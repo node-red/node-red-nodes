@@ -1,6 +1,6 @@
 # Node-RED Nodes
 
-A collection of nodes for Node-RED.
+A collection of nodes for [Node-RED](http://nodered.org).
 
 ## Installation
 
@@ -8,11 +8,11 @@ Eventually, the nodes will be npm-installable, but we're not there yet. Until th
 
 1. cd into the `nodes` directory of Node-RED
 2. Either:
-  - download the zip of the repository and extract
+  - download the zip of the repository and extract it
   - run `git clone https://github.com/node-red/node-red-nodes.git`
 3. npm install any of the individual node dependencies
 
-This is all too manually, so the sooner we npm-enable this stuff the better
+This is all too manual, so the sooner we npm-enable this stuff the better
 
 ## Contributing
 
