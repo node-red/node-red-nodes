@@ -3,7 +3,7 @@
  * Scans for a specific Bluetooth 4 (BLE) Device (by Name and UUID)
  * Returns the Name the of Device when found and stops scanning
  * Requires Noble: https://github.com/sandeepmistry/noble
- * Copyright 2013 Charalampos Doukas
+ * Copyright 2013 Charalampos Doukas - @BuildingIoT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
  **/
 
 
+//might need to modify accordingly
 var RED = require("../../red/red");
 
 //import noble
@@ -54,6 +55,7 @@ function Scan(n) {
         	msg.topic = node.topic;
 		msg.payload = "not found";
         	
+		//check for the device name and the UUID (first one from the UUID list)
 		if(peripheral.advertisement.localName==node.ble_name && peripheral.advertisement.serviceUuids[0]==node.ble_uuid) {
 			msg.payload=peripheral.advertisement.localName;
 			noble.stopScanning(); }
