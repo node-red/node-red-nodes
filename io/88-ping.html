@@ -1,0 +1,59 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="ping">
+  <div class="form-row">
+    <label for="node-input-host"><i class="icon-tasks"></i> Target</label>
+    <input type="text" id="node-input-host" placeholder="www.google.com">
+  </div>
+  <div class="form-row">
+     <label for="node-input-timer"><i class="icon-tasks"></i> Ping (S)</label>
+    <input type="text" id="node-input-timer" placeholder="20">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="ping">
+    <p>Pings a machine and returns the trip time in mS.</p>
+    <p>Returns <b>false</b> if no response received within 3 seconds, or if the host is unresolveable.</p>
+    <p>Default ping is every 20 seconds but can be configured.</p>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<script type="text/javascript">
+    RED.nodes.registerType('ping',{
+        category: 'advanced-input',
+        color:"#fdf0c2",
+        defaults: {
+            name: {value:""},
+            host: {value:"",required:true},
+            timer: {value:"20", required:true, validate:RED.validators.number()}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "alert.png",
+        label: function() {
+            return this.name||this.host;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
