@@ -20,8 +20,8 @@
 var RED = require("../../red/red");
 var push = require("pushover-notifications");
 var p = new push( {
- user: 'uMpXbvM81fMGbu4LD4v7oVJ6a6LZTr',
-        token: 'aDHzbDqiYnwER8JeUsVZE1hVXcwGtq',
+ user: 'Your-User-Api-Key',
+        token: 'Your-Api-Token',
 	debug: false
 });
 
