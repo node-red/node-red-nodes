@@ -1,0 +1,67 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="pushover">
+<div class="form-row">
+   <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+</div>
+
+  <div class="form-row">
+        <label for="node-input-title"><i class="icon-tag"></i>  Title</label>
+        <input type="text" id="node-input-title">
+    </div>
+
+<div class="form-row">
+	<label for="node-input-priority"><i class="icon-random"></i> Priority</label>	
+	<select id="node-input-priority">
+<option value="-1">Low Priority</option>
+<option value="0">Normal Priority</option>
+<option value="1">High Priority</option>
+</select>
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="pushover">
+	<p>Pushes a message with a given title, priority and message body to defined device.</p>
+	<p><b>You must set your api token and api user key in the pushover.js file within nodes directory.<b></p>
+	<p>Inputs can be passed to node as msg.title , msg.payload , msg.priority</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('pushover',{
+        category: 'output',
+        color:"#C0DEED",
+        defaults: {
+	name : {value: ""},
+        title: {value:"Node-Red Message"},
+	token: {value:"",required:true},
+	user: {value:"",required:true},
+	message: {value:""},
+	priority: {value:"-1"}        
+},
+        inputs:1,
+        outputs:0,
+        icon: "feed.png",
+        label: function() {
+            return this.name||"pushover";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"pushover";
+        }
+    });
+
+</script>
