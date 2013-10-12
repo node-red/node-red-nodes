@@ -18,7 +18,6 @@
  * limitations under the License.
  **/
 
-
 //might need to modify accordingly
 var RED = require("../../red/red");
 
@@ -26,9 +25,9 @@ var RED = require("../../red/red");
 var noble = require('noble');
 
 // The main node definition - most things happen in here
-function Scan(n) {      
-    // Create a RED node
-    RED.nodes.createNode(this,n);
+function BleScan(n) {
+	// Create a RED node
+	RED.nodes.createNode(this,n);
 
     var msg = {};
     var ble_name; 
@@ -62,15 +61,12 @@ function Scan(n) {
 		node.send(msg);
 });
 
-
+	this.on("close", function() {
+		try { noble.stopScanning(); }
+		catch (err) { console.log(err); }
+	});
 }
 
 // Register the node by name. This must be called before overriding any of the
 // Node functions.
-RED.nodes.registerType("scanBLE", Scan);
-
-
-Scan.prototype.close = function() {
-
-}
-
+RED.nodes.registerType("scanBLE", BleScan);
