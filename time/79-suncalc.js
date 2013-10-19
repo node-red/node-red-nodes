@@ -40,6 +40,7 @@ function SunNode(n) {
         var moon = parseInt(SunCalc.getMoonFraction(now)*100)/100;
         msg = { payload:0, topic:"sun", moon:moon };
         if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
+        if (oldval == null) { oldval = msg.payload; }
         if (msg.payload != oldval) {
             oldval = msg.payload;
             msg2 = msg;
