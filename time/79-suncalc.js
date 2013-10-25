@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-var RED = require("../../red/red");
+
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var SunCalc = require('suncalc');
 
 function SunNode(n) {
