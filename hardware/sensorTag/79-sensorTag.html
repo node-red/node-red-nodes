@@ -17,7 +17,7 @@
 
 <!-- First, the content of the edit dialog is defined.                       -->
 
-<script type="text/x-red" data-template-name="digiRGB">
+<script type="text/x-red" data-template-name="sensorTag">
    <!-- data-template-name identifies the node type this is for              -->
 
    <!-- Each of the following divs creates a field in the edit dialog.       -->
@@ -32,35 +32,73 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Expects a msg.payload with three part csv string of r,g,b.</div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Topic</label>
+        <input type="text" id="node-input-topic" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Temperature</label>
+        <input type="checkbox" id="node-input-temperature" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Humidity</label>
+        <input type="checkbox" id="node-input-humidity" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Pressure</label>
+        <input type="checkbox" id="node-input-pressure" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Magnetometer</label>
+        <input type="checkbox" id="node-input-magnetometer" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Accelerometer</label>
+        <input type="checkbox" id="node-input-accelerometer" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Gyroscope</label>
+        <input type="checkbox" id="node-input-gyroscope" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Keys</label>
+        <input type="checkbox" id="node-input-keys" >
+    </div>
 </script>
 
 
 <!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="digiRGB">
+<script type="text/x-red" data-help-name="sensorTag">
    <!-- data-help-name identifies the node type this help is for             -->
    <!-- This content appears in the Info sidebar when a node is selected     -->
    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
    <!-- node in the palette.                                                 -->
-   <p>Simple output node to drive digispark RGB</p>
+   <p>Simple outputput node to drive digispark RGB</p>
    <p>Requires msg.payload to be of the form 'r,g,b'</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
-    RED.nodes.registerType('digiRGB',{
-        category: 'output',      // the palette category
+    RED.nodes.registerType('sensorTag',{
+        category: 'advanced',      // the palette category
         color:"GoldenRod",
         defaults: {             // defines the editable properties of the node
-            name: {value:"digiSparkRGB"}   //  along with default values.
+            name: {value:"sensorTag"},   //  along with default values.
+            topic: {value:"sensorTag"},
+            temperature: {value:true},
+            humidity: {value:true},
+            pressure: {value:true},
+            magnetometer: {value:true},
+            accelerometer: {value:true},
+            gyroscope: {value:true},
+            keys: {value:true}
         },
-        inputs:1,                // set the number of inputs - only 0 or 1
-        outputs:0,               // set the number of outputs - 0 to n
-        icon: "light.png",    // set the icon (held in public/icons)
-        align: "right",
+        inputs:0,                // set the number of inputs - only 0 or 1
+        outputs:1,               // set the number of outputs - 0 to n
+        icon: "bluetooth.png",    // set the icon (held in public/icons)
         label: function() {      // sets the default label contents
-            return this.name||this.topic||"sample";
+            return this.name||this.topic||"sensorTag";
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
