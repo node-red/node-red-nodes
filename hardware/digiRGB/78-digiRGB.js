@@ -17,7 +17,7 @@
 // Sample Node-RED node file
 
 // Require main module
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var HID = require('node-hid');
 var device;
 var node;
@@ -27,7 +27,7 @@ function DigiRGBNode(n) {
     // Create a RED node
     RED.nodes.createNode(this,n);
     node=this;
-   
+
     var devices = HID.devices(0x16c0,0x05df);
     for (var i=0; i< devices.length; i++) {
       if (devices[i].product == 'DigiUSB') {
@@ -39,13 +39,13 @@ function DigiRGBNode(n) {
         } catch (e) {
           node.log(e)
         }
-      }  
+      }
    }
-   
+
    var p1 = /^\#[A-Fa-f0-9]{6}$/
    var p2 = /[0-9]+,[0-9]+,[0-9]+/
-   
-   if (device) {   
+
+   if (device) {
       this.on("input", function(msg) {
         if (msg != null) {
           if (p1.test(msg.payload)) {
