@@ -1,0 +1,54 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="wake on lan">
+    <div class="form-row">
+        <label for="node-input-mac"><i class="icon-globe"></i> MAC Address</label>
+        <input type="text" id="node-input-mac" placeholder="DE:AD:BE:EF:FE:ED">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: leave blank if you want to use <b>msg.mac</b></div>
+</script>
+
+<script type="text/x-red" data-help-name="wake on lan">
+    <p>Sends a Wake-On-LAN magic packet to the mac address specified.</p>
+    <p>You may instead set <b>msg.mac</b> to dynamically set the target device mac to wake up.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('wake on lan',{
+        category: 'advanced-output',
+        color:"#999966",
+        defaults: {
+            mac: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "light.png",
+        align: "right",
+        label: function() {
+            if (this.mac != "") { return "WOL: "+this.mac; }
+            else { return this.name||"wake on lan"; }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
