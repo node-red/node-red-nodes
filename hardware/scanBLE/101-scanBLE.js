@@ -19,7 +19,7 @@
  **/
 
 //might need to modify accordingly
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 
 //import noble
 var noble = require('noble');

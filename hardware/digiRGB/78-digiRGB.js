@@ -17,7 +17,7 @@
 // Sample Node-RED node file
 
 // Require main module
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var HID = require('node-hid');
 var device;
 var node;

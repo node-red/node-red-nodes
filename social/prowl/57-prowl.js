@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var Prowl = require('node-prowl');
 var util = require('util');
 
@@ -24,7 +24,7 @@ var util = require('util');
 //    module.exports = {prowlkey:'My-API-KEY'}
 
 try {
-	var pushkey = require("../../settings").prowl || require("../../../pushkey.js");
+	var pushkey = require(process.env.NODE_RED_HOME+"/settings").prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
 	util.log("[57-prowl.js] Error: Failed to load Prowl credentials");

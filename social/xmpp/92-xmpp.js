@@ -22,12 +22,12 @@ console.warn=(function() { // suppress warning from stringprep when not needed)
 	};
 })();
 
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var xmpp = require('simple-xmpp');
 console.warn = orig;
 
 try {
-	var xmppkey = require("../../settings").xmpp || require("../../../xmppkeys.js");
+	var xmppkey = require(process.env.NODE_RED_HOME+"/settings").xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
 } catch(err) {
 	throw new Error("Failed to load XMPP credentials");
 }

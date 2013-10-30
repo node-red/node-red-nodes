@@ -14,9 +14,9 @@
  * limitations under the License.
  **/
 
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var growl = require('growl');
-var imagefile = __dirname+"/../../public/mqtt-node-red.png";
+var imagefile = process.env.NODE_RED_HOME+"/public/mqtt-node-red.png";
 
 function NotifyNode(n) {
 	RED.nodes.createNode(this,n);
