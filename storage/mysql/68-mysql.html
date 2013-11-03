@@ -1,0 +1,147 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="MySQLdatabase">
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="icon-briefcase"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="icon-briefcase"></i> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="3306">
+    </div>
+        <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-briefcase"></i> User</label>
+        <input type="text" id="node-config-input-user" placeholder="JoeDemo">
+    </div>
+        <div class="form-row">
+        <label for="node-config-input-pass"><i class="icon-briefcase"></i> Password</label>
+        <input type="text" id="node-config-input-pass" placeholder="mySecret">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-db"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-config-input-db" placeholder="myDatabase">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('MySQLdatabase',{
+        category: 'config',
+        defaults: {
+            host: {value:"127.0.0.1",required:true},
+            port: {value:"3306",required:true},
+            user: {value:"",required:true},
+            pass: {value:"",required:true},
+            db: {value:"",required:true}
+        },
+        label: function() {
+            return this.db;
+        }
+    });
+</script>
+
+
+
+<script type="text/x-red" data-template-name="mysql">
+    <div class="form-row">
+        <label for="node-input-mydb"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-input-mydb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="mysql">
+    <p>Allows basic access to a MySQL database.</p>
+    <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
+    By it's very nature it allows SQL injection... so <i>be careful out there...</i></p>
+    <p><b>msg.topic</b> must hold the <i>query</i> for the database, and the result is returned in <b>msg.payload</b>.</p>
+    <p>Typically the returned payload will be an array of the result rows.</p>
+    <p>If nothing is found for the key then <i>null</i> is returned,</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mysql',{
+        category: 'storage-input',
+        color:"#e97b00",
+        defaults: {
+            mydb: {type:"MySQLdatabase",required:true},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "db.png",
+        label: function() {
+            var levelNode = RED.nodes.node(this.mydb);
+            return this.name||(levelNode?levelNode.label():"mysql");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<!--
+<script type="text/x-red" data-template-name="mysql out">
+    <div class="form-row node-input-level">
+        <label for="node-input-level"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-input-level">
+    </div>
+    <div class="form-row">
+        <label for="node-input-operation"><i class="icon-wrench"></i> Operation</label>
+        <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
+            <option value="store">Store</option>
+            <option value="delete">Delete</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="mysql out">
+    <p>Allows access to a MySQL database.</p>
+    <p>Use this node to either <b>put</b> (store) the <b>msg.payload</b> to the named database file, using <b>msg.topic</b> as the key.</p>
+    <p>To <b>delete</b> information select delete in the properties dialogue and again use <b>msg.topic</b> as the key.</b>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mysql out',{
+        category: 'storage-output',
+        color:"#e97b00",
+        defaults: {
+            level: {type:"MySQLdatabase",required:true},
+            operation: {value:"store"},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "db.png",
+        align: "right",
+        label: function() {
+            var levelNode = RED.nodes.node(this.level);
+            return this.name||(levelNode?levelNode.label():"mysql");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+-->
