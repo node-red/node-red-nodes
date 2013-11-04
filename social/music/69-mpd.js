@@ -35,9 +35,9 @@ function MPDOut(n) {
                 //node.mpc.command(msg.payload);
                 node.mpc.command(msg.payload, msg.param, function(err, results) {
                     if (err) { console.log("MPD: Error:",err); }
-                    else { node.error(results); }
+                    //else { console.log(results); }
                 });
-            } catch(err) { console.log("MPD: Error:",err); }
+            } catch (err) { console.log("MPD: Error:",err); }
         }
     });
 
