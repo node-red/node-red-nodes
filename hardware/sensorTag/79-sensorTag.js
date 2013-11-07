@@ -47,7 +47,7 @@ function sensorTagNode(n) {
                 sensorTag.enableIrTemperature(function(){});
                 sensorTag.on('irTemperatureChange', 
                 function(objectTemperature, ambientTemperature){
-                  var msg = {'topic': node.topic + '/tempature'};
+                  var msg = {'topic': node.topic + '/temperature'};
                   msg.payload = {'object': objectTemperature.toFixed(1),
                   'ambient':ambientTemperature.toFixed(1)
                   };
