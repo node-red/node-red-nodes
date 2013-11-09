@@ -14,15 +14,16 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var RED = require("../../red/red");
 var badwords = require('badwords');
 
 function BadwordsNode(n) {
     RED.nodes.createNode(this,n);
     var node = this;
     this.on("input", function(msg) {
-        if (badwords.ok(msg.payload)) { node.send(msg); }
+        if (typeof msg.payload == "string") {
+            if (badwords.ok(msg.payload)) { node.send(msg); }
+        }
     });
 }
-
 RED.nodes.registerType("badwords",BadwordsNode);
