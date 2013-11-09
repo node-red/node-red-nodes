@@ -58,6 +58,7 @@ function HueNode(n) {
     msg.topic = this.topic;
 
     this.on("input", function(msg){
+        
         //check if users has selected discovery mode, provide output:
         if(this.discovery_mode==1) {
             //start with detecting the IP address of the Hue gateway in the local network:
@@ -95,35 +96,42 @@ function HueNode(n) {
                 var msg2 = {};
                 msg2.topic = this.topic;
                 if (err) throw err;
-                //save the IP address of the 1st bridge found
-                this.gw_ipaddress = result[0].ipaddress;
-                
 
-                //set light status
-                var api = new HueApi(this.gw_ipaddress, node.username);
-                var lightState = hue.lightState;
-                var state = lightState.create();
-
-                var status;
-                if(msg.payload=="ALERT"){
-                    status = "ALERT";
-                }
-                else if(node.lamp_status=="ON" || msg.payload=="ON") status = "ON";
-                else if(node.lamp_status=="OFF" || msg.payload=="OFF") status = "OFF";
-
-
-                if(status=="ALERT") {
-                    api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
-                }
-                else if(status=="ON") {
-                    api.setLightState(node.lamp_id, state.on()).then(displayResult).fail(displayError).done();
+                if(result[0]==null) {
+                    msg2.payload="No Philips Hue Bridge located! Nothing to be done.";
+                    console.log("No Philips Hue Bridge located!");
+                    node.send(msg2);
                 }
                 else {
-                    api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
-                }
+                    //save the IP address of the 1st bridge found
+                    this.gw_ipaddress = result[0].ipaddress;
 
-                msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
-                node.send(msg2);
+                    //set light status
+                    var api = new HueApi(this.gw_ipaddress, node.username);
+                    var lightState = hue.lightState;
+                    var state = lightState.create();
+
+                    var status;
+                    if(msg.payload=="ALERT"){
+                        status = "ALERT";
+                    }
+                    else if(node.lamp_status=="ON" || msg.payload=="ON") status = "ON";
+                    else if(node.lamp_status=="OFF" || msg.payload=="OFF") status = "OFF";
+
+
+                    if(status=="ALERT") {
+                        api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
+                    }
+                    else if(status=="ON") {
+                        api.setLightState(node.lamp_id, state.on()).then(displayResult).fail(displayError).done();
+                    }
+                    else {
+                        api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
+                    }
+
+                    msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
+                    node.send(msg2);
+                }
 
             });
         }
