@@ -63,6 +63,7 @@ function DigiRGBNode(n) {
     }
 
     this.on('close', function() {
-    if (device) { device.close(); });
+        if (device) { device.close(); }
+    });
 }
 RED.nodes.registerType("digiRGB",DigiRGBNode);
