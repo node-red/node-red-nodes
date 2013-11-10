@@ -54,7 +54,6 @@
 </script>
 
 
-
 <script type="text/x-red" data-template-name="mysql">
     <div class="form-row">
         <label for="node-input-mydb"><i class="icon-briefcase"></i> Database</label>
@@ -95,53 +94,3 @@
         }
     });
 </script>
-
-<!--
-<script type="text/x-red" data-template-name="mysql out">
-    <div class="form-row node-input-level">
-        <label for="node-input-level"><i class="icon-briefcase"></i> Database</label>
-        <input type="text" id="node-input-level">
-    </div>
-    <div class="form-row">
-        <label for="node-input-operation"><i class="icon-wrench"></i> Operation</label>
-        <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
-            <option value="store">Store</option>
-            <option value="delete">Delete</option>
-        </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-
-<script type="text/x-red" data-help-name="mysql out">
-    <p>Allows access to a MySQL database.</p>
-    <p>Use this node to either <b>put</b> (store) the <b>msg.payload</b> to the named database file, using <b>msg.topic</b> as the key.</p>
-    <p>To <b>delete</b> information select delete in the properties dialogue and again use <b>msg.topic</b> as the key.</b>.</p>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('mysql out',{
-        category: 'storage-output',
-        color:"#e97b00",
-        defaults: {
-            level: {type:"MySQLdatabase",required:true},
-            operation: {value:"store"},
-            name: {value:""}
-        },
-        inputs:1,
-        outputs:0,
-        icon: "db.png",
-        align: "right",
-        label: function() {
-            var levelNode = RED.nodes.node(this.level);
-            return this.name||(levelNode?levelNode.label():"mysql");
-        },
-            labelStyle: function() {
-            return this.name?"node_label_italic":"";
-        }
-    });
-</script>
--->

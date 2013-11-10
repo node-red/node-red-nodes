@@ -51,7 +51,5 @@ function PingNode(n) {
     this.on("close", function() {
         clearInterval(this.tout);
     });
-
 }
-
 RED.nodes.registerType("ping",PingNode);

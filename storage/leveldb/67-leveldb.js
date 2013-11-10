@@ -18,76 +18,77 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var lvldb = require('level');
 
 function LevelNode(n) {
-	RED.nodes.createNode(this,n);
-	this.dbname = n.db;
-	var node = this;
-	lvldb(this.dbname, function(err, db) {
-		if (err) node.error(err);
-		node.db = db;
-	});
+    RED.nodes.createNode(this,n);
+    this.dbname = n.db;
+    var node = this;
+    lvldb(this.dbname, function(err, db) {
+        if (err) node.error(err);
+        node.db = db;
+    });
+    this.on('close', function() {
+        if (node.db) { node.db.close(); }
+    });
 }
 RED.nodes.registerType("leveldbase",LevelNode);
-LevelNode.prototype.close = function() {
-    this.db.close();
-}
+
 
 function LevelDBNodeIn(n) {
-	RED.nodes.createNode(this,n);
-	this.level = n.level;
-	this.levelConfig = RED.nodes.getNode(this.level);
+    RED.nodes.createNode(this,n);
+    this.level = n.level;
+    this.levelConfig = RED.nodes.getNode(this.level);
 
-	if (this.levelConfig) {
-		var node = this;
-		node.on("input", function(msg) {
-			if (typeof msg.topic === 'string') {
-				node.levelConfig.db.get(msg.topic, function(err, value) {
-					if (err) {
-						//node.warn(err);
-						// for some reason they treat nothing found as an error...
-						msg.payload = null;  // so we should return null
-					}
-					else { msg.payload = value; }
-					node.send(msg);
-				});
-			}
-			else {
-				if (typeof msg.topic !== 'string') node.error("msg.topic (the key is not defined");
-			}
-		});
-	}
-	else {
-		this.error("LevelDB database name not configured");
-	}
+    if (this.levelConfig) {
+        var node = this;
+        node.on("input", function(msg) {
+            if (typeof msg.topic === 'string') {
+                node.levelConfig.db.get(msg.topic, function(err, value) {
+                    if (err) {
+                        //node.warn(err);
+                        // for some reason they treat nothing found as an error...
+                        msg.payload = null;  // so we should return null
+                    }
+                    else { msg.payload = value; }
+                    node.send(msg);
+                });
+            }
+            else {
+                if (typeof msg.topic !== 'string') node.error("msg.topic (the key is not defined");
+            }
+        });
+    }
+    else {
+        this.error("LevelDB database name not configured");
+    }
 }
 RED.nodes.registerType("leveldb in",LevelDBNodeIn);
 
 
 function LevelDBNodeOut(n) {
-	RED.nodes.createNode(this,n);
-	this.level = n.level;
-	this.operation = n.operation;
-	this.levelConfig = RED.nodes.getNode(this.level);
+    RED.nodes.createNode(this,n);
+    this.level = n.level;
+    this.operation = n.operation;
+    this.levelConfig = RED.nodes.getNode(this.level);
 
-	if (this.levelConfig) {
-		var node = this;
-		node.on("input", function(msg) {
-			if (typeof msg.topic === 'string') {
-				if (node.operation === "delete") {
-					node.levelConfig.db.del(msg.topic);
-				}
-				else {
-					node.levelConfig.db.put(msg.topic, msg.payload, function(err) {
-						if (err) node.error(err);
-					});
-				}
-			}
-			else {
-				if (typeof msg.topic !== 'string') node.error("msg.topic (the key is not defined");
-			}
-		});
-	}
-	else {
-		this.error("LevelDB database name not configured");
-	}
+    if (this.levelConfig) {
+        var node = this;
+        node.on("input", function(msg) {
+            if (typeof msg.topic === 'string') {
+                if (node.operation === "delete") {
+                    node.levelConfig.db.del(msg.topic);
+                }
+                else {
+                    node.levelConfig.db.put(msg.topic, msg.payload, function(err) {
+                        if (err) node.error(err);
+                    });
+                }
+            }
+            else {
+                if (typeof msg.topic !== 'string') node.error("msg.topic (the key is not defined");
+            }
+        });
+    }
+    else {
+        this.error("LevelDB database name not configured");
+    }
 }
 RED.nodes.registerType("leveldb out",LevelDBNodeOut);
