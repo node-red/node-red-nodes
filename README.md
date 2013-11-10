@@ -57,11 +57,13 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **78-ledborg** - A simple driver for the LEDborg plug on module for Raspberry Pi.
 
+**60-wemo** - Basic node to drive a WeMo socket and switch. Does not use discovery.
+
 **76-blinkstick** - Provides support for the BlinkStick USB LED device.
 
 **77-blink1** - Provides support for the Blink1 USB LED from ThingM.
 
-**78-digiRGB** - Provides support for the DigiPark RGB USB LED.
+**78-digiRGB** - Provides support for the DigiSpark RGB USB LED.
 
 **79-sensorTag** - Reads data from the Ti BLE SensorTag device.
 
