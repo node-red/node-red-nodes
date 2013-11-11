@@ -14,32 +14,37 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="mpd out">
+<script type="text/x-red" data-template-name="wemo out">
+    <div class="form-row">
+        <label for="node-input-ipaddr"><i class="icon-globe"></i> IP Address</label>
+        <input type="text" id="node-input-ipaddr" placeholder="192.168.1.100">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Expects a msg.payload with a valid mpc command.</div>
+    <div class="form-tips">Expects a msg.payload with either 1/0, on/off, or true/false</div>
 </script>
 
-<script type="text/x-red" data-help-name="mpd out">
-    <p>MPD music control output node.</p>
-    <p>Expects <b>msg.payload</b> to be a valid mpc command. Currently only simple commands that expect no reply are supported.</p>
+<script type="text/x-red" data-help-name="wemo out">
+    <p>Wemo output node. Expects a <b>msg.payload</b> with either 1/0, on/off or true/false.</p>
+    <p>It doesn't yet do any ip address discovery of the wemo devices.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('mpd out',{
+    RED.nodes.registerType('wemo out',{
         category: 'advanced-output',
-        color:"#ffcc66",
+        color:"GoldenRod",
         defaults: {
+            ipaddr: {value:"",required:true},
             name: {value:""}
         },
         inputs:1,
         outputs:0,
-        icon: "music.png",
+        icon: "light.png",
         align: "right",
         label: function() {
-            return this.name||"mpd";
+            return this.name||"wemo";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -47,31 +52,36 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="mpd in">
+<script type="text/x-red" data-template-name="wemo in">
+    <div class="form-row">
+        <label for="node-input-ipaddr"><i class="icon-globe"></i> IP Address</label>
+        <input type="text" id="node-input-ipaddr" placeholder="192.168.1.100">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Creates a msg.payload object with Artist, Album, Title, Genre and Date.</div>
+    <div class="form-tips">Creates a msg.payload with either 1, 0, nc or na.</div>
 </script>
 
-<script type="text/x-red" data-help-name="mpd in">
-    <p>MPD music control input node.</p>
-    <p>Creates a <b>msg.payload</b> object with Artist, Album, Track, Genre and Date.</p>
+<script type="text/x-red" data-help-name="wemo in">
+    <p>Wemo input node. Creates a <b>msg.payload</b> with either 1, 0, nc (no change), or na (not available).</p>
+    <p>It doesn't yet do any ip address discovery of the wemo devices.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('mpd in',{
+    RED.nodes.registerType('wemo in',{
         category: 'advanced-input',
-        color:"#ffcc66",
+        color:"GoldenRod",
         defaults: {
+            ipaddr: {value:"",required:true},
             name: {value:""}
         },
         inputs:0,
         outputs:1,
-        icon: "music.png",
+        icon: "light.png",
         label: function() {
-            return this.name||"mpd";
+            return this.name||"wemo";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

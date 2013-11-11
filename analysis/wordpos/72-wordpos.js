@@ -15,20 +15,17 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var util = require("util");
 var WordPos = require('wordpos');
-
 var wordpos = new WordPos();
 
 function WordPOSNode(n) {
     RED.nodes.createNode(this,n);
     this.on("input", function(msg) {
-            var node = this;
-            wordpos.getPOS(msg.payload, function (result) {
-                msg.pos = result;
-                node.send(msg);
-            });
+        var node = this;
+        wordpos.getPOS(msg.payload, function (result) {
+            msg.pos = result;
+            node.send(msg);
+        });
     });
 }
-
 RED.nodes.registerType("wordpos",WordPOSNode);
