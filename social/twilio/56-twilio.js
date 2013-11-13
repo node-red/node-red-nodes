@@ -24,7 +24,7 @@ var util = require('util');
 //   module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }
 
 try {
-	var twiliokey = require(process.env.NODE_RED_HOME+"/settings").twilio || require(process.env.NODE_RED_HOME+"/../twiliokey.js");
+	var twiliokey = RED.settings.twilio || require(process.env.NODE_RED_HOME+"/../twiliokey.js");
 }
 catch(err) {
 	util.log("[56-twilio.js] Error: Failed to load Twilio credentials");
