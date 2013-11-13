@@ -24,7 +24,7 @@ var util = require('util');
 //    module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
 
 try {
-	var pushkey = require(process.env.NODE_RED_HOME+"/settings").pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+	var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
 	util.log("[57-pushbullet.js] Error: Failed to load PushBullet credentials");
