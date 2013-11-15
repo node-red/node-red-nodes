@@ -16,10 +16,10 @@
 
 var orig=console.warn;
 console.warn=(function() { // suppress warning from stringprep when not needed)
-	var orig=console.warn;
-	return function() {
-	//orig.apply(console, arguments);
-	};
+    var orig=console.warn;
+    return function() {
+    //orig.apply(console, arguments);
+    };
 })();
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
@@ -27,92 +27,96 @@ var xmpp = require('simple-xmpp');
 console.warn = orig;
 
 try {
-	var xmppkey = require(process.env.NODE_RED_HOME+"/settings").xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
+    var xmppkey = require(process.env.NODE_RED_HOME+"/settings").xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
 } catch(err) {
-	throw new Error("Failed to load XMPP credentials");
+    throw new Error("Failed to load XMPP credentials");
 }
 
 function XmppNode(n) {
-	RED.nodes.createNode(this,n);
-	this.server = n.server;
-	this.port = n.port;
-	this.join = n.join || false;
-	this.nick = n.nick || "Node-RED";
-	this.sendAll = n.sendObject;
-	this.to = n.to || "";
-	var node = this;
+    RED.nodes.createNode(this,n);
+    this.server = n.server;
+    this.port = n.port;
+    this.join = n.join || false;
+    this.nick = n.nick || "Node-RED";
+    this.sendAll = n.sendObject;
+    this.to = n.to || "";
+    var node = this;
 
-	setTimeout(function() {
-		xmpp.connect({
-			jid			: xmppkey.jid,
-			password	: xmppkey.password,
-			host		: this.server,
-			port		: this.port,
-			skipPresence : true,
-			reconnect : false
-		});
-	}, 5000);
+    setTimeout(function() {
+        xmpp.connect({
+            jid         : xmppkey.jid,
+            password    : xmppkey.password,
+            host        : this.server,
+            port        : this.port,
+            skipPresence : true,
+            reconnect : false
+        });
+    }, 5000);
 
-	xmpp.on('online', function() {
-		node.log('connected to '+node.server);
-		xmpp.setPresence('online', node.nick+' online');
-		if (node.join) {
-			xmpp.join(node.to+'/'+node.nick);
-		}
-	});
+    xmpp.on('online', function() {
+        node.log('connected to '+node.server);
+        xmpp.setPresence('online', node.nick+' online');
+        if (node.join) {
+            xmpp.join(node.to+'/'+node.nick);
+        }
+    });
 
-	xmpp.on('chat', function(from, message) {
-		var msg = { topic:from, payload:message };
-		node.send([msg,null]);
-	});
+    xmpp.on('chat', function(from, message) {
+        var msg = { topic:from, payload:message };
+        node.send([msg,null]);
+    });
 
-	xmpp.on('groupchat', function(conference, from, message, stamp) {
-		var msg = { topic:from, payload:message, room:conference };
-		if (from != node.nick) { node.send([msg,null]); }
-	});
+    xmpp.on('groupchat', function(conference, from, message, stamp) {
+        var msg = { topic:from, payload:message, room:conference };
+        if (from != node.nick) { node.send([msg,null]); }
+    });
 
-	//xmpp.on('chatstate', function(from, state) {
-		//console.log('%s is currently %s', from, state);
-		//var msg = { topic:from, payload:state };
-		//node.send([null,msg]);
-	//});
+    //xmpp.on('chatstate', function(from, state) {
+        //console.log('%s is currently %s', from, state);
+        //var msg = { topic:from, payload:state };
+        //node.send([null,msg]);
+    //});
 
-	xmpp.on('buddy', function(jid, state, statusText) {
-		node.log(jid+" is "+state+" : "+statusText);
-		var msg = { topic:jid, payload: { presence:state, status:statusText} };
-		node.send([null,msg]);
-	});
+    xmpp.on('buddy', function(jid, state, statusText) {
+        node.log(jid+" is "+state+" : "+statusText);
+        var msg = { topic:jid, payload: { presence:state, status:statusText} };
+        node.send([null,msg]);
+    });
 
-	xmpp.on('error', function(err) {
-		console.error(err);
-	});
+    xmpp.on('error', function(err) {
+        console.error(err);
+    });
 
-	xmpp.on('close', function(err) {
-		node.log('connection closed');
-	});
+    xmpp.on('close', function(err) {
+        node.log('connection closed');
+    });
 
-	xmpp.on('subscribe', function(from) {
-		xmpp.acceptSubscription(from);
-	});
+    xmpp.on('subscribe', function(from) {
+        xmpp.acceptSubscription(from);
+    });
 
-	this.on("input", function(msg) {
-		var to = msg.topic;
-		if (node.to != "") { to = node.to; }
-		if (node.sendAll) {
-			xmpp.send(to, JSON.stringify(msg), node.join);
-		}
-		else {
-			xmpp.send(to, msg.payload, node.join);
-		}
-	});
+    this.on("input", function(msg) {
+        var to = msg.topic;
+        if (node.to != "") { to = node.to; }
+        if (node.sendAll) {
+            xmpp.send(to, JSON.stringify(msg), node.join);
+        }
+        else {
+            xmpp.send(to, msg.payload, node.join);
+        }
+    });
 
-	this.on("close", function() {
-		xmpp.setPresence('offline');
-		//xmpp.conn.end();
-		// TODO - DCJ NOTE... this is not good. It leaves the connection up over a restart - which will end up with bad things happening...
-		// (but requires the underlying xmpp lib to be fixed (which does have an open bug request on fixing the close method)).
-		this.warn("Due to an underlying bug in the xmpp library this does not disconnect old sessions. This is bad... A restart would be better.");
-	});
+    this.on("close", function() {
+        xmpp.setPresence('offline');
+        try {
+            xmpp.disconnect();
+        // TODO - DCJ NOTE... this is not good. It leaves the connection up over a restart - which will end up with bad things happening...
+        // (but requires the underlying xmpp lib to be fixed, which does have an open bug request on fixing the close method - and a work around.
+        // see - https://github.com/simple-xmpp/node-simple-xmpp/issues/12 for the fix
+        } catch(e) {
+            this.warn("Due to an underlying bug in the xmpp library this does not disconnect old sessions. This is bad... A restart would be better.");
+        }
+    });
 }
 
 RED.nodes.registerType("xmpp",XmppNode);
