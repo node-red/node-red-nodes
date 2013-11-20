@@ -15,14 +15,14 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var badwords = require('badwords');
+var badwordsRegExp = require('badwords/regexp');
 
 function BadwordsNode(n) {
     RED.nodes.createNode(this,n);
     var node = this;
     this.on("input", function(msg) {
-        if (typeof msg.payload == "string") {
-            if (badwords.ok(msg.payload)) { node.send(msg); }
+        if (typeof msg.payload === "string") {
+            if ( !badwordsRegExp.test(msg.payload) ) { node.send(msg); }
         }
     });
 }
