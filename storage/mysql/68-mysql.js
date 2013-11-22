@@ -61,6 +61,10 @@ function MySQLNode(n) {
     RED.nodes.createNode(this,n);
     this.host = n.host;
     this.port = n.port;
+    
+    this.connected = false;
+    this.connecting = false;
+    
     if (n.user) {
         var credentials = {};
         credentials.user = n.user;
@@ -80,6 +84,7 @@ function MySQLNode(n) {
     var node = this;
 
     function doConnect() {
+        node.connecting = true;
         node.connection = mysqldb.createConnection({
             host : node.host,
             port : node.port,
@@ -90,13 +95,17 @@ function MySQLNode(n) {
         });
 
         node.connection.connect(function(err) {
+            node.connecting = false;
             if (err) {
-                node.warn("mysql: "+err);
+                node.warn(err);
                 node.tick = setTimeout(doConnect, reconnect);
+            } else {
+                node.connected = true;
             }
         });
 
         node.connection.on('error', function(err) {
+            node.connected = false;
             if (err.code === 'PROTOCOL_CONNECTION_LOST') {
                 doConnect(); // silently reconnect...
             } else {
@@ -105,13 +114,20 @@ function MySQLNode(n) {
             }
         });
     }
-    doConnect();
-
-    node.on('close', function () {
-        if (node.tick) { clearTimeout(node.tick); }
-        node.connection.end(function(err) {
-            if (err) node.error(err);
-        });
+    
+    this.connect = function() {
+        if (!this.connected && !this.connecting) {
+            doConnect();
+        }
+    }
+    
+    this.on('close', function () {
+        if (this.tick) { clearTimeout(this.tick); }
+        if (this.connection) {
+            node.connection.end(function(err) {
+                if (err) node.error(err);
+            });
+        }
     });
 }
 RED.nodes.registerType("MySQLdatabase",MySQLNode);
@@ -123,6 +139,7 @@ function MysqlDBNodeIn(n) {
     this.mydbConfig = RED.nodes.getNode(this.mydb);
 
     if (this.mydbConfig) {
+        this.mydbConfig.connect();
         var node = this;
         node.on("input", function(msg) {
             if (typeof msg.topic === 'string') {
