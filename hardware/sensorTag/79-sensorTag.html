@@ -33,8 +33,12 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Topic</label>
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
         <input type="text" id="node-input-topic" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-uuid"><i class="icon-tag"></i> UUID</label>
+        <input type="text" id="node-input-uuid" >
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Temperature</label>
@@ -85,6 +89,7 @@
         defaults: {             // defines the editable properties of the node
             name: {value:"sensorTag"},   //  along with default values.
             topic: {value:"sensorTag"},
+            uuid: {value:undefined},
             temperature: {value:true},
             humidity: {value:true},
             pressure: {value:true},

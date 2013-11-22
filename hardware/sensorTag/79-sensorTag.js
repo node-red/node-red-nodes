@@ -14,20 +14,18 @@
  * limitations under the License.
  **/
 
-// Sample Node-RED node file
-
 // Require main module
-var RED = require("../../red/red");
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var SensorTag = require('sensortag');
 var stag;
 var node;
 
 // The main node definition - most things happen in here
 function sensorTagNode(n) {
-    // Create a RED node
     RED.nodes.createNode(this,n);
     this.name = n.name;
     this.topic = n.topic;
+    this.uuid = n.uuid;
     this.temperature = n.temperature;
     this.pressure = n.pressure;
     this.humidity = n.humidity;
@@ -35,19 +33,25 @@ function sensorTagNode(n) {
     this.magnetometer = n.magnetometer;
     this.gyroscope = n.gyroscope;
     this.keys = n.keys;
+
+    if (this.uuid === "") {
+        this.uuid = undefined;
+    }
+    console.log(this.uuid);
+
     node=this;
-    
+
     if ( typeof stag == "undefined") {
     //console.log("starting");
-    SensorTag.discover(function(sensorTag){ 
+    SensorTag.discover(function(sensorTag){
         stag = sensorTag;
         sensorTag.connect(function(){
             //console.log("connected");
             sensorTag.discoverServicesAndCharacteristics(function(){
                 sensorTag.enableIrTemperature(function(){});
-                sensorTag.on('irTemperatureChange', 
+                sensorTag.on('irTemperatureChange',
                 function(objectTemperature, ambientTemperature){
-                  var msg = {'topic': node.topic + '/temperature'};
+                  var msg = {'topic': node.topic + '/tempature'};
                   msg.payload = {'object': objectTemperature.toFixed(1),
                   'ambient':ambientTemperature.toFixed(1)
                   };
@@ -93,13 +97,11 @@ function sensorTagNode(n) {
                 enable();
             });
         });
-    });
+    },node.uuid);
     } else {
       //console.log("reconfig");
       enable();
     }
-
-    
 }
 
 function enable() {
@@ -139,8 +141,4 @@ function enable() {
                   stag.unnotifySimpleKey(function() {});
                 }
 }
-
-// Register the node by name. This must be called before overriding any of the
-// Node functions.
 RED.nodes.registerType("sensorTag",sensorTagNode);
-
