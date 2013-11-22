@@ -17,13 +17,65 @@
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var reconnect = RED.settings.mysqlReconnectTime || 30000;
 var mysqldb = require('mysql');
+var querystring = require('querystring');
+
+RED.app.get('/MySQLdatabase/:id',function(req,res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else {
+        res.send(JSON.stringify({}));
+    }
+});
+
+RED.app.delete('/MySQLdatabase/:id',function(req,res) {
+    RED.nodes.deleteCredentials(req.params.id);
+    res.send(200);
+});
+
+RED.app.post('/MySQLdatabase/:id',function(req,res) {
+    var body = "";
+    req.on('data', function(chunk) {
+        body+=chunk;
+    });
+    req.on('end', function(){
+        var newCreds = querystring.parse(body);
+        var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.user == null || newCreds.user == "") {
+            delete credentials.user;
+        } else {
+            credentials.user = newCreds.user;
+        }
+        if (newCreds.password == "") {
+            delete credentials.password;
+        } else {
+            credentials.password = newCreds.password||credentials.password;
+        }
+        RED.nodes.addCredentials(req.params.id,credentials);
+        res.send(200);
+    });
+});
+
 
 function MySQLNode(n) {
     RED.nodes.createNode(this,n);
     this.host = n.host;
     this.port = n.port;
-    this.user = n.user;
-    this.password = n.pass;
+    if (n.user) {
+        var credentials = {};
+        credentials.user = n.user;
+        credentials.password = n.pass;
+        RED.nodes.addCredentials(n.id,credentials);
+        this.user = n.user;
+        this.password = n.pass;
+    } else {
+        var credentials = RED.nodes.getCredentials(n.id);
+        if (credentials) {
+            this.user = credentials.user;
+            this.password = credentials.password;
+        }
+    }
+        
     this.dbname = n.db;
     var node = this;
 
