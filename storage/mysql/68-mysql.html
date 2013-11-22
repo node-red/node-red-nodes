@@ -29,7 +29,7 @@
     </div>
         <div class="form-row">
         <label for="node-config-input-pass"><i class="icon-briefcase"></i> Password</label>
-        <input type="text" id="node-config-input-pass" placeholder="mySecret">
+        <input type="password" id="node-config-input-pass" placeholder="mySecret">
     </div>
     <div class="form-row">
         <label for="node-config-input-db"><i class="icon-briefcase"></i> Database</label>
@@ -72,6 +72,8 @@
     <p><b>msg.topic</b> must hold the <i>query</i> for the database, and the result is returned in <b>msg.payload</b>.</p>
     <p>Typically the returned payload will be an array of the result rows.</p>
     <p>If nothing is found for the key then <i>null</i> is returned,</p>
+    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
+    <pre>mysqlReconnectTime: 30000,</pre></p>
 </script>
 
 <script type="text/javascript">

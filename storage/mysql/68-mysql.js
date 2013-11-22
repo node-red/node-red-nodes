@@ -15,6 +15,7 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var reconnect = RED.settings.mysqlReconnectTime || 30000;
 var mysqldb = require('mysql');
 
 function MySQLNode(n) {
@@ -26,19 +27,36 @@ function MySQLNode(n) {
     this.dbname = n.db;
     var node = this;
 
-    node.connection = mysqldb.createConnection({
-        host : node.host,
-        port : node.port,
-        user : node.user,
-        password : node.password,
-        database : node.dbname
-    });
+    function doConnect() {
+        node.connection = mysqldb.createConnection({
+            host : node.host,
+            port : node.port,
+            user : node.user,
+            password : node.password,
+            database : node.dbname,
+            insecureAuth: true
+        });
 
-    node.connection.connect(function(err) {
-        if (err) node.error(err);
-    });
+        node.connection.connect(function(err) {
+            if (err) {
+                node.warn("mysql: "+err);
+                node.tick = setTimeout(doConnect, reconnect);
+            }
+        });
+
+        node.connection.on('error', function(err) {
+            if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                doConnect(); // silently reconnect...
+            } else {
+                node.error(err);
+                doConnect();
+            }
+        });
+    }
+    doConnect();
 
     node.on('close', function () {
+        if (node.tick) { clearTimeout(node.tick); }
         node.connection.end(function(err) {
             if (err) node.error(err);
         });
