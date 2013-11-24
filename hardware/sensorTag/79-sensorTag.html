@@ -106,6 +106,16 @@
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditsave: function() {
+           var mac = $("#node-input-uuid").val();
+           //nasty hack as I can't get global replace to work
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.toLowerCase();
+           $("#node-input-uuid").val(mac);
         }
     });
 </script>
