@@ -1,0 +1,134 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="MySQLdatabase">
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="icon-briefcase"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="icon-briefcase"></i> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="3306">
+    </div>
+        <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-briefcase"></i> User</label>
+        <input type="text" id="node-config-input-user" placeholder="JoeDemo">
+    </div>
+        <div class="form-row">
+        <label for="node-config-input-pass"><i class="icon-briefcase"></i> Password</label>
+        <input type="password" id="node-config-input-pass" placeholder="mySecret">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-db"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-config-input-db" placeholder="myDatabase">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('MySQLdatabase',{
+        category: 'config',
+        defaults: {
+            host: {value:"127.0.0.1",required:true},
+            port: {value:"3306",required:true},
+            //user: {value:"",required:true},
+            //pass: {value:"",required:true},
+            db: {value:"",required:true}
+        },
+        label: function() {
+            return this.db;
+        },
+        oneditprepare: function() {
+            $.getJSON('MySQLdatabase/'+this.id,function(data) {
+                if (data.user) {
+                    $('#node-config-input-user').val(data.user);
+                }
+                if (data.hasPassword) {
+                    $('#node-config-input-pass').val('__PWRD__');
+                } else {
+                    $('#node-config-input-pass').val('');
+                }
+                
+            });
+        },
+        oneditsave: function() {
+            var newUser = $('#node-config-input-user').val();
+            var newPass = $('#node-config-input-pass').val();
+            var credentials = {};
+            credentials.user = newUser;
+            if (newPass != '__PWRD__') {
+                credentials.password = newPass;
+            }
+            $.ajax({
+                url: 'MySQLdatabase/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success:function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'MySQLdatabase/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
+        }
+        
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="mysql">
+    <div class="form-row">
+        <label for="node-input-mydb"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-input-mydb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="mysql">
+    <p>Allows basic access to a MySQL database.</p>
+    <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
+    By it's very nature it allows SQL injection... so <i>be careful out there...</i></p>
+    <p><b>msg.topic</b> must hold the <i>query</i> for the database, and the result is returned in <b>msg.payload</b>.</p>
+    <p>Typically the returned payload will be an array of the result rows.</p>
+    <p>If nothing is found for the key then <i>null</i> is returned,</p>
+    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
+    <pre>mysqlReconnectTime: 30000,</pre></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mysql',{
+        category: 'storage-input',
+        color:"#e97b00",
+        defaults: {
+            mydb: {type:"MySQLdatabase",required:true},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "db.png",
+        label: function() {
+            var levelNode = RED.nodes.node(this.mydb);
+            return this.name||(levelNode?levelNode.label():"mysql");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

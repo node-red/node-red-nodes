@@ -14,34 +14,40 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="ledborg">
+<script type="text/x-red" data-template-name="wordpos">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Expects a msg.payload with PiBorg three digit rgb colour string. 000 -> 222</div>
+    <div class="form-tips">Adds <b>msg.pos</b> as the anaylsis result.
+    </div>
 </script>
 
-<script type="text/x-red" data-help-name="ledborg">
-    <p>PiBorg LedBorg LED output node. Expects a <b>msg.payload</b> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
-    <p>See <i><a href="http://www.piborg.com/ledborg/install" target="_new">the PiBorg site</a></i> for more information.</p>
-    <p>You can also now use a <b>msg.payload</b> in the standard hex format "#rrggbb". The clip levels are :</p>
-    <p><pre>0x00 - 0x57 = off<br/>0x58 - 0xA7 = 50%<br/>0xA8 - 0xFF = fully on</pre></p>
+<script type="text/x-red" data-help-name="wordpos">
+    <p>Analyses <b>msg.payload</b> and classifies the part-of-speech of each word.</p>
+    <p>The resulting message has <b>msg.pos</b> added with the results:</p>
+    <pre>{
+    nouns:[],
+    verbs:[],
+    adjectives:[],
+    adverbs:[],
+    rest:[]
+}</pre>
+    <p>Note: a word may appear in multiple POS (eg, 'great' is both a noun and an adjective)</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('ledborg',{
-        category: 'output',
-        color:"GoldenRod",
+    RED.nodes.registerType('wordpos',{
+        category: 'analysis-function',
+        color:"#E6E0F8",
         defaults: {
-            name: {value:""}
+            name: {value:""},
         },
         inputs:1,
-        outputs:0,
-        icon: "light.png",
-        align: "right",
+        outputs:1,
+        icon: "arrow-in.png",
         label: function() {
-            return this.name||"ledborg";
+            return this.name||"wordpos";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

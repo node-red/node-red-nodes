@@ -14,37 +14,42 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="ledborg">
+<script type="text/x-red" data-template-name="notify">
+    <div class="form-row">
+        <label for="node-input-title"><i class="icon-flag"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="Node-RED">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Expects a msg.payload with PiBorg three digit rgb colour string. 000 -> 222</div>
 </script>
 
-<script type="text/x-red" data-help-name="ledborg">
-    <p>PiBorg LedBorg LED output node. Expects a <b>msg.payload</b> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
-    <p>See <i><a href="http://www.piborg.com/ledborg/install" target="_new">the PiBorg site</a></i> for more information.</p>
-    <p>You can also now use a <b>msg.payload</b> in the standard hex format "#rrggbb". The clip levels are :</p>
-    <p><pre>0x00 - 0x57 = off<br/>0x58 - 0xA7 = 50%<br/>0xA8 - 0xFF = fully on</pre></p>
+<script type="text/x-red" data-help-name="notify">
+	<p>Uses Growl to provide a desktop popup containing the <b>msg.payload</b>. Only useful on the local machine.</p>
+	<p>Optionally uses <b>msg.topic</b> as the title.</p>
+	<p>Uses Growl so should work cross platform but will need pre-reqs installed... see <i><a href="https://npmjs.org/package/growl" target="_new">this link.</a></i></p>
+	<p>If installing on Windows you MUST read the install instructions ... especially the bit about adding growlnotify to your path... or it WON'T work.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('ledborg',{
+    RED.nodes.registerType('notify',{
         category: 'output',
-        color:"GoldenRod",
         defaults: {
+            title: {value:""},
             name: {value:""}
         },
+        color:"#a7c9a0",
         inputs:1,
         outputs:0,
-        icon: "light.png",
+        icon: "alert.png",
         align: "right",
         label: function() {
-            return this.name||"ledborg";
+            return this.name||this.title||"notify";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
         }
     });
+
 </script>

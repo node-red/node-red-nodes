@@ -1,0 +1,102 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rawserial in">
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-random"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="COM1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-split"><i class="icon-edit"></i> Split on</label>
+        <input type="text" id="node-input-split" placeholder="\n">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="rawserial in">
+    <p>Uses a simple read of the serial port as a file to input data.</p>
+    <p>You MUST set the baud rate etc <i>externally</i> before starting Node-RED. For example.</p>
+    <p>Windows<pre>mode COM1:9600,n,8,1</pre>
+    <p>Linux<pre>stty -F /dev/ttyUSB0 9600</pre>
+    <p>Note: This node does not implement pooling of connections so only one instance of each port may be used - so in OR out but NOT both.</p>
+    <p>Should only really be used if you can't get npm serialport installed properly.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rawserial in',{
+        category: 'advanced-input',
+        color:"BurlyWood",
+        defaults: {
+            name: {value:""},
+            split: {value:""},
+            port: {value:"", required:true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "serial.png",
+        label: function() {
+            return this.name||this.port||"Raw Serial";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="rawserial out">
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-random"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="COM1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="rawserial out">
+    <p>Uses a simple file write to output <b>msg.payload</b> to the serial port.</p>
+    <p>You MUST set the baud rate etc <i>externally</i> before starting Node-RED. For example.</p>
+    <p>Windows<pre>mode COM1:9600,n,8,1</pre>
+    <p>Linux<pre>stty -F /dev/ttyUSB0 9600</pre>
+    <p>Note: This node does not implement pooling of connections so only one instance of each port may be used - so in OR out but NOT both.</p>
+    <p>Should only really be used if you can't get npm serialport installed properly.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rawserial out',{
+        category: 'advanced-input',
+        color:"BurlyWood",
+        defaults: {
+            name: {value:""},
+            split: {value:""},
+            port: {value:"", required:true}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "serial.png",
+        align: "right",
+        label: function() {
+            return this.name||this.port||"Raw Serial";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

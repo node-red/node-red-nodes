@@ -14,23 +14,23 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="ledborg">
+<script type="text/x-red" data-template-name="blinkstick">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Expects a msg.payload with PiBorg three digit rgb colour string. 000 -> 222</div>
+    <div class="form-tips">Expects a msg.payload with either hex #rrggbb or decimal red,green,blue.</div>
 </script>
 
-<script type="text/x-red" data-help-name="ledborg">
-    <p>PiBorg LedBorg LED output node. Expects a <b>msg.payload</b> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
-    <p>See <i><a href="http://www.piborg.com/ledborg/install" target="_new">the PiBorg site</a></i> for more information.</p>
-    <p>You can also now use a <b>msg.payload</b> in the standard hex format "#rrggbb". The clip levels are :</p>
-    <p><pre>0x00 - 0x57 = off<br/>0x58 - 0xA7 = 50%<br/>0xA8 - 0xFF = fully on</pre></p>
+<script type="text/x-red" data-help-name="blinkstick">
+    <p>BlinkStick output node. Expects a <b>msg.payload</b> with either a hex string #rrggbb triple or red,green,blue as three 0-255 values.
+    It can also accept <i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">standard HTML colour</a></i> names</p>
+    <p><b>NOTE:</b> currently only works with a single BlinkStick. (As it uses the findFirst() function to attach).</p>
+    <p>For more info see the <i><a href="http://blinkstick.com/" target="_new">BlinkStick website</a></i> or the <i><a href="https://github.com/arvydas/blinkstick-node" target="_new">node module</a></i> documentation.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('ledborg',{
+    RED.nodes.registerType('blinkstick',{
         category: 'output',
         color:"GoldenRod",
         defaults: {
@@ -41,7 +41,7 @@
         icon: "light.png",
         align: "right",
         label: function() {
-            return this.name||"ledborg";
+            return this.name||"blinkstick";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
