@@ -25,6 +25,7 @@ function sensorTagNode(n) {
     RED.nodes.createNode(this,n);
     this.name = n.name;
     this.topic = n.topic;
+    this.uuid = n.uuid;
     this.temperature = n.temperature;
     this.pressure = n.pressure;
     this.humidity = n.humidity;
@@ -32,6 +33,12 @@ function sensorTagNode(n) {
     this.magnetometer = n.magnetometer;
     this.gyroscope = n.gyroscope;
     this.keys = n.keys;
+
+    if (this.uuid === "") {
+        this.uuid = undefined;
+    }
+    console.log(this.uuid);
+
     node=this;
 
     if ( typeof stag == "undefined") {
@@ -90,7 +97,7 @@ function sensorTagNode(n) {
                 enable();
             });
         });
-    });
+    },node.uuid);
     } else {
       //console.log("reconfig");
       enable();

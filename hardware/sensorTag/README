@@ -1,5 +1,5 @@
-This currently requires a slightly modified sensortag library
+This currently requires the sensortag library
 
 To install use the following command in the Node-Red directory
 
-npm install sensortag@https://api.github.com/repos/hardillb/node-sensortag/tarball
+npm install sensortag
