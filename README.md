@@ -96,6 +96,8 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **68-mysql** - Allows basic access to a MySQL database. This node uses the **query** operation against the configured database. This does allow both INSERTS and DELETES. By it's very nature it allows SQL injection... *so be careful out there...*
 
+**69-ddbout** - Support output to Amazon DynamoDB.
+
 ### Time
 
 **79-suncalc** - Uses the suncalc module to generate an output at sunrise and sunset based on a specified location. Several choices of definition of sunrise and sunset are available,

@@ -1,0 +1,72 @@
+<!--
+  Copyright 2013 Wolfgang Nagele
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="ddb out">
+    <div class="form-row">
+        <label for="node-input-accessKey"><i class="icon-briefcase"></i> Access Key</label>
+        <input type="text" id="node-input-accessKey" placeholder="Access Key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-secretAccessKey"><i class="icon-briefcase"></i> Secret Access Key</label>
+        <input type="text" id="node-input-secretAccessKey" placeholder="Secret Access Key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-region"><i class="icon-th"></i> Region</label>
+        <select type="text" id="node-input-region">
+        <option value="us-east-1">US East, Northern Virginia</option>
+        <option value="us-west-2">US West, Oregon</option>
+        <option value="us-west-1">US West, Northern California</option>
+        <option value="eu-west-1">EU, Ireland</option>
+        <option value="ap-southeast-1">Asia Pacific, Singapore</option>
+        <option value="ap-southeast-2">Asia Pacific, Sydney</option>
+        <option value="ap-northeast-1">Asia Pacific, Tokyo</option>
+        <option value="sa-east-1">South America, Sao Paulo</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-table"><i class="icon-tasks"></i> Table</label>
+        <input type="text" id="node-input-table" placeholder="Table">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ddb out">
+	<p>A Amazon DynamoDB output node.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("ddb out", {
+        category: "storage-output",
+        color: "#ffaaaa",
+        defaults: {
+            accessKey: { value: "", required: true },
+            secretAccessKey: { value: "", required: true },
+            region: { value: "us-east-1" },
+            table: { value: "", required: true },
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "db.png",
+        align: "right",
+        label: function() {
+            return this.name || this.table + " (" + this.region + ")";
+        }
+    });
+</script>
