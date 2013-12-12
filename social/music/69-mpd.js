@@ -15,7 +15,14 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var exec = require('child_process').exec;
 var komponist = require('komponist');
+exec("which mpd",function(err,stdout,stderr) {
+    if (stdout.indexOf('mpd') == -1) {
+        util.log('[69-mpd.js] Error: Cannot find "mpd" command. Please install MPD.');
+        return;
+    }
+});
 
 var mpc = "";
 komponist.createConnection(6600, 'localhost', function(err, client) {
