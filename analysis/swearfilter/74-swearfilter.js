@@ -15,6 +15,8 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var badwords = require('badwords');
+if (badwords.length == 0 ) { return; }
 var badwordsRegExp = require('badwords/regexp');
 
 function BadwordsNode(n) {
