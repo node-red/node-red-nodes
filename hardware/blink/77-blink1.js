@@ -58,7 +58,7 @@ function Blink1Node(n) {
         var blink1 = new Blink1.Blink1();
     }
     catch(e) {
-        node.error("No Blink1 found");
+        node.error("No Blink1 found (" + e + ")");
     }
 }
 RED.nodes.registerType("blink1",Blink1Node);
