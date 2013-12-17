@@ -28,7 +28,25 @@
 </script>
 
 <script type="text/x-red" data-help-name="selector">
-  <p>Retrieve all the DOM elements contained in the jQuery set, as an array</p>
+  <p>Performs a <b><a href="http://api.jquery.com/category/selectors/">JQuery selection</a></b> on the <b>msg.payload</b> contains, 
+  then append an array with all the returned objects from this selection on <b>msg.selection</b>.</p>
+  <p><b>Example:</b></p>
+  <p>When on Selector node</p>
+  <p><b>msg.payload</b> contains <pre>&lt;a class=&quot;c1&quot; href=&quot;/&quot;&gt&lt;/a&gt;</pre></p>
+  <p>and <b>selector = "a"</b> then returns on <b>msg.selection</b></p>
+  <pre>
+    [{
+      "type": "tag",
+      "name": "a",
+      "attribs": {
+        "class": "c1",
+        "href": "/"
+      },
+      "children": [],
+      "prev": null,
+      "next": null
+    }]
+  </pre></p>
 </script>
 
 <script type="text/javascript">
