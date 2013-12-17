@@ -26,7 +26,7 @@ function CherrioNode(n) {
             if (msg != null) {
                 try {
                     $ = cheerio.load(msg.payload);                  
-                    msg.payload = $(n.selector).toArray();
+                    msg.selection = $(n.selector).toArray();                 
                     this.send(msg);
                 } catch(err) {
                     this.error(err.message);
