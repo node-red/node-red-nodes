@@ -14,25 +14,33 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var RED = require(process.env.NODE_RED_HOME + "/red/red");
 
 var cheerio = require('cheerio');
 
 function CherrioNode(n) {
-    RED.nodes.createNode(this,n);
+    RED.nodes.createNode(this, n);
+
     this.name = n.name;
     this.selector = n.selector;
+    this.context = n.context;
+    this.root = n.root;
+
     this.on("input", function(msg) {
-            if (msg != null) {
-                try {
-                    $ = cheerio.load(msg.payload);                  
-                    msg.selection = $(n.selector).toArray();                 
-                    this.send(msg);
-                } catch(err) {
-                    this.error(err.message);
-                }
+        if (msg !== null) {
+            try {
+                n.root = (n.root.match(/msg\./)) ? msg[n.root.replace(/msg\./, '')] : n.root;
+                msg.$ = cheerio.load(n.root || msg.payload);
+                msg.selection = msg.$(
+                    (n.selector) ? n.selector : "a" +
+                    (n.context) ? "," + n.context : ""
+                );
+                this.send(msg);
+            } catch (err) {
+                this.error(err.message);
             }
+        }
     });
 }
 
-RED.nodes.registerType("selector",CherrioNode);
+RED.nodes.registerType("selector", CherrioNode);
