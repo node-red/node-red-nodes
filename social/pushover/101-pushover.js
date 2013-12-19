@@ -11,10 +11,10 @@ var push = require("pushover-notifications");
 //    module.exports = {user:'My-API-KEY', token:'MY-TOKEN-KEY'}
 
 try {
-	var pushoverkey = RED.settings.pushover || require(process.env.NODE_RED_HOME+"/../pushover.js");
+	var pushoverkey = RED.settings.pushover;
 }
 catch(err) {
-	util.log("[101-pushover.js] Error: Failed to load Push Over credentials");
+	util.log("[pushover.js] Error: Failed to load Push Over credentials");
 }
 
 
@@ -24,8 +24,6 @@ catch(err) {
 
 //Create new push object
 if (pushoverkey) {
-
-
 var p = new push({
 user: pushoverkey.user,
 token: pushoverkey.token,
