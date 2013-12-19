@@ -67,7 +67,6 @@ function Blink1Node(n) {
             }
         });
         this.on("close", function() {
-            console.log(typeof blink1.close);
             if (blink1 && typeof blink1.close == "function") {
                 blink1.close();
             }
