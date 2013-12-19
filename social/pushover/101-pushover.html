@@ -1,0 +1,52 @@
+<script type="text/x-red" data-template-name="pushover">
+<div class="form-row">
+   <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+</div>
+
+  <div class="form-row">
+        <label for="node-input-title"><i class="icon-tag"></i>  Title</label>
+        <input type="text" id="node-input-title">
+    </div>
+
+<div class="form-row">
+	<label for="node-input-priority"><i class="icon-random"></i> Priority</label>	
+	<select id="node-input-priority">
+<option value="-1">Low Priority</option>
+<option value="0">Normal Priority</option>
+<option value="1">High Priority</option>
+</select>
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="pushover">
+	<p>Pushes a message (msg.payload) with a given title (msg.title), priority (msg.priority) to defined device.</p>
+	<p>Inputs can be passed to node as msg.title , msg.payload , msg.priority</p>
+	<p><b>Create pushover.js in dir ABOVE node-red, it just needs to be like module.exports = {user:'My-API-KEY', token:'MY-TOKEN-KEY'}</b></p>
+	
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('pushover',{
+        category: 'output',
+        color:"#C0DEED",
+        defaults: {
+	name : {value: ""},
+        title: {value:"Node-Red Message"},
+	message: {value:""},
+	priority: {value:"-1"}        
+},
+        inputs:1,
+        outputs:0,
+        icon: "feed.png",
+        label: function() {
+            return this.name||"pushover";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"pushover";
+        }
+    });
+
+</script>
+
