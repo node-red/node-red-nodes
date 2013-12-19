@@ -50,10 +50,15 @@ function Blink1Node(n) {
                 node.warn("No Blink1 found");
             }
         });
+        this.on("close", function() {
+            if (blink1 && typeof blink1.close == "function") {
+                blink1.close();
+            }
+        });
         var blink1 = new Blink1.Blink1();
     }
     catch(e) {
-        node.error("No Blink1 found");
+        node.error("No Blink1 found (" + e + ")");
     }
 }
 RED.nodes.registerType("blink1",Blink1Node);
