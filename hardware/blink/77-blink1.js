@@ -19,7 +19,7 @@ var Blink1 = require("node-blink1");
 
 function Blink1Node(n) {
     RED.nodes.createNode(this,n);
-    this.fade = n.fade||0;
+    this.fade = Number(n.fade) || 0;
     var node = this;
 
     try {
@@ -43,7 +43,23 @@ function Blink1Node(n) {
                 }
                 else {
                     // you can add fancy colours by name here if you want...
-                    node.warn("Blink1 : invalid msg : "+msg.payload);
+                    // these are the @cheerlight ones.
+                    var result = msg.payload.toLowerCase().match(/red|green|blue|cyan|white|warmwhite|purple|magenta|yellow|orange|black/g);
+                    var colors = {"red":"#FF0000","green":"#008000","blue":"#0000FF","cyan":"#00FFFF","white":"#FFFFFF",
+                        "warmwhite":"#FDF5E6","purple":"#800080","magenta":"#FF00FF","yellow":"#FFFF00","orange":"#FFA500","black":"#000000"}
+                    if (result != null) {
+                        for (var colour in result) {
+                            var c = colors[result[colour]];
+                            var r = parseInt(c.slice(1,3),16);
+                            var g = parseInt(c.slice(3,5),16);
+                            var b = parseInt(c.slice(5),16);
+                            if (node.fade == 0) { blink1.setRGB( r, g, b ); }
+                            else { blink1.fadeToRGB(node.fade, r, g, b ); }
+                        }
+                    }
+                    else {
+                        node.warn("Blink1 : invalid msg : "+msg.payload);
+                    }
                 }
             }
             else {
@@ -51,6 +67,7 @@ function Blink1Node(n) {
             }
         });
         this.on("close", function() {
+            console.log(typeof blink1.close);
             if (blink1 && typeof blink1.close == "function") {
                 blink1.close();
             }
