@@ -16,12 +16,8 @@
 
 <script type="text/x-red" data-template-name="ddb out">
     <div class="form-row">
-        <label for="node-input-accessKey"><i class="icon-briefcase"></i> Access Key</label>
-        <input type="text" id="node-input-accessKey" placeholder="Access Key">
-    </div>
-    <div class="form-row">
-        <label for="node-input-secretAccessKey"><i class="icon-briefcase"></i> Secret Access Key</label>
-        <input type="text" id="node-input-secretAccessKey" placeholder="Secret Access Key">
+        <label for="node-input-credentials"><i class="icon-tag"></i> Credentials</label>
+        <input type="text" id="node-input-credentials">
     </div>
     <div class="form-row">
         <label for="node-input-region"><i class="icon-th"></i> Region</label>
@@ -55,8 +51,7 @@
         category: "storage-output",
         color: "#ffaaaa",
         defaults: {
-            accessKey: { value: "", required: true },
-            secretAccessKey: { value: "", required: true },
+            credentials: { type: "awscredentials", required: true },
             region: { value: "us-east-1" },
             table: { value: "", required: true },
             name: { value: "" }
@@ -67,6 +62,60 @@
         align: "right",
         label: function() {
             return this.name || this.table + " (" + this.region + ")";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="awscredentials">
+    <div class="form-row">
+        <label for="node-config-input-accessKey"><i class="icon-briefcase"></i> Access Key</label>
+        <input type="text" id="node-config-input-accessKey" placeholder="Access Key">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-secretAccessKey"><i class="icon-briefcase"></i> Secret Access Key</label>
+        <input type="text" id="node-config-input-secretAccessKey" placeholder="Secret Access Key">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("awscredentials", {
+        category: "config",
+        defaults: {
+            accessKey: { value: "", required: true },
+            secretAccessKey: { value: "", required: true }
+        },
+        label: function() {
+            return this.accessKey;
+        },
+        oneditprepare: function() {
+            $.getJSON("awscredentials/" + this.id, function(data) {
+                if (data.accessKey) {
+                    $("#node-config-input-accessKey").val(data.accessKey);
+                }
+                if (data.secretAccessKey) {
+                    $("#node-config-input-secretAccessKey").val(data.secretAccessKey);
+                }
+            });
+        },
+        oneditsave: function() {
+            var newAccessKey = $("#node-config-input-accessKey").val();
+            var newSecretAccessKey = $("#node-config-input-secretAccessKey").val();
+            var credentials = {};
+            credentials.accessKey = newAccessKey;
+            credentials.secretAccessKey = newSecretAccessKey;
+            $.ajax({
+                url: "awscredentials/" + this.id,
+                type: "POST",
+                data: credentials,
+                success: function(result) {}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: "awscredentials/" + this.id,
+                type: "DELETE",
+                success: function(result) {}
+            });
         }
     });
 </script>
