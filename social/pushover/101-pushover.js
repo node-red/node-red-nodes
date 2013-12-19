@@ -5,10 +5,9 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var push = require("pushover-notifications");
 
 
-// Either add a line like this to settings.js
+// Add a line like this to settings.js:
 //    pushover: {user:'My-API-KEY', token:'MY-TOKEN-KEY},
-// or create pushover.js in dir ABOVE node-red, it just needs to be like
-//    module.exports = {user:'My-API-KEY', token:'MY-TOKEN-KEY'}
+
 
 try {
 	var pushoverkey = RED.settings.pushover;
