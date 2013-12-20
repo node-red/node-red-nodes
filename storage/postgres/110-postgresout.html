@@ -1,0 +1,148 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="postgresdb">
+    <div class="form-row">
+        <label for="node-config-input-hostname"><i class="icon-bookmark"></i> Host</label>
+        <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="5432" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-db"><i class="icon-briefcase"></i> Database</label>
+        <input type="text" id="node-config-input-db" placeholder="test">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-user"></i> Username</label>
+        <input type="text" id="node-config-input-username" placeholder="postgres">
+        <label for="node-config-input-password"><i class="icon-lock"></i> Password</label>
+        <input type="password" id="node-config-input-password" placeholder="postgres">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('postgresdb',{
+        category: 'config',
+        color:"rgb(218, 196, 180)",
+        defaults: {
+            hostname: { value:"localhost",required:true},
+            port: { value: 5432,required:true},
+            db: { value:"postgres",required:true},
+            username: { value:"postgres", required:true },
+            password: { value:"postgres", required:true }
+        },
+        label: function() {
+            return this.name||this.hostname+":"+this.port+"/"+this.db;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="postgres">
+	 <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-postgresdb"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-postgresdb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-collection"><i class="icon-briefcase"></i> Query</label>
+        <input type="hidden" id="node-input-sqlquery" autofocus="autofocus">
+        <div style="height: 250px;" class="node-text-editor" id="node-input-sqlquery-editor"></div>
+    </div>
+     <div class="form-row">
+        <label for="node-input-outputs"><i class="icon-random"></i> Outputs</label>
+        <input id="node-input-outputs" style="width: 60px; height: 1.7em;" value="0">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="postgres">
+    <p>A PostgreSql I/O node. </p>
+    <p>Executes the specified query with the msg.payload as query parameters</p>
+    <p>The parameters in the query must be specified as $propertyname</p>
+    <p>ex. if the property is msg.payload.value then the query parameter should be $value</p>
+    <p>This node can be used to write and read from a Postgres database</p>
+    <p>To receive the results from a query, simply set the outputs to 1 and connect a node</p>
+    <p>The msg.payload on the output will be a json array of the returned records</p>
+</script>
+
+<script type="text/javascript">
+		RED.nodes.registerType('postgres',{
+        category: 'storage-output',
+        color:"rgb(148, 226, 252)",
+        defaults: {
+            postgresdb: { type:"postgresdb",required:true},
+            name: {value:""},
+            sqlquery: {value:"",required:true},
+            outputs: {value:0}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "postgres.png",
+        align: "right",
+        label: function() {
+            return this.name||(this.sqlquery?this.sqlquery:"postgres");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $( "#node-input-outputs" ).spinner({
+                min:0,
+                max:1
+            });
+            
+            $( "#node-input-outputs" ).spinner( "value", this.outputs );
+
+            function functionDialogResize(ev,ui) {
+                $("#node-input-sqlquery-editor").css("height",(ui.size.height-235)+"px");
+            };
+
+            $( "#dialog" ).on("dialogresize", functionDialogResize);
+            $( "#dialog" ).one("dialogopen", function(ev) {
+                var size = $( "#dialog" ).dialog('option','sizeCache-function');
+                if (size) {
+                    functionDialogResize(null,{size:size});
+                }
+            });
+            $( "#dialog" ).one("dialogclose", function(ev,ui) {
+                var height = $( "#dialog" ).dialog('option','height');
+                $( "#dialog" ).off("dialogresize",functionDialogResize);
+            });
+            var that = this;
+            require(["orion/editor/edit"], function(edit) {
+                that.editor = edit({
+                    parent:document.getElementById('node-input-sqlquery-editor'),
+                    lang:"sql",
+                    contents: $("#node-input-sqlquery").val()
+                });
+                RED.library.create({
+                    url:"storage", // where to get the data from
+                    type:"postgres", // the type of object the library is for
+                    editor:that.editor, // the field name the main text body goes to
+                    fields:['name','outputs']
+                });
+                $("#node-input-name").focus();
+
+            });
+        },
+        oneditsave: function() {
+            $("#node-input-sqlquery").val(this.editor.getText())
+            delete this.editor;
+        }
+    });
+</script>
