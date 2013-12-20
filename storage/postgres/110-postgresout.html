@@ -78,6 +78,16 @@
     <p>This node can be used to write and read from a Postgres database</p>
     <p>To receive the results from a query, simply set the outputs to 1 and connect a node</p>
     <p>The msg.payload on the output will be a json array of the returned records</p>
+    <p></p>
+    <p><b>Insert example</b>b></p>
+    <p><pre>msg.payload = { 'sensorid': 1, 'value': 2 }</pre></p>
+    <p><pre>insert into table (field1, field2) values ($sensorid, $value)</pre></p>
+
+    <p></p>
+    <p><b>Select example</b>b></p>
+    <p><pre>msg.payload = { 'sensorid': 1, 'value': 2 }</pre></p>
+    <p><pre>select * from table where field1=$sensorid order by time desc limit 1</pre></p>
+    
 </script>
 
 <script type="text/javascript">
