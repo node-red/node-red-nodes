@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2013 Kris Daniels.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
  * limitations under the License.
  **/
 
-// If you use this as a template, replace IBM Corp. with your own name.
-
-// Sample Node-RED node file
-
-// Require main module
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var pg=require('pg');
 var named=require('node-postgres-named');
