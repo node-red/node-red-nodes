@@ -80,10 +80,6 @@
 <script type="text/javascript">
     RED.nodes.registerType("awscredentials", {
         category: "config",
-        defaults: {
-            accessKey: { value: "", required: true },
-            secretAccessKey: { value: "", required: true }
-        },
         label: function() {
             return this.accessKey;
         },
