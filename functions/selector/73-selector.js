@@ -17,24 +17,40 @@
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
 
 var cheerio = require('cheerio');
+var util = require('util');
 
 function CherrioNode(n) {
     RED.nodes.createNode(this, n);
 
     this.name = n.name;
     this.selector = n.selector;
-    this.context = n.context;
-    this.root = n.root;
+    this.output = n.output;
 
     this.on("input", function(msg) {
         if (msg !== null) {
             try {
-                n.root = (n.root.match(/msg\./)) ? msg[n.root.replace(/msg\./, '')] : n.root;
-                msg.$ = cheerio.load(n.root || msg.payload);
-                msg.selection = msg.$(
-                    (n.selector) ? n.selector : "a" +
-                    (n.context) ? "," + n.context : ""
-                );
+                $ = cheerio.load(msg.payload);
+
+                var selector = (n.selector)?n.selector:"a";
+                var selJSON =  JSON.stringify($(selector).toArray(), function (key, val) {
+                        if (key === "prev" || key === "next" || key === "parent") return undefined;
+                        return val;
+                    });
+
+                switch (n.output) {
+                  case "xml":
+                    msg.payload = $.xml(selector);
+                    break;
+                  case "html":
+                    msg.payload = $.html(selector);
+                    break;
+                  case "json":
+                    msg.payload = selJSON;
+                    break;
+                  case "array":
+                    msg.payload = JSON.parse(selJSON);
+                    break;
+                };
                 this.send(msg);
             } catch (err) {
                 this.error(err.message);

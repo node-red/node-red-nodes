@@ -26,26 +26,26 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-context"><i class="icon-tasks"></i> Context</label>
-        <input type="text" id="node-input-context" placeholder="">
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-root"><i class="icon-tasks"></i> Root</label>
-        <input type="text" id="node-input-root" placeholder="msg.payload">
+        <label for="node-input-output"><i class="icon-tasks"></i> Output</label>
+        <select type="text" id="node-input-output" style="width: 150px;">
+          <option value="xml">As XML</option>
+          <option value="html">As HTML</option>
+          <option value="json">As JSON</option>
+          <option value="array">As Object Array</option>
+        </select>
     </div>
 
     <div class="form-tips">
-      <p><b>Selector</b> searches within the <b>Context</b> scope which searches within the root scope. selector and context can be an string expression, DOM Element, array of DOM elements, or cheerio object. <b>Root</b> is typically the HTML document string.</p>
-      <p>Tip: you can use <b>msg</b> properties as <b>Root</b> input</p>
+      <p>Tip: the <b>XML</b> output close the elements on this way</p>
+      <p><b>&lt;br/&gt;</b> to <b>&lt;br&gt;&lt;/br&gt;</b></p>
+      <p> and <b>HTML</b> leave the elements as is</b>
     </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="selector">
-  <p>This module is based on <a href="https://github.com/MatthewMueller/cheerio"><b>cheerio</b></a> and export all the methods on the <b>msg.$ object</b><p>
-  <p>Cheerio's selector implementation is nearly identical to jQuery's, so the API is very similar.</p>
-  <p><b><a href="http://api.jquery.com/category/selectors/">JQuery matching selection reference</a></b></p>
+  <p>This module is a filter based on <a href="https://github.com/MatthewMueller/cheerio"><b>cheerio</b></a> and Cheerio's selector implementation is nearly identical to a <a href="http://api.jquery.com/category/selectors/">jQuery's selectors</a></p>
+  <p>The output returns on <b>msg.payload</b> and can be <b>HTML</b>, <b>XML</b>, <b>JSON</b> or <b>Array Object</b></p>
 </script>
 
 <script type="text/javascript">
@@ -55,8 +55,7 @@
         defaults: {
             name: {value:"Selector"},
             selector: {value:"a"},
-            context: {value:this.context},
-            root: {value:this.root}
+            output: {value:"xml"}
         },
         inputs:1,
         outputs:1,
