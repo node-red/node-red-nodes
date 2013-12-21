@@ -27,7 +27,7 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-user"></i> Username</label>
-        <input type="text" id="node-config-input-username" placeholder="postgres">
+        <input type="text" id="node-config-input-user" placeholder="postgres">
         <label for="node-config-input-password"><i class="icon-lock"></i> Password</label>
         <input type="password" id="node-config-input-password" placeholder="postgres">
     </div>
@@ -40,12 +40,46 @@
         defaults: {
             hostname: { value:"localhost",required:true},
             port: { value: 5432,required:true},
-            db: { value:"postgres",required:true},
-            username: { value:"postgres", required:true },
-            password: { value:"postgres", required:true }
+            db: { value:"postgres",required:true}
         },
         label: function() {
             return this.name||this.hostname+":"+this.port+"/"+this.db;
+        },
+        oneditprepare: function() {
+            
+            $.getJSON('postgresdb/'+this.id,function(data) {
+                if (data.user) {
+                    $('#node-config-input-user').val(data.user);
+                }
+                if (data.hasPassword) {
+                    $('#node-config-input-password').val('__PWRD__');
+                } else {
+                    $('#node-config-input-password').val('');
+                }
+            });
+        },
+        oneditsave: function() {
+           
+            var newUser = $('#node-config-input-user').val();
+            var newPass = $('#node-config-input-password').val();
+            var credentials = {};
+            credentials.user = newUser;
+            if (newPass != '__PWRD__') {
+                credentials.password = newPass;
+            }
+            $.ajax({
+                url: 'postgresdb/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success:function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'postgresdb/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
         }
     });
 </script>
@@ -98,12 +132,13 @@
             
             $( "#node-input-output" ).prop( "checked", this.output );
             $("#node-input-name").focus();
-
+            
         },
         oneditsave: function() {
+
             var hasOutput = $( "#node-input-output" ).prop( "checked" );
             this.outputs = hasOutput ? 1: 0;
-            delete this.editor;
+            
         }
     });
 </script>

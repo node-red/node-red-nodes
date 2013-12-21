@@ -17,14 +17,57 @@
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var pg=require('pg');
 var named=require('node-postgres-named');
+var querystring = require('querystring');
+
+RED.app.get('/postgresdb/:id',function(req,res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else {
+        res.send(JSON.stringify({}));
+    }
+});
+
+RED.app.delete('/postgresdb/:id',function(req,res) {
+    RED.nodes.deleteCredentials(req.params.id);
+    res.send(200);
+});
+
+RED.app.post('/postgresdb/:id',function(req,res) {
+    var body = "";
+    req.on('data', function(chunk) {
+        body+=chunk;
+    });
+    req.on('end', function(){
+        var newCreds = querystring.parse(body);
+        var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.user == null || newCreds.user == "") {
+            delete credentials.user;
+        } else {
+            credentials.user = newCreds.user;
+        }
+        if (newCreds.password == "") {
+            delete credentials.password;
+        } else {
+            credentials.password = newCreds.password||credentials.password;
+        }
+        RED.nodes.addCredentials(req.params.id,credentials);
+        res.send(200);
+    });
+});
+
 
 function PostgresDatabaseNode(n) {
     RED.nodes.createNode(this,n);
     this.hostname = n.hostname;
     this.port = n.port;
     this.db = n.db;
-    this.username = n.username;
-    this.password = n.password;
+    
+	var credentials = RED.nodes.getCredentials(n.id);
+	if (credentials) {
+		this.user = credentials.user;
+		this.password = credentials.password;
+	}
 }
 
 RED.nodes.registerType("postgresdb",PostgresDatabaseNode);
@@ -39,10 +82,11 @@ function PostgresNode(n) {
     this.output = n.output;
     
     var node = this;
+
     if(this.postgresConfig)
     {
 		
-		var conString = 'postgres://'+this.postgresConfig.username +':' + this.postgresConfig.password + '@' + this.postgresConfig.hostname + ':' + this.postgresConfig.port + '/' + this.postgresConfig.db;
+		var conString = 'postgres://'+this.postgresConfig.user +':' + this.postgresConfig.password + '@' + this.postgresConfig.hostname + ':' + this.postgresConfig.port + '/' + this.postgresConfig.db;
 		node.clientdb = new pg.Client(conString);
 		named.patch(node.clientdb);
 
