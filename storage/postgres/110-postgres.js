@@ -36,7 +36,7 @@ function PostgresNode(n) {
     this.postgresdb = n.postgresdb;
     this.postgresConfig = RED.nodes.getNode(this.postgresdb);
     this.sqlquery = n.sqlquery;
-    this.outputs = n.outputs;
+    this.output = n.output;
     
     var node = this;
     if(this.postgresConfig)
@@ -51,12 +51,13 @@ function PostgresNode(n) {
 				else {
 					node.on('input', 
 						function(msg){
-							node.clientdb.query(node.sqlquery,
-										 msg.payload,
+							if(!msg.queryParameters) msg.queryParameters={};
+							node.clientdb.query(msg.payload,
+										 msg.queryParameters,
 										 function (err, results) {
 											 if(err) { node.error(err); }
 											 else {
-												if(node.outputs>0)
+												if(node.output)
 												{
 													msg.payload = results.rows;
 													node.send(msg);

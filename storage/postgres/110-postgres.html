@@ -60,43 +60,18 @@
         <input type="text" id="node-input-postgresdb">
     </div>
     <div class="form-row">
-        <label for="node-input-collection"><i class="icon-briefcase"></i> Query</label>
-        <input type="hidden" id="node-input-sqlquery" autofocus="autofocus">
-        <div style="height: 250px;" class="node-text-editor" id="node-input-sqlquery-editor"></div>
-    </div>
-     <div class="form-row">
-        <label for="node-input-outputs"><i class="icon-random"></i> Outputs</label>
-        <input id="node-input-outputs" style="width: 60px; height: 1.7em;" value="0">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-output" placeholder="once" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-output" style="width: 70%;">Receive query output ?</label>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="postgres">
     <p>A PostgreSql I/O node. </p>
-    <p>Executes the specified query with the msg.payload as query parameters</p>
-    <p>The parameters in the query must be specified as $propertyname</p>
-    <p>ex. if the property is msg.payload.value then the query parameter should be $value</p>
-    <p>This node can be used to write and read from a Postgres database</p>
-    <p>To receive the results from a query, simply set the outputs to 1 and connect a node</p>
-    <p>The msg.payload on the output will be a json array of the returned records</p>
-    <p></p>
-    <p><b>Payload example</b></p>
-     <p><pre>
-msg.payload = { 
-	'sensorid': 1, 
-	'value': 2 
-}</pre></p>
-    <p><b>Insert example</b></p>
-    <p><pre>
-insert into table (field1, field2) 
-values ($sensorid, $value)</pre></p>
-
-    <p></p>
-    <p><b>Select example</b></p>
-    <p><pre>
-select * from table 
-where field1 = $sensorid 
-order by time desc 
-limit 1</pre></p>
+    <p>Executes the query specified in msg.payload with optional query parameters in msg.queryParameters</p>
+    <p>The queryParameters in the query must be specified as $propertyname</p>
+    <p>See the node-postgres-named package for more info</p>
+    <p>When receiving data from the query, the msg.payload on the output will be a json array of the returned records</p>
     
 </script>
 
@@ -107,8 +82,7 @@ limit 1</pre></p>
         defaults: {
             postgresdb: { type:"postgresdb",required:true},
             name: {value:""},
-            sqlquery: {value:"",required:true},
-            outputs: {value:0}
+            output: {value:false}
         },
         inputs:1,
         outputs:0,
@@ -121,47 +95,14 @@ limit 1</pre></p>
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
-            $( "#node-input-outputs" ).spinner({
-                min:0,
-                max:1
-            });
             
-            $( "#node-input-outputs" ).spinner( "value", this.outputs );
+            $( "#node-input-output" ).prop( "checked", this.output );
+            $("#node-input-name").focus();
 
-            function functionDialogResize(ev,ui) {
-                $("#node-input-sqlquery-editor").css("height",(ui.size.height-235)+"px");
-            };
-
-            $( "#dialog" ).on("dialogresize", functionDialogResize);
-            $( "#dialog" ).one("dialogopen", function(ev) {
-                var size = $( "#dialog" ).dialog('option','sizeCache-function');
-                if (size) {
-                    functionDialogResize(null,{size:size});
-                }
-            });
-            $( "#dialog" ).one("dialogclose", function(ev,ui) {
-                var height = $( "#dialog" ).dialog('option','height');
-                $( "#dialog" ).off("dialogresize",functionDialogResize);
-            });
-            var that = this;
-            require(["orion/editor/edit"], function(edit) {
-                that.editor = edit({
-                    parent:document.getElementById('node-input-sqlquery-editor'),
-                    lang:"sql",
-                    contents: $("#node-input-sqlquery").val()
-                });
-                RED.library.create({
-                    url:"storage", // where to get the data from
-                    type:"postgres", // the type of object the library is for
-                    editor:that.editor, // the field name the main text body goes to
-                    fields:['name','outputs']
-                });
-                $("#node-input-name").focus();
-
-            });
         },
         oneditsave: function() {
-            $("#node-input-sqlquery").val(this.editor.getText())
+            var hasOutput = $( "#node-input-output" ).prop( "checked" );
+            this.outputs = hasOutput ? 1: 0;
             delete this.editor;
         }
     });
