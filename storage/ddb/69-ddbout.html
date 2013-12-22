@@ -21,16 +21,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-region"><i class="icon-th"></i> Region</label>
-        <select type="text" id="node-input-region">
-        <option value="us-east-1">US East, Northern Virginia</option>
-        <option value="us-west-2">US West, Oregon</option>
-        <option value="us-west-1">US West, Northern California</option>
-        <option value="eu-west-1">EU, Ireland</option>
-        <option value="ap-southeast-1">Asia Pacific, Singapore</option>
-        <option value="ap-southeast-2">Asia Pacific, Sydney</option>
-        <option value="ap-northeast-1">Asia Pacific, Tokyo</option>
-        <option value="sa-east-1">South America, Sao Paulo</option>
-        </select>
+        <input type="text" id="node-input-region">
     </div>
     <div class="form-row">
         <label for="node-input-table"><i class="icon-tasks"></i> Table</label>
@@ -52,7 +43,7 @@
         color: "#ffaaaa",
         defaults: {
             credentials: { type: "aws credentials", required: true },
-            region: { value: "us-east-1" },
+            region: { value: "us-east-1", required: true },
             table: { value: "", required: true },
             name: { value: "" }
         },
