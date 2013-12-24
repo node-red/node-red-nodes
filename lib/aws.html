@@ -31,6 +31,9 @@
         label: function() {
             return this.accessKey;
         },
+        defaults: {
+            accessKey: { value: "", required: true }
+        },
         oneditprepare: function() {
             $.getJSON("aws-credentials/" + this.id, function(data) {
                 if (data.accessKey) {
