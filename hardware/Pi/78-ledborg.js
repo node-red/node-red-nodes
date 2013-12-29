@@ -36,7 +36,7 @@ function LedBorgNode(n) {
                 if (err) node.warn(msg.payload+" : No LedBorg found");
             });
         }
-        if (p2.test(msg.payload)) {
+        else if (p2.test(msg.payload)) {
             var r = Math.floor(parseInt(msg.payload.slice(1,3),16)/88).toString();
             var g = Math.floor(parseInt(msg.payload.slice(3,5),16)/88).toString();
             var b = Math.floor(parseInt(msg.payload.slice(5),16)/88).toString();
