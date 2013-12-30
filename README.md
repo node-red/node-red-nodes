@@ -76,7 +76,7 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **39-wol** - Sends a Wake-On-LAN magic packet to the mac address specified. You may instead set msg.mac to dynamically set the target device mac to wake up.
 
-**88-ping** - Pings a machine and returns the trip time in mS. Returns false if no response received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
+**88-ping** - Pings a machine and returns the average trip time in mS. Returns false if no response is received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
 
 ### Social
 
