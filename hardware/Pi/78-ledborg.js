@@ -26,7 +26,7 @@ if (!fs.existsSync("/dev/ledborg")) {
 
 function LedBorgNode(n) {
     RED.nodes.createNode(this,n);
-    var p1 = /[0-2][0-2][0-2]/
+    var p1 = /^[0-2][0-2][0-2]$/
     var p2 = /^\#[A-Fa-f0-9]{6}$/
     var node = this;
 
