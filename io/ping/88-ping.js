@@ -26,14 +26,14 @@ function PingNode(n) {
 
     node.tout = setInterval(function() {
         var ex;
-        if (plat == "linux") ex = spawn('ping', ['-n', '-w 5', '-c 1', node.host]);
-        else if (plat.match(/^win/)) ex = spawn('ping', ['-n 1', '-w 5000', node.host]);
-        else if (plat == "darwin") ex = spawn('ping', ['-n', '-t 5', '-c 1', node.host]);
+        if (plat == "linux") ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]);
+        else if (plat.match(/^win/)) ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]);
+        else if (plat == "darwin") ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]);
         else node.error("Sorry - your platform - "+plat+" - is not recognised.");
-        var res="";
+        var res = "";
         ex.stdout.on('data', function (data) {
             //console.log('[ping] stdout: ' + data.toString());
-            var regex = /time=(.*)ms/;
+            var regex = /time.(.*)ms/;
             var m = regex.exec(data.toString())||[""];
             res = Number(m[1]);
         });
@@ -42,8 +42,8 @@ function PingNode(n) {
         });
         ex.on('close', function (code) {
             //console.log('[ping] result: ' + code);
-            var msg = { payload: false, topic:node.host };
-            if (code == 0) msg = { payload: res, topic:node.host };
+            var msg = { payload:false, topic:node.host };
+            if (code == 0) msg = { payload:res, topic:node.host };
             node.send(msg);
         });
     }, node.timer);
