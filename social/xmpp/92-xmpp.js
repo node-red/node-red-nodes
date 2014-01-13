@@ -27,7 +27,7 @@ var xmpp = require('simple-xmpp');
 console.warn = orig;
 
 try {
-    var xmppkey = require(process.env.NODE_RED_HOME+"/settings").xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
+    var xmppkey = RED.settings.xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
 } catch(err) {
     throw new Error("Failed to load XMPP credentials");
 }
