@@ -24,7 +24,7 @@ var util = require('util');
 //    module.exports = {prowlkey:'My-API-KEY'}
 
 try {
-	var pushkey = require(process.env.NODE_RED_HOME+"/settings").prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+	var pushkey = RED.settings.prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
 	util.log("[57-prowl.js] Error: Failed to load Prowl credentials");
