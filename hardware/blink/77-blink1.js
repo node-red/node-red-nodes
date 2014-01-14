@@ -16,6 +16,7 @@
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var Blink1 = require("node-blink1");
+var blink1 = new Blink1.Blink1();
 
 function Blink1Node(n) {
     RED.nodes.createNode(this,n);
@@ -63,13 +64,12 @@ function Blink1Node(n) {
                 node.warn("No Blink1 found");
             }
         });
-        // This ought to work but seems to cause more hangs on closing than not...
-        //this.on("close", function() {
-            //if (blink1 && typeof blink1.close == "function") {
-                //blink1.close();
-            //}
-        //});
-        var blink1 = new Blink1.Blink1();
+        //This ought to work but seems to cause more hangs on closing than not...
+        this.on("close", function() {
+            if (blink1 && typeof blink1.close == "function") {
+                blink1.close();
+            }
+        });
     }
     catch(e) {
         node.error("No Blink1 found (" + e + ")");
