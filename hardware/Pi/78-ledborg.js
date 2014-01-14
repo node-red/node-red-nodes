@@ -48,7 +48,7 @@ function LedBorgNode(n) {
             // you can add fancy colours by name here if you want...
             // these are the @cheerlight ones.
             var colors = {"red":"200","green":"020","blue":"002","cyan":"022","white":"222","pink":"201",
-                "warmwhite":"221","purple":"101","magenta":"202","yellow":"220","orange":"210","black":"000"}
+                "warmwhite":"221","purple":"101","magenta":"202","yellow":"220","amber":"220","orange":"210","black":"000"}
             if (msg.payload.toLowerCase() in colors) {
                 var c = colors[msg.payload.toLowerCase()];
                 fs.writeFile('/dev/ledborg', c, function (err) {
