@@ -70,7 +70,6 @@ function Blink1Node(n) {
                 blink1.close();
             }
         });
-//        var blink1 = new Blink1.Blink1();
     }
     catch(e) {
         node.error("No Blink1 found (" + e + ")");
