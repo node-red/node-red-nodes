@@ -18,7 +18,7 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var util = require("util");
 var exec = require('child_process').exec;
 var komponist = require('komponist');
-var mpc = "";
+var mpc = null;
 exec("which mpd",function(err,stdout,stderr) {
     if (stdout.indexOf('mpd') == -1) {
         util.log('[69-mpd.js] Error: Cannot find "mpd" command. Please install MPD.');
@@ -35,12 +35,15 @@ exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
         if (err) node.error("MPD: Failed to connect to MPD server");
         mpc = client;
     });
+});
 
-    function MPDOut(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
-        node.mpc = mpc;
 
+function MPDOut(n) {
+    RED.nodes.createNode(this,n);
+    var node = this;
+    node.mpc = mpc;
+
+    if (mpc != null) {
         this.on("input", function(msg) {
             if (msg != null) {
                 console.log(msg);
@@ -58,14 +61,17 @@ exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
             console.log("MPD: Error:",err);
         });
     }
-    RED.nodes.registerType("mpd out",MPDOut);
+    else { node.warn("MPD not running"); }
+}
+RED.nodes.registerType("mpd out",MPDOut);
 
-    function MPDIn(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
-        node.mpc = mpc;
-        var oldMsg = "";
+function MPDIn(n) {
+    RED.nodes.createNode(this,n);
+    var node = this;
+    node.mpc = mpc;
+    var oldMsg = "";
 
+    if (mpc != null) {
         getSong();
 
         function getSong() {
@@ -94,6 +100,6 @@ exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
            // node.mpc.command("stop");
         });
     }
-    RED.nodes.registerType("mpd in",MPDIn);
-
-});
+    else { node.warn("MPD not running"); }
+}
+RED.nodes.registerType("mpd in",MPDIn);
