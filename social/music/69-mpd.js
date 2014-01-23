@@ -15,8 +15,10 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var util = require("util");
 var exec = require('child_process').exec;
 var komponist = require('komponist');
+var mpc = "";
 exec("which mpd",function(err,stdout,stderr) {
     if (stdout.indexOf('mpd') == -1) {
         util.log('[69-mpd.js] Error: Cannot find "mpd" command. Please install MPD.');
@@ -24,68 +26,74 @@ exec("which mpd",function(err,stdout,stderr) {
     }
 });
 
-var mpc = "";
-komponist.createConnection(6600, 'localhost', function(err, client) {
-    if (err) node.error("MPD: Failed to connect to MPD server");
-    mpc = client;
-});
-
-function MPDOut(n) {
-    RED.nodes.createNode(this,n);
-    var node = this;
-    node.mpc = mpc;
-
-    this.on("input", function(msg) {
-        if (msg != null) {
-            console.log(msg);
-            try {
-                //node.mpc.command(msg.payload);
-                node.mpc.command(msg.payload, msg.param, function(err, results) {
-                    if (err) { console.log("MPD: Error:",err); }
-                    //else { console.log(results); }
-                });
-            } catch (err) { console.log("MPD: Error:",err); }
-        }
+exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
+    if (stdout.indexOf('6600') == -1) {
+        util.log('[69-mpd.js] Error: MPD daemon not listening on port 6600. Please start MPD.');
+        return;
+    }
+    komponist.createConnection(6600, 'localhost', function(err, client) {
+        if (err) node.error("MPD: Failed to connect to MPD server");
+        mpc = client;
     });
 
-    node.mpc.on('error', function(err) {
-        console.log("MPD: Error:",err);
-    });
-}
-RED.nodes.registerType("mpd out",MPDOut);
+    function MPDOut(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.mpc = mpc;
 
-function MPDIn(n) {
-    RED.nodes.createNode(this,n);
-    var node = this;
-    node.mpc = mpc;
-    var oldMsg = "";
-
-    getSong();
-
-    function getSong() {
-        node.mpc.currentsong(function(err, info) {
-            if (err) console.log(err);
-            else {
-                var msg = {payload:{},topic:"music"};
-                msg.payload.Artist = info.Artist;
-                msg.payload.Album = info.Album;
-                msg.payload.Title = info.Title;
-                msg.payload.Genre = info.Genre;
-                msg.payload.Date = info.Date;
-                if (JSON.stringify(msg) != oldMsg) {
-                    node.send(msg);
-                    oldMsg = JSON.stringify(msg);
-                }
+        this.on("input", function(msg) {
+            if (msg != null) {
+                console.log(msg);
+                try {
+                    //node.mpc.command(msg.payload);
+                    node.mpc.command(msg.payload, msg.param, function(err, results) {
+                        if (err) { console.log("MPD: Error:",err); }
+                        //else { console.log(results); }
+                    });
+                } catch (err) { console.log("MPD: Error:",err); }
             }
         });
+
+        node.mpc.on('error', function(err) {
+            console.log("MPD: Error:",err);
+        });
     }
+    RED.nodes.registerType("mpd out",MPDOut);
 
-    node.mpc.on('changed', function(system) {
+    function MPDIn(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.mpc = mpc;
+        var oldMsg = "";
+
         getSong();
-    });
 
-    this.on("close", function() {
-       // node.mpc.command("stop");
-    });
-}
-RED.nodes.registerType("mpd in",MPDIn);
+        function getSong() {
+            node.mpc.currentsong(function(err, info) {
+                if (err) console.log(err);
+                else {
+                    var msg = {payload:{},topic:"music"};
+                    msg.payload.Artist = info.Artist;
+                    msg.payload.Album = info.Album;
+                    msg.payload.Title = info.Title;
+                    msg.payload.Genre = info.Genre;
+                    msg.payload.Date = info.Date;
+                    if (JSON.stringify(msg) != oldMsg) {
+                        node.send(msg);
+                        oldMsg = JSON.stringify(msg);
+                    }
+                }
+            });
+        }
+
+        node.mpc.on('changed', function(system) {
+            getSong();
+        });
+
+        this.on("close", function() {
+           // node.mpc.command("stop");
+        });
+    }
+    RED.nodes.registerType("mpd in",MPDIn);
+
+});
