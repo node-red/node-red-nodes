@@ -29,13 +29,13 @@ function SunNode(n) {
 
     this.tick = setInterval(function() {
         var now = new Date();
-        var hour = now.getHours();
-        var mins = now.getMinutes();
+        var hour = now.getUTCHours();
+        var mins = now.getUTCMinutes();
         var times = SunCalc.getTimes(now, node.lat, node.lon);
-        var hour1 = times[node.start].getHours();
-        var mins1 = times[node.start].getMinutes();
-        var hour2 = times[node.end].getHours();
-        var mins2 = times[node.end].getMinutes();
+        var hour1 = times[node.start].getUTCHours();
+        var mins1 = times[node.start].getUTCMinutes();
+        var hour2 = times[node.end].getUTCHours();
+        var mins2 = times[node.end].getUTCMinutes();
         var e1 = (hour*60+mins) - (hour1*60+mins1);
         var e2 = (hour*60+mins) - (hour2*60+mins2);
         var moon = parseInt(SunCalc.getMoonFraction(now)*100)/100;
