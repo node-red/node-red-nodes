@@ -15,7 +15,6 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
-require("../../lib/aws");
 var util = require("util");
 var aws = require("aws-sdk");
 var attrWrapper = require("dynamodb-data-types").AttributeValue;
