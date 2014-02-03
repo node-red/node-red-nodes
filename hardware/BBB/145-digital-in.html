@@ -1,0 +1,111 @@
+<!--
+  Copyright 2014 Maxwell R Hadley
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!-- First, the content of the edit dialog is defined.                       -->
+
+<script type="text/x-red" data-template-name="BBB-discrete-in">
+   <div class="form-row">
+	   <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+	   <select type="text" id="node-input-pin" style="width: 180px;">
+		   <option value="">select pin</option>
+		   <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+		   <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+		   <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+		   <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+		   <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+		   <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+		   <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+		   <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+		   <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+		   <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+		   <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+		   <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+		   <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+		   <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+		   <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+		   <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+		   <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+		   <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+		   <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+		   <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+		   <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+		   <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+		   <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+		   <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+		   <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+		   <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+		   <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+		   <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+		   <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+		   <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+		   <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+		</select>
+	</div>
+    <div class="form-row">
+		<label for="node-input-updateInterval"><i class="icon-repeat"></i>Update every</label>
+		<input id="node-input-updateInterval" type="text">
+		<label>s</label>
+	</div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field.                                       -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="BBB-discrete-in">
+   <!-- data-help-name identifies the node type this help is for             -->
+   <!-- This content appears in the Info sidebar when a node is selected     -->
+   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
+   <!-- node in the palette.                                                 -->
+   <p>Discrete input for the Beaglebone Black. Sends a message on the first output
+   each time the pin changes state, and
+   records the total time in the active state</p>
+   <p>A timer updates the total active time, sending a message on the 2nd output at the chosen interval.
+   An input (any input) message will reset the total active time</p>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('BBB-discrete-in',{
+        category: 'advanced-input',      // the palette category
+	color:"#c6abef",
+        defaults: {             // defines the editable properties of the node
+            name: { value:"" },   //  along with default values.
+			updateInterval: { value:5 },
+            topic: { value:"", required:true },
+		pin: { value:"", required:true },
+        },
+        inputs:1,                // set the number of inputs - only 0 or 1
+        outputs:2,               // set the number of outputs - 0 to n
+        icon: "arrow-in.png",    // set the icon (held in public/icons)
+        label: function() {      // sets the default label contents
+            return this.name || "discrete-in: " + this.pin;
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
