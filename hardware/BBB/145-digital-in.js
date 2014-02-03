@@ -29,25 +29,26 @@ function DiscreteInputNode(n) {
     RED.nodes.createNode(this, n);
 
     // Store local copies of the node configuration (as defined in the .html)
-    this.topic = n.topic;					// the topic is not currently used
-    this.pin = n.pin;						// The Beaglebone Black pin identifying string
-	this.updateInterval = n.updateInterval*1000; // How often to send total active time messages
+    this.topic = n.topic;							// the topic is not currently used
+    this.pin = n.pin;								// The Beaglebone Black pin identifying string
+	this.updateInterval = n.updateInterval*1000; 	// How often to send total active time messages
 
-	// Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
-	// otherwise there is only one 'node' for all instances of DiscreteInputNode!)
-    var node = this;
 	this.interruptAttached = false;	// Flag: should we detach interrupt when we are closed?
 	this.intervalId = null;			// Remember the timer ID so we can delete it when we are closed
 	this.currentState = 0;			// The pin input state "1" or "0"
 	this.lastActiveTime = 0;		// The date (in ms since epoch) when the pin last went high
 	this.totalActiveTime = 0;		// The total time in ms that the pin has been high (since reset)
 	this.starting = true;
+	
+	// Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
+	// otherwise there is only one 'node' for all instances of DiscreteInputNode!)
+    var node = this;
 
-	// This function is called whenver the input pin changes state. We update the currentState
+	// This function is called whenever the input pin changes state. We update the currentState
 	// and the ActiveTime variables, and send a message on the first output with the new state
 	var interruptCallback = function (x) {
 			if (node.currentState == x.value) {
-				node.error("Spurious interrupt" + x.value);
+				node.log("Spurious interrupt: " + x.value);
 			} else {
 				node.currentState = x.value;
 				var now = Date.now();
@@ -82,16 +83,19 @@ function DiscreteInputNode(n) {
 			if (node.currentState == "1") {
 				node.lastActiveTime = Date.now();
 			}
-			 if (node.starting) {
-			 	node.starting = 0;
+			if (node.starting) {
+			 	node.starting = false;
 				var msg1 = {};
-				msg1.payload = node.currentState;
+				msg1.payload = "hello";
 				var msg2 = {};
-				msg2.payload = node.totalActiveTime/1000;
-				node.send([null, msg2]);
-				node.send([msg1, null]);
-				node.error("Initial message" + msg1 + " " + msg2);
-			 }
+				msg2.payload = "world";
+				this.send([msg1, msg2]);
+				node.log("Initial message " + msg1.payload + " " + msg2.payload);
+				node.log("currentState: " + node.currentState);
+				node.log("activeTime: " + node.totalActiveTime);
+				msg1 = null;
+				msg2 = null;
+			}
 		};
 
 	// If we have a valid pin, set it as an input and read the (digital) state
@@ -102,7 +106,8 @@ function DiscreteInputNode(n) {
 		bs.pinMode(node.pin, bs.INPUT);
 		bs.digitalRead(node.pin, function (x) {
 				// Initialise the currentState and lastActveTime variables based on the value read
-				node.currentState = x;
+				node.currentState = x.value;
+				node.error("First read - currentState: " + node.currentState);
 				if (node.currentState == "1") {
 					node.lastActiveTime = Date.now();
 				}
@@ -116,7 +121,7 @@ function DiscreteInputNode(n) {
 				} else {
 					node.error("Failed to attach interrupt");
 				}
-				setTimeout(function () { node.starting = 1; node.emit("input", {}); }, 250);
+				setTimeout(function () { node.emit("input", {}); }, 50);
 			});
 	} else {
 		node.error("Unconfigured input pin");
@@ -131,7 +136,7 @@ DiscreteInputNode.prototype.close = function () {
 	if (this.interruptAttached) {
 		bs.detachInterrupt(this.pin);
 	}
-	if (this.intervalId!= null) {
+	if (this.intervalId != null) {
 		clearInterval(this.intervalId);
 	}
 };
