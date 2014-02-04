@@ -21,7 +21,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 try {
 	var bs = require("bonescript");
 } catch(err) {
-	require("util").log("[BBB-discrete-in] Error: cannot find module 'bonescript'");
+	require("util").log("[145-digital-in] Error: cannot find module 'bonescript'");
 }
 
 // The node constructor
@@ -31,6 +31,10 @@ function DiscreteInputNode(n) {
     // Store local copies of the node configuration (as defined in the .html)
     this.topic = n.topic;							// the topic is not currently used
     this.pin = n.pin;								// The Beaglebone Black pin identifying string
+	if (n.activeLow)								// Set the 'active' state 0 or 1 as appropriate
+		this.activeState = "0";
+	else
+		this.activeState = "1";
 	this.updateInterval = n.updateInterval*1000; 	// How often to send total active time messages
 
 	this.interruptAttached = false;	// Flag: should we detach interrupt when we are closed?
@@ -52,26 +56,28 @@ function DiscreteInputNode(n) {
 			} else {
 				node.currentState = x.value;
 				var now = Date.now();
-				if (node.currentState == "1") {
+				if (node.currentState == node.activeState) {
 					node.lastActiveTime = now;
 				} else {
 					node.totalActiveTime += now - node.lastActiveTime;
 				}
+				var msg = {};
+				msg.topic = node.topic;
+				msg.payload = node.currentState;
+				node.send([msg, null]);
 			}
-			var msg = {};
-			msg.payload = node.currentState;
-			node.send([msg, null]);
 		};
 
 	// This function is called by the timer. It updates the ActiveTime variables, and sends a
 	// message on the second output with the latest value of the total active time, in seconds
 	var timerCallback = function () {
-			if (node.currentState == "1") {
+			if (node.currentState == node.activeState) {
 				var now = Date.now();
 				node.totalActiveTime += now - node.lastActiveTime;
 				node.lastActiveTime = now;
 			}
 			var msg = {};
+			msg.topic = node.topic;
 			msg.payload = node.totalActiveTime/1000;
 			node.send([null, msg]);
 		};
@@ -80,21 +86,18 @@ function DiscreteInputNode(n) {
 	// (so we start counting from zero again)
 	var inputCallback = function (msg) {
 			node.totalActiveTime = 0;
-			if (node.currentState == "1") {
+			if (node.currentState == node.activeState) {
 				node.lastActiveTime = Date.now();
 			}
 			if (node.starting) {
 			 	node.starting = false;
-				var msg1 = {};
-				msg1.payload = "hello";
-				var msg2 = {};
-				msg2.payload = "world";
-				this.send([msg1, msg2]);
-				node.log("Initial message " + msg1.payload + " " + msg2.payload);
-				node.log("currentState: " + node.currentState);
-				node.log("activeTime: " + node.totalActiveTime);
-				msg1 = null;
-				msg2 = null;
+				var msg = [{topic:node.topic}, {topic:node.topic}];
+				msg[0].payload = node.currentState;
+				msg[1].payload = node.totalActiveTime;
+				this.send(msg);
+				node.log("Initial message: " + msg[0].payload + " " + msg[1].payload);
+				node.log("currentState: " + this.currentState);
+				node.log("activeTime: " + this.totalActiveTime);
 			}
 		};
 
@@ -108,7 +111,7 @@ function DiscreteInputNode(n) {
 				// Initialise the currentState and lastActveTime variables based on the value read
 				node.currentState = x.value;
 				node.error("First read - currentState: " + node.currentState);
-				if (node.currentState == "1") {
+				if (node.currentState == node.activeState) {
 					node.lastActiveTime = Date.now();
 				}
 				// Attempt to attach a change-of-state interrupt handler to the pin. If we succeed,
@@ -129,7 +132,7 @@ function DiscreteInputNode(n) {
 }
 
 // Register the node by name. This must be called before overriding any of the Node functions.
-RED.nodes.registerType("BBB-discrete-in", DiscreteInputNode);
+RED.nodes.registerType("discrete-in", DiscreteInputNode);
 
 // On close, detach the interrupt (if we attaced one) and clear the interval (if we set one)
 DiscreteInputNode.prototype.close = function () {

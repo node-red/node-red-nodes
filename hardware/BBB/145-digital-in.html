@@ -16,10 +16,10 @@
 
 <!-- First, the content of the edit dialog is defined.                       -->
 
-<script type="text/x-red" data-template-name="BBB-discrete-in">
+<script type="text/x-red" data-template-name="discrete-in">
    <div class="form-row">
 	   <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
-	   <select type="text" id="node-input-pin" style="width: 180px;">
+	   <select type="text" id="node-input-pin" style="width: 200px;">
 		   <option value="">select pin</option>
 		   <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
 		   <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
@@ -54,10 +54,13 @@
 		   <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
 		</select>
 	</div>
+	<div class="form-row">
+		<label for="node-input-activeLow">Active low</label>
+		<input type="checkbox" id="node-input-activeLow" style="display:inline-block; width:auto; vertical-align:top;">
     <div class="form-row">
-		<label for="node-input-updateInterval"><i class="icon-repeat"></i>Update every</label>
-		<input id="node-input-updateInterval" type="text">
-		<label>s</label>
+		<label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
+		<input id="node-input-updateInterval" type="text" style="width: 65px">
+		<label>sec intervals</label>
 	</div>
     <div class="form-row">
         <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
@@ -74,29 +77,28 @@
 
 
 <!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="BBB-discrete-in">
-   <!-- data-help-name identifies the node type this help is for             -->
-   <!-- This content appears in the Info sidebar when a node is selected     -->
-   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-   <!-- node in the palette.                                                 -->
-   <p>Discrete input for the Beaglebone Black. Sends a message on the first output
-   each time the pin changes state, and
-   records the total time in the active state</p>
-   <p>A timer updates the total active time, sending a message on the 2nd output at the chosen interval.
-   An input (any input) message will reset the total active time</p>
+<script type="text/x-red" data-help-name="discrete-in">
+<p>Discrete input for the Beaglebone Black. Sends a message on the first output
+each time the pin changes state, and records the total time in the active state</p>
+   <p>A timer updates the total active time, sending a message on the second output
+   at the chosen update interval.
+   Any input message will reset the total active time</p><p>The active
+   state may be set to be high or low: this only affects the active time, not the
+   value read from the pin and sent on the first output</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
-    RED.nodes.registerType('BBB-discrete-in',{
+    RED.nodes.registerType('discrete-in',{
         category: 'advanced-input',      // the palette category
-	color:"#c6abef",
+		color:"#c6baef",
         defaults: {             // defines the editable properties of the node
             name: { value:"" },   //  along with default values.
-			updateInterval: { value:5 },
+			updateInterval: { value:30 },
             topic: { value:"", required:true },
-		pin: { value:"", required:true },
+			pin: { value:"", required:true },
+			activeLow: { value:false, required:true}
         },
         inputs:1,                // set the number of inputs - only 0 or 1
         outputs:2,               // set the number of outputs - 0 to n
