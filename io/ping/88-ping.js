@@ -30,12 +30,12 @@ function PingNode(n) {
         else if (plat.match(/^win/)) ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]);
         else if (plat == "darwin") ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]);
         else node.error("Sorry - your platform - "+plat+" - is not recognised.");
-        var res = "";
+        var res = false;
         ex.stdout.on('data', function (data) {
             //console.log('[ping] stdout: ' + data.toString());
-            var regex = /time.(.*)ms/;
-            var m = regex.exec(data.toString())||[""];
-            res = Number(m[1]);
+            var regex = /from.*time.(.*)ms/;
+            var m = regex.exec(data.toString())||"";
+            if (m != '') { res = Number(m[1]); }
         });
         ex.stderr.on('data', function (data) {
             //console.log('[ping] stderr: ' + data);
