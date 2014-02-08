@@ -32,10 +32,16 @@ function AnalogInputNode(n) {
     // Store local copies of the node configuration (as defined in the .html)
     this.topic = n.topic;
     this.pin = n.pin;
+    this.breakpoints = n.breakpoints;
 
     // Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
     // otherwise there is only one global 'node' for all instances of AnalogInputNode!)
     var node = this;
+
+    node.log("breakpoints:");
+    for (var i = 0; i < node.breakpoints.length; i++) {
+    	node.log(i + ": {input:" + node.breakpoints[i].input + ", output:" + node.breakpoints[i].output + ", mutable:" + node.breakpoints[i].mutable +"}");
+   	}
 
     // A callback function variable seems to be more reliable than a lambda ?!
     var readCallback = function (x) {
