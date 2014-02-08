@@ -40,9 +40,10 @@ function Emoncms(n) {
 	this.on("input", function(msg) {
 		
 		var topic = this.topic || msg.topic;
+		var nodegroup = this.nodegroup || msg.nodegroup;
 		this.url = this.baseurl + '/input/post.json?json={' + topic + ':' + msg.payload+'}&apikey='+this.apikey;
-		if(this.nodegroup != ""){
-			this.url += '&node='+this.nodegroup;
+		if(nodegroup != ""){
+			this.url += '&node='+nodegroup;
 		}
 		node.log("[emoncms] "+this.url);
 		http.get(this.url, function(res) {
