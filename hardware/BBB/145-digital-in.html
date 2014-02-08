@@ -95,7 +95,7 @@ of the active time, not the pin state sent on the first output
 		color:"#c6dbef",
         defaults: {             	// defines the editable properties of the node
             name: { value:"" },   	//  along with default values.
-			updateInterval: { value:60 },
+			updateInterval: { value:60, required:true, validate:RED.validators.number() },
             topic: { value:"", required:true },
 			pin: { value:"", required:true },
 			activeLow: { value:false, required:true}

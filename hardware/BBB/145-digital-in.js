@@ -53,10 +53,10 @@ function DiscreteInputNode(n) {
     // Note: this function gets called spuriously when the interrupt is first enabled: in this
     // case x.value is undefined - we must test for this
     var interruptCallback = function (x) {
-            node.log("interruptCallback: x.value = " + x.value);
-            node.log("interruptCallback: node.currentState = " + node.currentState);
-            node.log("interruptCallback: node.totalActiveTime = " + node.totalActiveTime);
-            node.log("interruptCallback: node.lastActiveTime = " + node.lastActiveTime);
+//            node.log("interruptCallback: x.value = " + x.value);
+//            node.log("interruptCallback: node.currentState = " + node.currentState);
+//            node.log("interruptCallback: node.totalActiveTime = " + node.totalActiveTime);
+//           node.log("interruptCallback: node.lastActiveTime = " + node.lastActiveTime);
             if (node.currentState === x.value - 0) {
                 node.log("Spurious interrupt: " + x.value);
             } else if (x.value != undefined) {
@@ -77,9 +77,9 @@ function DiscreteInputNode(n) {
     // This function is called by the timer. It updates the ActiveTime variables, and sends a
     // message on the second output with the latest value of the total active time, in seconds
     var timerCallback = function () {
-            node.log("timerCallback: node.currentState = " + node.currentState);
-            node.log("timerCallback: node.totalActiveTime = " + node.totalActiveTime);
-            node.log("timerCallback: node.lastActiveTime = " + node.lastActiveTime);
+//            node.log("timerCallback: node.currentState = " + node.currentState);
+//            node.log("timerCallback: node.totalActiveTime = " + node.totalActiveTime);
+//            node.log("timerCallback: node.lastActiveTime = " + node.lastActiveTime);
             if (node.currentState === node.activeState) {
                 var now = Date.now();
                 node.totalActiveTime += now - node.lastActiveTime;
@@ -94,9 +94,9 @@ function DiscreteInputNode(n) {
     // This function is called when we receive an input message. Clear the ActiveTime variables
     // (so we start counting from zero again)
     var inputCallback = function (msg) {
-            node.log("inputCallback: node.currentState = " + node.currentState);
-            node.log("inputCallback: node.totalActiveTime = " + node.totalActiveTime);
-            node.log("inputCallback: node.lastActiveTime = " + node.lastActiveTime);
+//            node.log("inputCallback: node.currentState = " + node.currentState);
+//            node.log("inputCallback: node.totalActiveTime = " + node.totalActiveTime);
+//            node.log("inputCallback: node.lastActiveTime = " + node.lastActiveTime);
             node.totalActiveTime = 0;
             if (node.currentState === node.activeState) {
                 node.lastActiveTime = Date.now();
@@ -107,9 +107,9 @@ function DiscreteInputNode(n) {
                 msg[0].payload = node.currentState;
                 msg[1].payload = node.totalActiveTime;
                 node.send(msg);
-                node.log("Initial message: " + msg[0].payload + " " + msg[1].payload);
-                node.log("currentState: " + node.currentState);
-                node.log("activeTime: " + node.totalActiveTime);
+//                node.log("Initial message: " + msg[0].payload + " " + msg[1].payload);
+//                node.log("currentState: " + node.currentState);
+//                node.log("activeTime: " + node.totalActiveTime);
             }
         };
 
@@ -122,12 +122,12 @@ function DiscreteInputNode(n) {
             bonescript.pinMode(node.pin, bonescript.INPUT);
             bonescript.digitalRead(node.pin, function (x) {
                         // Initialise the currentState and lastActveTime variables based on the value read
-                        node.log("digitalRead: x.value = " + x.value);
-                        node.log("digitalRead: node.currentState = " + node.currentState);
-                        node.log("digitalRead: node.totalActiveTime = " + node.totalActiveTime);
-                        node.log("digitalRead: node.lastActiveTime = " + node.lastActiveTime);
+//                        node.log("digitalRead: x.value = " + x.value);
+//                        node.log("digitalRead: node.currentState = " + node.currentState);
+//                        node.log("digitalRead: node.totalActiveTime = " + node.totalActiveTime);
+//                        node.log("digitalRead: node.lastActiveTime = " + node.lastActiveTime);
                         node.currentState = x.value - 0;
-                        node.log("First read - currentState: " + node.currentState);
+//                        node.log("First read - currentState: " + node.currentState);
                         if (node.currentState === node.activeState) {
                             node.lastActiveTime = Date.now();
                         }
