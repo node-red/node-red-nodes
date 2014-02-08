@@ -19,9 +19,9 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 
 // Require bonescript
 try {
-	var bs = require("bonescript");
-} catch(err) {
-	require("util").log("[BBB-analog-in] Error: cannot find module 'bonescript'");
+    var bonescript = require("bonescript");
+} catch (err) {
+    require("util").log("[144-analog-in] Error: cannot find module 'bonescript'");
 }
 
 // The main node definition - most things happen in here
@@ -33,30 +33,28 @@ function AnalogInputNode(n) {
     this.topic = n.topic;
     this.pin = n.pin;
 
-	// Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
-	// otherwise there is only one 'node' for all instances of AnalogInputNode!)
+    // Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
+    // otherwise there is only one global 'node' for all instances of AnalogInputNode!)
     var node = this;
 
-	// A callback function variable seems to be more reliable than a lambda ?!
-	var cbFun = function (x) {
-			var msg = {};
-			msg.topic = node.topic;
-			msg.payload = x.value;
-			if (isNaN(x.value)) {
-				this.log(x.err);
-			}
-			node.send(msg);
-		};
+    // A callback function variable seems to be more reliable than a lambda ?!
+    var readCallback = function (x) {
+            var msg = {};
+            msg.topic = node.topic;
+            msg.payload = x.value;
+            if (isNaN(x.value)) {
+                node.log(x.err);
+            }
+            node.send(msg);
+        };
 
-	// If we have a valid pin, set the input event handler to Bonescript's analogRead
-	if (["P9_39", "P9_40", "P9_37", "P9_38", "P9_33", "P9_36", "P9_35"].indexOf(node.pin) >= 0) {
-		node.on("input", function (msg) { bs.analogRead(node.pin, cbFun) });
-	} else {
-		node.error("Unconfigured input pin");
-	}
+    // If we have a valid pin, set the input event handler to Bonescript's analogRead
+    if (["P9_39", "P9_40", "P9_37", "P9_38", "P9_33", "P9_36", "P9_35"].indexOf(node.pin) >= 0) {
+        node.on("input", function (msg) { bonescript.analogRead(node.pin, readCallback) });
+    } else {
+        node.error("Unconfigured input pin");
+    }
 }
 
 // Register the node by name. This must be called before overriding any of the Node functions.
-RED.nodes.registerType("BBB-analog-in", AnalogInputNode);
-
-// AnalogInputNode.prototype.close = function () { };
+RED.nodes.registerType("analog-in", AnalogInputNode);

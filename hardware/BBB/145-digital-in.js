@@ -19,7 +19,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 
 // Require bonescript
 try {
-    var bs = require("bonescript");
+    var bonescript = require("bonescript");
 } catch (err) {
     require("util").log("[145-digital-in] Error: cannot find module 'bonescript'");
 }
@@ -119,31 +119,31 @@ function DiscreteInputNode(n) {
          "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
          "P9_27", "P9_30", "P9_41", "P9_42"].indexOf(node.pin) >= 0) {
         setTimeout(function () {
-			bs.pinMode(node.pin, bs.INPUT);
-			bs.digitalRead(node.pin, function (x) {
-						// Initialise the currentState and lastActveTime variables based on the value read
-						node.log("digitalRead: x.value = " + x.value);
-						node.log("digitalRead: node.currentState = " + node.currentState);
-						node.log("digitalRead: node.totalActiveTime = " + node.totalActiveTime);
-						node.log("digitalRead: node.lastActiveTime = " + node.lastActiveTime);
-						node.currentState = x.value - 0;
-						node.log("First read - currentState: " + node.currentState);
-						if (node.currentState === node.activeState) {
-							node.lastActiveTime = Date.now();
-						}
-						// Attempt to attach a change-of-state interrupt handler to the pin. If we succeed,
-						// set the input event and interval handlers, then send an initial message with the
-						// pin state on the first output
-						if (bs.attachInterrupt(node.pin, true, bs.CHANGE, interruptCallback)) {
-							node.interruptAttached = true;
-							node.on("input", inputCallback);
-							node.intervalId = setInterval(timerCallback, node.updateInterval);
-						} else {
-							node.error("Failed to attach interrupt");
-						}
-						setTimeout(function () { node.emit("input", {}); }, 50);
-					});
-				}, 50);
+            bonescript.pinMode(node.pin, bonescript.INPUT);
+            bonescript.digitalRead(node.pin, function (x) {
+                        // Initialise the currentState and lastActveTime variables based on the value read
+                        node.log("digitalRead: x.value = " + x.value);
+                        node.log("digitalRead: node.currentState = " + node.currentState);
+                        node.log("digitalRead: node.totalActiveTime = " + node.totalActiveTime);
+                        node.log("digitalRead: node.lastActiveTime = " + node.lastActiveTime);
+                        node.currentState = x.value - 0;
+                        node.log("First read - currentState: " + node.currentState);
+                        if (node.currentState === node.activeState) {
+                            node.lastActiveTime = Date.now();
+                        }
+                        // Attempt to attach a change-of-state interrupt handler to the pin. If we succeed,
+                        // set the input event and interval handlers, then send an initial message with the
+                        // pin state on the first output
+                        if (bonescript.attachInterrupt(node.pin, true, bonescript.CHANGE, interruptCallback)) {
+                            node.interruptAttached = true;
+                            node.on("input", inputCallback);
+                            node.intervalId = setInterval(timerCallback, node.updateInterval);
+                        } else {
+                            node.error("Failed to attach interrupt");
+                        }
+                        setTimeout(function () { node.emit("input", {}); }, 50);
+                    });
+                }, 50);
     } else {
         node.error("Unconfigured input pin");
     }
@@ -155,7 +155,7 @@ RED.nodes.registerType("discrete-in", DiscreteInputNode);
 // On close, detach the interrupt (if we attached one) and clear the interval (if we set one)
 DiscreteInputNode.prototype.close = function () {
     if (this.interruptAttached) {
-        bs.detachInterrupt(this.pin);
+        bonescript.detachInterrupt(this.pin);
     }
     if (this.intervalId !== null) {
         clearInterval(this.intervalId);
