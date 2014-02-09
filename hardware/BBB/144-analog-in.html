@@ -34,18 +34,18 @@
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
     Input Scaling
     </div>
     <div class="form-row">
         <div id="node-input-breakpoint-container-div" style="border-radius: 5px; height: 310px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
-			<ol id="node-input-breakpoint-container" style=" list-style-type:none; margin: 0;">
-			</ol>
+            <ol id="node-input-breakpoint-container" style=" list-style-type:none; margin: 0;">
+            </ol>
         </div>
         <a href="#" class="btn btn-mini" id="node-input-add-breakpoint" style="margin-top: 4px;"><i class="icon-plus"></i> Add Breakpoint</a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
@@ -55,7 +55,13 @@
 Analogue input for the Beaglebone Black. Reads an anlogue pin when triggered
 </p>
 <p>The output message topic is the node topic: the output message value is the
-analogue input in the range [0-1), or NaN if an read error occurs (errors are logged)
+scaled analogue input or NaN if an read error occurs (errors are logged).
+</p>
+<p>
+Simple linear scaling is defined by setting the output values required for input
+values of 0 and 1. You can apply more complicated scaling, such as linearisation,
+by defining breakpoints at intermediate input values, with the desired output for
+each. Intermediate values are linearly interpolated.
 </p>
 </script>
 
@@ -80,79 +86,88 @@ analogue input in the range [0-1), or NaN if an read error occurs (errors are lo
                 return this.name ? "node_label_italic" : "";
             },
         oneditprepare: function () {
-				function generateBreakpoint(i, breakpoint) {
-					var container = $('<li/>', {style:"margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"});
-					var row = $('<div/>').appendTo(container);
-					var row2 = $('<div/>', {style:"padding-top: 5px; text-align: right;"}).appendTo(container);
-
-					var breakpointField = $('<span/>').appendTo(row);
+                function generateBreakpoint(breakpoint, insert) {
+                    var container = $('<li/>', {style:"margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"});
+                    var row = $('<div/>').appendTo(container);
+                    var breakpointField = $('<span/>').appendTo(row);
 					var inputValueField = $('<input/>',
-						{class:"node-input-breakpoint-input-value", type:"text", style:"margin-left:5px; margin-right:2px; width:36%;"}).appendTo(breakpointField);
-					breakpointField.append(" => ");
-					var outputValueField = $('<input/>',
-						{class:"node-input-breakpoint-output-value", type:"text", style:"margin-left:0px; width:36%;"}).appendTo(breakpointField);
-					var finalSpan = $('<span/>', {style:"float:right; margin-top:3px; margin-right:10px;"}).appendTo(row);
-					var mutableFlag = $('<span/>', {class:"node-input-breakpoint-mutable", style:"display:hide;"}).appendTo(row);
-					if (breakpoint.mutable) {
-						mutableFlag.attr("mutable", "true");
-						var deleteButton = $('<a/>', {href:"#", class:"btn btn-mini", style:"margin-left: 5px;"}).appendTo(finalSpan);
-						$('<i/>', {class:"icon-remove"}).appendTo(deleteButton);
+						{disabled:"", class:"node-input-breakpoint-input-value", type:"text", style:"margin-left:5px; margin-right:2px; width:36%;"}).appendTo(breakpointField);
+                    if (breakpoint.mutable) {
+                    	inputValueField.removeAttr("disabled");
+                    }
+                    breakpointField.append(" => ");
+                    var outputValueField = $('<input/>',
+                        {class:"node-input-breakpoint-output-value", type:"text", style:"margin-left:0px; width:36%;"}).appendTo(breakpointField);
+                    var finalSpan = $('<span/>', {style:"float:right; margin-top:3px; margin-right:10px;"}).appendTo(row);
+                    var mutableFlag = $('<span/>', {class:"node-input-breakpoint-mutable", style:"display:hide;"}).appendTo(row);
+                    if (breakpoint.mutable) {
+                        mutableFlag.attr("mutable", "true");
+                        var deleteButton = $('<a/>', {href:"#", class:"btn btn-mini", style:"margin-left: 5px;"}).appendTo(finalSpan);
+                        $('<i/>', {class:"icon-remove"}).appendTo(deleteButton);
 
-						deleteButton.click(function() {
-								container.css({"background":"#fee"});
-								container.fadeOut(300, function() {
-										$(this).remove();
-										$("#node-input-breakpoint-container").children().each(function (i) {
-												$(this).find(".node-input-breakpoint-index").html(i + 1);
-											});
-									});
-							});
-					} else {
-						mutableFlag.attr("mutable", "false");
-					}					
-					inputValueField.val(breakpoint.input);
-					outputValueField.val(breakpoint.output);
-					$("#node-input-breakpoint-container").append(container);
-				}
-				
-				$("#node-input-add-breakpoint").click(function () {
-						generateBreakpoint($("#node-input-breakpoint-container").children().length + 1, {input:0, output:0, mutable:true});
-						$("#node-input-breakpoint-container-div").scrollTop($("#node-input-breakpoint-container-div").get(0).scrollHeight);
-					});
-					
-				for (var i = 0; i < this.breakpoints.length; i++) {
-					var breakpoint = this.breakpoints[i];
-					generateBreakpoint(i + 1, breakpoint);
-				}
-				
-				// Handle resizing the Input Scaling div when the dialog is resized
-				function switchDialogResize(ev, ui) {
-					$("#node-input-breakpoint-container-div").css("height", (ui.size.height - 290) + "px");
-				};
+                        deleteButton.click(function() {
+                                container.css({"background":"#fee"});
+                                container.fadeOut(300, function() {
+                                        $(this).remove();
+                                    });
+                            });
+                    } else {
+                        mutableFlag.attr("mutable", "false");
+                    }                   
+                    if (insert === true) {
+                    	var last = $("#node-input-breakpoint-container").children().last();
+                    	var prev = last.prev();
+                    	inputValueField.val(((last.find(".node-input-breakpoint-input-value").val() - 0) + 
+                    							(prev.find(".node-input-breakpoint-input-value").val() - 0))/2);
+                    	outputValueField.val(((last.find(".node-input-breakpoint-output-value").val() - 0) +
+                    							(prev.find(".node-input-breakpoint-output-value").val() - 0))/2);
+                    	last.before(container);
+                    } else {
+						inputValueField.val(breakpoint.input);
+						outputValueField.val(breakpoint.output);
+                    	$("#node-input-breakpoint-container").append(container);
+                    }
+                }
+                
+                $("#node-input-add-breakpoint").click(function () {
+                        generateBreakpoint({input:0, output:0, mutable:true}, true);
+                        $("#node-input-breakpoint-container-div").scrollTop($("#node-input-breakpoint-container-div").get(0).scrollHeight);
+                    });
+                    
+                for (var i = 0; i < this.breakpoints.length; i++) {
+                    var breakpoint = this.breakpoints[i];
+                    generateBreakpoint(breakpoint, false);
+                }
+                
+                // Handle resizing the Input Scaling div when the dialog is resized
+                function switchDialogResize(ev, ui) {
+                    $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 290) + "px");
+                };
 
-				$("#dialog").on("dialogresize", switchDialogResize);
-				$("#dialog").one("dialogopen", function (ev) {
-						var size = $("#dialog").dialog('option', 'sizeCache-switch');
-						if (size) {
-							switchDialogResize(null, { size:size });
-						}
-					});
-				$("#dialog").one("dialogclose", function(ev, ui) {
-						$("#dialog").off("dialogresize", switchDialogResize);
-					});
-			},
+                $("#dialog").on("dialogresize", switchDialogResize);
+                $("#dialog").one("dialogopen", function (ev) {
+                        var size = $("#dialog").dialog('option', 'sizeCache-switch');
+                        if (size) {
+                            switchDialogResize(null, { size:size });
+                        }
+                    });
+                $("#dialog").one("dialogclose", function(ev, ui) {
+                        $("#dialog").off("dialogresize", switchDialogResize);
+                    });
+            },
         oneditsave: function() {
-				var breakpoints = $("#node-input-breakpoint-container").children();
-				var node = this;
-				node.breakpoints = [];
-				breakpoints.each(function (i) {
-						var breakpoint = $(this);
-						var r = {};
-						r.input = breakpoint.find(".node-input-breakpoint-input-value").val() - 0
-						r.output = breakpoint.find(".node-input-breakpoint-output-value").val() - 0;
-						r.mutable = breakpoint.find(".node-input-breakpoint-mutable").attr("mutable") == "true";
-						node.breakpoints.push(r);
-					});
-			}
+                var breakpoints = $("#node-input-breakpoint-container").children();
+                var node = this;
+                node.breakpoints = [];
+                breakpoints.each(function (i) {
+                        var breakpoint = $(this);
+                        var r = {};
+                        r.input = breakpoint.find(".node-input-breakpoint-input-value").val() - 0
+                        r.output = breakpoint.find(".node-input-breakpoint-output-value").val() - 0;
+                        r.mutable = breakpoint.find(".node-input-breakpoint-mutable").attr("mutable") == "true";
+                        node.breakpoints.push(r);
+                    });
+                node.breakpoints = node.breakpoints.sort(function (a, b) { return a.input - b.input; });
+            }
         });
 </script>
