@@ -85,11 +85,36 @@
         category: 'config',
         defaults: {
             server: {value:"http://localhost",required:true},
-            apikey: {value:"",required:true},
+            // apikey: {value:"",required:true},
             name: {value:""}
         },
         label: function() {
             return this.name||this.server;
+        },
+        oneditprepare: function() {
+            $.getJSON('emoncms-server/'+this.id,function(data) {
+                if (data.apikey) {
+                    $('#node-config-input-apikey').val(data.apikey);
+                }
+            });
+        },
+		oneditsave: function() {
+            var newApikey = $('#node-config-input-apikey').val();
+            var credentials = {};
+            credentials.apikey = newApikey;
+            $.ajax({
+                url: 'emoncms-server/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success:function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'emoncms-server/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
         }
     });
 </script>
