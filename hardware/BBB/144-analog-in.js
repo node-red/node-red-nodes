@@ -33,30 +33,49 @@ function AnalogInputNode(n) {
     this.topic = n.topic;
     this.pin = n.pin;
     this.breakpoints = n.breakpoints;
+    this.averaging = n.averaging;
+    if (this.averaging) {
+    	this.averages = 10;
+    } else {
+    	this.averages = 1;
+    }
 
     // Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
     // otherwise there is only one global 'node' for all instances of AnalogInputNode!)
     var node = this;
 
-    node.log("breakpoints:");
-    for (var i = 0; i < node.breakpoints.length; i++) {
-    	node.log(i + ": {input:" + node.breakpoints[i].input + ", output:" + node.breakpoints[i].output + ", mutable:" + node.breakpoints[i].mutable +"}");
-   	}
-
-    // A callback function variable seems to be more reliable than a lambda ?!
-    var readCallback = function (x) {
-            var msg = {};
-            msg.topic = node.topic;
-            msg.payload = x.value;
-            if (isNaN(x.value)) {
-                node.log(x.err);
+	// Variables used for input averaging
+	var sum;	// accumulates the input readings to be averaged
+	var count;	// keep track of the number of measurements made
+	
+    // The callback function for analogRead. Accumulates the required number of
+    // measurements, then divides the total number, applies output scaling and
+    // sends the result
+    var analogReadCallback = function (x) {
+    		sum = sum + x.value;
+    		count = count - 1;
+    		if (count > 0) {
+    			bonescript.analogRead(node.pin, analogReadCallback);
+    		} else {
+				var msg = {};
+				msg.topic = node.topic;
+				sum = sum/node.averages;
+				// i is the index of the first breakpoint where the 'input' value is strictly
+				// greater than the measurement (note: a measurement can never be == 1)
+				var i = node.breakpoints.map(function (breakpoint) { return sum >= breakpoint.input; }).indexOf(false);
+				msg.payload = node.breakpoints[i-1].output + (node.breakpoints[i].output - node.breakpoints[i-1].output) *
+								(sum - node.breakpoints[i-1].input)/(node.breakpoints[i].input - node.breakpoints[i-1].input);
+				node.send(msg);
             }
-            node.send(msg);
         };
 
     // If we have a valid pin, set the input event handler to Bonescript's analogRead
     if (["P9_39", "P9_40", "P9_37", "P9_38", "P9_33", "P9_36", "P9_35"].indexOf(node.pin) >= 0) {
-        node.on("input", function (msg) { bonescript.analogRead(node.pin, readCallback) });
+        node.on("input", function (msg) {
+        		sum = 0;
+        		count = node.averages;
+        		bonescript.analogRead(node.pin, analogReadCallback);
+        	});
     } else {
         node.error("Unconfigured input pin");
     }

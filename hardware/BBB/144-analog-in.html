@@ -37,11 +37,16 @@
     Input Scaling
     </div>
     <div class="form-row">
-        <div id="node-input-breakpoint-container-div" style="border-radius: 5px; height: 310px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+        <div id="node-input-breakpoint-container-div" style="border-radius: 5px; height: 132px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
             <ol id="node-input-breakpoint-container" style=" list-style-type:none; margin: 0;">
             </ol>
         </div>
+    </div>
+    <div class="form-row">
         <a href="#" class="btn btn-mini" id="node-input-add-breakpoint" style="margin-top: 4px;"><i class="icon-plus"></i> Add Breakpoint</a>
+        <span style="float:right; margin-top:4px">
+        	<input type="checkbox" id="node-input-averaging" style="display:inline-block; width:auto; vertical-align:top;"> Averaging&nbsp;
+    	</span>	
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -52,16 +57,20 @@
 <!-- Add help text -->
 <script type="text/x-red" data-help-name="analog-in">
 <p>
-Analogue input for the Beaglebone Black. Reads an anlogue pin when triggered
+Analogue input for the Beaglebone Black. Reads an analogue pin when triggered
 </p>
 <p>The output message topic is the node topic: the output message value is the
-scaled analogue input or NaN if an read error occurs (errors are logged).
+scaled analogue input or NaN if a read error occurs.
 </p>
 <p>
 Simple linear scaling is defined by setting the output values required for input
-values of 0 and 1. You can apply more complicated scaling, such as linearisation,
+values of 0 and 1. You can apply more complicated scaling, e.g. for sensor linearisation,
 by defining breakpoints at intermediate input values, with the desired output for
 each. Intermediate values are linearly interpolated.
+</p>
+<p>
+To reduce the effect of noise, enable averaging. This will read the input pin
+voltage ten times in rapid succession for each input message and output the mean value.
 </p>
 </script>
 
@@ -74,7 +83,8 @@ each. Intermediate values are linearly interpolated.
             name: { value:"" },     //  along with default values.
             topic: { value:"", required:true },
             pin: { value:"", required:true },
-            breakpoints: { value:[{input:0.0, output:0.0, mutable:false},  {input:1.0, output:1.0, mutable:false}] }
+            breakpoints: { value:[{input:0.0, output:0.0, mutable:false},  {input:1.0, output:1.0, mutable:false}] },
+            averaging: { value:false, required:true }
         },
         inputs:1,                   // set the number of inputs - only 0 or 1
         outputs:1,                  // set the number of outputs - 0 to n
@@ -87,7 +97,7 @@ each. Intermediate values are linearly interpolated.
             },
         oneditprepare: function () {
                 function generateBreakpoint(breakpoint, insert) {
-                    var container = $('<li/>', {style:"margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"});
+                    var container = $('<li/>', {style:"margin:0; padding:4px; padding-left 10px;"});
                     var row = $('<div/>').appendTo(container);
                     var breakpointField = $('<span/>').appendTo(row);
 					var inputValueField = $('<input/>',
@@ -117,10 +127,10 @@ each. Intermediate values are linearly interpolated.
                     if (insert === true) {
                     	var last = $("#node-input-breakpoint-container").children().last();
                     	var prev = last.prev();
-                    	inputValueField.val(((last.find(".node-input-breakpoint-input-value").val() - 0) + 
-                    							(prev.find(".node-input-breakpoint-input-value").val() - 0))/2);
-                    	outputValueField.val(((last.find(".node-input-breakpoint-output-value").val() - 0) +
-                    							(prev.find(".node-input-breakpoint-output-value").val() - 0))/2);
+                    	inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) + 
+                    							Number(prev.find(".node-input-breakpoint-input-value").val()))/2);
+                    	outputValueField.val((Number(last.find(".node-input-breakpoint-output-value").val()) +
+                    							Number(prev.find(".node-input-breakpoint-output-value").val()))/2);
                     	last.before(container);
                     } else {
 						inputValueField.val(breakpoint.input);
@@ -139,9 +149,9 @@ each. Intermediate values are linearly interpolated.
                     generateBreakpoint(breakpoint, false);
                 }
                 
-                // Handle resizing the Input Scaling div when the dialog is resized
+                // Handle resizing the Input Scaling div when the dialog is resized - this isn't quite right!
                 function switchDialogResize(ev, ui) {
-                    $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 290) + "px");
+                    $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 299) + "px");
                 };
 
                 $("#dialog").on("dialogresize", switchDialogResize);
@@ -162,8 +172,8 @@ each. Intermediate values are linearly interpolated.
                 breakpoints.each(function (i) {
                         var breakpoint = $(this);
                         var r = {};
-                        r.input = breakpoint.find(".node-input-breakpoint-input-value").val() - 0
-                        r.output = breakpoint.find(".node-input-breakpoint-output-value").val() - 0;
+                        r.input = Number(breakpoint.find(".node-input-breakpoint-input-value").val());
+                        r.output = Number(breakpoint.find(".node-input-breakpoint-output-value").val());
                         r.mutable = breakpoint.find(".node-input-breakpoint-mutable").attr("mutable") == "true";
                         node.breakpoints.push(r);
                     });

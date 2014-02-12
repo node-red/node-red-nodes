@@ -53,14 +53,8 @@ function DiscreteInputNode(n) {
     // Note: this function gets called spuriously when the interrupt is first enabled: in this
     // case x.value is undefined - we must test for this
     var interruptCallback = function (x) {
-//            node.log("interruptCallback: x.value = " + x.value);
-//            node.log("interruptCallback: node.currentState = " + node.currentState);
-//            node.log("interruptCallback: node.totalActiveTime = " + node.totalActiveTime);
-//           node.log("interruptCallback: node.lastActiveTime = " + node.lastActiveTime);
-            if (node.currentState === x.value - 0) {
-                node.log("Spurious interrupt: " + x.value);
-            } else if (x.value != undefined) {
-                node.currentState = x.value - 0;
+            if (x.value != undefined && node.currentState !== Number(x.value)) {
+                node.currentState = Number(x.value);
                 var now = Date.now();
                 if (node.currentState === node.activeState) {
                     node.lastActiveTime = now;
@@ -77,9 +71,6 @@ function DiscreteInputNode(n) {
     // This function is called by the timer. It updates the ActiveTime variables, and sends a
     // message on the second output with the latest value of the total active time, in seconds
     var timerCallback = function () {
-//            node.log("timerCallback: node.currentState = " + node.currentState);
-//            node.log("timerCallback: node.totalActiveTime = " + node.totalActiveTime);
-//            node.log("timerCallback: node.lastActiveTime = " + node.lastActiveTime);
             if (node.currentState === node.activeState) {
                 var now = Date.now();
                 node.totalActiveTime += now - node.lastActiveTime;
@@ -89,14 +80,13 @@ function DiscreteInputNode(n) {
             msg.topic = node.topic;
             msg.payload = node.totalActiveTime / 1000;
             node.send([null, msg]);
+            // Re-synchronise the pin state if we have missed a state change interrupt for some reason
+            bonescript.digitalRead(node.pin, interruptCallback);
         };
 
     // This function is called when we receive an input message. Clear the ActiveTime variables
     // (so we start counting from zero again)
     var inputCallback = function (msg) {
-//            node.log("inputCallback: node.currentState = " + node.currentState);
-//            node.log("inputCallback: node.totalActiveTime = " + node.totalActiveTime);
-//            node.log("inputCallback: node.lastActiveTime = " + node.lastActiveTime);
             node.totalActiveTime = 0;
             if (node.currentState === node.activeState) {
                 node.lastActiveTime = Date.now();
@@ -107,9 +97,6 @@ function DiscreteInputNode(n) {
                 msg[0].payload = node.currentState;
                 msg[1].payload = node.totalActiveTime;
                 node.send(msg);
-//                node.log("Initial message: " + msg[0].payload + " " + msg[1].payload);
-//                node.log("currentState: " + node.currentState);
-//                node.log("activeTime: " + node.totalActiveTime);
             }
         };
 
@@ -118,16 +105,12 @@ function DiscreteInputNode(n) {
          "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
          "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
          "P9_27", "P9_30", "P9_41", "P9_42"].indexOf(node.pin) >= 0) {
-        setTimeout(function () {
+        // Don't set up interrupts & intervals until after the close event handler has been installed
+        process.nextTick(function () {
             bonescript.pinMode(node.pin, bonescript.INPUT);
             bonescript.digitalRead(node.pin, function (x) {
                         // Initialise the currentState and lastActveTime variables based on the value read
-//                        node.log("digitalRead: x.value = " + x.value);
-//                        node.log("digitalRead: node.currentState = " + node.currentState);
-//                        node.log("digitalRead: node.totalActiveTime = " + node.totalActiveTime);
-//                        node.log("digitalRead: node.lastActiveTime = " + node.lastActiveTime);
-                        node.currentState = x.value - 0;
-//                        node.log("First read - currentState: " + node.currentState);
+                        node.currentState = Number(x.value);
                         if (node.currentState === node.activeState) {
                             node.lastActiveTime = Date.now();
                         }
@@ -143,7 +126,7 @@ function DiscreteInputNode(n) {
                         }
                         setTimeout(function () { node.emit("input", {}); }, 50);
                     });
-                }, 50);
+                });
     } else {
         node.error("Unconfigured input pin");
     }
