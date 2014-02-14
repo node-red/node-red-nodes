@@ -96,8 +96,8 @@ function HueNode(n) {
                         api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
                     }
                     else if(status=="ON") {
-                        if(node.color==null) {
-                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(msg.topic).r,hexToRgb(msg.topic).g,hexToRgb(msg.topic).b)).then(displayResult).fail(displayError).done();
+                         if(node.color==null || node.color=="") {
+                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
                         }
                         else {
                             api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b)).then(displayResult).fail(displayError).done();
