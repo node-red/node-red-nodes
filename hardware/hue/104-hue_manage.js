@@ -65,7 +65,7 @@ function HueNode(n) {
     msg.topic = this.topic;
 
     this.on("input", function(msg){
-        global.msg = msg;
+        var myMsg = msg;
             //set the lamp status
             //first locate the Hue gateway:
             hue.locateBridges(function(err, result) {
@@ -85,11 +85,11 @@ function HueNode(n) {
                     var state = lightState.create();
 
                     var status;
-                    if(global.msg.payload=="ALERT"){
+                    if(myMsg.payload=="ALERT"){
                         status = "ALERT";
                     }
-                    else if(node.lamp_status=="ON" || global.msg.payload=="ON") status = "ON";
-                    else if(node.lamp_status=="OFF" || global.msg.payload=="OFF") status = "OFF";
+                    else if(node.lamp_status=="ON" || myMsg.payload=="ON") status = "ON";
+                    else if(node.lamp_status=="OFF" || myMsg.payload=="OFF") status = "OFF";
 
 
                     if(status=="ALERT") {
