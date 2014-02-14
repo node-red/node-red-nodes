@@ -1,12 +1,12 @@
 /**
  * Copyright 2013 Henrik Olsson henols@gmail.com
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,8 +22,8 @@ function EmoncmsServerNode(n) {
     this.name = n.name;
     var credentials = RED.nodes.getCredentials(n.id);
     if (credentials) {
-    	this.apikey = credentials.apikey;
-    }  
+        this.apikey = credentials.apikey;
+    }
 
 }
 RED.nodes.registerType("emoncms-server",EmoncmsServerNode);
@@ -64,48 +64,48 @@ RED.app.post('/emoncms-server/:id',function(req,res) {
 });
 
 function Emoncms(n) {
-	RED.nodes.createNode(this,n);
+    RED.nodes.createNode(this,n);
     this.emonServer = n.emonServer;
     var sc = RED.nodes.getNode(this.emonServer);
 
-	this.baseurl = sc.server;
-	this.apikey = sc.apikey;
+    this.baseurl = sc.server;
+    this.apikey = sc.apikey;
 
-	this.topic = n.topic ||"";
-	this.nodegroup = n.nodegroup || "";
-	var node = this;
-	if (this.baseurl.substring(0,5) === "https") { var http = require("https"); }
-	else { var http = require("http"); }
-	this.on("input", function(msg) {
-		
-		var topic = this.topic || msg.topic;
-		var nodegroup = this.nodegroup || msg.nodegroup;
-		this.url = this.baseurl + '/input/post.json?json={' + topic + ':' + msg.payload+'}&apikey='+this.apikey;
-		if(nodegroup != ""){
-			this.url += '&node='+nodegroup;
-		}
-		node.log("[emoncms] "+this.url);
-		http.get(this.url, function(res) {
-			node.log("Http response: " + res.statusCode);
- 			msg.rc = res.statusCode;
-			msg.payload = "";
-			if ((msg.rc != 200) && (msg.rc != 404)) {
-				node.send(msg);
-			}
-			res.setEncoding('utf8');
-			res.on('data', function(chunk) {
-				msg.payload += chunk;
-			});
-			res.on('end', function() {
-				node.send(msg);
-			});
-		}).on('error', function(e) {
-			// node.error(e);
-			msg.rc = 503;
-			msg.payload = e;
-			node.send(msg);
-		});
-	});
+    this.topic = n.topic ||"";
+    this.nodegroup = n.nodegroup || "";
+    var node = this;
+    if (this.baseurl.substring(0,5) === "https") { var http = require("https"); }
+    else { var http = require("http"); }
+    this.on("input", function(msg) {
+
+        var topic = this.topic || msg.topic;
+        var nodegroup = this.nodegroup || msg.nodegroup;
+        this.url = this.baseurl + '/input/post.json?json={' + topic + ':' + msg.payload+'}&apikey='+this.apikey;
+        if(nodegroup != ""){
+            this.url += '&node='+nodegroup;
+        }
+        node.log("[emoncms] "+this.url);
+        http.get(this.url, function(res) {
+            node.log("Http response: " + res.statusCode);
+            msg.rc = res.statusCode;
+            msg.payload = "";
+            if ((msg.rc != 200) && (msg.rc != 404)) {
+                node.send(msg);
+            }
+            res.setEncoding('utf8');
+            res.on('data', function(chunk) {
+                msg.payload += chunk;
+            });
+            res.on('end', function() {
+                node.send(msg);
+            });
+        }).on('error', function(e) {
+            // node.error(e);
+            msg.rc = 503;
+            msg.payload = e;
+            node.send(msg);
+        });
+    });
 }
 
 RED.nodes.registerType("emoncms",Emoncms);

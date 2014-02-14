@@ -32,20 +32,20 @@
         <input type="text" id="node-input-name" placeholder="Emoncms">
     </div>
     <div class="form-tips">Topic is not mandatory, if Topic is left blank <b>msg.topic</b> will used. Topic overrides <b>msg.topic</b></br>
-		Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node Group overrides <b>msg.nodegroup</b></div>
+        Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node Group overrides <b>msg.nodegroup</b></div>
 </script>
 
 <script type="text/x-red" data-help-name="emoncms">
-	<p>Performs post to Emoncms.</p>
-	<p>Topic is not mandatory, if Topic is left blank <b>msg.topic</b> will used. Topic overrides <b>msg.topic</b></p>
-	<p>Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node overrides <b>msg.nodegrpup</b></p>
+    <p>Performs post to Emoncms.</p>
+    <p>Topic is not mandatory, if Topic is left blank <b>msg.topic</b> will used. Topic overrides <b>msg.topic</b></p>
+    <p>Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node overrides <b>msg.nodegrpup</b></p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('emoncms',{
         category: 'output',
         color:"rgb(91, 192, 222)",
-         defaults: {
+        defaults: {
             name: {value:"Emoncms"},
             emonServer: {type:"emoncms-server", required:true},
             topic: {value:""},
@@ -53,7 +53,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "emoncms-logo.png",
+        icon: "emoncms.png",
         align: "right",
         label: function() {
             return this.name||this.baseurl;
@@ -98,7 +98,7 @@
                 }
             });
         },
-		oneditsave: function() {
+        oneditsave: function() {
             var newApikey = $('#node-config-input-apikey').val();
             var credentials = {};
             credentials.apikey = newApikey;
