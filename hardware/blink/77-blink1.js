@@ -28,6 +28,7 @@ function Blink1Node(n) {
         var p2 = /[0-9]+,[0-9]+,[0-9]+/
         this.on("input", function(msg) {
             if (blink1) {
+                try {
                 if (p1.test(msg.payload)) {
                     // if it is a hex colour string
                     var r = parseInt(msg.payload.slice(1,3),16);
@@ -59,9 +60,10 @@ function Blink1Node(n) {
                         node.warn("Blink1 : invalid msg : "+msg.payload);
                     }
                 }
+                } catch (e) { node.warn("Blink1 : error"); }
             }
             else {
-                node.warn("No Blink1 found");
+                node.warn("Blink1 : not found");
             }
         });
         //This ought to work but seems to cause more hangs on closing than not...
