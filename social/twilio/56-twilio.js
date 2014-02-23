@@ -24,41 +24,41 @@ var util = require('util');
 //   module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }
 
 try {
-	var twiliokey = RED.settings.twilio || require(process.env.NODE_RED_HOME+"/../twiliokey.js");
+    var twiliokey = RED.settings.twilio || require(process.env.NODE_RED_HOME+"/../twiliokey.js");
 }
 catch(err) {
-	util.log("[56-twilio.js] Error: Failed to load Twilio credentials");
+    util.log("[56-twilio.js] Error: Failed to load Twilio credentials");
 }
 
 if (twiliokey) {
-	var twilioClient = require('twilio')(twiliokey.account, twiliokey.authtoken);
-	var fromNumber = twiliokey.from;
+    var twilioClient = require('twilio')(twiliokey.account, twiliokey.authtoken);
+    var fromNumber = twiliokey.from;
 }
 
 function TwilioOutNode(n) {
-	RED.nodes.createNode(this,n);
-	this.title = n.title;
-	var node = this;
-	this.on("input",function(msg) {
-		if (typeof(msg.payload) == 'object') {
-			msg.payload = JSON.stringify(msg.payload);
-		}
-		if (twiliokey) {
-			try {
-				// Send SMS
-				twilioClient.sendMessage( {to: msg.topic, from: fromNumber, body: msg.payload}, function(err, response) {
-					if (err) node.error(err);
-					//console.log(response);
-				});
-			}
-			catch (err) {
-				node.error(err);
-			}
-		}
-		else {
-			node.warn("Twilio credentials not set/found. See node info.");
-		}
-	});
+    RED.nodes.createNode(this,n);
+    this.number = n.number;
+    var node = this;
+    this.on("input",function(msg) {
+        if (typeof(msg.payload) == 'object') {
+            msg.payload = JSON.stringify(msg.payload);
+        }
+        if (twiliokey) {
+            try {
+                // Send SMS
+                var tonum = node.number || msg.topic;
+                twilioClient.sendMessage( {to: tonum, from: fromNumber, body: msg.payload}, function(err, response) {
+                    if (err) node.error(err);
+                    //console.log(response);
+                });
+            }
+            catch (err) {
+                node.error(err);
+            }
+        }
+        else {
+            node.warn("Twilio credentials not set/found. See node info.");
+        }
+    });
 }
-
 RED.nodes.registerType("twilio out",TwilioOutNode);
