@@ -24,41 +24,42 @@ var util = require('util');
 //    module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
 
 try {
-	var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+    var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
-	util.log("[57-pushbullet.js] Error: Failed to load PushBullet credentials");
+    util.log("[57-pushbullet.js] Error: Failed to load PushBullet credentials");
 }
 
 if (pushkey) {
-	var pusher = new PushBullet(pushkey.pushbullet);
-	var deviceId = pushkey.deviceid;
+    var pusher = new PushBullet(pushkey.pushbullet);
+    var deviceId = pushkey.deviceid;
 }
 
 function PushbulletNode(n) {
-	RED.nodes.createNode(this,n);
-	this.title = n.title;
-	var node = this;
-	this.on("input",function(msg) {
-		var titl = this.title||msg.topic||"Node-RED";
-		if (typeof(msg.payload) == 'object') {
-			msg.payload = JSON.stringify(msg.payload);
-		}
-		if (pushkey) {
-			try {
-				pusher.note(deviceId, titl, msg.payload, function(err, response) {
-					if (err) node.error(err);
-					console.log(response);
-				});
-			}
-			catch (err) {
-				node.error(err);
-			}
-		}
-		else {
-			node.warn("Pushbullet credentials not set/found. See node info.");
-		}
-	});
+    RED.nodes.createNode(this,n);
+    this.title = n.title;
+    var node = this;
+    this.on("input",function(msg) {
+        var titl = this.title||msg.topic||"Node-RED";
+        if (typeof(msg.payload) == 'object') {
+            msg.payload = JSON.stringify(msg.payload);
+        }
+        if (pushkey.pushbullet && pushkey.deviceid) {
+            try {
+                if (!isNaN(deviceId)) { deviceId = Number(deviceId); }
+                pusher.note(deviceId, titl, msg.payload, function(err, response) {
+                    if (err) node.error(err);
+                    console.log(response);
+                });
+            }
+            catch (err) {
+                node.error(err);
+            }
+        }
+        else {
+            node.warn("Pushbullet credentials not set/found. See node info.");
+        }
+    });
 }
 
 RED.nodes.registerType("pushbullet",PushbulletNode);
