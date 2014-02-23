@@ -19,7 +19,7 @@ var reconnect = RED.settings.mysqlReconnectTime || 30000;
 var mysqldb = require('mysql');
 var querystring = require('querystring');
 
-RED.app.get('/MySQLdatabase/:id',function(req,res) {
+RED.httpAdmin.get('/MySQLdatabase/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
@@ -28,12 +28,12 @@ RED.app.get('/MySQLdatabase/:id',function(req,res) {
     }
 });
 
-RED.app.delete('/MySQLdatabase/:id',function(req,res) {
+RED.httpAdmin.delete('/MySQLdatabase/:id',function(req,res) {
     RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
 });
 
-RED.app.post('/MySQLdatabase/:id',function(req,res) {
+RED.httpAdmin.post('/MySQLdatabase/:id',function(req,res) {
     var body = "";
     req.on('data', function(chunk) {
         body+=chunk;
@@ -61,10 +61,10 @@ function MySQLNode(n) {
     RED.nodes.createNode(this,n);
     this.host = n.host;
     this.port = n.port;
-    
+
     this.connected = false;
     this.connecting = false;
-    
+
     if (n.user) {
         var credentials = {};
         credentials.user = n.user;
@@ -79,7 +79,7 @@ function MySQLNode(n) {
             this.password = credentials.password;
         }
     }
-        
+
     this.dbname = n.db;
     var node = this;
 
@@ -114,13 +114,13 @@ function MySQLNode(n) {
             }
         });
     }
-    
+
     this.connect = function() {
         if (!this.connected && !this.connecting) {
             doConnect();
         }
     }
-    
+
     this.on('close', function () {
         if (this.tick) { clearTimeout(this.tick); }
         if (this.connection) {
