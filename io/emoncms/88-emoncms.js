@@ -30,7 +30,7 @@ RED.nodes.registerType("emoncms-server",EmoncmsServerNode);
 
 var querystring = require('querystring');
 
-RED.app.get('/emoncms-server/:id',function(req,res) {
+RED.httpAdmin.get('/emoncms-server/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({apikey:credentials.apikey}));
@@ -39,12 +39,12 @@ RED.app.get('/emoncms-server/:id',function(req,res) {
     }
 });
 
-RED.app.delete('/emoncms-server/:id',function(req,res) {
+RED.httpAdmin.delete('/emoncms-server/:id',function(req,res) {
     RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
 });
 
-RED.app.post('/emoncms-server/:id',function(req,res) {
+RED.httpAdmin.post('/emoncms-server/:id',function(req,res) {
 
     var body = "";
     req.on('data', function(chunk) {

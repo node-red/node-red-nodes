@@ -27,7 +27,7 @@ function AWSCredentialsNode(n) {
 }
 RED.nodes.registerType("aws credentials", AWSCredentialsNode);
 
-RED.app.get('/aws-credentials/:id', function(req, res) {
+RED.httpAdmin.get('/aws-credentials/:id', function(req, res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({ accessKey: credentials.accessKey, secretAccessKey: credentials.secretAccessKey }));
@@ -36,12 +36,12 @@ RED.app.get('/aws-credentials/:id', function(req, res) {
     }
 });
 
-RED.app.delete('/aws-credentials/:id', function(req, res) {
+RED.httpAdmin.delete('/aws-credentials/:id', function(req, res) {
     RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
 });
 
-RED.app.post('/aws-credentials/:id', function(req, res) {
+RED.httpAdmin.post('/aws-credentials/:id', function(req, res) {
     var body = "";
     req.on("data", function(chunk) {
         body += chunk;

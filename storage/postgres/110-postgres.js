@@ -19,7 +19,7 @@ var pg=require('pg');
 var named=require('node-postgres-named');
 var querystring = require('querystring');
 
-RED.app.get('/postgresdb/:id',function(req,res) {
+RED.httpAdmin.get('/postgresdb/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
@@ -28,12 +28,12 @@ RED.app.get('/postgresdb/:id',function(req,res) {
     }
 });
 
-RED.app.delete('/postgresdb/:id',function(req,res) {
+RED.httpAdmin.delete('/postgresdb/:id',function(req,res) {
     RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
 });
 
-RED.app.post('/postgresdb/:id',function(req,res) {
+RED.httpAdmin.post('/postgresdb/:id',function(req,res) {
     var body = "";
     req.on('data', function(chunk) {
         body+=chunk;
