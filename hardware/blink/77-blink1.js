@@ -16,7 +16,9 @@
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var Blink1 = require("node-blink1");
-var blink1 = new Blink1.Blink1();
+// create a single global blink1 object
+// all blink1 nodes affect the same (single) led
+var blink1 = blink1 || new Blink1.Blink1();
 
 function Blink1Node(n) {
     RED.nodes.createNode(this,n);
@@ -27,6 +29,7 @@ function Blink1Node(n) {
         var p1 = /^\#[A-Fa-f0-9]{6}$/
         var p2 = /[0-9]+,[0-9]+,[0-9]+/
         this.on("input", function(msg) {
+            blink1 = blink1 || new Blink1.Blink1();
             if (blink1) {
                 try {
                 if (p1.test(msg.payload)) {
@@ -60,17 +63,17 @@ function Blink1Node(n) {
                         node.warn("Blink1 : invalid msg : "+msg.payload);
                     }
                 }
-                } catch (e) { node.warn("Blink1 : error"); }
+                } catch (e) { node.warn("Blink1 : error"); blink1 = null; }
             }
             else {
                 node.warn("Blink1 : not found");
             }
         });
-        //This ought to work but seems to cause more hangs on closing than not...
         this.on("close", function() {
             if (blink1 && typeof blink1.close == "function") {
-                blink1.close();
+                //blink1.close(); //This ought to work but seems to cause more hangs on closing than not...
             }
+            blink1 = null;
         });
     }
     catch(e) {
