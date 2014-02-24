@@ -18,7 +18,7 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var Blink1 = require("node-blink1");
 // create a single global blink1 object
 // all blink1 nodes affect the same (single) led
-var blink1 = blink1 || new Blink1.Blink1();
+var blink1 = null;
 
 function Blink1Node(n) {
     RED.nodes.createNode(this,n);
