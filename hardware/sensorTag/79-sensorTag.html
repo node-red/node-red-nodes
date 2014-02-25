@@ -78,6 +78,10 @@
    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
    <!-- node in the palette.                                                 -->
    <p>Input node for the Ti SensorTag</p>
+   <p>The UUID field is the mac address of the sensor tag, this is optional
+      can be used to bind to a specific SensorTag if you have more than one
+      active in range at the same time. (note you can only have one SensorTag per 
+      node-red instance at the moment)</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -109,6 +113,7 @@
         },
         oneditsave: function() {
            var mac = $("#node-input-uuid").val();
+           mac = mac.toLowerCase();
            //nasty hack as I can't get global replace to work
            mac = mac.replace(/:/gi,'');
            mac = mac.replace(/:/gi,'');
