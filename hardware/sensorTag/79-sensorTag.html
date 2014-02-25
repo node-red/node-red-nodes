@@ -78,10 +78,14 @@
    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
    <!-- node in the palette.                                                 -->
    <p>Input node for the Ti SensorTag</p>
+   <p>For this node to work correctly Node-Red needs to be run as root, this 
+      due to how Bluetooth 4.0 support is currently implemented in Linux</p>
    <p>The UUID field is the mac address of the sensor tag, this is optional
       can be used to bind to a specific SensorTag if you have more than one
-      active in range at the same time. (note you can only have one SensorTag per 
-      node-red instance at the moment)</p>
+      active in range at the same time. (note you can only have one SensorTag 
+      per node-red instance at the moment)</p>
+   <p>The topic setting is a prefix that will be pre-pended to name of the 
+      sensor that creates the reading. e.g. <i>sensorTag/temperature</i></p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
