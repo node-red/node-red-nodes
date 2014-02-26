@@ -79,16 +79,18 @@
 <!-- Help text for discrete-in -->
 <script type="text/x-red" data-help-name="discrete-in">
 <p>
-Discrete input for the Beaglebone Black. Sends a message on the first output
-each time the pin changes state, and records the total time in the active state
+Discrete input for the Beaglebone Black. Sends a message with payload 0 or 1 on the
+first output each time the pin changes state, and logs the total time in the active state.
 </p>
 <p>
-A timer updates the total active time, sending a message on the second output
-at the chosen update interval. Any input message will reset the total active time
+The node periodically sends a message with a payload of the current total active time
+(in seconds) on the second output at selectable intervals. An input message with topic 'load'
+and a numeric payload will set the total active time to that value: any other input message
+will reset it to zero.
 </p>
 <p>
 The active state may be set to be high or low: this only affects the calculation
-of the active time, not the pin state sent on the first output
+of the active time, not the pin state value sent on the first output.
 </p>
 </script>
 
@@ -98,11 +100,12 @@ of the active time, not the pin state sent on the first output
         category: 'advanced-input', // the palette category
 		color:"#c6dbef",
         defaults: {             	// defines the editable properties of the node
-            name: { value:"" },   	//  along with default values.
-			updateInterval: { value:60, required:true, validate:RED.validators.number() },
-            topic: { value:"", required:true },
 			pin: { value:"", required:true },
-			activeLow: { value:false, required:true}
+			activeLow: { value:false, required:true },
+			debounce: { value:false, required: true },
+			updateInterval: { value:60, required:true, validate:RED.validators.number() },
+            topic: { value:"" },
+            name: { value:"" }
         },
         inputs:1,                	// set the number of inputs - only 0 or 1
         outputs:2,               	// set the number of outputs - 0 to n
@@ -161,15 +164,16 @@ of the active time, not the pin state sent on the first output
 			<option value="pulse">pulses</option>
 			<option value="edge">edges</option>
 		</select>
-    <div class="form-row">
-		<label for="node-input-countUnit"><i class="icon-repeat"></i> Scaling</label>
-		<input id="node-input-countUnit" type="text" style="width: 65px">
-		<label> units per count</label>
 	</div>
     <div class="form-row">
-		<label for="node-input-countRate"><i class="icon-repeat"></i> Rate</label>
+		<label for="node-input-countUnit">Scaling</label>
+		<input id="node-input-countUnit" type="text" style="width: 65px">
+		<label style="width: 60%"> units per count</label>
+	</div>
+    <div class="form-row">
+		<label for="node-input-countRate">Rate</label>
 		<input id="node-input-countRate" type="text" style="width: 65px">
-		<label> units per count/second</label>
+		<label style="width: 60%"> units per count/second</label>
 	</div>
     <div class="form-row">
 		<label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
@@ -194,8 +198,9 @@ the total counts and the rate of counts/second, each with scaling applied.
 </p>
 <p>
 Sends the total count message on the first output, and the current count
-rate message on the second output, at the chosen interval. Any input message
-will reset the total count
+rate message on the second output, at the chosen interval. An input message with topic 'load'
+and a numeric payload will set the total count to that value (no scaling is applied):
+any other input message will reset it to zero.
 </p>
 </script>
 
@@ -205,19 +210,19 @@ will reset the total count
         category: 'advanced-input', // the palette category
 		color:"#c6dbef",
         defaults: {             	// defines the editable properties of the node
-            name: { value:"" },   	//  along with default values.
-			updateInterval: { value:2, required:true, validate:RED.validators.number() },
-            topic: { value:"" },
 			pin: { value:"", required:true },
 			countType: { value:"pulse", required:true },
 			countUnit: { value:1, required:true, validate:RED.validators.number() },
-			countRate: { value:1, required:true, validate:RED.validators.number() }
+			countRate: { value:1, required:true, validate:RED.validators.number() },
+			updateInterval: { value:2, required:true, validate:RED.validators.number() },
+            topic: { value:"" },
+            name: { value:"" }
         },
         inputs:1,                	// set the number of inputs - only 0 or 1
         outputs:2,               	// set the number of outputs - 0 to n
         icon: "arrow-in.png",    	// set the icon (held in public/icons)
         label: function() {      	// sets the default label contents
-            return this.name || "discrete-in: " + this.pin;
+            return this.name || "pulse-in: " + this.pin;
         },
         labelStyle: function() { 	// sets the class to apply to the label
             return this.name ? "node_label_italic" : "";

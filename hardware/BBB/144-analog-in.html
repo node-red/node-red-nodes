@@ -66,7 +66,7 @@ scaled analogue input or NaN if a read error occurs.
 Simple linear scaling is defined by setting the output values required for input
 values of 0 and 1. You can apply more complicated scaling, e.g. for sensor linearisation,
 by defining breakpoints at intermediate input values, with the desired output for
-each. Intermediate values are linearly interpolated.
+each. Values between breakpoints are linearly interpolated.
 </p>
 <p>
 To reduce the effect of noise, enable averaging. This will read the input pin
