@@ -319,6 +319,7 @@ function DiscreteOutputNode(n) {
                 }
             }
             bonescript.digitalWrite(node.pin, newState ? 1 : 0);
+            node.send({ topic:node.topic, payload:newState });
             node.currentState = newState;
         };
     
