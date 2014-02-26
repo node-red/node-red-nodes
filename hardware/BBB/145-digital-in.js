@@ -37,6 +37,15 @@ function DiscreteInputNode(n) {
         this.activeState = 1;
     this.updateInterval = n.updateInterval * 1000;  // How often to send totalActiveTime messages
     this.debounce = n.debounce;                     // Enable switch contact debouncing algorithm
+    if (n.outputOn === "rising") {
+        this.activeEdges = [false, true];
+    } else if (n.outputOn === "falling") {
+        this.activeEdges = [true, false];
+    } else if (n.outputOn === "both") {
+        this.activeEdges = [true, true];
+    } else {
+        node.error("Invalid edge type: " + n.outputOn);
+    }
 
     // Working variables
     this.interruptAttached = false; // Flag: should we detach interrupt when we are closed?
@@ -93,10 +102,12 @@ function DiscreteInputNode(n) {
             } else if (!isNaN(node.lastActiveTime)) {
                 node.totalActiveTime += now - node.lastActiveTime;
             }
-            var msg = {};
-            msg.topic = node.topic;
-            msg.payload = node.currentState;
-            node.send([msg, null]);
+            if (node.activeEdges[node.currentState]) {
+                var msg = {};
+                msg.topic = node.topic;
+                msg.payload = node.currentState;
+                node.send([msg, null]);
+            }
         };
         
     // This function is called by the timer. It updates the ActiveTime variables, and sends a
@@ -131,10 +142,17 @@ function DiscreteInputNode(n) {
             if (node.currentState === node.activeState) {
                 node.lastActiveTime = Date.now();
             }
+            // On startup, send an initial activeTime message, but only send an
+            // initial currentState message if we are in both edges active mode
             if (node.starting) {
                 node.starting = false;
-                var msg = [{topic:node.topic}, {topic:node.topic}];
-                msg[0].payload = node.currentState;
+                var msg;
+                if (node.activeEdges[0] && node.activeEdges[1]) {
+                    msg = [{topic:node.topic}, {topic:node.topic}];
+                    msg[0].payload = node.currentState;
+                } else {
+                    msg = [null, {topic:node.topic}];
+                }
                 msg[1].payload = node.totalActiveTime;
                 node.send(msg);
             }
@@ -239,8 +257,8 @@ function PulseInputNode(n) {
         // Don't set up interrupts & intervals until after the close event handler has been installed
         bonescript.detachInterrupt(node.pin);
         process.nextTick(function () {
-            bonescript.pinMode(node.pin, bonescript.INPUT);
-            bonescript.digitalRead(node.pin, function (x) {
+                bonescript.pinMode(node.pin, bonescript.INPUT);
+                bonescript.digitalRead(node.pin, function (x) {
                         // Initialise the currentState based on the value read
                         node.currentState = Number(x.value);
                         // Attempt to attach an interrupt handler to the pin. If we succeed,
@@ -260,15 +278,71 @@ function PulseInputNode(n) {
                             node.error("Failed to attach interrupt");
                         }
                     });
-                });
+            });
     } else {
         node.error("Unconfigured input pin");
+    }
+}
+
+// Node constructor for discrete-out
+function DiscreteOutputNode(n) {
+    RED.nodes.createNode(this, n);
+
+    // Store local copies of the node configuration (as defined in the .html)
+    this.topic = n.topic;                           // the topic is not currently used
+    this.pin = n.pin;                               // The Beaglebone Black pin identifying string
+    this.defaultState = Number(n.defaultState);     // What state to set up as
+    this.inverting = n.inverting;
+    this.toggle = n.toggle;
+    
+    // Working variables
+    this.currentState = this.defaultState;
+    
+    var node = this;
+    
+    // If the input message paylod is numeric, values > 0.5 are 'true', otherwise use
+    // the truthiness of the payload. Apply the inversion flag before setting the output
+    var inputCallback = function (msg) {
+            var newState;
+            if (node.toggle) {
+                newState = node.currentState === 0 ? 1 : 0;
+            } else {
+                if (isFinite(Number(msg.payload))) {
+                    newState = Number(msg.payload) > 0.5 ? true : false;
+                } else if (msg.payload) {
+                    newState = true;
+                } else {
+                    newState = false;
+                }
+                if (node.inverting) {
+                    newState = !newState;
+                }
+            }
+            bonescript.digitalWrite(node.pin, newState ? 1 : 0);
+            node.currentState = newState;
+        };
+    
+    // If we have a valid pin, set it as an output and set the default state
+    if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
+         "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
+         "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
+         "P9_27", "P9_30", "P9_41", "P9_42", "USR0", "USR1", "USR2", "USR3"].indexOf(node.pin) >= 0) {
+        // Don't set up interrupts & intervals until after the close event handler has been installed
+        bonescript.detachInterrupt(node.pin);
+        process.nextTick(function () {
+                bonescript.pinMode(node.pin, bonescript.OUTPUT);
+                node.on("input", inputCallback);
+                setTimeout(function () { bonescript.digitalWrite(node.pin, node.defaultState); }, 50);
+            });
+    } else {
+        node.error("Unconfigured output pin");
     }
 }
 
 // Register the nodes by name. This must be called before overriding any of the Node functions.
 RED.nodes.registerType("discrete-in", DiscreteInputNode);
 RED.nodes.registerType("pulse-in", PulseInputNode);
+RED.nodes.registerType("discrete-out", DiscreteOutputNode);
 
 // On close, detach the interrupt (if we attached one) and clear any active timers
 DiscreteInputNode.prototype.close = function () {
