@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-<!-- Define the edit dialog -->
+<!-- Edit dialog for analogue-in -->
 <script type="text/x-red" data-template-name="analog-in">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
@@ -54,10 +54,11 @@
     </div>
 </script>
 
-<!-- Add help text -->
+<!-- Help text for analogue-in -->
 <script type="text/x-red" data-help-name="analog-in">
 <p>
-Analogue input for the Beaglebone Black. Reads an analogue pin when triggered
+Analogue input for the Beaglebone Black. Reads an analogue pin when triggered by
+a message.
 </p>
 <p>The output message topic is the node topic: the output message value is the
 scaled analogue input or NaN if a read error occurs.
@@ -74,7 +75,7 @@ voltage ten times in rapid succession for each input message and output the mean
 </p>
 </script>
 
-<!-- Register the node -->
+<!-- Register analogue-in node -->
 <script type="text/javascript">
     RED.nodes.registerType('analog-in', {
         category: 'advanced-input', // the palette category

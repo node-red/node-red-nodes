@@ -24,7 +24,7 @@ try {
     require("util").log("[144-analog-in] Error: cannot find module 'bonescript'");
 }
 
-// The main node definition - most things happen in here
+// Node constructor for analogue-in
 function AnalogInputNode(n) {
     // Create a RED node
     RED.nodes.createNode(this, n);
@@ -40,8 +40,7 @@ function AnalogInputNode(n) {
     	this.averages = 1;
     }
 
-    // Define 'node' to allow us to access 'this' from within callbacks (the 'var' is essential -
-    // otherwise there is only one global 'node' for all instances of AnalogInputNode!)
+    // Define 'node' to allow us to access 'this' from within callbacks
     var node = this;
 
 	// Variables used for input averaging
