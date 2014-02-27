@@ -101,10 +101,10 @@ voltage ten times in rapid succession for each input message and output the mean
                     var container = $('<li/>', {style:"margin:0; padding:4px; padding-left 10px;"});
                     var row = $('<div/>').appendTo(container);
                     var breakpointField = $('<span/>').appendTo(row);
-					var inputValueField = $('<input/>',
-						{disabled:"", class:"node-input-breakpoint-input-value", type:"text", style:"margin-left:5px; margin-right:2px; width:36%;"}).appendTo(breakpointField);
+                    var inputValueField = $('<input/>',
+                        {disabled:"", class:"node-input-breakpoint-input-value", type:"text", style:"margin-left:5px; margin-right:2px; width:36%;"}).appendTo(breakpointField);
                     if (breakpoint.mutable) {
-                    	inputValueField.removeAttr("disabled");
+                        inputValueField.removeAttr("disabled");
                     }
                     breakpointField.append(" => ");
                     var outputValueField = $('<input/>',
@@ -126,17 +126,17 @@ voltage ten times in rapid succession for each input message and output the mean
                         mutableFlag.attr("mutable", "false");
                     }                   
                     if (insert === true) {
-                    	var last = $("#node-input-breakpoint-container").children().last();
-                    	var prev = last.prev();
-                    	inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) + 
-                    							Number(prev.find(".node-input-breakpoint-input-value").val()))/2);
-                    	outputValueField.val((Number(last.find(".node-input-breakpoint-output-value").val()) +
-                    							Number(prev.find(".node-input-breakpoint-output-value").val()))/2);
-                    	last.before(container);
+                        var last = $("#node-input-breakpoint-container").children().last();
+                        var prev = last.prev();
+                        inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) + 
+                                                Number(prev.find(".node-input-breakpoint-input-value").val()))/2);
+                        outputValueField.val((Number(last.find(".node-input-breakpoint-output-value").val()) +
+                                                Number(prev.find(".node-input-breakpoint-output-value").val()))/2);
+                        last.before(container);
                     } else {
-						inputValueField.val(breakpoint.input);
-						outputValueField.val(breakpoint.output);
-                    	$("#node-input-breakpoint-container").append(container);
+                        inputValueField.val(breakpoint.input);
+                        outputValueField.val(breakpoint.output);
+                        $("#node-input-breakpoint-container").append(container);
                     }
                 }
                 
