@@ -21,7 +21,7 @@ var RED = require(process.env.NODE_RED_HOME + "/red/red");
 try {
     var bonescript = require("bonescript");
 } catch (err) {
-    require("util").log("[145-digital-in] Error: cannot find module 'bonescript'");
+    require("util").log("[145-BBB-hardware] Error: cannot find module 'bonescript'");
 }
 
 // Node constructor for analogue-in

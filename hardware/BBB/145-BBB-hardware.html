@@ -81,11 +81,11 @@ voltage ten times in rapid succession for each input message and output the mean
         category: 'advanced-input', // the palette category
         color:"#c6dbef",
         defaults: {                 // defines the editable properties of the node
-            name: { value:"" },     //  along with default values.
-            topic: { value:"", required:true },
             pin: { value:"", required:true },
+            topic: { value:"" },
             breakpoints: { value:[{input:0.0, output:0.0, mutable:false},  {input:1.0, output:1.0, mutable:false}] },
-            averaging: { value:false, required:true }
+            averaging: { value:false, required:true },
+            name: { value:"" }
         },
         inputs:1,                   // set the number of inputs - only 0 or 1
         outputs:1,                  // set the number of outputs - 0 to n
