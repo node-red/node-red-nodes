@@ -340,10 +340,85 @@ function DiscreteOutputNode(n) {
     }
 }
 
+// Node constructor for pulse-out
+function PulseOutputNode(n) {
+    RED.nodes.createNode(this, n);
+
+    // Store local copies of the node configuration (as defined in the .html)
+    this.topic = n.topic;                           // the topic is not currently used
+    this.pin = n.pin;                               // The Beaglebone Black pin identifying string
+    this.pulseState = Number(n.pulseState);         // What state the pulse will be..
+    this.defaultState = this.pulseState === 1 ? 0 : 1;
+    this.retriggerable = n.retriggerable;
+    this.pulseTime = n.pulseTime * 1000;          // Pulse width in milliseconds
+    
+    // Working variables
+    this.pulseTimer = null;                         // Non-null while a pulse is being generated
+    
+    var node = this;
+    
+    // Generate a pulse in response to an input message. If the topic includes the text
+    // 'time' (case insensitive) and the payload is numeric, use this value as the
+    // pulse time. Otherwise use the value from the properties dialog.
+    // If the resulting pulse time is < 1ms, do nothing.
+    // If the pulse mode is not retriggerable, then if no pulseTimer is active, generate
+    // a pulse. If the pulse mode is retriggerable, and a pulseTimer is active, cancel it.
+    // If no timer is active, set the pulse output. In both cases schedule a new pulse
+    // timer.
+    var inputCallback = function (msg) {
+            var time = node.pulseTime;
+            if (String(msg.topic).search(/time/i) >= 0 && isFinite(msg.payload)) {
+                time = msg.payload * 1000;
+            }
+            if (time >= 1) {
+                if (node.retriggerable === false) {
+                    if (node.pulseTimer === null) {
+                        node.pulseTimer = setTimeout(endPulseCallback, time);
+                        bonescript.digitalWrite(node.pin, node.pulseState);
+                        node.send({ topic:node.topic, payload:node.pulseState });
+                    }
+                } else {
+                    if (node.pulseTimer !== null) {
+                        clearTimeout(node.pulseTimer);
+                    } else {
+                        bonescript.digitalWrite(node.pin, node.pulseState);
+                        node.send({ topic:node.topic, payload:node.pulseState });
+                    }
+                    node.pulseTimer = setTimeout(endPulseCallback, time);
+                }
+            }
+        };
+    
+    // At the end of the pulse, restore the default state and set the timer to null
+    var endPulseCallback = function () {
+            node.pulseTimer = null;
+            bonescript.digitalWrite(node.pin, node.defaultState);
+            node.send({ topic:node.topic, payload:node.defaultState });
+        };
+    
+    // If we have a valid pin, set it as an output and set the default state
+    if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
+         "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
+         "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
+         "P9_27", "P9_30", "P9_41", "P9_42", "USR0", "USR1", "USR2", "USR3"].indexOf(node.pin) >= 0) {
+        // Don't set up interrupts & intervals until after the close event handler has been installed
+        bonescript.detachInterrupt(node.pin);
+        process.nextTick(function () {
+                bonescript.pinMode(node.pin, bonescript.OUTPUT);
+                node.on("input", inputCallback);
+                // Set the pin to the default stte once the dust settles
+                setTimeout(endPulseCallback, 50);
+            });
+    } else {
+        node.error("Unconfigured output pin");
+    }
+}
+
 // Register the nodes by name. This must be called before overriding any of the Node functions.
 RED.nodes.registerType("discrete-in", DiscreteInputNode);
 RED.nodes.registerType("pulse-in", PulseInputNode);
 RED.nodes.registerType("discrete-out", DiscreteOutputNode);
+RED.nodes.registerType("pulse-out", PulseOutputNode);
 
 // On close, detach the interrupt (if we attached one) and clear any active timers
 DiscreteInputNode.prototype.close = function () {
@@ -365,5 +440,12 @@ PulseInputNode.prototype.close = function () {
     }
     if (this.intervalId !== null) {
         clearInterval(this.intervalId);
+    }
+};
+
+// On close, clear an active pulse timer
+PulseOutputNode.prototype.close = function () {
+    if (this.pulseTimer !== null) {
+        clearTimeout(this.pulseTimer);
     }
 };

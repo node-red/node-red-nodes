@@ -91,7 +91,7 @@ Discrete input for the Beaglebone Black. Sends a message with payload 0 or 1 on 
 first output when the pin changes state, and logs the total time in the active state.
 </p>
 <p>
-The node sends a message with a payload of the current total active time
+Sends a message with a payload of the current total active time
 (in seconds) on the second output at selectable intervals. An input message with topic 'load'
 and a numeric payload will set the total active time to that value: any other input message
 will reset it to zero.
@@ -207,8 +207,8 @@ press. When using buttons or switches, enable debouncing to improve reliability.
 <!-- Help text for pulse-in -->
 <script type="text/x-red" data-help-name="pulse-in">
 <p>
-Pulse input for the Beaglebone Black. Counts input pulses or pulse edges, outputs
-the total counts and the rate of counts/second, each with scaling applied.
+Pulse input for the Beaglebone Black. Counts input pulses or pulse edges: outputs
+total counts and the rate of counts/sec, with scaling.
 </p>
 <p>
 Sends the total count message on the first output, and the current count
@@ -311,17 +311,17 @@ any other input message will reset it to zero.
 <!-- Help text for discrete-out -->
 <script type="text/x-red" data-help-name="discrete-out">
 <p>
-Discrete output for the Beaglebone Black.
+Directly control an output pin on the Beaglebone Black.
 </p>
 <p>
 Sets the output pin high or low depending on the payload of the input message. Numeric
-payloads > 0.5 are 'high', payloads <= 0.5 are 'low'. Other payloads which
+payloads > 0.5 are 'high' (1), payloads <= 0.5 are 'low' (0). Other payloads which
 evaluate to true are 'high', if not then 'low'. Selecting the Inverting checkbox will
-switch the sense of the comparison.
+switch the sense of the pin output.
 </p>
 <p>
-If the Toggle state checkbox is checked, any message will cause the pin to switch from
-1 to 0 and back.
+If the Toggle state checkbox is checked, the message content is ignored: successive
+messages cause the pin to toggle between 0 and 1.
 </P>
 <p>
 The pin will be initially set to the given Startup state until the first message arrives:
@@ -352,3 +352,116 @@ the Inverting property is not applied to this value.
         }
     });
 </script>
+
+<!-- Edit dialog for pulse-out -->
+<script type="text/x-red" data-template-name="pulse-out">
+   <div class="form-row">
+	   <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
+	   <select type="text" id="node-input-pin" style="width: 200px;">
+		   <option value="">select pin</option>
+		   <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+		   <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+		   <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+		   <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+		   <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+		   <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+		   <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+		   <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+		   <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+		   <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+		   <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+		   <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+		   <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+		   <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+		   <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+		   <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+		   <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+		   <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+		   <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+		   <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+		   <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+		   <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+		   <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+		   <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+		   <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+		   <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+		   <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+		   <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+		   <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+		   <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+		   <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+		   <option value="USR0">User LED 0</option>
+		   <option value="USR1">User LED 1</option>
+		   <option value="USR2">User LED 2</option>
+		   <option value="USR3">User LED 3</option>
+		</select>
+	</div>
+    <div class="form-row">
+		<label for="node-input-pulseTime"><i class="icon-repeat"></i> Pulse time</label>
+		<input id="node-input-pulseTime" type="text" style="width: 65px">
+		<label> seconds</label>
+	</div>
+	<div class="form-row">
+		<label for="node-input-retriggerable">Retriggerable</label>
+		<input type="checkbox" id="node-input-retriggerable" style="display:inline-block; width:auto; vertical-align:top;">
+	</div>
+    <div class="form-row">
+		<label for="node-input-pulseState">Pulse state</label>
+	    <select type="text" id="node-input-pulseState" style="width: 80px;">
+		   <option value="0">0</option>
+		   <option value="1">1</option>
+		</select>
+	</div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for pulse-out -->
+<script type="text/x-red" data-help-name="pulse-out">
+<p>
+Pulse an output pin on the Beaglebone Black.
+</p>
+<p>
+Pulses the output pin for the set time after receiving an input message, unless the
+message has a topic including the text 'time' and a numeric payload. In this case, the
+the pulse time will be the value of the payload in seconds. If the time from either
+source is < 0.001 seconds, no pulse is generated.
+</p>
+<p>
+In retriggerable mode, a second message within the pulse period will extend the duration
+of the pulse by the time value: in non-retriggerable mode, input messages arriving during
+the duration of the pulse are ignored.
+</p>
+<p>
+The pin state of the pulse may be set to either 0 or 1: the output pin will switch
+back to the other state after the pulse time. An output message is generated each time
+the pin changes state: its payload is the new state (0 or 1).
+</p>
+</script>
+
+<!-- Register pulse-out -->
+<script type="text/javascript">
+    RED.nodes.registerType('pulse-out', {
+        category: 'advanced-input', // the palette category
+		color:"#c6dbef",
+        defaults: {             	// defines the editable properties of the node
+			pin: { value:"", required:true },
+			pulseTime: { value:1, required:true, validate:RED.validators.number() },
+			retriggerable: { value:false, required:true },
+			pulseState: { value:"1", required:true },
+            name: { value:"" }
+        },
+        inputs:1,                	// set the number of inputs - only 0 or 1
+        outputs:1,               	// set the number of outputs - 0 to n
+        icon: "arrow-out.png",    	// set the icon (held in public/icons)
+        label: function() {      	// sets the default label contents
+            return this.name || "pulse-out: " + this.pin;
+        },
+        labelStyle: function() { 	// sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
