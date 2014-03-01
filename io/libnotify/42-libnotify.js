@@ -19,39 +19,41 @@ var util = require("util");
 var events = require("events");
 
 function LibnotifyNode(n) {
-	RED.nodes.createNode(this, n);
-	this.name = n.name;
-	this.title = n.title;
-	this.active = (n.active == null)||n.active;
-  this.maxlength = parseInt(n.maxlength) || 200;
+    RED.nodes.createNode(this, n);
+    this.name = n.name;
+    this.title = n.title;
+    this.active = (n.active == null)||n.active;
+    this.maxlength = parseInt(n.maxlength) || 200;
 
-	this.on("input",function(msg) {
-		if (this.active) {
-			if (msg.payload instanceof Buffer) {
-				msg.payload = "(Buffer) "+msg.payload.toString();
-			}
+    this.on("input",function(msg) {
+        if (this.active) {
+            if (msg.payload instanceof Buffer) {
+                msg.payload = "(Buffer) "+msg.payload.toString();
+            }
 
-				if (typeof msg.payload !== "undefined") {
-					LibnotifyNode.send(this, msg.payload);
-				}
-		}
-	});
+            if (typeof msg.payload !== "undefined") {
+                LibnotifyNode.send(this, msg.payload);
+            }
+        }
+    });
 }
 
 RED.nodes.registerType("libnotify",LibnotifyNode);
 
 LibnotifyNode.send = function(self, msg) {
-  var title = self.title;
-	if (msg instanceof Error) {
-	  title += " [ERROR]: ";
-	} else if (typeof msg === 'object') {
-	  title += " [OBJECT]: ";
-	}
-	msg = msg.toString();
+    var title = self.title;
 
-	if (msg.length > self.maxlength) {
-		msg = msg.substr(0,self.maxlength) +"...";
-	}
-	
-	ln.notify(msg, { title: title });
+    if (msg instanceof Error) {
+        title += " [ERROR]: ";
+    } else if (typeof msg === 'object') {
+        title += " [OBJECT]: ";
+    }
+
+    msg = msg.toString();
+
+    if (msg.length > self.maxlength) {
+        msg = msg.substr(0,self.maxlength) +"...";
+    }
+
+    ln.notify(msg, { title: title });
 }
