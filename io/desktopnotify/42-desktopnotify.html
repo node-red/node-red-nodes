@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="libnotify">
+<script type="text/x-red" data-template-name="desktopnotify">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -29,14 +29,14 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="libnotify">
-    <p>Incomming data gets forwarded to your libnotify-compatible desktop notification service.</p>
+<script type="text/x-red" data-help-name="desktopnotify">
+    <p>Incomming data gets forwarded to your desktopnotify-compatible desktop notification service.</p>
     <p>Messages longer than maxlength get truncated.</p>
-    <p>See the <a href="https://github.com/mytrile/node-libnotify">libnotify node module</a> and <a href="https://wiki.archlinux.org/index.php/Desktop_Notifications">this wiki</a> for more information.</p>
+    <p>See the <a href="https://github.com/mytrile/node-desktopnotify">desktopnotify node module</a> and <a href="https://wiki.archlinux.org/index.php/Desktop_Notifications">this wiki</a> for more information.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('libnotify',{
+    RED.nodes.registerType('desktopnotify',{
         category: 'output',
         defaults: {
             name: {value:"Desktop Notification"},
