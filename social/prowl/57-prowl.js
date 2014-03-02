@@ -31,7 +31,7 @@ catch(err) {
 }
 
 if (pushkey) {
-    var prowl = new Prowl(pushkey.prowlkey);
+    if (pushkey.prowlkey) { var prowl = new Prowl(pushkey.prowlkey); }
 }
 
 function ProwlNode(n) {
@@ -44,11 +44,11 @@ function ProwlNode(n) {
     this.on("input",function(msg) {
         var titl = this.title||msg.topic||"Node-RED";
         var pri = msg.priority||this.priority;
-        if (typeof(msg.payload) == 'object') {
+        if (typeof(msg.payload) === 'object') {
             msg.payload = JSON.stringify(msg.payload);
         }
         else { msg.payload = msg.payload.toString(); }
-        if (pushkey) {
+        if (pushkey.prowlkey) {
             try {
                 prowl.push(msg.payload, titl, { priority: pri }, function(err, remaining) {
                     if (err) node.error(err);
@@ -64,5 +64,4 @@ function ProwlNode(n) {
         }
     });
 }
-
 RED.nodes.registerType("prowl",ProwlNode);

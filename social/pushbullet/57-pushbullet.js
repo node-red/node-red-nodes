@@ -31,8 +31,8 @@ catch(err) {
 }
 
 if (pushkey) {
-    var pusher = new PushBullet(pushkey.pushbullet);
-    var deviceId = pushkey.deviceid;
+    if (pushkey.pushbullet) { var pusher = new PushBullet(pushkey.pushbullet); }
+    if (pushkey.deviceid) { var deviceId = pushkey.deviceid; }
 }
 
 function PushbulletNode(n) {
@@ -41,15 +41,16 @@ function PushbulletNode(n) {
     var node = this;
     this.on("input",function(msg) {
         var titl = this.title||msg.topic||"Node-RED";
-        if (typeof(msg.payload) == 'object') {
+        if (typeof(msg.payload) === 'object') {
             msg.payload = JSON.stringify(msg.payload);
         }
+        else { msg.payload = msg.payload.toString(); }
         if (pushkey.pushbullet && pushkey.deviceid) {
             try {
                 if (!isNaN(deviceId)) { deviceId = Number(deviceId); }
                 pusher.note(deviceId, titl, msg.payload, function(err, response) {
-                    if (err) node.error(err);
-                    console.log(response);
+                    if (err) node.error("Pushbullet error: "+err);
+                    //console.log(response);
                 });
             }
             catch (err) {
