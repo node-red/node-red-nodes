@@ -63,7 +63,6 @@ of the pulse, or by both edges. Two outputs are provided:
 Separate scaling factors are applied to each output. Output messages are generated
 at regular intervals, controlled by an internal timer. The count can be cleared
 or set to an arbitrary value by an input message who's topic contains 'load'.
-
 Useful for energy monitoring, e.g. electricty meter pulse outputs.
 
 The 'instantaneous' pulse rate is derived from either the time between the last two

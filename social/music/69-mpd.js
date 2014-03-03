@@ -28,7 +28,7 @@ exec("which mpd",function(err,stdout,stderr) {
 
 exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
     if (stdout.indexOf('6600') == -1) {
-        util.log('[69-mpd.js] Error: MPD daemon not listening on port 6600. Please start MPD.');
+        util.log('[69-mpd.js] Warning: MPD daemon not listening on port 6600. Please start MPD.');
         return;
     }
     komponist.createConnection(6600, 'localhost', function(err, client) {

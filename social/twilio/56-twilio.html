@@ -15,31 +15,32 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="twilio">
+<script type="text/x-red" data-template-name="twilio out">
     <div class="form-row">
-        <label for="node-input-title"><i class="icon-flag"></i> Title</label>
-        <input type="text" id="node-input-title" placeholder="Node-RED">
+        <label for="node-input-number"><i class="icon-envelope"></i> SMS to</label>
+        <input type="text" id="node-input-number" placeholder="01234 5678901">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips">Tip - leave Number blank to use <b>msg.topic</b> to set the number.</div>
 </script>
 
 <script type="text/x-red" data-help-name="twilio out">
-	<p>Uses Twilio to send the <b>msg.payload</b> as a SMS to the configured number.</p>
-	<p>Uses <b>msg.topic</b> to set the phone number, if not already set in the properties.</p>
-	<p>You MUST configure both your Account SID and the Auth Token. Either into settings.js like this</p>
-	<p><pre>twilio: { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN', from:'FROM-NUMBER' },</pre></p>
-	<p>Or as a twiliokey.js file in the directory <b>above</b> node-red.<p>
-	<p><pre>module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }</pre></p>
+    <p>Uses Twilio to send the <b>msg.payload</b> as a SMS to the configured number.</p>
+    <p>Uses <b>msg.topic</b> to set the phone number, if not already set in the properties.</p>
+    <p>You MUST configure both your Account SID and the Auth Token. Either into settings.js like this</p>
+    <p><pre>twilio: { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN', from:'FROM-NUMBER' },</pre></p>
+    <p>Or as a twiliokey.js file in the directory <b>above</b> node-red.<p>
+    <p><pre>module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }</pre></p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('twilio out',{
         category: 'output',
         defaults: {
-            title: {value:""},
+            number: {value:""},
             name: {value:""}
         },
         color:"#ed1c24",
@@ -48,7 +49,7 @@
         icon: "twilio.png",
         align: "right",
         label: function() {
-            return this.name||this.title||"twilio out";
+            return this.name||this.title||"twilio";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

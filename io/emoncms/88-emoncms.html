@@ -1,0 +1,120 @@
+<!--
+  Copyright 2013 Henrik Olsson henols@gmail.com
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="emoncms">
+    <div class="form-row">
+        <label for="node-input-emonServer"><i class="icon-globe"></i> Emoncms server</label>
+        <input type="text" id="node-input-emonServer">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-nodegroup"><i class="icon-tag"></i> Node Group</label>
+        <input type="text" id="node-input-nodegroup" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Emoncms">
+    </div>
+    <div class="form-tips">Topic is not mandatory, if Topic is left blank <b>msg.topic</b> will used. Topic overrides <b>msg.topic</b></br>
+        Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node Group overrides <b>msg.nodegroup</b></div>
+</script>
+
+<script type="text/x-red" data-help-name="emoncms">
+    <p>Performs post to Emoncms.</p>
+    <p>Topic is not mandatory, if Topic is left blank <b>msg.topic</b> will used. Topic overrides <b>msg.topic</b></p>
+    <p>Node Group (numeric) is not mandatory, if Node Group is left blank <b>msg.nodegrpup</b> will used. Node overrides <b>msg.nodegrpup</b></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('emoncms',{
+        category: 'output',
+        color:"rgb(91, 192, 222)",
+        defaults: {
+            name: {value:"Emoncms"},
+            emonServer: {type:"emoncms-server", required:true},
+            topic: {value:""},
+            nodegroup: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "emoncms.png",
+        align: "right",
+        label: function() {
+            return this.name||this.baseurl;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="emoncms-server">
+    <div class="form-row">
+        <label for="node-config-input-server"><i class="icon-globe"></i> Base URL</label>
+        <input type="text" id="node-config-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apikey"><i class="icon-tasks"></i> API key</label>
+        <input type="text" id="node-config-input-apikey">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+<div class="form-tips">The <b>Base URL</b> is the URL to the Emoncms root directory.</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('emoncms-server',{
+        category: 'config',
+        defaults: {
+            server: {value:"http://localhost",required:true},
+            // apikey: {value:"",required:true},
+            name: {value:""}
+        },
+        label: function() {
+            return this.name||this.server;
+        },
+        oneditprepare: function() {
+            $.getJSON('emoncms-server/'+this.id,function(data) {
+                if (data.apikey) {
+                    $('#node-config-input-apikey').val(data.apikey);
+                }
+            });
+        },
+        oneditsave: function() {
+            var newApikey = $('#node-config-input-apikey').val();
+            var credentials = {};
+            credentials.apikey = newApikey;
+            $.ajax({
+                url: 'emoncms-server/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success:function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'emoncms-server/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
+        }
+    });
+</script>
