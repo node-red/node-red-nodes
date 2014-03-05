@@ -24,7 +24,7 @@ try {
     require("util").log("[145-BBB-hardware] Error: cannot find module 'bonescript'");
 }
 
-// Node constructor for analogue-in
+// Node constructor for bbb-analogue-in
 function AnalogueInputNode(n) {
     // Create a RED node
     RED.nodes.createNode(this, n);
@@ -80,7 +80,7 @@ function AnalogueInputNode(n) {
     }
 }
 
-// Node constructor for discrete-in
+// Node constructor for bbb-discrete-in
 function DiscreteInputNode(n) {
     RED.nodes.createNode(this, n);
 
@@ -248,7 +248,7 @@ function DiscreteInputNode(n) {
     }
 }
 
-// Node constructor for pulse-in
+// Node constructor for bbb-pulse-in
 function PulseInputNode(n) {
     RED.nodes.createNode(this, n);
 
@@ -340,7 +340,7 @@ function PulseInputNode(n) {
     }
 }
 
-// Node constructor for discrete-out
+// Node constructor for bbb-discrete-out
 function DiscreteOutputNode(n) {
     RED.nodes.createNode(this, n);
 
@@ -396,7 +396,7 @@ function DiscreteOutputNode(n) {
     }
 }
 
-// Node constructor for pulse-out
+// Node constructor for bbb-pulse-out
 function PulseOutputNode(n) {
     RED.nodes.createNode(this, n);
 
@@ -471,11 +471,11 @@ function PulseOutputNode(n) {
 }
 
 // Register the nodes by name. This must be called before overriding any of the Node functions.
-RED.nodes.registerType("analogue-in", AnalogueInputNode);
-RED.nodes.registerType("discrete-in", DiscreteInputNode);
-RED.nodes.registerType("pulse-in", PulseInputNode);
-RED.nodes.registerType("discrete-out", DiscreteOutputNode);
-RED.nodes.registerType("pulse-out", PulseOutputNode);
+RED.nodes.registerType("bbb-analogue-in", AnalogueInputNode);
+RED.nodes.registerType("bbb-discrete-in", DiscreteInputNode);
+RED.nodes.registerType("bbb-pulse-in", PulseInputNode);
+RED.nodes.registerType("bbb-discrete-out", DiscreteOutputNode);
+RED.nodes.registerType("bbb-pulse-out", PulseOutputNode);
 
 // On close, detach the interrupt (if we attached one) and clear any active timers
 DiscreteInputNode.prototype.close = function () {

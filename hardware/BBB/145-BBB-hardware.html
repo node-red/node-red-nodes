@@ -14,8 +14,8 @@
   limitations under the License.
 -->
 
-<!-- Edit dialog for analogue-in -->
-<script type="text/x-red" data-template-name="analogue-in">
+<!-- Edit dialog for bbb-analogue-in -->
+<script type="text/x-red" data-template-name="bbb-analogue-in">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 150px;">
@@ -54,8 +54,8 @@
     </div>
 </script>
 
-<!-- Help text for analogue-in -->
-<script type="text/x-red" data-help-name="analogue-in">
+<!-- Help text for bbb-analogue-in -->
+<script type="text/x-red" data-help-name="bbb-analogue-in">
 <p>
 Analogue input for the Beaglebone Black. Reads an analogue pin when triggered by
 a message.
@@ -75,9 +75,9 @@ voltage ten times in rapid succession for each input message and output the mean
 </p>
 </script>
 
-<!-- Register analogue-in node -->
+<!-- Register bbb-analogue-in node -->
 <script type="text/javascript">
-    RED.nodes.registerType('analogue-in', {
+    RED.nodes.registerType('bbb-analogue-in', {
         category: 'advanced-input', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
@@ -91,7 +91,7 @@ voltage ten times in rapid succession for each input message and output the mean
         outputs:1,                  // set the number of outputs - 0 to n
         icon: "BBB.png",            // set the icon (held in public/icons)
         label: function() {         // sets the default label contents
-                return this.name || "analogue-in: " + this.pin;
+                return this.name || "bbb-analogue-in: " + this.pin;
             },
         labelStyle: function() {    // sets the class to apply to the label
                 return this.name ? "node_label_italic" : "";
@@ -183,8 +183,8 @@ voltage ten times in rapid succession for each input message and output the mean
         });
 </script>
 
-<!-- Edit dialog for discrete-in -->
-<script type="text/x-red" data-template-name="discrete-in">
+<!-- Edit dialog for bbb-discrete-in -->
+<script type="text/x-red" data-template-name="bbb-discrete-in">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
@@ -253,8 +253,8 @@ voltage ten times in rapid succession for each input message and output the mean
     </div>
 </script>
 
-<!-- Help text for discrete-in -->
-<script type="text/x-red" data-help-name="discrete-in">
+<!-- Help text for bbb-discrete-in -->
+<script type="text/x-red" data-help-name="bbb-discrete-in">
 <p>
 Discrete input for the Beaglebone Black. Sends a message with payload 0 or 1 on the
 first output when the pin changes state, and logs the total time in the active state.
@@ -276,9 +276,9 @@ press. When using buttons or switches, enable debouncing to improve reliability.
 </p>
 </script>
 
-<!-- Register discrete-in node -->
+<!-- Register bbb-discrete-in node -->
 <script type="text/javascript">
-    RED.nodes.registerType('discrete-in', {
+    RED.nodes.registerType('bbb-discrete-in', {
         category: 'advanced-input', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
@@ -294,7 +294,7 @@ press. When using buttons or switches, enable debouncing to improve reliability.
         outputs:2,                  // set the number of outputs - 0 to n
         icon: "BBB.png",            // set the icon (held in public/icons)
         label: function() {         // sets the default label contents
-            return this.name || "discrete-in: " + this.pin;
+            return this.name || "bbb-discrete-in: " + this.pin;
         },
         labelStyle: function() {    // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
@@ -302,8 +302,8 @@ press. When using buttons or switches, enable debouncing to improve reliability.
     });
 </script>
 
-<!-- Edit dialog for pulse-in -->
-<script type="text/x-red" data-template-name="pulse-in">
+<!-- Edit dialog for bbb-pulse-in -->
+<script type="text/x-red" data-template-name="bbb-pulse-in">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
@@ -373,8 +373,8 @@ press. When using buttons or switches, enable debouncing to improve reliability.
     </div>
 </script>
 
-<!-- Help text for pulse-in -->
-<script type="text/x-red" data-help-name="pulse-in">
+<!-- Help text for bbb-pulse-in -->
+<script type="text/x-red" data-help-name="bbb-pulse-in">
 <p>
 Pulse input for the Beaglebone Black. Counts input pulses or pulse edges: outputs
 total counts and the rate of counts/sec, with scaling.
@@ -387,9 +387,9 @@ any other input message will reset it to zero.
 </p>
 </script>
 
-<!-- Register pulse-in node -->
+<!-- Register bbb-pulse-in node -->
 <script type="text/javascript">
-    RED.nodes.registerType('pulse-in', {
+    RED.nodes.registerType('bbb-pulse-in', {
         category: 'advanced-input', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
@@ -405,7 +405,7 @@ any other input message will reset it to zero.
         outputs:2,                  // set the number of outputs - 0 to n
         icon: "BBB.png",            // set the icon (held in public/icons)
         label: function() {         // sets the default label contents
-            return this.name || "pulse-in: " + this.pin;
+            return this.name || "bbb-pulse-in: " + this.pin;
         },
         labelStyle: function() {    // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
@@ -413,8 +413,8 @@ any other input message will reset it to zero.
     });
 </script>
 
-<!-- Edit dialog for discrete-out -->
-<script type="text/x-red" data-template-name="discrete-out">
+<!-- Edit dialog for bbb-discrete-out -->
+<script type="text/x-red" data-template-name="bbb-discrete-out">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
@@ -477,8 +477,8 @@ any other input message will reset it to zero.
     </div>
 </script>
 
-<!-- Help text for discrete-out -->
-<script type="text/x-red" data-help-name="discrete-out">
+<!-- Help text for bbb-discrete-out -->
+<script type="text/x-red" data-help-name="bbb-discrete-out">
 <p>
 Directly control an output pin on the Beaglebone Black.
 </p>
@@ -498,9 +498,9 @@ the Inverting property is not applied to this value.
 </p>
 </script>
 
-<!-- Register discrete-out node -->
+<!-- Register bbb-discrete-out node -->
 <script type="text/javascript">
-    RED.nodes.registerType('discrete-out', {
+    RED.nodes.registerType('bbb-discrete-out', {
         category: 'advanced-input', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
@@ -515,7 +515,7 @@ the Inverting property is not applied to this value.
         icon: "BBB.png",            // set the icon (held in public/icons)
         align:"right",
         label: function() {         // sets the default label contents
-            return this.name || "discrete-out: " + this.pin;
+            return this.name || "bbb-discrete-out: " + this.pin;
         },
         labelStyle: function() {    // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
@@ -523,8 +523,8 @@ the Inverting property is not applied to this value.
     });
 </script>
 
-<!-- Edit dialog for pulse-out -->
-<script type="text/x-red" data-template-name="pulse-out">
+<!-- Edit dialog for bbb-pulse-out -->
+<script type="text/x-red" data-template-name="bbb-pulse-out">
    <div class="form-row">
        <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
@@ -588,8 +588,8 @@ the Inverting property is not applied to this value.
     </div>
 </script>
 
-<!-- Help text for pulse-out -->
-<script type="text/x-red" data-help-name="pulse-out">
+<!-- Help text for bbb-pulse-out -->
+<script type="text/x-red" data-help-name="bbb-pulse-out">
 <p>
 Pulse an output pin on the Beaglebone Black.
 </p>
@@ -611,9 +611,9 @@ the pin changes state: its payload is the new state (0 or 1).
 </p>
 </script>
 
-<!-- Register pulse-out node -->
+<!-- Register bbb-pulse-out node -->
 <script type="text/javascript">
-    RED.nodes.registerType('pulse-out', {
+    RED.nodes.registerType('bbb-pulse-out', {
         category: 'advanced-input', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
@@ -628,7 +628,7 @@ the pin changes state: its payload is the new state (0 or 1).
         icon: "BBB.png",            // set the icon (held in public/icons)
         align:"right",
         label: function() {         // sets the default label contents
-            return this.name || "pulse-out: " + this.pin;
+            return this.name || "bbb-pulse-out: " + this.pin;
         },
         labelStyle: function() {    // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
