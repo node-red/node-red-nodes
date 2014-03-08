@@ -26,7 +26,7 @@ function HeatmiserNode(n) {
     this.ip = n.ip || "192.168.0.1";
     this.pin = n.pin || "1234";
     this.multiWriteFunc = undefined;
-    that = this;
+    node = this;
 
     this.hm = new Heatmiser(this.ip, this.pin);
 
@@ -34,23 +34,23 @@ function HeatmiserNode(n) {
 		if (DEBUG) {
 			util.log(JSON.stringify(data));
 		}
-		that.currentStatus = data.dcb;
-		if (that.multiWriteFunc) {
-			that.multiWriteFunc();
-			that.multiWriteFunc = undefined;
+		node.currentStatus = data.dcb;
+		if (node.multiWriteFunc) {
+			node.multiWriteFunc();
+			node.multiWriteFunc = undefined;
 			return;
 		}
-		that.send(data.dcb);
+		node.send(data.dcb);
 	});
 	this.hm.on('error', function(data) {
 		if (DEBUG) {
 			console.log(JSON.stringify(data));
 		}
-		that.send(data);
+		node.send(data);
 	});
 
 	this.read = function() {
-		that.hm.read_device();
+		node.hm.read_device();
 	};
 
 	if (!this.currentStatus) {
@@ -59,7 +59,7 @@ function HeatmiserNode(n) {
 	}
 
 	this.write = function(dcb) {
-		that.hm.write_device(dcb);
+		node.hm.write_device(dcb);
 	};
 
 	this.validateAndWrite = function(message) {
@@ -85,7 +85,7 @@ function HeatmiserNode(n) {
 					// 		return;
 					// 	}
 					// 	var time = message.payload[key].time;
-					// 	// Ensure that time is a date
+					// 	// Ensure node time is a date
 					// 	if (typeof(time) == "string") {
 					// 		util.log("Typeof time was " +typeof(message.payload[key].time));
 					// 		// message.payload[key].time = new Date(message.payload[key].time);
@@ -128,13 +128,13 @@ function HeatmiserNode(n) {
 						(target <= 10.0) ? message.payload[key].target = 10.0 : message.payload[key].target = target;
 						(hold <= 0) ? message.payload[key].hold = 0 : message.payload[key].hold = hold;
 
-						// Ensure that runmode == heating first
-						if (that.currentStatus.run_mode === "frost_protection") {
+						// Ensure node runmode == heating first
+						if (node.currentStatus.run_mode === "frost_protection") {
 							// Use the multiWriteFunc as a callback in our success case
-							that.multiWriteFunc = function() {
-								that.write(message.payload);
+							node.multiWriteFunc = function() {
+								node.write(message.payload);
 							}
-							that.write({"runmode" : "heating"});
+							node.write({"runmode" : "heating"});
 							// End the flow here to ensure no double-writing
 							return;
 						}
@@ -144,7 +144,7 @@ function HeatmiserNode(n) {
 						if (DEBUG) {
 							util.log("[100-heatmiser.js] Hit the default case");
 						}
-						that.read();
+						node.read();
 				}
 			}
 			// Valid set of key messages, construct DCB and write
@@ -152,7 +152,7 @@ function HeatmiserNode(n) {
 			if (DEBUG) {
 				util.log("[100-heatmiser.js] Injecting " + JSON.stringify(dcb));
 			}
-			that.write(dcb);
+			node.write(dcb);
 	};
 
     this.on("input", function(message) {
@@ -161,7 +161,7 @@ function HeatmiserNode(n) {
 			message.payload = JSON.parse(message.payload);
 		}
 		if (message.payload.read) {
-			that.hm.read_device();
+			node.hm.read_device();
 		}
 		else if (message.payload) {
 			// Compare message.payload data to confirm valid and send to thermostat
@@ -174,7 +174,7 @@ function HeatmiserNode(n) {
 					}
 				}
 			}
-			that.validateAndWrite(message);
+			node.validateAndWrite(message);
 		}
     });
 }
