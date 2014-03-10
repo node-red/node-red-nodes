@@ -69,6 +69,8 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **101-scanBLE** - Scans for a particular Bluetooth Low Energy (BLE) device.
 
+**145-BBB-hardware** - A collection of analogue & digital input & output nodes for the Beaglebone Black
+
 ### IO
 
 **26-rawserial** - Only really needed for Windows boxes without serialport npm module installed.

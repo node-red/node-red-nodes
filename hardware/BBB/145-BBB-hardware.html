@@ -1,0 +1,638 @@
+<!--
+  Copyright 2014 Maxwell R Hadley
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!-- Edit dialog for bbb-analogue-in -->
+<script type="text/x-red" data-template-name="bbb-analogue-in">
+   <div class="form-row">
+       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <select type="text" id="node-input-pin" style="width: 150px;">
+           <option value="">select pin</option>
+           <option value="P9_39">AIN0 (P9 pin 39)</option>
+           <option value="P9_40">AIN1 (P9 pin 40)</option>
+           <option value="P9_37">AIN2 (P9 pin 37)</option>
+           <option value="P9_38">AIN3 (P9 pin 38)</option>
+           <option value="P9_33">AIN4 (P9 pin 33)</option>
+           <option value="P9_36">AIN5 (P9 pin 36)</option>
+           <option value="P9_35">AIN6 (P9 pin 35)</option>
+       </select>
+   </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <div class="form-row">
+    Input Scaling
+    </div>
+    <div class="form-row">
+        <div id="node-input-breakpoint-container-div" style="border-radius: 5px; height: 132px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+            <ol id="node-input-breakpoint-container" style=" list-style-type:none; margin: 0;">
+            </ol>
+        </div>
+    </div>
+    <div class="form-row">
+        <a href="#" class="btn btn-mini" id="node-input-add-breakpoint" style="margin-top: 4px;"><i class="icon-plus"></i> Add Breakpoint</a>
+        <span style="float:right; margin-top:4px">
+            <input type="checkbox" id="node-input-averaging" style="display:inline-block; width:auto; vertical-align:top;"> Averaging&nbsp;
+        </span> 
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-analogue-in -->
+<script type="text/x-red" data-help-name="bbb-analogue-in">
+<p>
+Analogue input for the Beaglebone Black. Reads an analogue pin when triggered by
+a message.
+</p>
+<p>The output message topic is the node topic: the output message value is the
+scaled analogue input or NaN if a read error occurs.
+</p>
+<p>
+Simple linear scaling is defined by setting the output values required for input
+values of 0 and 1. You can apply more complicated scaling, e.g. for sensor linearisation,
+by defining breakpoints at intermediate input values, with the desired output for
+each. Values between breakpoints are linearly interpolated.
+</p>
+<p>
+To reduce the effect of noise, enable averaging. This will read the input pin
+voltage ten times in rapid succession for each input message and output the mean value.
+</p>
+</script>
+
+<!-- Register bbb-analogue-in node -->
+<script type="text/javascript">
+    RED.nodes.registerType('bbb-analogue-in', {
+        category: 'advanced-input', // the palette category
+        color:"#de7224",
+        defaults: {                 // defines the editable properties of the node
+            pin: { value:"", required:true },
+            topic: { value:"" },
+            breakpoints: { value:[{input:0.0, output:0.0, mutable:false},  {input:1.0, output:1.0, mutable:false}] },
+            averaging: { value:false, required:true },
+            name: { value:"" }
+        },
+        inputs:1,                   // set the number of inputs - only 0 or 1
+        outputs:1,                  // set the number of outputs - 0 to n
+        icon: "BBB.png",            // set the icon (held in public/icons)
+        label: function() {         // sets the default label contents
+                return this.name || "bbb-analogue-in: " + this.pin;
+            },
+        labelStyle: function() {    // sets the class to apply to the label
+                return this.name ? "node_label_italic" : "";
+            },
+        oneditprepare: function () {
+                function generateBreakpoint(breakpoint, insert) {
+                    var container = $('<li/>', {style:"margin:0; padding:4px; padding-left 10px;"});
+                    var row = $('<div/>').appendTo(container);
+                    var breakpointField = $('<span/>').appendTo(row);
+                    var inputValueField = $('<input/>',
+                        {disabled:"", class:"node-input-breakpoint-input-value", type:"text", style:"margin-left:5px; margin-right:2px; width:36%;"}).appendTo(breakpointField);
+                    if (breakpoint.mutable) {
+                        inputValueField.removeAttr("disabled");
+                    }
+                    breakpointField.append(" => ");
+                    var outputValueField = $('<input/>',
+                        {class:"node-input-breakpoint-output-value", type:"text", style:"margin-left:0px; width:36%;"}).appendTo(breakpointField);
+                    var finalSpan = $('<span/>', {style:"float:right; margin-top:3px; margin-right:10px;"}).appendTo(row);
+                    var mutableFlag = $('<span/>', {class:"node-input-breakpoint-mutable", style:"display:hide;"}).appendTo(row);
+                    if (breakpoint.mutable) {
+                        mutableFlag.attr("mutable", "true");
+                        var deleteButton = $('<a/>', {href:"#", class:"btn btn-mini", style:"margin-left: 5px;"}).appendTo(finalSpan);
+                        $('<i/>', {class:"icon-remove"}).appendTo(deleteButton);
+
+                        deleteButton.click(function() {
+                                container.css({"background":"#fee"});
+                                container.fadeOut(300, function() {
+                                        $(this).remove();
+                                    });
+                            });
+                    } else {
+                        mutableFlag.attr("mutable", "false");
+                    }                   
+                    if (insert === true) {
+                        var last = $("#node-input-breakpoint-container").children().last();
+                        var prev = last.prev();
+                        inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) + 
+                                                Number(prev.find(".node-input-breakpoint-input-value").val()))/2);
+                        outputValueField.val((Number(last.find(".node-input-breakpoint-output-value").val()) +
+                                                Number(prev.find(".node-input-breakpoint-output-value").val()))/2);
+                        last.before(container);
+                    } else {
+                        inputValueField.val(breakpoint.input);
+                        outputValueField.val(breakpoint.output);
+                        $("#node-input-breakpoint-container").append(container);
+                    }
+                }
+                
+                $("#node-input-add-breakpoint").click(function () {
+                        generateBreakpoint({input:0, output:0, mutable:true}, true);
+                        $("#node-input-breakpoint-container-div").scrollTop($("#node-input-breakpoint-container-div").get(0).scrollHeight);
+                    });
+                    
+                for (var i = 0; i < this.breakpoints.length; i++) {
+                    var breakpoint = this.breakpoints[i];
+                    generateBreakpoint(breakpoint, false);
+                }
+                
+                // Handle resizing the Input Scaling div when the dialog is resized - this isn't quite right!
+                function switchDialogResize(ev, ui) {
+                    $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 299) + "px");
+                };
+
+                $("#dialog").on("dialogresize", switchDialogResize);
+                $("#dialog").one("dialogopen", function (ev) {
+                        var size = $("#dialog").dialog('option', 'sizeCache-switch');
+                        if (size) {
+                            switchDialogResize(null, { size:size });
+                        }
+                    });
+                $("#dialog").one("dialogclose", function(ev, ui) {
+                        $("#dialog").off("dialogresize", switchDialogResize);
+                    });
+            },
+        oneditsave: function() {
+                var breakpoints = $("#node-input-breakpoint-container").children();
+                var node = this;
+                node.breakpoints = [];
+                breakpoints.each(function (i) {
+                        var breakpoint = $(this);
+                        var r = {};
+                        r.input = Number(breakpoint.find(".node-input-breakpoint-input-value").val());
+                        r.output = Number(breakpoint.find(".node-input-breakpoint-output-value").val());
+                        r.mutable = breakpoint.find(".node-input-breakpoint-mutable").attr("mutable") == "true";
+                        node.breakpoints.push(r);
+                    });
+                node.breakpoints = node.breakpoints.sort(function (a, b) { return a.input - b.input; });
+            }
+        });
+</script>
+
+<!-- Edit dialog for bbb-discrete-in -->
+<script type="text/x-red" data-template-name="bbb-discrete-in">
+   <div class="form-row">
+       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <select type="text" id="node-input-pin" style="width: 200px;">
+           <option value="">select pin</option>
+           <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+           <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+           <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+           <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+           <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+           <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+           <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+           <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+           <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+           <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+           <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+           <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+           <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+           <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+           <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+           <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+           <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+           <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+           <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+           <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+           <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+           <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+           <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+           <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+           <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+           <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+           <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+           <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+           <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+           <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+           <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-activeLow">Active low</label>
+        <input type="checkbox" id="node-input-activeLow" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-debounce">Debounce</label>
+        <input type="checkbox" id="node-input-debounce" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputOn">Output on</label>
+        <select type="text" id="node-input-outputOn" style="width: 200px;">
+           <option value="both">both changes</option>
+           <option value="rising">0 to 1 change only</option>
+           <option value="falling">1 to 0 change only</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
+        <input id="node-input-updateInterval" type="text" style="width: 65px">
+        <label>sec intervals</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-discrete-in -->
+<script type="text/x-red" data-help-name="bbb-discrete-in">
+<p>
+Discrete input for the Beaglebone Black. Sends a message with payload 0 or 1 on the
+first output when the pin changes state, and logs the total time in the active state.
+</p>
+<p>
+Sends a message with a payload of the current total active time
+(in seconds) on the second output at selectable intervals. An input message with topic 'load'
+and a numeric payload will set the total active time to that value: any other input message
+will reset it to zero.
+</p>
+<p>
+The active state may be set to be high or low: this only affects the calculation
+of the active time, not the pin state value sent on the first output.
+</p>
+<p>
+The pin state messages may be generated for both directions of change, or for just 0 to 1
+or just 1 to 0 changes. This is useful to generate a single message from a button
+press. When using buttons or switches, enable debouncing to improve reliability.
+</p>
+</script>
+
+<!-- Register bbb-discrete-in node -->
+<script type="text/javascript">
+    RED.nodes.registerType('bbb-discrete-in', {
+        category: 'advanced-input', // the palette category
+        color:"#de7224",
+        defaults: {                 // defines the editable properties of the node
+            pin: { value:"", required:true },
+            activeLow: { value:false, required:true },
+            debounce: { value:false, required:true },
+            outputOn: { value:"both", required:true },
+            updateInterval: { value:60, required:true, validate:RED.validators.number() },
+            topic: { value:"" },
+            name: { value:"" }
+        },
+        inputs:1,                   // set the number of inputs - only 0 or 1
+        outputs:2,                  // set the number of outputs - 0 to n
+        icon: "BBB.png",            // set the icon (held in public/icons)
+        label: function() {         // sets the default label contents
+            return this.name || "bbb-discrete-in: " + this.pin;
+        },
+        labelStyle: function() {    // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- Edit dialog for bbb-pulse-in -->
+<script type="text/x-red" data-template-name="bbb-pulse-in">
+   <div class="form-row">
+       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <select type="text" id="node-input-pin" style="width: 200px;">
+           <option value="">select pin</option>
+           <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+           <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+           <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+           <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+           <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+           <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+           <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+           <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+           <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+           <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+           <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+           <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+           <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+           <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+           <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+           <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+           <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+           <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+           <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+           <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+           <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+           <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+           <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+           <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+           <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+           <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+           <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+           <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+           <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+           <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+           <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-countType">Count</label>
+        <select type="text" id="node-input-countType" style="width: 100px;">
+            <option value="pulse">pulses</option>
+            <option value="edge">edges</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-countUnit">Scaling</label>
+        <input id="node-input-countUnit" type="text" style="width: 65px">
+        <label style="width: 60%"> units per count</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-countRate">Rate</label>
+        <input id="node-input-countRate" type="text" style="width: 65px">
+        <label style="width: 60%"> units per count/second</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
+        <input id="node-input-updateInterval" type="text" style="width: 65px">
+        <label>sec intervals</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-pulse-in -->
+<script type="text/x-red" data-help-name="bbb-pulse-in">
+<p>
+Pulse input for the Beaglebone Black. Counts input pulses or pulse edges: outputs
+total counts and the rate of counts/sec, with scaling.
+</p>
+<p>
+Sends the total count message on the first output, and the current count
+rate message on the second output, at the chosen interval. An input message with topic 'load'
+and a numeric payload will set the total count to that value (no scaling is applied):
+any other input message will reset it to zero.
+</p>
+</script>
+
+<!-- Register bbb-pulse-in node -->
+<script type="text/javascript">
+    RED.nodes.registerType('bbb-pulse-in', {
+        category: 'advanced-input', // the palette category
+        color:"#de7224",
+        defaults: {                 // defines the editable properties of the node
+            pin: { value:"", required:true },
+            countType: { value:"pulse", required:true },
+            countUnit: { value:1, required:true, validate:RED.validators.number() },
+            countRate: { value:1, required:true, validate:RED.validators.number() },
+            updateInterval: { value:2, required:true, validate:RED.validators.number() },
+            topic: { value:"" },
+            name: { value:"" }
+        },
+        inputs:1,                   // set the number of inputs - only 0 or 1
+        outputs:2,                  // set the number of outputs - 0 to n
+        icon: "BBB.png",            // set the icon (held in public/icons)
+        label: function() {         // sets the default label contents
+            return this.name || "bbb-pulse-in: " + this.pin;
+        },
+        labelStyle: function() {    // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- Edit dialog for bbb-discrete-out -->
+<script type="text/x-red" data-template-name="bbb-discrete-out">
+   <div class="form-row">
+       <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
+       <select type="text" id="node-input-pin" style="width: 200px;">
+           <option value="">select pin</option>
+           <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+           <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+           <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+           <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+           <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+           <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+           <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+           <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+           <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+           <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+           <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+           <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+           <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+           <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+           <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+           <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+           <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+           <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+           <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+           <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+           <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+           <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+           <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+           <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+           <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+           <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+           <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+           <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+           <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+           <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+           <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+           <option value="USR0">User LED 0</option>
+           <option value="USR1">User LED 1</option>
+           <option value="USR2">User LED 2</option>
+           <option value="USR3">User LED 3</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-inverting">Inverting</label>
+        <input type="checkbox" id="node-input-inverting" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-toggle">Toggle state</label>
+        <input type="checkbox" id="node-input-toggle" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-defaultState">Startup as</label>
+        <select type="text" id="node-input-defaultState" style="width: 80px;">
+           <option value="0">0</option>
+           <option value="1">1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-discrete-out -->
+<script type="text/x-red" data-help-name="bbb-discrete-out">
+<p>
+Directly control an output pin on the Beaglebone Black.
+</p>
+<p>
+Sets the output pin high or low depending on the payload of the input message. Numeric
+payloads > 0.5 are 'high' (1), payloads <= 0.5 are 'low' (0). Other payloads which
+evaluate to true are 'high', if not then 'low'. Selecting the Inverting checkbox will
+switch the sense of the pin output.
+</p>
+<p>
+If the Toggle state checkbox is checked, the message content is ignored: successive
+messages cause the pin to toggle between 0 and 1.
+</P>
+<p>
+The pin will be initially set to the given Startup state until the first message arrives:
+the Inverting property is not applied to this value.
+</p>
+</script>
+
+<!-- Register bbb-discrete-out node -->
+<script type="text/javascript">
+    RED.nodes.registerType('bbb-discrete-out', {
+        category: 'advanced-input', // the palette category
+        color:"#de7224",
+        defaults: {                 // defines the editable properties of the node
+            pin: { value:"", required:true },
+            inverting: { value:false, required:true },
+            toggle: { value:false, required:true },
+            defaultState: { value:"0", required:true },
+            name: { value:"" }
+        },
+        inputs:1,                   // set the number of inputs - only 0 or 1
+        outputs:1,                  // set the number of outputs - 0 to n
+        icon: "BBB.png",            // set the icon (held in public/icons)
+        align:"right",
+        label: function() {         // sets the default label contents
+            return this.name || "bbb-discrete-out: " + this.pin;
+        },
+        labelStyle: function() {    // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- Edit dialog for bbb-pulse-out -->
+<script type="text/x-red" data-template-name="bbb-pulse-out">
+   <div class="form-row">
+       <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
+       <select type="text" id="node-input-pin" style="width: 200px;">
+           <option value="">select pin</option>
+           <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
+           <option value="P8_8">GPIO2_3 (P8 pin 8)</option>
+           <option value="P8_9">GPIO2_5 (P8 pin 9)</option>
+           <option value="P8_10">GPIO2_4 (P8 pin 10)</option>
+           <option value="P8_11">GPIO1_13 (P8 pin 11)</option>
+           <option value="P8_12">GPIO1_12 (P8 pin 12)</option>
+           <option value="P8_13">GPIO0_23 (P8 pin 13)</option>
+           <option value="P8_14">GPIO0_26 (P8 pin 14)</option>
+           <option value="P8_15">GPIO1_15 (P8 pin 15)</option>
+           <option value="P8_16">GPIO1_14 (P8 pin 16)</option>
+           <option value="P8_17">GPIO0_27 (P8 pin 17)</option>
+           <option value="P8_18">GPIO2_1 (P8 pin 18)</option>
+           <option value="P8_19">GPIO0_22 (P8 pin 19)</option>
+           <option value="P8_26">GPIO1_29 (P8 pin 26)</option>
+           <option value="P9_11">GPIO0_30 (P9 pin 11)</option>
+           <option value="P9_12">GPIO1_28 (P9 pin 12)</option>
+           <option value="P9_13">GPIO0_31 (P9 pin 13)</option>
+           <option value="P9_14">GPIO1_18 (P9 pin 14)</option>
+           <option value="P9_15">GPIO1_16 (P9 pin 15)</option>
+           <option value="P9_16">GPIO1_19 (P9 pin 16)</option>
+           <option value="P9_17">GPIO0_5 (P9 pin 17)</option>
+           <option value="P9_18">GPIO0_4 (P9 pin 18)</option>
+           <option value="P9_21">GPIO0_3 (P9 pin 21)</option>
+           <option value="P9_22">GPIO0_2 (P9 pin 22)</option>
+           <option value="P9_23">GPIO1_17 (P9 pin 23)</option>
+           <option value="P9_24">GPIO0_15 (P9 pin 24)</option>
+           <option value="P9_26">GPIO0_14 (P9 pin 26)</option>
+           <option value="P9_27">GPIO3_19 (P9 pin 27)</option>
+           <option value="P9_30">GPIO3_16 (P9 pin 30)</option>
+           <option value="P9_41">GPIO0_20 (P9 pin 41)</option>
+           <option value="P9_42">GPIO0_7 (P9 pin 42)</option>
+           <option value="USR0">User LED 0</option>
+           <option value="USR1">User LED 1</option>
+           <option value="USR2">User LED 2</option>
+           <option value="USR3">User LED 3</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-pulseTime"><i class="icon-repeat"></i> Pulse time</label>
+        <input id="node-input-pulseTime" type="text" style="width: 65px">
+        <label> seconds</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-retriggerable">Retriggerable</label>
+        <input type="checkbox" id="node-input-retriggerable" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pulseState">Pulse state</label>
+        <select type="text" id="node-input-pulseState" style="width: 80px;">
+           <option value="0">0</option>
+           <option value="1">1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-pulse-out -->
+<script type="text/x-red" data-help-name="bbb-pulse-out">
+<p>
+Pulse an output pin on the Beaglebone Black.
+</p>
+<p>
+Pulses the output pin for the set time after receiving an input message, unless the
+message has a topic including the text 'time' and a numeric payload. In this case, the
+the pulse time will be the value of the payload in seconds. If the time from either
+source is < 0.001 seconds, no pulse is generated.
+</p>
+<p>
+In retriggerable mode, a second message within the pulse period will extend the duration
+of the pulse by the time value: in non-retriggerable mode, input messages arriving during
+the duration of the pulse are ignored.
+</p>
+<p>
+The pin state of the pulse may be set to either 0 or 1: the output pin will switch
+back to the other state after the pulse time. An output message is generated each time
+the pin changes state: its payload is the new state (0 or 1).
+</p>
+</script>
+
+<!-- Register bbb-pulse-out node -->
+<script type="text/javascript">
+    RED.nodes.registerType('bbb-pulse-out', {
+        category: 'advanced-input', // the palette category
+        color:"#de7224",
+        defaults: {                 // defines the editable properties of the node
+            pin: { value:"", required:true },
+            pulseTime: { value:1, required:true, validate:RED.validators.number() },
+            retriggerable: { value:false, required:true },
+            pulseState: { value:"1", required:true },
+            name: { value:"" }
+        },
+        inputs:1,                   // set the number of inputs - only 0 or 1
+        outputs:1,                  // set the number of outputs - 0 to n
+        icon: "BBB.png",            // set the icon (held in public/icons)
+        align:"right",
+        label: function() {         // sets the default label contents
+            return this.name || "bbb-pulse-out: " + this.pin;
+        },
+        labelStyle: function() {    // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
