@@ -50,7 +50,9 @@ function HeatmiserNode(n) {
 	});
 
 	this.read = function() {
-		node.hm.read_device();
+		if (node.hm) {
+			node.hm.read_device();
+		}
 	};
 
 	if (!this.currentStatus) {
