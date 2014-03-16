@@ -80,10 +80,9 @@ function Emoncms(n) {
 
         var topic = this.topic || msg.topic;
         var nodegroup = this.nodegroup || msg.nodegroup;
-        this.url = this.baseurl + '/input/post.json?json={' + topic + ':' + msg.payload+'}&apikey='+this.apikey;
         if(nodegroup != ""){
-            this.url += '&node='+nodegroup;
-        }
+            this.url = this.baseurl + '/input/post.json?node=' + nodegroup + '&csv=' + msg.payload+'&apikey='+this.apikey;
+	     }
         node.log("[emoncms] "+this.url);
         http.get(this.url, function(res) {
             node.log("Http response: " + res.statusCode);
