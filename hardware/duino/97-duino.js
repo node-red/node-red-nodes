@@ -20,7 +20,6 @@ var duino = require("duino");
 var util =  require('util');
 
 function DuinoNode(n) {
-	var DEBUG = true;
 	RED.nodes.createNode(this,n);
 	this.pin = n.pin || "10";
 	node = this;
