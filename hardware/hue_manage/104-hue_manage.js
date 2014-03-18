@@ -65,6 +65,7 @@ function HueNode(n) {
     msg.topic = this.topic;
 
     this.on("input", function(msg){
+        var myMsg = msg;
             //set the lamp status
             //first locate the Hue gateway:
             hue.locateBridges(function(err, result) {
@@ -84,19 +85,19 @@ function HueNode(n) {
                     var state = lightState.create();
 
                     var status;
-                    if(msg.payload=="ALERT"){
+                    if(myMsg.payload=="ALERT"){
                         status = "ALERT";
                     }
-                    else if(node.lamp_status=="ON" || msg.payload=="ON") status = "ON";
-                    else if(node.lamp_status=="OFF" || msg.payload=="OFF") status = "OFF";
+                    else if(node.lamp_status=="ON" || myMsg.payload=="ON") status = "ON";
+                    else if(node.lamp_status=="OFF" || myMsg.payload=="OFF") status = "OFF";
 
 
                     if(status=="ALERT") {
                         api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
                     }
                     else if(status=="ON") {
-                        if(node.color==null) {
-                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(msg.topic).r,hexToRgb(msg.topic).g,hexToRgb(msg.topic).b)).then(displayResult).fail(displayError).done();
+                         if(node.color==null || node.color=="") {
+                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
                         }
                         else {
                             api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b)).then(displayResult).fail(displayError).done();
