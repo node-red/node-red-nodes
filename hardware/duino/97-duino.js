@@ -26,7 +26,7 @@ function DuinoNode(n) {
     try {
 	    this.board = new duino.Board();
     }
-    catch {
+    catch (e) {
         util.log("[duino] - Error establishing board connection!");
     }
 	
