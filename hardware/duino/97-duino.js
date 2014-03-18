@@ -23,8 +23,12 @@ function DuinoNode(n) {
 	RED.nodes.createNode(this,n);
 	this.pin = n.pin || "10";
 	node = this;
-	this.board = new duino.Board();
-
+    try {
+	    this.board = new duino.Board();
+    }
+    catch {
+        util.log("[duino] - Error establishing board connection!");
+    }
 	
 	this.on("input", function(message) {
 		if (typeof(message.payload) == "string") {

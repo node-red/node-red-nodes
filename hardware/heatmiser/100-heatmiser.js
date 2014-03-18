@@ -21,10 +21,11 @@ var util =  require('util');
 
 function HeatmiserNode(n) {
 	// TODO - holiday and hot water cases when confirmed working
-	var DEBUG = true;
+	var DEBUG = false;
     RED.nodes.createNode(this,n);
     this.ip = n.ip || "192.168.0.1";
     this.pin = n.pin || "1234";
+    this.pollTime = n.pollTime*60*1000 || 30*60*1000
     this.multiWriteFunc = undefined;
     node = this;
 
@@ -40,7 +41,7 @@ function HeatmiserNode(n) {
 			node.multiWriteFunc = undefined;
 			return;
 		}
-		node.send(data.dcb);
+		node.send({topic: "", payload:JSON.stringify(data.dcb)});
 	});
 	this.hm.on('error', function(data) {
 		if (DEBUG) {
@@ -57,7 +58,7 @@ function HeatmiserNode(n) {
 
 	if (!this.currentStatus) {
 		this.read();
-		setInterval(this.read, 30000);
+		setInterval(this.read, this.pollTime);
 	}
 
 	this.write = function(dcb) {
