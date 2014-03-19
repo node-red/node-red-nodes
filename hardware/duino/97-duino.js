@@ -23,12 +23,6 @@ function DuinoNode(n) {
 	RED.nodes.createNode(this,n);
 	this.pin = n.pin || "10";
 	node = this;
-    try {
-	    this.board = new duino.Board();
-    }
-    catch (e) {
-        util.log("[duino] - Error establishing board connection!");
-    }
 	
 	this.on("input", function(message) {
 		if (typeof(message.payload) == "string") {
@@ -36,6 +30,12 @@ function DuinoNode(n) {
 		}
 		// Send message as RC triState
 		if (message.payload.inputType === "RC") {
+            try {
+                this.board = new duino.Board();
+            }
+            catch (e) {
+                util.log("[duino] - Error establishing board connection!");
+            }
 			var rcCode = message.payload.rcCode;
 
 			if (rcCode.length != 8) {
