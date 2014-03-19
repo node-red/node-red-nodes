@@ -27,7 +27,7 @@ function HeatmiserNode(n) {
     this.pin = n.pin || "1234";
     this.pollTime = n.pollTime*60*1000 || 30*60*1000
     this.multiWriteFunc = undefined;
-    node = this;
+    hmnode = this;
 
     this.hm = new Heatmiser(this.ip, this.pin);
 
@@ -35,24 +35,24 @@ function HeatmiserNode(n) {
 		if (DEBUG) {
 			util.log(JSON.stringify(data));
 		}
-		node.currentStatus = data.dcb;
-		if (node.multiWriteFunc) {
-			node.multiWriteFunc();
-			node.multiWriteFunc = undefined;
+		hmnode.currentStatus = data.dcb;
+		if (hmnode.multiWriteFunc) {
+			hmnode.multiWriteFunc();
+			hmnode.multiWriteFunc = undefined;
 			return;
 		}
-		node.send({topic: "", payload:JSON.stringify(data.dcb)});
+		hmnode.send({topic: "", payload:JSON.stringify(data.dcb)});
 	});
 	this.hm.on('error', function(data) {
 		if (DEBUG) {
 			console.log(JSON.stringify(data));
 		}
-		node.send(data);
+		hmnode.send(data);
 	});
 
 	this.read = function() {
-		if (node.hm) {
-			node.hm.read_device();
+		if (hmnode.hm) {
+			hmnode.hm.read_device();
 		}
 	};
 
@@ -62,7 +62,9 @@ function HeatmiserNode(n) {
 	}
 
 	this.write = function(dcb) {
-		node.hm.write_device(dcb);
+        if (hmnode.hm) {
+		    hmnode.hm.write_device(dcb);
+        }
 	};
 
 	this.validateAndWrite = function(message) {
@@ -88,7 +90,7 @@ function HeatmiserNode(n) {
 					// 		return;
 					// 	}
 					// 	var time = message.payload[key].time;
-					// 	// Ensure node time is a date
+					// 	// Ensure hmnode time is a date
 					// 	if (typeof(time) == "string") {
 					// 		util.log("Typeof time was " +typeof(message.payload[key].time));
 					// 		// message.payload[key].time = new Date(message.payload[key].time);
@@ -131,13 +133,13 @@ function HeatmiserNode(n) {
 						(target <= 10.0) ? message.payload[key].target = 10.0 : message.payload[key].target = target;
 						(hold <= 0) ? message.payload[key].hold = 0 : message.payload[key].hold = hold;
 
-						// Ensure node runmode == heating first
-						if (node.currentStatus.run_mode === "frost_protection") {
+						// Ensure hmnode runmode == heating first
+						if (hmnode.currentStatus.run_mode === "frost_protection") {
 							// Use the multiWriteFunc as a callback in our success case
-							node.multiWriteFunc = function() {
-								node.write(message.payload);
+							hmnode.multiWriteFunc = function() {
+								hmnode.write(message.payload);
 							}
-							node.write({"runmode" : "heating"});
+							hmnode.write({"runmode" : "heating"});
 							// End the flow here to ensure no double-writing
 							return;
 						}
@@ -147,7 +149,7 @@ function HeatmiserNode(n) {
 						if (DEBUG) {
 							util.log("[100-heatmiser.js] Hit the default case");
 						}
-						node.read();
+						hmnode.read();
 				}
 			}
 			// Valid set of key messages, construct DCB and write
@@ -155,16 +157,21 @@ function HeatmiserNode(n) {
 			if (DEBUG) {
 				util.log("[100-heatmiser.js] Injecting " + JSON.stringify(dcb));
 			}
-			node.write(dcb);
+			hmnode.write(dcb);
 	};
 
     this.on("input", function(message) {
 		// Valid inputs are heating:{target:, hold:}, read:, runmode:frost/heating, holiday:{enabled:, time:}, hotwater:{'on':1/0 / 'boost':1/0}
+        console.log("msg.payload="+message.payload);
+        if (message.payload == "undefined" || !message.payload) {
+            message.payload = {read : true};
+        }
 		if (typeof(message.payload) == "string") {
 			message.payload = JSON.parse(message.payload);
 		}
+        console.log("msg.payload now = "+JSON.stringify(message.payload));
 		if (message.payload.read) {
-			node.hm.read_device();
+			hmnode.read();
 		}
 		else if (message.payload) {
 			// Compare message.payload data to confirm valid and send to thermostat
@@ -177,7 +184,7 @@ function HeatmiserNode(n) {
 					}
 				}
 			}
-			node.validateAndWrite(message);
+			hmnode.validateAndWrite(message);
 		}
     });
 }
