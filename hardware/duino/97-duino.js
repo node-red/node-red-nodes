@@ -26,7 +26,7 @@ function DuinoNode(n) {
     try {
 	    this.board = new duino.Board();
     }
-    catch {
+    catch (e) {
         util.log("[duino] - Error establishing board connection!");
     }
 	
@@ -37,7 +37,7 @@ function DuinoNode(n) {
 		// Send message as RC triState
 		if (message.payload.inputType === "RC") {
 			var rcCode = message.payload.rcCode;
-			util.log("RCCode = "+ rcCode);
+
 			if (rcCode.length != 8) {
 				util.log("[duino] - Error, code  : "+rcCode+ "was not 8 digits long!");
 				return;
@@ -48,9 +48,12 @@ function DuinoNode(n) {
 			});
 
 			if (message.payload.on) {
+                util.log("RCCode = "+ rcCode + "FFFF");
 				rcRef.triState(message.payload.rcCode + "FFFF");
 			}
 			else {
+
+                util.log("RCCode = "+ rcCode + "FFF0");
 				rcRef.triState(message.payload.rcCode + "FFF0");
 			}
 		}
