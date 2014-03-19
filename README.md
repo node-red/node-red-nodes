@@ -67,6 +67,8 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **79-sensorTag** - Reads data from the Ti BLE SensorTag device.
 
+**100-heatmiser** - Read/writes Heatmiser thermostats. Allows for setting of temperature and frost protection modes.
+
 **101-scanBLE** - Scans for a particular Bluetooth Low Energy (BLE) device.
 
 **145-BBB-hardware** - A collection of analogue & digital input & output nodes for the Beaglebone Black

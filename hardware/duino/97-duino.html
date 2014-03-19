@@ -1,0 +1,48 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="duino">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Pin</label>
+        <input type="text" id="node-input-pin" placeholder="10">
+    </div>
+    <div class="form-tips">Expects a msg.payload of the signal to send to the RC switch</div>
+</script>
+
+<script type="text/x-red" data-help-name="duino">
+    <p>Duino node built on top of the duino library.</p>
+    <p>INPUT - Expects a msg.payload of the signal to send to the RC switch.</p>
+    <h3>RC Switch</h3>
+    <p><pre>{inputType: "RC", rcCode: 8DIGITCODE, on : true/false}</pre></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('duino',{
+        category: 'advanced-function',
+        color:"#3fadb5",
+        defaults: {
+            pin: {value:""}
+        },
+        inputs:1,
+        icon: "arduino.png",
+        label: function() {
+            return this.name||"duino";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
