@@ -20,7 +20,6 @@ function EmoncmsServerNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
     this.name = n.name;
-    this.payloadType = n.payloadType;
     var credentials = RED.nodes.getCredentials(n.id);
     if (credentials) {
         this.apikey = credentials.apikey;
@@ -72,7 +71,6 @@ function Emoncms(n) {
     this.baseurl = sc.server;
     this.apikey = sc.apikey;
 
-    this.payloadType = n.payloadType;
     this.topic = n.topic ||"";
     this.nodegroup = n.nodegroup || "";
     var node = this;
@@ -80,11 +78,11 @@ function Emoncms(n) {
     else { var http = require("http"); }
     this.on("input", function(msg) {
         this.url = this.baseurl + '/input/post.json?';
-        if(this.payloadType == 'json'){
-        	var topic = this.topic || msg.topic;
-        	this.url += 'json={' + topic + ':' + msg.payload+'}';
-        } else {
+        var topic = this.topic || msg.topic;
+        if(msg.payload.indexOf(',') > -1 || topic.trim() == ''){
         	this.url += 'csv='+msg.payload;
+        } else {
+        	this.url += 'json={' + topic + ':' + msg.payload+'}';
         }
         this.url += '&apikey='+this.apikey;
         var nodegroup = this.nodegroup || msg.nodegroup;
