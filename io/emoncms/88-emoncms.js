@@ -20,6 +20,7 @@ function EmoncmsServerNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
     this.name = n.name;
+    this.payloadType = n.payloadType;
     var credentials = RED.nodes.getCredentials(n.id);
     if (credentials) {
         this.apikey = credentials.apikey;
@@ -71,18 +72,27 @@ function Emoncms(n) {
     this.baseurl = sc.server;
     this.apikey = sc.apikey;
 
+    this.payloadType = n.payloadType;
     this.topic = n.topic ||"";
     this.nodegroup = n.nodegroup || "";
     var node = this;
     if (this.baseurl.substring(0,5) === "https") { var http = require("https"); }
     else { var http = require("http"); }
     this.on("input", function(msg) {
-
-        var topic = this.topic || msg.topic;
+        this.url = this.baseurl + '/input/post.json?';
+        if(this.payloadType == 'json'){
+        	var topic = this.topic || msg.topic;
+        	this.url += 'json={' + topic + ':' + msg.payload+'}';
+        } else {
+        	this.url += 'csv='+msg.payload;
+        }
+        this.url += '&apikey='+this.apikey;
         var nodegroup = this.nodegroup || msg.nodegroup;
-        this.url = this.baseurl + '/input/post.json?json={' + topic + ':' + msg.payload+'}&apikey='+this.apikey;
         if(nodegroup != ""){
-            this.url += '&node='+nodegroup;
+            this.url += '&node=' + nodegroup;
+        }
+        if(typeof msg.time !== 'undefined'){
+        	this.url += '&time=' + msg.time;
         }
         node.log("[emoncms] "+this.url);
         http.get(this.url, function(res) {
