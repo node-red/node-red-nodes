@@ -37,6 +37,11 @@
   </div>
 
   <div class="form-row">
+    <label for="node-input-brightness"><i class="icon-tag"></i>Change Brightness (0->100):</label>
+    <input type="text" id="node-input-brightness" placeholder="brightness">
+  </div>
+
+  <div class="form-row">
     <label for="node-input-color"><i class="icon-tag"></i>Select color:</label>
     <input type="text" id="node-input-color" placeholder="color">
   </div>
@@ -51,7 +56,7 @@
 <script type="text/x-red" data-help-name="HueNode">
     <p>This node implements some basic functionality for managing a Philips Hue wireless Lamp system.</p>
     <p>To use it you need to have obtained a valid auth token (or username) from your Philips Hue Bridge. Read <a href="http://developers.meethue.com/gettingstarted.html" target="_blank">here</a> on how to do this.</p>
-    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF and also set its color. </p><p>By setting the status to AUTO, you can set the ON/OFF status as a message payload (e.g., msg.payload="ON") and the color through the message topic (e.g., msg.topic="EBF5FF") on the node input. Please note, in case you use both, the status selection overides the msg.payload!</p><p>Also, if you pass something like msg.payload="ALERT" the Lamp will flash once.</p>
+    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF, set the color and the brightness (0->100). </p><p>By setting the status to AUTO, you can set the ON/OFF status as a message payload (e.g., msg.payload="1:ON", where 1 is the ID of the Lamp) and the color through the message topic (e.g., msg.topic="EBF5FF") on the node input. Please note, in case you use both, the node configuration through the UI overides the msg.payload!</p><p>Also, if you pass something like msg.payload="1:ALERT" the Lamp will flash once.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -65,6 +70,7 @@
             discovery_mode: {value: "", required:false},
             lamp_id: {value:"", required:false},
             color: {value:"EBF5FF"},
+            brightness: {value:"100"},
             lamp_status:{}
         },
         inputs:1,                // set the number of inputs - only 0 or 1

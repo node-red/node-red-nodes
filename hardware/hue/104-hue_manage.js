@@ -30,7 +30,7 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var gw_ipaddress = "";
 
 
-var username, lamp_status, lamp_id, color;
+var username, lamp_status, lamp_id, color, brightness;
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -54,6 +54,7 @@ function HueNode(n) {
     this.lamp_status = n.lamp_status;
     this.lamp_id = n.lamp_id;
     this.color = n.color;
+    this.brightness = n.brightness;
    
 
     // Store local copies of the node configuration (as defined in the .html)
@@ -85,6 +86,16 @@ function HueNode(n) {
                     var state = lightState.create();
 
                     var status;
+                    var lamp = -1;
+
+                    //check for lamp ID in the payload
+                    if(myMsg.payload.length>1) {
+                        var tmp_status = myMsg.payload.split(":");
+                        myMsg.payload = tmp_status[1];
+                        lamp = tmp_status[0];
+
+                    }
+
                     if(myMsg.payload=="ALERT"){
                         status = "ALERT";
                     }
@@ -93,21 +104,36 @@ function HueNode(n) {
 
 
                     if(status=="ALERT") {
-                        api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
+                        if(lamp!=-1)
+                            api.setLightState(lamp, state.alert()).then(displayResult).fail(displayError).done();
+                        else
+                            api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
                     }
                     else if(status=="ON") {
                          if(node.color==null || node.color=="") {
-                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
+                            if(lamp!=-1)
+                                api.setLightState(lamp, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
+                            else
+                                api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
                         }
                         else {
-                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b)).then(displayResult).fail(displayError).done();
+                            if(lamp!=-1)
+                                api.setLightState(lamp, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
+                            else
+                                api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
                         }
                     }
                     else {
-                        api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
+                        if(lamp!=-1)
+                            api.setLightState(lamp, state.off()).then(displayResult).fail(displayError).done();
+                        else
+                            api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
                     }
 
-                    msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
+                    if(lamp!=-1)
+                        msg2.payload = 'Light with ID: '+lamp+ ' was set to '+status;
+                    else
+                        msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
                     node.send(msg2);
                 }
                 else {
