@@ -88,52 +88,50 @@ function HueNode(n) {
                     var status;
                     var lamp = -1;
 
-                    //check for lamp ID in the payload
-                    if(myMsg.payload.length>1) {
-                        var tmp_status = myMsg.payload.split(":");
-                        myMsg.payload = tmp_status[1];
-                        lamp = tmp_status[0];
+                    //check for AUTO status (lamp settings set through node input)
+                    if(node.lamp_status=="AUTO") {
+                        var color;
+                        var brightness;
+                        //check for lamp ID in the payload
+                        if(myMsg.payload.length>1) {
+                            var tmp_status = myMsg.payload.split(":");
+                            myMsg.payload = tmp_status[1];
+                            lamp = tmp_status[0];
+                        }
 
-                    }
+                        //check for brightness & color:
+                        if(myMsg.topic.length>1) {
+                            var tmp_topic = myMsg.topic.split(":");
+                            color = tmp_topic[0];
+                            brightness = tmp_topic[1];
+                        }
 
-                    if(myMsg.payload=="ALERT"){
-                        status = "ALERT";
-                    }
-                    else if(node.lamp_status=="ON" || myMsg.payload=="ON") status = "ON";
-                    else if(node.lamp_status=="OFF" || myMsg.payload=="OFF") status = "OFF";
-
-
-                    if(status=="ALERT") {
-                        if(lamp!=-1)
+                        //case of ALERT:
+                        if(myMsg.payload=="ALERT"){
                             api.setLightState(lamp, state.alert()).then(displayResult).fail(displayError).done();
-                        else
-                            api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
-                    }
-                    else if(status=="ON") {
-                         if(node.color==null || node.color=="") {
-                            if(lamp!=-1)
-                                api.setLightState(lamp, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
-                            else
-                                api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(myMsg.topic).r,hexToRgb(myMsg.topic).g,hexToRgb(myMsg.topic).b)).then(displayResult).fail(displayError).done();
+                        }
+
+                        //case of ON:
+                        if(myMsg.payload=="ON") {
+                            api.setLightState(lamp, state.on().rgb(hexToRgb(color).r,hexToRgb(color).g,hexToRgb(color).b).brightness(brightness)).then(displayResult).fail(displayError).done();
                         }
                         else {
-                            if(lamp!=-1)
-                                api.setLightState(lamp, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
-                            else
-                                api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
+                            api.setLightState(lamp, state.off()).then(displayResult).fail(displayError).done();
                         }
+
                     }
                     else {
-                        if(lamp!=-1)
-                            api.setLightState(lamp, state.off()).then(displayResult).fail(displayError).done();
+                        //set lamp according to node settings
+                        if(node.lamp_status=="ON") 
+                             api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
                         else
                             api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
                     }
 
                     if(lamp!=-1)
-                        msg2.payload = 'Light with ID: '+lamp+ ' was set to '+status;
+                        msg2.payload = 'Light with ID: '+lamp+ ' was set to '+myMsg.payload;
                     else
-                        msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
+                        msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+node.lamp_status;
                     node.send(msg2);
                 }
                 else {
