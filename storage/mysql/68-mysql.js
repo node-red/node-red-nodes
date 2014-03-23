@@ -15,33 +15,119 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var reconnect = RED.settings.mysqlReconnectTime || 30000;
 var mysqldb = require('mysql');
+var querystring = require('querystring');
+
+RED.httpAdmin.get('/MySQLdatabase/:id',function(req,res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else {
+        res.send(JSON.stringify({}));
+    }
+});
+
+RED.httpAdmin.delete('/MySQLdatabase/:id',function(req,res) {
+    RED.nodes.deleteCredentials(req.params.id);
+    res.send(200);
+});
+
+RED.httpAdmin.post('/MySQLdatabase/:id',function(req,res) {
+    var body = "";
+    req.on('data', function(chunk) {
+        body+=chunk;
+    });
+    req.on('end', function(){
+        var newCreds = querystring.parse(body);
+        var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.user == null || newCreds.user == "") {
+            delete credentials.user;
+        } else {
+            credentials.user = newCreds.user;
+        }
+        if (newCreds.password == "") {
+            delete credentials.password;
+        } else {
+            credentials.password = newCreds.password||credentials.password;
+        }
+        RED.nodes.addCredentials(req.params.id,credentials);
+        res.send(200);
+    });
+});
+
 
 function MySQLNode(n) {
     RED.nodes.createNode(this,n);
     this.host = n.host;
     this.port = n.port;
-    this.user = n.user;
-    this.password = n.pass;
+
+    this.connected = false;
+    this.connecting = false;
+
+    if (n.user) {
+        var credentials = {};
+        credentials.user = n.user;
+        credentials.password = n.pass;
+        RED.nodes.addCredentials(n.id,credentials);
+        this.user = n.user;
+        this.password = n.pass;
+    } else {
+        var credentials = RED.nodes.getCredentials(n.id);
+        if (credentials) {
+            this.user = credentials.user;
+            this.password = credentials.password;
+        }
+    }
+
     this.dbname = n.db;
     var node = this;
 
-    node.connection = mysqldb.createConnection({
-        host : node.host,
-        port : node.port,
-        user : node.user,
-        password : node.password,
-        database : node.dbname
-    });
-
-    node.connection.connect(function(err) {
-        if (err) node.error(err);
-    });
-
-    node.on('close', function () {
-        node.connection.end(function(err) {
-            if (err) node.error(err);
+    function doConnect() {
+        node.connecting = true;
+        node.connection = mysqldb.createConnection({
+            host : node.host,
+            port : node.port,
+            user : node.user,
+            password : node.password,
+            database : node.dbname,
+            insecureAuth: true
         });
+
+        node.connection.connect(function(err) {
+            node.connecting = false;
+            if (err) {
+                node.warn(err);
+                node.tick = setTimeout(doConnect, reconnect);
+            } else {
+                node.connected = true;
+            }
+        });
+
+        node.connection.on('error', function(err) {
+            node.connected = false;
+            if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                doConnect(); // silently reconnect...
+            } else {
+                node.error(err);
+                doConnect();
+            }
+        });
+    }
+
+    this.connect = function() {
+        if (!this.connected && !this.connecting) {
+            doConnect();
+        }
+    }
+
+    this.on('close', function () {
+        if (this.tick) { clearTimeout(this.tick); }
+        if (this.connection) {
+            node.connection.end(function(err) {
+                if (err) node.error(err);
+            });
+        }
     });
 }
 RED.nodes.registerType("MySQLdatabase",MySQLNode);
@@ -53,6 +139,7 @@ function MysqlDBNodeIn(n) {
     this.mydbConfig = RED.nodes.getNode(this.mydb);
 
     if (this.mydbConfig) {
+        this.mydbConfig.connect();
         var node = this;
         node.on("input", function(msg) {
             if (typeof msg.topic === 'string') {

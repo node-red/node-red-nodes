@@ -69,6 +69,8 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **101-scanBLE** - Scans for a particular Bluetooth Low Energy (BLE) device.
 
+**145-BBB-hardware** - A collection of analogue & digital input & output nodes for the Beaglebone Black
+
 ### IO
 
 **26-rawserial** - Only really needed for Windows boxes without serialport npm module installed.
@@ -95,6 +97,8 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 **67-leveldb** - Uses LevelDB for a simple key value pair database.
 
 **68-mysql** - Allows basic access to a MySQL database. This node uses the **query** operation against the configured database. This does allow both INSERTS and DELETES. By it's very nature it allows SQL injection... *so be careful out there...*
+
+**69-ddbout** - Support output to Amazon DynamoDB.
 
 ### Time
 

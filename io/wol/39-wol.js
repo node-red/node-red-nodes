@@ -20,7 +20,7 @@ var chk = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
 
 function WOLnode(n) {
     RED.nodes.createNode(this,n);
-    this.mac = n.mac
+    this.mac = n.mac.trim();
     var node = this;
 
     this.on("input", function(msg) {
@@ -32,7 +32,7 @@ function WOLnode(n) {
                         if (error) { node.warn(error); }
                     });
                 }
-                else { node.warn("WOL: bad mac address "+mac); }
+                else { node.warn('WOL: bad mac address "'+mac+'"'); }
             }
             else { node.warn("WOL: no mac address specified"); }
         }

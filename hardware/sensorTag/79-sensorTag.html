@@ -33,8 +33,12 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Topic</label>
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
         <input type="text" id="node-input-topic" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-uuid"><i class="icon-tag"></i> UUID</label>
+        <input type="text" id="node-input-uuid" >
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Temperature</label>
@@ -74,6 +78,14 @@
    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
    <!-- node in the palette.                                                 -->
    <p>Input node for the Ti SensorTag</p>
+   <p>For this node to work correctly Node-Red needs to be run as root, this 
+      due to how Bluetooth 4.0 support is currently implemented in Linux</p>
+   <p>The UUID field is the mac address of the sensor tag, this is optional
+      can be used to bind to a specific SensorTag if you have more than one
+      active in range at the same time. (note you can only have one SensorTag 
+      per node-red instance at the moment)</p>
+   <p>The topic setting is a prefix that will be pre-pended to name of the 
+      sensor that creates the reading. e.g. <i>sensorTag/temperature</i></p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -85,6 +97,7 @@
         defaults: {             // defines the editable properties of the node
             name: {value:"sensorTag"},   //  along with default values.
             topic: {value:"sensorTag"},
+            uuid: {value:undefined},
             temperature: {value:true},
             humidity: {value:true},
             pressure: {value:true},
@@ -101,6 +114,17 @@
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditsave: function() {
+           var mac = $("#node-input-uuid").val();
+           mac = mac.toLowerCase();
+           //nasty hack as I can't get global replace to work
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.replace(/:/gi,'');
+           mac = mac.toLowerCase();
+           $("#node-input-uuid").val(mac);
         }
     });
 </script>

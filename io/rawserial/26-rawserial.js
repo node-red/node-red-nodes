@@ -36,6 +36,7 @@ function RawSerialInNode(n) {
 
     var setupSerial = function() {
         node.inp = fs.createReadStream(pre+node.port);
+        node.log("opened "+pre+node.port);
         node.inp.setEncoding('utf8');
         var line = "";
         node.inp.on('data', function (data) {

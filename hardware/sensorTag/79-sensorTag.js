@@ -17,14 +17,13 @@
 // Require main module
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var SensorTag = require('sensortag');
-var stag;
-var node;
 
 // The main node definition - most things happen in here
 function sensorTagNode(n) {
     RED.nodes.createNode(this,n);
     this.name = n.name;
     this.topic = n.topic;
+    this.uuid = n.uuid;
     this.temperature = n.temperature;
     this.pressure = n.pressure;
     this.humidity = n.humidity;
@@ -32,19 +31,25 @@ function sensorTagNode(n) {
     this.magnetometer = n.magnetometer;
     this.gyroscope = n.gyroscope;
     this.keys = n.keys;
-    node=this;
 
-    if ( typeof stag == "undefined") {
+    if (this.uuid === "") {
+        this.uuid = undefined;
+    }
+    //console.log(this.uuid);
+
+    var node=this;
+
+    if ( typeof node.stag == "undefined") {
     //console.log("starting");
     SensorTag.discover(function(sensorTag){
-        stag = sensorTag;
+        node.stag = sensorTag;
         sensorTag.connect(function(){
             //console.log("connected");
             sensorTag.discoverServicesAndCharacteristics(function(){
                 sensorTag.enableIrTemperature(function(){});
                 sensorTag.on('irTemperatureChange',
                 function(objectTemperature, ambientTemperature){
-                  var msg = {'topic': node.topic + '/tempature'};
+                  var msg = {'topic': node.topic + '/temperature'};
                   msg.payload = {'object': objectTemperature.toFixed(1),
                   'ambient':ambientTemperature.toFixed(1)
                   };
@@ -87,51 +92,51 @@ function sensorTagNode(n) {
                    msg.payload = {'left': left, 'right': right};
                    node.send(msg);
                 });
-                enable();
+                enable(node);
             });
         });
-    });
+    },node.uuid);
     } else {
       //console.log("reconfig");
-      enable();
+      enable(node);
     }
 }
 
-function enable() {
-                if (node.temperature) {
-                  stag.notifyIrTemperature(function(){});
-                } else {
-                  stag.unnotifyIrTemperature(function(){});
-                }
-                if (node.pressure) {
-                  stag.notifyBarometricPressure(function(){});
-                } else {
-                  stag.unnotifyBarometricPressure(function(){});
-                }
-                if (node.humidity) {
-                  stag.notifyHumidity(function() {});
-                } else {
-                  stag.unnotifyHumidity(function() {});
-                }
-                if (node.accelometer){
-                  stag.notifyAccelerometer(function() {});
-                } else {
-                  stag.unnotifyAccelerometer(function() {});
-                }
-                if (node.magnetometer) {
-                  stag.notifyMagnetometer(function() {});
-                } else {
-                  stag.unnotifyMagnetometer(function() {});
-                }
-                if (node.gyroscope) {
-                  stag.notifyGyroscope(function() {});
-                } else {
-                  stag.unnotifyGyroscope(function() {});
-                }
-                if (node.keys) {
-                  stag.notifySimpleKey(function() {});
-                } else {
-                  stag.unnotifySimpleKey(function() {});
-                }
+function enable(node) {
+    if (node.temperature) {
+        node.stag.notifyIrTemperature(function(){});
+    } else {
+       node.stag.unnotifyIrTemperature(function(){});
+    }
+    if (node.pressure) {
+       node.stag.notifyBarometricPressure(function(){});
+    } else {
+       node.stag.unnotifyBarometricPressure(function(){});
+    }
+    if (node.humidity) {
+       node.stag.notifyHumidity(function() {});
+    } else {
+       node.stag.unnotifyHumidity(function() {});
+    }
+    if (node.accelometer){
+       node.stag.notifyAccelerometer(function() {});
+    } else {
+       node.stag.unnotifyAccelerometer(function() {});
+    }
+    if (node.magnetometer) {
+       node.stag.notifyMagnetometer(function() {});
+    } else {
+       node.stag.unnotifyMagnetometer(function() {});
+    }
+    if (node.gyroscope) {
+       node.stag.notifyGyroscope(function() {});
+    } else {
+       node.stag.unnotifyGyroscope(function() {});
+    }
+    if (node.keys) {
+       node.stag.notifySimpleKey(function() {});
+    } else {
+       node.stag.unnotifySimpleKey(function() {});
+    }
 }
 RED.nodes.registerType("sensorTag",sensorTagNode);

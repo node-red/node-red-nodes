@@ -24,44 +24,44 @@ var util = require('util');
 //    module.exports = {prowlkey:'My-API-KEY'}
 
 try {
-	var pushkey = require(process.env.NODE_RED_HOME+"/settings").prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+    var pushkey = RED.settings.prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
-	util.log("[57-prowl.js] Error: Failed to load Prowl credentials");
+    util.log("[57-prowl.js] Error: Failed to load Prowl credentials");
 }
 
 if (pushkey) {
-	var prowl = new Prowl(pushkey.prowlkey);
+    if (pushkey.prowlkey) { var prowl = new Prowl(pushkey.prowlkey); }
 }
 
 function ProwlNode(n) {
-	RED.nodes.createNode(this,n);
-	this.title = n.title;
-	this.priority = parseInt(n.priority);
-	if (this.priority > 2) this.priority = 2;
-	if (this.priority < -2) this.priority = -2;
-	var node = this;
-	this.on("input",function(msg) {
-		var titl = this.title||msg.topic||"Node-RED";
-		var pri = msg.priority||this.priority;
-		if (typeof(msg.payload) == 'object') {
-			msg.payload = JSON.stringify(msg.payload);
-		}
-		if (pushkey) {
-			try {
-				prowl.push(msg.payload, titl, { priority: pri }, function(err, remaining) {
-					if (err) node.error(err);
-					node.log( remaining + ' calls to Prowl api during current hour.' );
-				});
-			}
-			catch (err) {
-				node.error(err);
-			}
-		}
-		else {
-			node.warn("Prowl credentials not set/found. See node info.");
-		}
-	});
+    RED.nodes.createNode(this,n);
+    this.title = n.title;
+    this.priority = parseInt(n.priority);
+    if (this.priority > 2) this.priority = 2;
+    if (this.priority < -2) this.priority = -2;
+    var node = this;
+    this.on("input",function(msg) {
+        var titl = this.title||msg.topic||"Node-RED";
+        var pri = msg.priority||this.priority;
+        if (typeof(msg.payload) === 'object') {
+            msg.payload = JSON.stringify(msg.payload);
+        }
+        else { msg.payload = msg.payload.toString(); }
+        if (pushkey.prowlkey) {
+            try {
+                prowl.push(msg.payload, titl, { priority: pri }, function(err, remaining) {
+                    if (err) node.error(err);
+                    node.log( remaining + ' calls to Prowl api during current hour.' );
+                });
+            }
+            catch (err) {
+                node.error(err);
+            }
+        }
+        else {
+            node.warn("Prowl credentials not set/found. See node info.");
+        }
+    });
 }
-
 RED.nodes.registerType("prowl",ProwlNode);
