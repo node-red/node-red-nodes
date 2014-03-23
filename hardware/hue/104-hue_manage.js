@@ -92,27 +92,27 @@ function HueNode(n) {
                     if(node.lamp_status=="AUTO") {
                         var color;
                         var brightness;
-                        //check for lamp ID in the payload
-                        if(myMsg.payload.length>1) {
-                            var tmp_status = myMsg.payload.split(":");
-                            myMsg.payload = tmp_status[1];
+                        //check for lamp ID in the topic
+                        if(myMsg.topic.length>1) {
+                            var tmp_status = myMsg.topic.split(":");
+                            myMsg.topic = tmp_status[1];
                             lamp = tmp_status[0];
                         }
 
                         //check for brightness & color:
-                        if(myMsg.topic.length>1) {
-                            var tmp_topic = myMsg.topic.split(":");
+                        if(myMsg.payload.length>1) {
+                            var tmp_topic = myMsg.payload.split(":");
                             color = tmp_topic[0];
                             brightness = tmp_topic[1];
                         }
 
                         //case of ALERT:
-                        if(myMsg.payload=="ALERT"){
+                        if(myMsg.topic=="ALERT"){
                             api.setLightState(lamp, state.alert()).then(displayResult).fail(displayError).done();
                         }
 
                         //case of ON:
-                        if(myMsg.payload=="ON") {
+                        if(myMsg.topic=="ON") {
                             api.setLightState(lamp, state.on().rgb(hexToRgb(color).r,hexToRgb(color).g,hexToRgb(color).b).brightness(brightness)).then(displayResult).fail(displayError).done();
                         }
                         else {
