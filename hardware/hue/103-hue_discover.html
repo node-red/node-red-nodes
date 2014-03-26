@@ -13,6 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
+
 -->
 
 <script type="text/x-red" data-template-name="Discover">
@@ -28,27 +29,25 @@
 
 <!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="Discover">
-    <p>This node looks for a Philips Hue Bridge in the local network.</p>
-    <p> The node has 2 outputs, the first one contains the IP address of the first discovered bridge and the second one the lights registered to that bridge (in JSON format).</p>
-    <p>To use the node you need to have obtained a valid auth token (or username) from your Philips Hue Bridge. Read <a href="http://developers.meethue.com/gettingstarted.html" target="_blank">here</a> on how to do this.</p>
+    <p>This node looks for a Philips Hue Bridge in the local network.</p><p> The node has 2 outputs, the first one contains the IP address of the first discovered bridge and the second one the lights registered to that bridge (in JSON format).</p> <p>To use the node you need to have obtained a valid auth token (or username) from your Philips Hue Bridge. Read <a href="http://developers.meethue.com/gettingstarted.html" target="_blank">here</a> on how to do this.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <script type="text/javascript">
     RED.nodes.registerType('Discover',{
-        category: 'advanced-input',
+        category: 'advanced-input',      // the palette category
         color:"#EFEFEF",
-        defaults: {
-            name: {value:""},
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
             username: {value:"", required:true}
         },
-        inputs:1,
-        outputs:2,
-        icon: "hue.png",
-        label: function() {
-            return this.name||"Discover";
+        inputs:1,                // set the number of inputs - only 0 or 1
+        outputs:2,               // set the number of outputs - 0 to n
+        icon: "huediscover.png",    // set the icon (held in public/icons)
+        label: function() {      // sets the default label contents
+            return this.name||this.topic||"Discover";
         },
-        labelStyle: function() {
+        labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
         }
     });
