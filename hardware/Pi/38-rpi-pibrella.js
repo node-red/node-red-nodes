@@ -33,7 +33,7 @@ if (!fs.existsSync("/usr/local/bin/gpio")) {
 var pintable = {
 // Physical : WiringPi
         "Amber LED":"0",
-        "Buzzer":"1",
+        "Buzzer ":"1",
         "Red LED":"2",
         "Out E":"3",
         "Out F":"4",
@@ -49,7 +49,7 @@ var pintable = {
 var tablepin = {
 // WiringPi : Physical
         "0":"Amber",
-        "Buzzer":"1",
+        "1":"Buzzer",
         "2":"Red",
         "3":"E",
         "4":"F",
@@ -67,11 +67,10 @@ function PibrellaIn(n) {
     RED.nodes.createNode(this,n);
     this.buttonState = -1;
     this.pin = pintable[n.pin];
-    this.intype = n.intype;
     var node = this;
 
     if (this.pin) {
-        exec("gpio mode "+node.pin+" "+node.intype, function(err,stdout,stderr) {
+        exec("gpio mode "+node.pin+" in", function(err,stdout,stderr) {
             if (err) node.error(err);
             else {
                 node._interval = setInterval( function() {
@@ -88,7 +87,7 @@ function PibrellaIn(n) {
                             }
                         }
                     });
-                }, 250);
+                }, 200);
             }
         });
     }

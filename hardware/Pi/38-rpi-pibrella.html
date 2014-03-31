@@ -18,7 +18,7 @@
     <div class="form-row">
         <label for="node-input-pin"><i class="icon-asterisk"></i> Input</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-">select input </option>
+            <option value="-">select input</option>
             <option value="Red Button">Red Button</option>
             <option value="In A">In A</option>
             <option value="In B">In B</option>
@@ -45,8 +45,7 @@
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
-            intype: { value: "in" },
-            pin: { value:"",required:true },
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) }
         },
         inputs:0,
         outputs:1,
@@ -65,7 +64,7 @@
     <div class="form-row">
         <label for="node-input-pin"><i class="icon-asterisk"></i> Output</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-">select output </option>
+            <option value="-">select output</option>
             <option value="Red LED">Red LED</option>
             <option value="Amber LED">Amber LED</option>
             <option value="Green LED">Green LED</option>
@@ -73,7 +72,7 @@
             <option value="Out F">Out F</option>
             <option value="Out G">Out G</option>
             <option value="Out H">Out H</option>
-            <option value="Buzzer">Buzzer</option>
+            <option value="Buzzer ">Buzzer</option>
          </select>
     </div>
     <div class="form-row">
@@ -96,7 +95,7 @@
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
-            pin: { value:"",required:true },
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) }
         },
         inputs:1,
         outputs:0,
