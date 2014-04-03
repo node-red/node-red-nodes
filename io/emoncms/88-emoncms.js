@@ -71,18 +71,16 @@ function Emoncms(n) {
     this.baseurl = sc.server;
     this.apikey = sc.apikey;
 
-    this.topic = n.topic ||"";
     this.nodegroup = n.nodegroup || "";
     var node = this;
     if (this.baseurl.substring(0,5) === "https") { var http = require("https"); }
     else { var http = require("http"); }
     this.on("input", function(msg) {
         this.url = this.baseurl + '/input/post.json?';
-        var topic = this.topic || msg.topic;
-        if(msg.payload.indexOf(',') > -1 || topic.trim() == ''){
-        	this.url += 'csv='+msg.payload;
+        if(msg.payload.indexOf(':') > -1){
+        	this.url += 'json={' + msg.payload + '}';
         } else {
-        	this.url += 'json={' + topic + ':' + msg.payload+'}';
+        	this.url += 'csv='+msg.payload;
         }
         this.url += '&apikey='+this.apikey;
         var nodegroup = this.nodegroup || msg.nodegroup;
