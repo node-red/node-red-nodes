@@ -107,12 +107,15 @@ function PibrellaOut(n) {
             exec("gpio pwm-ms");
             node.on("input", function(msg) {
                 var out = Number(msg.payload);
-                if (out == 1) { out = 2; } // doesn't work with 1...
-                if (out == 0) { exec("gpio pwm 1 0"); }
-                else {
+                if (out == 1) { // fixed buzz
+                    exec("gpio pwm 1 511");
+                    exec("gpio pwmc 100");
+                }
+                else if ((out >= 2) && (out <= 9999)) { // set buzz to a value
                     exec("gpio pwm 1 511");
                     exec("gpio pwmc "+out);
                 }
+                else { exec("gpio pwm 1 0"); } // turn it off
             });
         });
     }
