@@ -118,7 +118,7 @@ function enable(node) {
     } else {
        node.stag.unnotifyHumidity(function() {});
     }
-    if (node.accelometer){
+    if (node.accelerometer){
        node.stag.notifyAccelerometer(function() {});
     } else {
        node.stag.unnotifyAccelerometer(function() {});
