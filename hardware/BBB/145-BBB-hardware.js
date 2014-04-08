@@ -18,13 +18,6 @@
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
 var bonescript = require("bonescript");
 
-// Require bonescript
-//try {
-//   var bonescript = require("bonescript");
-//} catch (err) {
-//    require("util").log("[145-BBB-hardware] Error: cannot find module 'bonescript'");
-//}
-
 // Node constructor for bbb-analogue-in
 function AnalogueInputNode(n) {
     // Create a RED node

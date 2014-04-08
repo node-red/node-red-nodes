@@ -19,14 +19,12 @@ var util = require("util");
 var exec = require('child_process').exec;
 var fs =  require('fs');
 
-if (!fs.existsSync("/usr/local/bin/gpio")) {
-    exec("cat /proc/cpuinfo | grep BCM27",function(err,stdout,stderr) {
-        if (stdout.indexOf('BCM27') > -1) {
-            util.log('[36-rpi-gpio.js] Error: Cannot find Wiring-Pi "gpio" command. http://wiringpi.com/download-and-install/');
-        }
-        // else not on a Pi so don't worry anyone with needless messages.
-    });
-    return;
+if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
+    throw "Info : Ignoring Raspberry Pi specific node.";
+}
+
+if (!fs.existsSync("/usr/local/bin/gpio")) { // gpio command not installed
+    throw "Info : Can't find Raspberry Pi wiringPi gpio command.";
 }
 
 // Map physical P1 pins to Gordon's Wiring-Pi Pins (as they should be V1/V2 tolerant)
@@ -94,6 +92,10 @@ function PibrellaIn(n) {
     else {
         this.error("Invalid GPIO pin: "+this.pin);
     }
+
+    this.on("close", function() {
+        clearInterval(this._interval);
+    });
 }
 
 function PibrellaOut(n) {
@@ -142,6 +144,10 @@ function PibrellaOut(n) {
     else {
         this.error("Invalid GPIO pin: "+this.pin);
     }
+
+    this.on("close", function() {
+        exec("gpio mode "+this.pin+" in");
+    });
 }
 
 exec("gpio mode 0 out",function(err,stdout,stderr) {
@@ -159,17 +165,8 @@ exec("gpio mode 0 out",function(err,stdout,stderr) {
     exec("gpio mode 11 in");
     exec("gpio mode 12 in");
     exec("gpio mode 13 in");
-    exec("gpio mode 14 in",function(err,stdout,stderr) {
-        RED.nodes.registerType("rpi-pibrella in",PibrellaIn);
-        RED.nodes.registerType("rpi-pibrella out",PibrellaOut);
-
-        PibrellaIn.prototype.close = function() {
-            clearInterval(this._interval);
-        }
-
-        PibrellaOut.prototype.close = function() {
-            exec("gpio mode "+this.pin+" in");
-        }
-
-    });
+    exec("gpio mode 14 in");
 });
+
+RED.nodes.registerType("rpi-pibrella in",PibrellaIn);
+RED.nodes.registerType("rpi-pibrella out",PibrellaOut);
