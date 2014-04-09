@@ -16,6 +16,17 @@
 -->
 
 <script type="text/x-red" data-template-name="twilio out">
+    <div class="form-row" id="node-input-credentials-row">
+        <label for="node-input-creds"><i class="icon-folder-close"></i> Credentials</label>
+        <select id="node-input-creds">
+            <option value="global">Use global credentials</option>
+            <option value="local">Use local credentials</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-input-twilio-row">
+        <label for="node-input-twilio"><i class="icon-user"></i> Twilio</label>
+        <input type="text" id="node-input-twilio">
+    </div>
     <div class="form-row">
         <label for="node-input-number"><i class="icon-envelope"></i> SMS to</label>
         <input type="text" id="node-input-number" placeholder="01234 5678901">
@@ -24,36 +35,136 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Tip - leave Number blank to use <b>msg.topic</b> to set the number.</div>
 </script>
 
 <script type="text/x-red" data-help-name="twilio out">
-    <p>Uses Twilio to send the <b>msg.payload</b> as a SMS to the configured number.</p>
-    <p>Uses <b>msg.topic</b> to set the phone number, if not already set in the properties.</p>
-    <p>You MUST configure both your Account SID and the Auth Token. Either into settings.js like this</p>
-    <p><pre>twilio: { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN', from:'FROM-NUMBER' },</pre></p>
-    <p>Or as a twiliokey.js file in the directory <b>above</b> node-red.<p>
-    <p><pre>module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }</pre></p>
+    <p>Sends an SMS message using the Twilio service.</p>
+    <p><code>msg.payload</code> is used as the body of the message. The node can be configured with the number
+    to send the message to. Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>.</p>
+    <p>You must have an account with Twilio to use this node. You can register for one <a href="https://www.twilio.com/">here</a>.</p>
+    <p>You can either set your account details within the node, or provide it globally using either the settings file or a file
+    called 'twiliokey.js' located in the directory above node-red.</p>
+    <p>To use the settings.js file, add an entry such as:
+    <pre>twilio: { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN', from:'FROM-NUMBER' }</pre></p>
+    <p>To use the 'twiliokey.js' file in the directory <b>above</b> node-red, use the following format:
+    <pre>module.exports = { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN',from:'FROM-NUMBER' }</pre></p>
+</script>
+
+<script type="text/x-red" data-template-name="twilio-api">
+    <div class="form-row">
+        <label for="node-config-input-sid">Account SID</label>
+        <input type="text" id="node-config-input-sid">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-from"><i class="icon-envelope"></i> From</label>
+        <input type="text" id="node-config-input-from" placeholder="01234 5678901">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="icon-lock"></i> Token</label>
+        <input type="password" id="node-config-input-token">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('twilio out',{
-        category: 'output',
-        defaults: {
-            number: {value:""},
-            name: {value:""}
-        },
-        color:"#ed1c24",
-        inputs:1,
-        outputs:0,
-        icon: "twilio.png",
-        align: "right",
-        label: function() {
-            return this.name||this.title||"twilio";
-        },
-        labelStyle: function() {
-            return this.name?"node_label_italic":"";
-        }
-    });
+
+
+    (function() {
+    
+        var hasGlobal = false;
+        $.getJSON('twilio-api/global',function(data) {
+            hasGlobal = data.hasToken;
+        });
+        
+    
+        RED.nodes.registerType('twilio-api',{
+            category: 'config',
+            defaults: {
+                sid: {value:"",required:true},
+                from: {value:"",required:true},
+                // token -> credentials
+                name: { value: ""}
+            },
+            label: function() {
+                return this.name||this.from;
+            },
+            oneditprepare: function() {
+                $.getJSON('twilio-api/'+this.id,function(data) {
+                    if (data.hasToken) {
+                        $('#node-config-input-token').val('__PWRD__');
+                    } else {
+                        $('#node-config-input-token').val('');
+                    }
+    
+                });
+            },
+            oneditsave: function() {
+                var newToken = $('#node-config-input-token').val();
+                if (newToken != '__PWRD__') {
+                var credentials = {};
+                    credentials.token = newToken;
+                    $.ajax({
+                        url: 'twilio-api/'+this.id,
+                        type: 'POST',
+                        data: credentials,
+                        success:function(result){}
+                    });
+                }
+            },
+            ondelete: function() {
+                $.ajax({
+                    url: 'twilio-api/'+this.id,
+                    type: 'DELETE',
+                    success: function(result) {}
+                });
+            }
+        });
+        
+        RED.nodes.registerType('twilio out',{
+            category: 'output',
+            defaults: {
+                twilio:{type:"twilio-api",validate:function(v) {
+                    return hasGlobal || (v && v!="_ADD_");
+                }},
+                number: {value:""},
+                name: {value:""}
+            },
+            color:"#FF595F",
+            inputs:1,
+            outputs:0,
+            icon: "twilio.png",
+            align: "right",
+            label: function() {
+                return this.name||this.title||"twilio";
+            },
+            labelStyle: function() {
+                return this.name?"node_label_italic":"";
+            },
+            oneditprepare: function() {
+                if (hasGlobal) {
+                    $("#node-input-creds").change(function() {
+                        var val = $(this).val();
+                        if (val == "global") {
+                            $("#node-input-twilio-row").hide();
+                        } else {
+                            $("#node-input-twilio-row").show();
+                        }
+                    });
+                    $("#node-input-credentials-row").show();
+                    if (!this.twilio) {
+                        $("#node-input-creds").val("global");
+                    } else {
+                        $("#node-input-creds").val("local");
+                    }
+                    $("#node-input-creds").change();
+                } else {
+                    $("#node-input-credentials-row").hide();
+                }
+            }
+        });
+    })();
 
 </script>
