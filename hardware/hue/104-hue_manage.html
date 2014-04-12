@@ -56,7 +56,15 @@
 <script type="text/x-red" data-help-name="HueNode">
     <p>This node implements some basic functionality for managing a Philips Hue wireless Lamp system.</p>
     <p>To use it you need to have obtained a valid auth token (or username) from your Philips Hue Bridge. Read <a href="http://developers.meethue.com/gettingstarted.html" target="_blank">here</a> on how to do this.</p>
-    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF, set the color and the brightness (0->100). </p><p>By setting the status to AUTO, you can set the ON/OFF status as a message topic (e.g., msg.topic="1:ON", where 1 is the ID of the Lamp) and the color/brightness through the message payload (e.g., msg.payload="DF0101:50" will set the color to red and brightness to 50%) on the node input. Please note, in case you use both, the msg.payload overrides the node configuration through the UI!</p><p>Also, if you pass something like msg.topic="1:ALERT" the Lamp with ID 1 will flash once.</p>
+    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF, set the color and the brightness (0->100). </p><p>By setting the status to AUTO, you can set the lamp parameters using the message on the input node as follows:</p>
+    <ul>
+    <li>msg.lamp sets the lamp ID</li>
+    <li>msg.color sets the lamp color (e.g., msg.color="DF0101" will set the color to red)</li>
+    <li>msg.brightness sets the lamp brightness (e.g., msg.brightness=50)</li>
+    <li>msg.payload is used to se the lamp status (on/off/alert) (e.g., msg.payload="alert" will flash the Lamp once</li>
+    </ul>
+
+    <p>Please note, by setting the status to AUTO on the node configuration, the rest of the node parameters are ignored, you need to set all parameters through the message input.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->

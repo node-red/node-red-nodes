@@ -92,27 +92,30 @@ function HueNode(n) {
                     if(node.lamp_status=="AUTO") {
                         var color;
                         var brightness;
-                        //check for lamp ID in the topic
-                        if(myMsg.topic.length>1) {
-                            var tmp_status = myMsg.topic.split(":");
-                            myMsg.topic = tmp_status[1];
-                            lamp = tmp_status[0];
+                        
+                        //get lamp id from msg.lamp:
+                        lamp = myMsg.lamp;
+
+                        //get brightness:
+                        brightness = myMsg.brightness;
+
+                        //get colour either from msg.color or msg.topic
+                        if(myMsg.color!=null && myMsg.color.length>0) {
+                            color = myMsg.color;
+                        } 
+                        else if(myMsg.topic!=null && myMsg.topic.length>0) {
+                            color = myMsg.topic;
                         }
 
-                        //check for brightness & color:
-                        if(myMsg.payload.length>1) {
-                            var tmp_topic = myMsg.payload.split(":");
-                            color = tmp_topic[0];
-                            brightness = tmp_topic[1];
-                        }
 
+                        //check the payload for on/off/alert:
                         //case of ALERT:
-                        if(myMsg.topic=="ALERT"){
+                        if(myMsg.payload=="ALERT" || myMsg.payload=="alert"){
                             api.setLightState(lamp, state.alert()).then(displayResult).fail(displayError).done();
                         }
 
                         //case of ON:
-                        if(myMsg.topic=="ON") {
+                        if(myMsg.payload=="ON" || myMsg.payload=="on") {
                             api.setLightState(lamp, state.on().rgb(hexToRgb(color).r,hexToRgb(color).g,hexToRgb(color).b).brightness(brightness)).then(displayResult).fail(displayError).done();
                         }
                         else {
