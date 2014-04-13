@@ -18,14 +18,19 @@
  * limitations under the License.
  **/
 
+
 //Require node-hue-api
 var hue = require("node-hue-api");
 var HueApi = require("node-hue-api").HueApi;
+
+// Require main module
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
 
 //store the IP address of the Hue Gateway
 var gw_ipaddress = "";
-var username, lamp_status, lamp_id, color;
+
+
+var username, lamp_status, lamp_id, color, brightness;
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -36,73 +41,112 @@ function hexToRgb(hex) {
     } : null;
 }
 
+
 // The main node definition - most things happen in here
 function HueNode(n) {
     // Create a RED node
     RED.nodes.createNode(this,n);
+
+    var node = this;
 
     //get parameters from user
     this.username = n.username;
     this.lamp_status = n.lamp_status;
     this.lamp_id = n.lamp_id;
     this.color = n.color;
-    var node = this;
+    this.brightness = n.brightness;
+   
 
+    // Store local copies of the node configuration (as defined in the .html)
+    this.topic = n.topic;
+
+    
     var msg = {};
+    
+    msg.topic = this.topic;
 
     this.on("input", function(msg){
-        //set the lamp status
-        //first locate the Hue gateway:
-        hue.locateBridges(function(err, result) {
+        var myMsg = msg;
+            //set the lamp status
+            //first locate the Hue gateway:
+            hue.locateBridges(function(err, result) {
 
-            var msg2 = {};
-            msg2.topic = this.topic;
-            if (err) throw err;
-            //check for found bridges
-            if(result[0]!=null) {
-                //save the IP address of the 1st bridge found
-                this.gw_ipaddress = result[0].ipaddress;
+                var msg2 = {};
+                msg2.topic = this.topic;
+                if (err) throw err;
+                //check for found bridges
+                if(result[0]!=null) {
+                    //save the IP address of the 1st bridge found
+                    this.gw_ipaddress = result[0].ipaddress;
+                
 
-                //set light status
-                var api = new HueApi(this.gw_ipaddress, node.username);
-                var lightState = hue.lightState;
-                var state = lightState.create();
+                    //set light status
+                    var api = new HueApi(this.gw_ipaddress, node.username);
+                    var lightState = hue.lightState;
+                    var state = lightState.create();
 
-                var status;
-                if(msg.payload=="ALERT"){
-                    status = "ALERT";
-                }
-                else if(node.lamp_status=="ON" || msg.payload=="ON") status = "ON";
-                else if(node.lamp_status=="OFF" || msg.payload=="OFF") status = "OFF";
+                    var status;
+                    var lamp = -1;
+
+                    //check for AUTO status (lamp settings set through node input)
+                    if(node.lamp_status=="AUTO") {
+                        var color;
+                        var brightness;
+                        
+                        //get lamp id from msg.lamp:
+                        lamp = myMsg.lamp;
+
+                        //get brightness:
+                        brightness = myMsg.brightness;
+
+                        //get colour either from msg.color or msg.topic
+                        if(myMsg.color!=null && myMsg.color.length>0) {
+                            color = myMsg.color;
+                        } 
+                        else if(myMsg.topic!=null && myMsg.topic.length>0) {
+                            color = myMsg.topic;
+                        }
 
 
-                if(status=="ALERT") {
-                    api.setLightState(node.lamp_id, state.alert()).then(displayResult).fail(displayError).done();
-                }
-                else if(status=="ON") {
-                    if(node.color==null) {
-                        api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(msg.topic).r,hexToRgb(msg.topic).g,hexToRgb(msg.topic).b)).then(displayResult).fail(displayError).done();
+                        //check the payload for on/off/alert:
+                        //case of ALERT:
+                        if(myMsg.payload=="ALERT" || myMsg.payload=="alert"){
+                            api.setLightState(lamp, state.alert()).then(displayResult).fail(displayError).done();
+                        }
+
+                        //case of ON:
+                        if(myMsg.payload=="ON" || myMsg.payload=="on") {
+                            api.setLightState(lamp, state.on().rgb(hexToRgb(color).r,hexToRgb(color).g,hexToRgb(color).b).brightness(brightness)).then(displayResult).fail(displayError).done();
+                        }
+                        else {
+                            api.setLightState(lamp, state.off()).then(displayResult).fail(displayError).done();
+                        }
+
                     }
                     else {
-                        api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b)).then(displayResult).fail(displayError).done();
+                        //set lamp according to node settings
+                        if(node.lamp_status=="ON") 
+                             api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
+                        else
+                            api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
                     }
+
+                    if(lamp!=-1)
+                        msg2.payload = 'Light with ID: '+lamp+ ' was set to '+myMsg.payload;
+                    else
+                        msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+node.lamp_status;
+                    node.send(msg2);
                 }
                 else {
-                    api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
+                    //bridge not found:
+                    var msg = {};
+                    msg.payload = "Bridge not found!";
+                    node.send(msg);
                 }
 
-                msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+status;
-                node.send(msg2);
-            }
-            else {
-                //bridge not found:
-                var msg = {};
-                msg.payload = "Bridge not found!";
-                node.send(msg);
-            }
-
-        });
+            });
     });
+
 
     this.on("close", function() {
         // Called when the node is shutdown - eg on redeploy.
@@ -120,6 +164,9 @@ function HueNode(n) {
 var displayError = function(err) {
     console.error(err);
 };
+
+
+
 
 // Register the node by name. This must be called before overriding any of the
 // Node functions.
