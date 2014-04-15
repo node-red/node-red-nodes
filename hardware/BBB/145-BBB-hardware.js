@@ -16,13 +16,7 @@
 
 // Require main module
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
-
-// Require bonescript
-try {
-    var bonescript = require("bonescript");
-} catch (err) {
-    require("util").log("[145-BBB-hardware] Error: cannot find module 'bonescript'");
-}
+var bonescript = require("bonescript");
 
 // Node constructor for bbb-analogue-in
 function AnalogueInputNode(n) {
@@ -46,7 +40,7 @@ function AnalogueInputNode(n) {
     // Variables used for input averaging
     var sum;    // accumulates the input readings to be averaged
     var count;  // keep track of the number of measurements made
-    
+
     // The callback function for analogRead. Accumulates the required number of
     // measurements, then divides the total number, applies output scaling and
     // sends the result
@@ -113,11 +107,11 @@ function DiscreteInputNode(n) {
     this.starting = true;
     this.debouncing = false;        // True after a change of state while waiting for the 7ms debounce time to elapse
     this.debounceTimer = null;
-    
+
     // Define 'node' to allow us to access 'this' from within callbacks
     var node = this;
 
-    // This function is called by the input pin change-of-state interrupt. If 
+    // This function is called by the input pin change-of-state interrupt. If
     // debounce is disabled, send the output message. Otherwise, if we are
     // currently debouncing, ignore this interrupt. If we are not debouncing,
     // schedule a re-read of the input pin in 7ms time, and set the debouncing flag
@@ -146,7 +140,7 @@ function DiscreteInputNode(n) {
                 sendStateMessage(x);
             }
         };
-    
+
     // This function is called when either the interruptCallback or the debounceCallback
     // have determined we have a 'genuine' change of state. Update the currentState and
     // ActiveTime variables, and send a message on the first output with the new state
@@ -165,7 +159,7 @@ function DiscreteInputNode(n) {
                 node.send([msg, null]);
             }
         };
-        
+
     // This function is called by the timer. It updates the ActiveTime variables, and sends a
     // message on the second output with the latest value of the total active time, in seconds
     var timerCallback = function () {
@@ -270,7 +264,7 @@ function PulseInputNode(n) {
     // Define 'node' to allow us to access 'this' from within callbacks
     var node = this;
 
-    // Called by the edge or pulse interrupt. If this is a valid interrupt, record the 
+    // Called by the edge or pulse interrupt. If this is a valid interrupt, record the
     // pulse time and count the pulse
     var interruptCallback = function (x) {
             if (x.value !== undefined) {
@@ -350,12 +344,12 @@ function DiscreteOutputNode(n) {
     this.defaultState = Number(n.defaultState);     // What state to set up as
     this.inverting = n.inverting;
     this.toggle = n.toggle;
-    
+
     // Working variables
     this.currentState = this.defaultState;
-    
+
     var node = this;
-    
+
     // If the input message paylod is numeric, values > 0.5 are 'true', otherwise use
     // the truthiness of the payload. Apply the inversion flag before setting the output
     var inputCallback = function (msg) {
@@ -378,7 +372,7 @@ function DiscreteOutputNode(n) {
             node.send({ topic:node.topic, payload:newState });
             node.currentState = newState;
         };
-    
+
     // If we have a valid pin, set it as an output and set the default state
     if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
          "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
@@ -407,12 +401,12 @@ function PulseOutputNode(n) {
     this.defaultState = this.pulseState === 1 ? 0 : 1;
     this.retriggerable = n.retriggerable;
     this.pulseTime = n.pulseTime * 1000;          // Pulse width in milliseconds
-    
+
     // Working variables
     this.pulseTimer = null;                         // Non-null while a pulse is being generated
-    
+
     var node = this;
-    
+
     // Generate a pulse in response to an input message. If the topic includes the text
     // 'time' (case insensitive) and the payload is numeric, use this value as the
     // pulse time. Otherwise use the value from the properties dialog.
@@ -444,14 +438,14 @@ function PulseOutputNode(n) {
                 }
             }
         };
-    
+
     // At the end of the pulse, restore the default state and set the timer to null
     var endPulseCallback = function () {
             node.pulseTimer = null;
             bonescript.digitalWrite(node.pin, node.defaultState);
             node.send({ topic:node.topic, payload:node.defaultState });
         };
-    
+
     // If we have a valid pin, set it as an output and set the default state
     if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
          "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",

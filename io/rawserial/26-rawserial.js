@@ -21,8 +21,8 @@ var fs = require('fs');
 var plat = require('os').platform();
 var pre = "\\\\.\\";
 
-if (! plat.match(/^win/)) {
-    util.log("[26-rawserial.js] Advise: Only really needed for Windows boxes without serialport npm module installed.");
+if (!plat.match(/^win/)) {
+    util.log("[26-rawserial.js] Info : only really needed for Windows boxes without serialport npm module installed.");
     pre = "";
 }
 

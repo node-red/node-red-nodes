@@ -20,8 +20,7 @@ var fs =  require('fs');
 
 // check if /dev/ledborg exists - if not then don't even show the node.
 if (!fs.existsSync("/dev/ledborg")) {
-    util.log("[78-ledborg.js] Warning: PiBorg hardware : LedBorg not found");
-    return;
+    throw "Info : PiBorg hardware : LedBorg not found";
 }
 
 function LedBorgNode(n) {
