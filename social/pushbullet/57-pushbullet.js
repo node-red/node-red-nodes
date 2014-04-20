@@ -33,7 +33,7 @@ RED.httpAdmin.get('/pushbullet-api/global', function (req, res) {
 RED.httpAdmin.get('/pushbullet-api/:id', function (req, res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({hasApiKey: (credentials.apikey && credentials.apikey != "")}));
+        res.send(JSON.stringify({hasApiKey: (credentials.apikey && credentials.apikey != ""), deviceid: credentials.deviceid}));
     } else {
         res.send(JSON.stringify({}));
     }
@@ -55,7 +55,12 @@ RED.httpAdmin.post('/pushbullet-api/:id', function (req, res) {
         if (newCreds.apikey == "") {
             delete credentials.apikey;
         } else {
-            credentials.apikey = newCreds.apikey;
+            credentials.apikey = newCreds.apikey || credentials.apikey;
+        }
+        if (newCreds.deviceid == "" || newCreds.deviceid == null) {
+            delete credentials.deviceid;
+        } else {
+            credentials.deviceid = newCreds.deviceid;
         }
         RED.nodes.addCredentials(req.params.id, credentials);
         res.send(200);
@@ -65,10 +70,10 @@ RED.httpAdmin.post('/pushbullet-api/:id', function (req, res) {
 function PushBulletDevice(n) {
     RED.nodes.createNode(this, n);
     this.name = n.name;
-    this.deviceid = n.deviceid;
     var credentials = RED.nodes.getCredentials(n.id);
     if (credentials) {
         this.apikey = credentials.apikey;
+        this.deviceid = credentials.deviceid;
     }
 }
 RED.nodes.registerType("bullet-device", PushBulletDevice);

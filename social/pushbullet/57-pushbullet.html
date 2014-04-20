@@ -38,6 +38,7 @@
 
 
 
+
 </script>
 
 <script type="text/x-red" data-help-name="pushbullet">
@@ -45,6 +46,7 @@
     <p>Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.</p>
     <p>When creating a node, you'll have to first set a device that contain it's ID and your API key that you can find in the <a href="https://www.pushbullet.com/account">Account Settings</a></p>
     <p>The deviceid can be found by hovering over you required device on the <a href="https://www.pushbullet.com/">PushBullet website</a>.</p>
+
 
 
 
@@ -70,6 +72,7 @@
 
 
 
+
 </script>
 
 <script type="text/javascript">
@@ -82,15 +85,18 @@
     RED.nodes.registerType('bullet-device', {
         category: 'config',
         defaults: {
-            name: {value: "", required: true},
+            name: {value: "", required: true}
             //apikey: -> credentials
-            deviceid: {value: "", required: true}
+            //deviceid -> credentials
         },
         label: function () {
             return this.name;
         },
         oneditprepare: function () {
             $.getJSON('pushbullet-api/' + this.id, function (data) {
+                if (data.deviceid) {
+                    $('#node-config-input-deviceid').val(data.deviceid);
+                }
                 if (data.hasApiKey) {
                     $('#node-config-input-apikey').val('__PWRD__');
                 } else {
@@ -101,17 +107,19 @@
         },
         oneditsave: function () {
             var newApiKey = $('#node-config-input-apikey').val();
+            var credentials = {};
             if (newApiKey != '__PWRD__') {
-                var credentials = {};
                 credentials.apikey = newApiKey;
-                $.ajax({
-                    url: 'pushbullet-api/' + this.id,
-                    type: 'POST',
-                    data: credentials,
-                    success: function (result) {
-                    }
-                });
             }
+            credentials.deviceid = $('#node-config-input-deviceid').val();
+            $.ajax({
+                url: 'pushbullet-api/' + this.id,
+                type: 'POST',
+                data: credentials,
+                success: function (result) {
+                }
+            });
+
         },
         ondelete: function () {
             $.ajax({
