@@ -33,7 +33,7 @@ RED.httpAdmin.get('/pushbullet-api/global', function (req, res) {
 RED.httpAdmin.get('/pushbullet-api/:id', function (req, res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({hasApiKey: (credentials.apikey && credentials.apikey != ""), deviceid: credentials.deviceid}));
+        res.send(JSON.stringify({hasApiKey: (credentials.apikey && credentials.apikey != ""), deviceIdent: credentials.deviceIdent}));
     } else {
         res.send(JSON.stringify({}));
     }
@@ -57,10 +57,10 @@ RED.httpAdmin.post('/pushbullet-api/:id', function (req, res) {
         } else {
             credentials.apikey = newCreds.apikey || credentials.apikey;
         }
-        if (newCreds.deviceid == "" || newCreds.deviceid == null) {
-            delete credentials.deviceid;
+        if (newCreds.deviceIdent == "" || newCreds.deviceIdent == null) {
+            delete credentials.deviceIdent;
         } else {
-            credentials.deviceid = newCreds.deviceid;
+            credentials.deviceIdent = newCreds.deviceIdent;
         }
         RED.nodes.addCredentials(req.params.id, credentials);
         res.send(200);
@@ -73,7 +73,7 @@ function PushBulletDevice(n) {
     var credentials = RED.nodes.getCredentials(n.id);
     if (credentials) {
         this.apikey = credentials.apikey;
-        this.deviceid = credentials.deviceid;
+        this.deviceIdent = credentials.deviceIdent;
     }
 }
 RED.nodes.registerType("bullet-device", PushBulletDevice);
@@ -86,10 +86,10 @@ function PushbulletNode(n) {
 
     if (this.api) {
         this.pusher = new PushBullet(this.api.apikey);
-        this.deviceId = this.api.deviceid;
+        this.deviceIdent = this.api.deviceIdent;
     } else if (pushkey) {
         this.pusher = new PushBullet(pushkey.pushbullet);
-        this.deviceId = pushkey.deviceid;
+        this.deviceIdent = pushkey.deviceid;
     } else {
         this.error("missing pushbullet credentials");
         return;
@@ -105,7 +105,7 @@ function PushbulletNode(n) {
             msg.payload = msg.payload.toString();
         }
         try {
-            this.pusher.note(this.deviceId, titl, msg.payload, function (err, response) {
+            this.pusher.note(this.deviceIdent, titl, msg.payload, function (err, response) {
                 if (err) node.error("Pushbullet error: " + err);
                 //console.log(response);
             });

@@ -64,8 +64,8 @@
         <input type="password" id="node-config-input-apikey" >
     </div>
     <div class="form-row">
-        <label for="node-config-input-deviceid"><i class="icon-tasks"></i>Device Ident</label>
-        <input type="text" id="node-config-input-deviceid" >
+        <label for="node-config-input-deviceIdent"><i class="icon-tasks"></i>Device Ident</label>
+        <input type="text" id="node-config-input-deviceIdent" >
     </div>
     <div class="form-tips">The API key can be found on the <a target="_blank" href="https://www.pushbullet.com/account">Account Settings</a></div>
 
@@ -87,15 +87,15 @@
         defaults: {
             name: {value: "", required: true}
             //apikey: -> credentials
-            //deviceid -> credentials
+            //deviceIdent -> credentials
         },
         label: function () {
             return this.name;
         },
         oneditprepare: function () {
             $.getJSON('pushbullet-api/' + this.id, function (data) {
-                if (data.deviceid) {
-                    $('#node-config-input-deviceid').val(data.deviceid);
+                if (data.deviceIdent) {
+                    $('#node-config-input-deviceIdent').val(data.deviceIdent);
                 }
                 if (data.hasApiKey) {
                     $('#node-config-input-apikey').val('__PWRD__');
@@ -111,7 +111,7 @@
             if (newApiKey != '__PWRD__') {
                 credentials.apikey = newApiKey;
             }
-            credentials.deviceid = $('#node-config-input-deviceid').val();
+            credentials.deviceIdent = $('#node-config-input-deviceIdent').val();
             $.ajax({
                 url: 'pushbullet-api/' + this.id,
                 type: 'POST',
