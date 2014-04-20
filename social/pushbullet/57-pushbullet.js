@@ -28,12 +28,12 @@ var querystring = require('querystring');
 
 //REST API for credentials
 RED.httpAdmin.get('/pushbullet-api/global',function(req,res) {
-    res.send(JSON.stringify({hasApiKey:!(pushkey && pushkey.pushbullet &&  pushkey.deviceid)}));
+    res.send(JSON.stringify({hasApiKey:(pushkey && pushkey.pushbullet &&  pushkey.deviceid && pushkey.pushbullet != '' && pushkey.deviceid !='')}));
 });
 RED.httpAdmin.get('/pushbullet-api/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({hasApiKey:(credentials.apikey&&credentials.apikey!="")}));
+        res.send(JSON.stringify({hasApiKey:(credentials.apikey && credentials.apikey!="")}));
     } else {
         res.send(JSON.stringify({}));
     }

@@ -22,7 +22,7 @@
             <option value="local">Use local credentials</option>
         </select>
     </div>
-    <div class="form-row">
+    <div class="form-row" id="node-input-device-row">
         <label for="node-input-device"><i class="icon-tasks"></i> Device</label>
         <input type="text" id="node-input-device">
     </div>
@@ -35,6 +35,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
+
+
 </script>
 
 <script type="text/x-red" data-help-name="pushbullet">
@@ -42,6 +44,8 @@
     <p>Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.</p>
     <p>When creating a node, you'll have to first set a device that contain it's ID and your API key that you can find in the <a href="https://www.pushbullet.com/account">Account Settings</a></p>
     <p>The deviceid can be found by hovering over you required device on the <a href="https://www.pushbullet.com/">PushBullet website</a>.</p>
+
+
 
 </script>
 
@@ -53,7 +57,7 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-apikey"><i class="icon-tasks"></i>API-Key</label>
-        <input type="text" id="node-config-input-apikey" >
+        <input type="password" id="node-config-input-apikey" >
     </div>
     <div class="form-row">
         <label for="node-config-input-deviceid"><i class="icon-tasks"></i>Device ID</label>
@@ -61,18 +65,58 @@
     </div>
     <div class="form-tips">The API key can be found on the <a target="_blank" href="https://www.pushbullet.com/account">Account Settings</a></div>
 
+
+
 </script>
 
 <script type="text/javascript">
+
+    var hasGlobal = false;
+    $.getJSON('pushbullet-api/global', function (data) {
+        hasGlobal = data.hasApiKey;
+    });
+
     RED.nodes.registerType('bullet-device', {
         category: 'config',
         defaults: {
             name: {value: "", required: true},
-            apikey: {value: "", required: true},
+            //apikey: -> credentials
             deviceid: {value: "", required: true}
         },
         label: function () {
             return this.name;
+        },
+        oneditprepare: function () {
+            $.getJSON('pushbullet-api/' + this.id, function (data) {
+                if (data.hasApiKey) {
+                    $('#node-config-input-apikey').val('__PWRD__');
+                } else {
+                    $('#node-config-input-apikey').val('');
+                }
+
+            });
+        },
+        oneditsave: function () {
+            var newApiKey = $('#node-config-input-apikey').val();
+            if (newApiKey != '__PWRD__') {
+                var credentials = {};
+                credentials.apikey = newApiKey;
+                $.ajax({
+                    url: 'pushbullet-api/' + this.id,
+                    type: 'POST',
+                    data: credentials,
+                    success: function (result) {
+                    }
+                });
+            }
+        },
+        ondelete: function () {
+            $.ajax({
+                url: 'pushbullet-api/' + this.id,
+                type: 'DELETE',
+                success: function (result) {
+                }
+            });
         }
     });
 
@@ -93,6 +137,27 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            if (hasGlobal) {
+                $("#node-input-creds").change(function () {
+                    var val = $(this).val();
+                    if (val == "global") {
+                        $("#node-input-device-row").hide();
+                    } else {
+                        $("#node-input-device-row").show();
+                    }
+                });
+                $("#node-input-credentials-row").show();
+                if (!this.twilio) {
+                    $("#node-input-creds").val("global");
+                } else {
+                    $("#node-input-creds").val("local");
+                }
+                $("#node-input-creds").change();
+            } else {
+                $("#node-input-credentials-row").hide();
+            }
         }
     });
 </script>
