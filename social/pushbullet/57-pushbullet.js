@@ -18,6 +18,50 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var PushBullet = require('pushbullet');
 var util = require('util');
 
+try {
+    var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+}
+catch(err) {
+}
+
+var querystring = require('querystring');
+
+//REST API for credentials
+RED.httpAdmin.get('/pushbullet-api/global',function(req,res) {
+    res.send(JSON.stringify({hasApiKey:!(pushkey && pushkey.pushbullet &&  pushkey.deviceid)}));
+});
+RED.httpAdmin.get('/pushbullet-api/:id',function(req,res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+        res.send(JSON.stringify({hasApiKey:(credentials.apikey&&credentials.apikey!="")}));
+    } else {
+        res.send(JSON.stringify({}));
+    }
+});
+
+RED.httpAdmin.delete('/pushbullet-api/:id',function(req,res) {
+    RED.nodes.deleteCredentials(req.params.id);
+    res.send(200);
+});
+
+RED.httpAdmin.post('/pushbullet-api/:id',function(req,res) {
+    var body = "";
+    req.on('data', function(chunk) {
+        body+=chunk;
+    });
+    req.on('end', function(){
+        var newCreds = querystring.parse(body);
+        var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.token == "") {
+            delete credentials.apikey;
+        } else {
+            credentials.apikey = newCreds.token;
+        }
+        RED.nodes.addCredentials(req.params.id,credentials);
+        res.send(200);
+    });
+});
+
 function PushBulletDevice(n) {
     RED.nodes.createNode(this,n);
     this.name = n.name;
