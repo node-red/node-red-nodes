@@ -1,0 +1,88 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="nma">
+    <div class="form-row">
+        <label for="node-input-title"><i class="icon-flag"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="Node-RED">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-pushkey"><i class="icon-lock"></i> API Key</label>
+        <input type="password" id="node-config-input-pushkey">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nma">
+    <p>Uses NotifyMyAndroid (NMA) to push the <b>msg.payload</b> to an Android device that has NotifyMyAndroid app installed.</p>
+    <p>Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.</p>
+    <p>The API-key is stored in a separate credentials file.</p>
+    <p>Uses Notify-My-Android. See <i><a href="http://www.notifymyandroid.com/" target="_new">this link</a></i> for more details.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('nma',{
+        category: 'output',
+        defaults: {
+            title: {value:""},
+            name: {value:""}
+        },
+        color:"#a7c9a0",
+        inputs:1,
+        outputs:0,
+        icon: "nma.png",
+        align: "right",
+        label: function() {
+            return this.name||this.title||"nma";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $.getJSON('nma/'+this.id,function(data) {
+                if (data.hasPassword) {
+                    $('#node-config-input-pushkey').val('__PWRD__');
+                } else {
+                    $('#node-config-input-pushkey').val('');
+                }
+            });
+        },
+        oneditsave: function() {
+            var credentials = {};
+            var newPass = $('#node-config-input-pushkey').val();
+            if (newPass != '__PWRD__') {
+                credentials.pushkey = newPass;
+                $.ajax({
+                    url: 'nma/'+this.id,
+                    type: 'POST',
+                    data: credentials,
+                    success: function(result){}
+                });
+            }
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'nma/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
+        }
+    });
+</script>
