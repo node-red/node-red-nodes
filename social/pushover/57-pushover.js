@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2014 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,77 +15,78 @@
  **/
 
 var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var Prowl = require('node-prowl');
+var PushOver = require('pushover-notifications');
 var util = require('util');
 
-// Either add a line like this to settings.js
-//    prowl: {prowlkey:'My-API-KEY'},
-// or create pushkey.js in dir ABOVE node-red, it just needs to be like
-//    module.exports = {prowlkey:'My-API-KEY'}
-
-try {
-    var pushkeys = RED.settings.prowl || require(process.env.NODE_RED_HOME+"/../pushkey.js");
-}
-catch(err) { }
-
-function ProwlNode(n) {
+function PushoverNode(n) {
     RED.nodes.createNode(this,n);
     this.title = n.title;
-    this.priority = parseInt(n.priority);
-    if (this.priority > 2) this.priority = 2;
-    if (this.priority < -2) this.priority = -2;
+    this.priority = n.priority;
     var credentials = RED.nodes.getCredentials(n.id);
     if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
-    else {
-        if (pushkeys) { this.pushkey = pushkeys.prowlkey; }
-        else { this.error("No Prowl credentials set."); }
+    else { this.error("No Pushover api token set"); }
+    if ((credentials) && (credentials.hasOwnProperty("deviceid"))) { this.deviceid = credentials.deviceid; }
+    else { this.error("No Pushover user key set"); }
+    var pusher = false;
+    if (this.pushkey && this.deviceid) {
+        pusher = new PushOver({
+            user: this.deviceid,
+            token: this.pushkey,
+            onerror: function(err) {
+                util.log('[57-pushover.js] Error: '+err);
+            }
+        });
     }
-    this.prowl = false;
-    if (this.pushkey) { this.prowl = new Prowl(this.pushkey); }
     var node = this;
 
     this.on("input",function(msg) {
-        var titl = this.title||msg.topic||"Node-RED";
-        var pri = msg.priority||this.priority;
+        var titl = this.title || msg.topic || "Node-RED";
+        var pri = this.priority || msg.priority || 0;
+        if (isNaN(pri)) {pri=0;}
+        if (pri > 2) {pri = 2;}
+        if (pri < -1) {pri = -1;}
         if (typeof(msg.payload) === 'object') {
             msg.payload = JSON.stringify(msg.payload);
         }
         else { msg.payload = msg.payload.toString(); }
-        if (node.pushkey) {
-            try {
-                node.prowl.push(msg.payload, titl, { priority: pri }, function(err, remaining) {
-                    if (err) node.error(err);
-                    node.log( remaining + ' calls to Prowl api during current hour.' );
-                });
-            }
-            catch (err) {
-                node.error(err);
-            }
+        if (pusher) {
+            var pushmsg = {
+                message: msg.payload,
+                title: titl,
+                priority: pri,
+                retry: 30,
+                expire: 600
+            };
+            //console.log("Sending",pushmsg);
+            pusher.send( pushmsg, function(err, response) {
+                if (err) node.error("Pushover Error: "+err);
+                //console.log(response);
+            });
         }
         else {
-            node.warn("Prowl credentials not set.");
+            node.warn("Pushover credentials not set.");
         }
     });
 }
-RED.nodes.registerType("prowl",ProwlNode);
+RED.nodes.registerType("pushover",PushoverNode);
 
 var querystring = require('querystring');
 
-RED.httpAdmin.get('/prowl/:id',function(req,res) {
+RED.httpAdmin.get('/pushover/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));
+        res.send(JSON.stringify({deviceid:credentials.deviceid,hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));
     } else {
         res.send(JSON.stringify({}));
     }
 });
 
-RED.httpAdmin.delete('/prowl/:id',function(req,res) {
+RED.httpAdmin.delete('/pushover/:id',function(req,res) {
     RED.nodes.deleteCredentials(req.params.id);
     res.send(200);
 });
 
-RED.httpAdmin.post('/prowl/:id',function(req,res) {
+RED.httpAdmin.post('/pushover/:id',function(req,res) {
     var body = "";
     req.on('data', function(chunk) {
         body+=chunk;
@@ -93,6 +94,11 @@ RED.httpAdmin.post('/prowl/:id',function(req,res) {
     req.on('end', function(){
         var newCreds = querystring.parse(body);
         var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.deviceid == null || newCreds.deviceid == "") {
+            delete credentials.deviceid;
+        } else {
+            credentials.deviceid = newCreds.deviceid;
+        }
         if (newCreds.pushkey == "") {
             delete credentials.pushkey;
         } else {
