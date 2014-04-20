@@ -37,6 +37,7 @@
 
 
 
+
 </script>
 
 <script type="text/x-red" data-help-name="pushbullet">
@@ -44,6 +45,7 @@
     <p>Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.</p>
     <p>When creating a node, you'll have to first set a device that contain it's ID and your API key that you can find in the <a href="https://www.pushbullet.com/account">Account Settings</a></p>
     <p>The deviceid can be found by hovering over you required device on the <a href="https://www.pushbullet.com/">PushBullet website</a>.</p>
+
 
 
 
@@ -64,6 +66,7 @@
         <input type="text" id="node-config-input-deviceid" >
     </div>
     <div class="form-tips">The API key can be found on the <a target="_blank" href="https://www.pushbullet.com/account">Account Settings</a></div>
+
 
 
 
@@ -123,7 +126,9 @@
     RED.nodes.registerType('pushbullet', {
         category: 'output',
         defaults: {
-            device: {type: "bullet-device", required: true},
+            device: {type: "bullet-device", validate: function (v) {
+                return hasGlobal || (v && v != "_ADD_")
+            }},
             title: {value: ""},
             name: {value: ""}
         },
@@ -149,7 +154,7 @@
                     }
                 });
                 $("#node-input-credentials-row").show();
-                if (!this.twilio) {
+                if (!this.device) {
                     $("#node-input-creds").val("global");
                 } else {
                     $("#node-input-creds").val("local");
