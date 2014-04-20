@@ -23,7 +23,7 @@ var util = require('util');
 // or create pushkey.js in dir ABOVE node-red, it just needs to be like
 //    module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
 
-try {
+/*try {
     var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
 }
 catch(err) {
@@ -34,18 +34,31 @@ if (pushkey) {
     if (pushkey.pushbullet) { var pusher = new PushBullet(pushkey.pushbullet); }
     if (pushkey.deviceid) { var deviceId = pushkey.deviceid; }
 }
+*/
+
+function PushBulletDevice(n) {
+    RED.nodes.createNode(this,n);
+    this.name = n.name;
+    this.apikey = n.apikey;
+    this.deviceid = n.deviceid;
+}
+RED.nodes.registerType("bullet-device",PushBulletDevice);
 
 function PushbulletNode(n) {
     RED.nodes.createNode(this,n);
     this.title = n.title;
     var node = this;
+    this.device = n.device;
+    this.deviceInfo = RED.nodes.getNode(this.device);
+    var pusher = new PushBullet(this.deviceInfo.apikey);
+    var deviceId = this.deviceInfo.deviceid;
     this.on("input",function(msg) {
         var titl = this.title||msg.topic||"Node-RED";
         if (typeof(msg.payload) === 'object') {
             msg.payload = JSON.stringify(msg.payload);
         }
         else { msg.payload = msg.payload.toString(); }
-        if (pushkey.pushbullet && pushkey.deviceid) {
+        if (this.deviceInfo.apikey && this.deviceInfo.deviceid) {
             try {
                 if (!isNaN(deviceId)) { deviceId = Number(deviceId); }
                 pusher.note(deviceId, titl, msg.payload, function(err, response) {
