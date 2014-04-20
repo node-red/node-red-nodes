@@ -13,6 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
+
 -->
 
 <script type="text/x-red" data-template-name="HueNode">
@@ -36,6 +37,11 @@
   </div>
 
   <div class="form-row">
+    <label for="node-input-brightness"><i class="icon-tag"></i>Change Brightness (0->100):</label>
+    <input type="text" id="node-input-brightness" placeholder="brightness">
+  </div>
+
+  <div class="form-row">
     <label for="node-input-color"><i class="icon-tag"></i>Select color:</label>
     <input type="text" id="node-input-color" placeholder="color">
   </div>
@@ -50,29 +56,38 @@
 <script type="text/x-red" data-help-name="HueNode">
     <p>This node implements some basic functionality for managing a Philips Hue wireless Lamp system.</p>
     <p>To use it you need to have obtained a valid auth token (or username) from your Philips Hue Bridge. Read <a href="http://developers.meethue.com/gettingstarted.html" target="_blank">here</a> on how to do this.</p>
-    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF and also set its color. </p><p>By setting the status to AUTO, you can set the ON/OFF status as a message payload (e.g., msg.payload="ON") and the color through the message topic (e.g., msg.topic="EBF5FF") on the node input. Please note, in case you use both, the status selection overides the msg.payload!</p><p>Also, if you pass something like msg.payload="ALERT" the Lamp will flash once.</p>
+    <p>You can enter the ID (1, 2, ...) of a Lamp and turn it ON or OFF, set the color and the brightness (0->100). </p><p>By setting the status to AUTO, you can set the lamp parameters using the message on the input node as follows:</p>
+    <ul>
+    <li>msg.lamp sets the lamp ID</li>
+    <li>msg.color sets the lamp color (e.g., msg.color="DF0101" will set the color to red)</li>
+    <li>msg.brightness sets the lamp brightness (e.g., msg.brightness=50)</li>
+    <li>msg.payload is used to se the lamp status (on/off/alert) (e.g., msg.payload="alert" will flash the Lamp once</li>
+    </ul>
+
+    <p>Please note, by setting the status to AUTO on the node configuration, the rest of the node parameters are ignored, you need to set all parameters through the message input.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <script type="text/javascript">
     RED.nodes.registerType('HueNode',{
-        category: 'advanced-input',
+        category: 'advanced-input',      // the palette category
         color:"#EFEFEF",
-        defaults: {
-            name: {value:""},
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
             username: {value:"", required:true},
             discovery_mode: {value: "", required:false},
             lamp_id: {value:"", required:false},
             color: {value:"EBF5FF"},
+            brightness: {value:"100"},
             lamp_status:{}
         },
-        inputs:1,
-        outputs:1,
-        icon: "hue.png",
-        label: function() {
-            return this.name||"HueNode";
+        inputs:1,                // set the number of inputs - only 0 or 1
+        outputs:1,               // set the number of outputs - 0 to n
+        icon: "huemanage.png",    // set the icon (held in public/icons)
+        label: function() {      // sets the default label contents
+            return this.name||this.topic||"HueNode";
         },
-        labelStyle: function() {
+        labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
         }
     });
