@@ -48,7 +48,6 @@ function KickassNode(n) {
                 });
                 node.send(msg);
             } else {
-                node.error(errors);
                 node.send(msg);
             }
         });
