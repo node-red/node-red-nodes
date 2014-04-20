@@ -30,10 +30,11 @@ function KickassNode(n) {
     });
     this.on("input", function (msg) {
         var query = msg.topic || this.title;
+        msg.topic = query;
+        msg.payload = [];
         this.kickass.setQuery(query).run(function (errors, data) {
             if (!errors.length > 0) {
-                msg.topic = query;
-                msg.payload = [];
+
                 data.forEach(function (torrent) {
                     var parsedTorrent = {};
                     parsedTorrent.title = torrent.title;
@@ -47,7 +48,8 @@ function KickassNode(n) {
                 });
                 node.send(msg);
             } else {
-                node.err(errors);
+                node.error(errors);
+                node.send(msg);
             }
         });
     });
