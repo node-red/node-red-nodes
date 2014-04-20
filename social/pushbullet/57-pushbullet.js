@@ -100,9 +100,6 @@ function PushbulletNode(n) {
             msg.payload = msg.payload.toString();
         }
         try {
-            if (!isNaN(this.deviceId)) {
-                this.deviceId = Number(this.deviceId);
-            }
             this.pusher.note(this.deviceId, titl, msg.payload, function (err, response) {
                 if (err) node.error("Pushbullet error: " + err);
                 //console.log(response);
