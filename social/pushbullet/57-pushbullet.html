@@ -15,7 +15,7 @@
 -->
 
 <script type="text/x-red" data-template-name="pushbullet">
-	<div class="form-row">
+    <div class="form-row">
         <label for="node-input-device"><i class="icon-tasks"></i> Device</label>
         <input type="text" id="node-input-device">
     </div>
@@ -39,7 +39,7 @@
     RED.nodes.registerType('pushbullet',{
         category: 'output',
         defaults: {
-			device:  {type:"bullet-device", required:true},
+            device:  {type:"bullet-device", required:true},
             title: {value:""},
             name: {value:""}
         },
@@ -58,7 +58,7 @@
 </script>
 
 <script type="text/x-red" data-template-name="bullet-device">
-  <div class="form-row">
+    <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tasks"></i>Name</label>
         <input type="text" id="node-config-input-name" >
     </div>
@@ -76,7 +76,7 @@
     RED.nodes.registerType('bullet-device',{
         category: 'config',
         defaults: {
-			name: {value: "",requiered:true},
+            name: {value: "",requiered:true},
             apikey: {value:"",required:true},
             deviceid: {value:"",required:true}
         },

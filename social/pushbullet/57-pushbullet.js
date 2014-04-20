@@ -18,24 +18,6 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
 var PushBullet = require('pushbullet');
 var util = require('util');
 
-// Either add a line like this to settings.js
-//    pushbullet: {pushbullet:'My-API-KEY', deviceid:'12345'},
-// or create pushkey.js in dir ABOVE node-red, it just needs to be like
-//    module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
-
-/*try {
-    var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
-}
-catch(err) {
-    util.log("[57-pushbullet.js] Error: Failed to load PushBullet credentials");
-}
-
-if (pushkey) {
-    if (pushkey.pushbullet) { var pusher = new PushBullet(pushkey.pushbullet); }
-    if (pushkey.deviceid) { var deviceId = pushkey.deviceid; }
-}
-*/
-
 function PushBulletDevice(n) {
     RED.nodes.createNode(this,n);
     this.name = n.name;
