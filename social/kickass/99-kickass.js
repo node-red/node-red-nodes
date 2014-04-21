@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 var RED = require(process.env.NODE_RED_HOME + "/red/red");
-var Kickass = require('node-kickass');
+var Kickass = require('node-kickass-json');
 
 
 function KickassNode(n) {
@@ -31,24 +31,12 @@ function KickassNode(n) {
     this.on("input", function (msg) {
         var query = msg.topic || this.title;
         msg.topic = query;
-        msg.payload = [];
-        this.kickass.setQuery(query).run(function (errors, data) {
-            if (!errors.length > 0) {
-
-                data.forEach(function (torrent) {
-                    var parsedTorrent = {};
-                    parsedTorrent.title = torrent.title;
-                    parsedTorrent.description = torrent.description;
-                    parsedTorrent.date = torrent.date;
-                    parsedTorrent.link = torrent.link;
-                    parsedTorrent.categories = torrent.categories;
-                    parsedTorrent.torrentFileInfo = torrent.enclosures[0];
-                    parsedTorrent.torrentMagnet = torrent["torrent:magneturi"]["#"];
-                    msg.payload.push(parsedTorrent);
-                });
+        this.kickass.setQuery(query).run(function (error, data) {
+            if (error === null) {
+                msg.payload = data;
                 node.send(msg);
             } else {
-                node.send(msg);
+                node.error(error);
             }
         });
     });
