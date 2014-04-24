@@ -36,30 +36,30 @@ function PushbulletNode(n) {
     if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
     else {
         if (pushkeys) { this.pushkey = pushkeys.pushbullet; }
-        else { this.error("No credentials set"); }
+        else { this.error("No Pushbullet API key set"); }
     }
     if ((credentials) && (credentials.hasOwnProperty("deviceid"))) { this.deviceid = credentials.deviceid; }
     else {
         if (pushkeys) { this.deviceid = pushkeys.deviceid; }
-        else { this.warn("No deviceId set"); }
+        else { this.warn("No deviceid set"); }
     }
-    //console.log("Cred:",n.id,this.deviceid,this.pushkey);
     this.pusher = new PushBullet(this.pushkey);
     var node = this;
 
     this.on("input",function(msg) {
         var titl = node.title||msg.topic||"Node-RED";
-        var dev = msg.deviceID||node.deviceId;
+        var dev = msg.deviceid||node.deviceid;
         if (typeof(msg.payload) === 'object') {
             msg.payload = JSON.stringify(msg.payload);
         }
         else { msg.payload = msg.payload.toString(); }
-        if (node.pushkey && node.deviceid) {
+        if (node.pushkey && dev) {
+            console.log(node.pushkey,dev);
             try {
-                if (!isNaN(node.deviceId)) { node.deviceId = Number(node.deviceId); }
+                if (!isNaN(dev)) { dev = Number(dev); }
                 node.pusher.note(dev, titl, msg.payload, function(err, response) {
                     if (err) node.error("Pushbullet error: "+err);
-                    //console.log(response);
+                    console.log(response);
                 });
             }
             catch (err) {
@@ -79,7 +79,13 @@ RED.httpAdmin.get('/pushbullet/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({deviceid:credentials.deviceid,hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));
-    } else {
+    }
+    else if (pushkeys && pushkeys.pushbullet && pushkeys.deviceid) {
+        RED.nodes.addCredentials(req.params.id,{pushkey:pushkeys.pushbullet,deviceid:pushkeys.deviceid,global:true});
+        credentials = RED.nodes.getCredentials(req.params.id);
+        res.send(JSON.stringify({deviceid:credentials.deviceid,global:credentials.global,hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));;
+    }
+    else {
         res.send(JSON.stringify({}));
     }
 });
