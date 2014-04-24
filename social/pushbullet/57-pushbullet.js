@@ -54,12 +54,11 @@ function PushbulletNode(n) {
         }
         else { msg.payload = msg.payload.toString(); }
         if (node.pushkey && dev) {
-            console.log(node.pushkey,dev);
             try {
                 if (!isNaN(dev)) { dev = Number(dev); }
                 node.pusher.note(dev, titl, msg.payload, function(err, response) {
                     if (err) node.error("Pushbullet error: "+err);
-                    console.log(response);
+                    //console.log(response);
                 });
             }
             catch (err) {
