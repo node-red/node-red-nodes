@@ -75,7 +75,13 @@ RED.httpAdmin.get('/prowl/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));
-    } else {
+    }
+    else if (pushkeys && pushkeys.prowlkey) {
+        RED.nodes.addCredentials(req.params.id,{pushkey:pushkeys.prowlkey,global:true});
+        credentials = RED.nodes.getCredentials(req.params.id);
+        res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!=""),global:credentials.global}));;
+    }
+    else {
         res.send(JSON.stringify({}));
     }
 });
