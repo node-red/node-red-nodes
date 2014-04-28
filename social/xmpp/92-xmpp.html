@@ -17,9 +17,7 @@
 <script type="text/x-red" data-template-name="xmpp">
     <div class="form-row">
         <label for="node-input-server"><i class="icon-bookmark"></i> Server</label>
-        <input type="text" id="node-input-server" placeholder="talk.google.com"  style="width: 40%;" >
-        <label for="node-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
-        <input type="text" id="node-input-port" placeholder="Port" style="width:45px">
+        <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
@@ -52,12 +50,7 @@
     <p>The second output will user presence and status in <b>msg.payload</b>.</p>
     <p>The <b>To</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</p>
     <p>If you are joining a room then the <b>To</b> field must be filled in.</p>
-    <p>Uses the simple-xmpp module - you may also need to pre-configure your xmpp settings as per below.</p>
-    <p>Either add to your settings.js file...</p>
-    <p><pre>xmpp : { jid : "yourid", password: "password" },</pre></p>
-    <p>Or create a file xmppkeys.js containing</p>
-    <p><pre>module.exports = { jid: "yourid", password: "password" }</pre></p>
-    <p>This <b>must</b> be located in the directory above node-red.</p>
+
 </script>
 
 <script type="text/javascript">
@@ -66,8 +59,7 @@
         color:"Silver",
         defaults: {
             name: {value:""},
-            server: { value:"",required:true},
-            port: {value:5222,required:true},
+            server: {type:"xmpp-server",required:true},
             to: {value:""},
             join: {value:false},
             sendObject: {value:false},
@@ -77,10 +69,88 @@
         outputs:2,
         icon: "xmpp.png",
         label: function() {
-            return this.name||this.server||"xmpp";
+            return this.name||"xmpp";
         },
         labelStyle: function() {
             return (this.name||!this.server)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="xmpp-server">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="icon-bookmark"></i> Server</label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-user"></i> Username</label>
+        <input type="text" id="node-config-input-user">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-pass"><i class="icon-lock"></i> Password</label>
+        <input type="password" id="node-config-input-pass">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xmpp-server',{
+        category: 'config',
+        defaults: {
+            server: {required:true},
+            port: {value:5222,required:true,validate:RED.validators.number()},
+            user: {required:true},
+            pass: {required:true}
+
+        },
+        label: function() {
+            return (this.user?this.user+"@":"")+this.server+":"+this.port;
+        },
+        oneditprepare: function() {
+            $.getJSON('xmpp-server/'+this.id,function(data) {
+                if (data.user) {
+                    $('#node-config-input-user').val(data.user);
+                }
+                if (data.server) {
+                    $('#node-config-input-server').val(data.server);
+                }
+                if (data.port) {
+                    $('#node-config-input-port').val(data.port);
+                }
+                if (data.hasPassword) {
+                    $('#node-config-input-pass').val('__PWRD__');
+                } else {
+                    $('#node-config-input-pass').val('');
+                }
+
+            });
+        },
+        oneditsave: function() {
+            var newUser = $('#node-config-input-user').val();
+            var newPass = $('#node-config-input-pass').val();
+            //var newServer = $('#node-config-input-server').val();
+            //var newPort = $('#node-config-input-port').val();
+            var credentials = {};
+            credentials.user = newUser;
+            if (newPass != '__PWRD__') {
+                credentials.password = newPass;
+            }
+            //credentials.server = newServer;
+            //credentials.port = newPort;
+            $.ajax({
+                url: 'xmpp-server/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success:function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'xmpp-server/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
         }
     });
 </script>

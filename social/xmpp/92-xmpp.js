@@ -29,13 +29,85 @@ console.warn = orig;
 try {
     var xmppkey = RED.settings.xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
 } catch(err) {
-    throw new Error("Failed to load XMPP credentials");
+//    throw new Error("Failed to load XMPP credentials");
 }
+
+function XMPPServerNode(n) {
+    RED.nodes.createNode(this,n);
+    this.server = n.server;
+    this.port = n.port;
+    var credentials = RED.nodes.getCredentials(n.id);
+    if (credentials) {
+        this.username = credentials.user;
+        this.password = credentials.password;
+    }  
+}
+RED.nodes.registerType("xmpp-server",XMPPServerNode);
+
+var querystring = require('querystring');
+
+RED.httpAdmin.get('/xmpp-server/:id',function(req,res) {
+    var credentials = RED.nodes.getCredentials(req.params.id);
+    if (credentials) {
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else if (xmppkey && xmppkey.jid && xmppkey.password) {
+        RED.nodes.addCredentials(req.params.id,{user:xmppkey.jid,password:xmppkey.password});
+	credentials = RED.nodes.getCredentials(req.params.id);
+	res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else {
+        res.send(JSON.stringify({}));
+    }
+});
+
+RED.httpAdmin.delete('/xmpp-server/:id',function(req,res) {
+    RED.nodes.deleteCredentials(req.params.id);
+    res.send(200);
+});
+
+RED.httpAdmin.post('/xmpp-server/:id',function(req,res) {
+    var body = "";
+    req.on('data', function(chunk) {
+        body+=chunk;
+    });
+    req.on('end', function(){
+        var newCreds = querystring.parse(body);
+        var credentials = RED.nodes.getCredentials(req.params.id)||{};
+        if (newCreds.user == null || newCreds.user == "") {
+            delete credentials.user;
+        } else {
+            credentials.user = newCreds.user;
+        }
+        if (newCreds.password == "") {
+            delete credentials.password;
+        } else {
+            credentials.password = newCreds.password||credentials.password;
+        }
+        RED.nodes.addCredentials(req.params.id,credentials);
+        res.send(200);
+    });
+});
+
 
 function XmppNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
-    this.port = n.port;
+    try {
+       this.serverConfig = RED.nodes.getNode(this.server);
+    } catch (err) {
+    }
+    if (this.serverConfig){
+        this.host = this.serverConfig.server;
+        this.port = this.serverConfig.port;
+        this.jid = this.serverConfig.username;
+        this.password = this.serverConfig.password;
+    } else if (xmppkey) {
+        console.warn("no serverConfig found, trying old creds file");
+        this.host = n.server;
+	this.port = n.port;
+	this.jid = xmppkey.jid;
+	this.password = xmppkey.password;
+    }
+
     this.join = n.join || false;
     this.nick = n.nick || "Node-RED";
     this.sendAll = n.sendObject;
@@ -44,10 +116,10 @@ function XmppNode(n) {
 
     setTimeout(function() {
         xmpp.connect({
-            jid         : xmppkey.jid,
-            password    : xmppkey.password,
-            host        : this.server,
-            port        : this.port,
+            jid         : node.jid,
+            password    : node.password,
+            host        : node.host,
+            port        : node.port,
             skipPresence : true,
             reconnect : false
         });
