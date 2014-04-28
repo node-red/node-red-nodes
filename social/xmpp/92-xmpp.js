@@ -22,15 +22,15 @@ console.warn=(function() { // suppress warning from stringprep when not needed)
     };
 })();
 
+var RED = require(process.env.NODE_RED_HOME+"/red/red");
+var xmpp = require('simple-xmpp');
+console.warn = orig;
+
 try {
     var xmppkey = RED.settings.xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js");
 } catch(err) {
 //    throw new Error("Failed to load XMPP credentials");
 }
-
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var xmpp = require('simple-xmpp');
-console.warn = orig;
 
 function XMPPServerNode(n) {
     RED.nodes.createNode(this,n);
@@ -50,6 +50,10 @@ RED.httpAdmin.get('/xmpp-server/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
         res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+    } else if (xmppkey && xmppkey.jid && xmppkey.password) {
+        RED.nodes.addCredentials(req.params.id,{user:xmppkey.jid,password:xmppkey.password});
+	credentials = RED.nodes.getCredentials(req.params.id);
+	res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
     } else {
         res.send(JSON.stringify({}));
     }
@@ -87,14 +91,21 @@ RED.httpAdmin.post('/xmpp-server/:id',function(req,res) {
 function XmppNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
-    this.serverConfig = RED.nodes.getNode(this.server);
+    try {
+       this.serverConfig = RED.nodes.getNode(this.server);
+    } catch (err) {
+    }
     if (this.serverConfig){
         this.host = this.serverConfig.server;
         this.port = this.serverConfig.port;
         this.jid = this.serverConfig.username;
         this.password = this.serverConfig.password;
-    } else {
-        console.log("no serverConfig found");
+    } else if (xmppkey) {
+        console.warn("no serverConfig found, trying old creds file");
+        this.host = n.server;
+	this.port = n.port;
+	this.jid = xmppkey.jid;
+	this.password = xmppkey.password;
     }
 
     this.join = n.join || false;

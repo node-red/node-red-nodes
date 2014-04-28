@@ -74,7 +74,7 @@
         outputs:2,
         icon: "xmpp.png",
         label: function() {
-            return this.name||this.server||"xmpp";
+            return this.name||"xmpp";
         },
         labelStyle: function() {
             return (this.name||!this.server)?"node_label_italic":"";
@@ -85,7 +85,7 @@
 <script type="text/x-red" data-template-name="xmpp-server">
     <div class="form-row node-input-server">
         <label for="node-config-input-server"><i class="icon-bookmark"></i> Server</label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="Server" style="width: 40%;" >
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
         <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
         <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
     </div>
@@ -103,12 +103,10 @@
     RED.nodes.registerType('xmpp-server',{
         category: 'config',
         defaults: {
-            server: {value:"localhost",required:true},
+            server: {required:true},
             port: {value:5222,required:true,validate:RED.validators.number()},
             user: {required:true},
             pass: {required:true}
-            //user -> credentials
-            //pass -> credentials
 
         },
         label: function() {
@@ -118,6 +116,12 @@
             $.getJSON('xmpp-server/'+this.id,function(data) {
                 if (data.user) {
                     $('#node-config-input-user').val(data.user);
+                }
+                if (data.server) {
+                    $('#node-config-input-server').val(data.server);
+                }
+                if (data.port) {
+                    $('#node-config-input-port').val(data.port);
                 }
                 if (data.hasPassword) {
                     $('#node-config-input-pass').val('__PWRD__');
@@ -130,11 +134,15 @@
         oneditsave: function() {
             var newUser = $('#node-config-input-user').val();
             var newPass = $('#node-config-input-pass').val();
+            //var newServer = $('#node-config-input-server').val();
+            //var newPort = $('#node-config-input-port').val();
             var credentials = {};
             credentials.user = newUser;
             if (newPass != '__PWRD__') {
                 credentials.password = newPass;
             }
+            //credentials.server = newServer;
+            //credentials.port = newPort;
             $.ajax({
                 url: 'xmpp-server/'+this.id,
                 type: 'POST',
