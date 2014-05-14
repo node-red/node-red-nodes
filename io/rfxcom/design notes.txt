@@ -1,0 +1,27 @@
+Lighting1   -   Off, On, All Off, All On, Chime
+    Subtype
+        X10
+        ARC
+        ELRO AB400D
+        Waveman
+        EMW200
+        Impuls
+        RisingSun
+        Philips SBC
+    HouseCode
+    UnitCode
+    
+Lighting2   -   Off, On, Set Level, Group Off, Group On, Set Group Level
+    Subtype
+        AC
+        HOMEEASY_EU
+        ANSLUT
+    ID
+    UnitCode
+    
+Lighting5   -   Off, On
+    Subtype
+        Lightwave RF, Siemens
+        EMW100 GAO/Everflourish
+    ID
+    UnitCode
