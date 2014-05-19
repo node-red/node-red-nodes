@@ -16,7 +16,7 @@
 
 -->
 
-<script type="text/x-red" data-template-name="Pusher">
+<script type="text/x-red" data-template-name="pusher in">
   <div class="form-row">
      <label for="node-input-topic"><i class="icon-tasks"></i>App Key:</label>
      <input type="text" id="node-input-appkey_sub" placeholder="apikey">
@@ -40,13 +40,13 @@
 </script>
 
 <!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="Pusher">
+<script type="text/x-red" data-help-name="pusher in">
     <p>Pusher input mode. Use this node to subscribe to a Pusher channel/event. You need a valid Pusher App key.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <script type="text/javascript">
-    RED.nodes.registerType('Pusher',{
+    RED.nodes.registerType('pusher in',{
         category: 'social-output',      // the palette category
         color:"#A9D0F5",
         defaults: {             // defines the editable properties of the node
@@ -59,7 +59,7 @@
         outputs:1,               // set the number of outputs - 0 to n
         icon: "pusher.png",    // set the icon (held in public/icons)
         label: function() {      // sets the default label contents
-            return this.name||this.topic||"Pusher";
+            return this.name||this.topic||"pusher";
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
@@ -87,7 +87,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="Pusher out">
+<script type="text/x-red" data-template-name="pusher out">
   <div class="form-row">
      <label for="node-input-topic"><i class="icon-tasks"></i>App ID:</label>
      <input type="text" id="node-input-appid" placeholder="appid">
@@ -121,13 +121,13 @@
 </script>
 
 <!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="Pusher out">
+<script type="text/x-red" data-help-name="pusher out">
     <p>Pusher output node for sending messages to a specific channel/event. You need an App key, secret and ID of a Pusher app. The node will send the payload of the incoming message.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
 <script type="text/javascript">
-    RED.nodes.registerType('Pusher out',{
+    RED.nodes.registerType('pusher out',{
         category: 'social-input',      // the palette category
         color:"#A9D0F5",
         defaults: {             // defines the editable properties of the node
@@ -143,7 +143,7 @@
         icon: "pusher.png",    // set the icon (held in public/icons)
         align: "right",
         label: function() {      // sets the default label contents
-            return this.name||this.topic||"Pusher";
+            return this.name||this.topic||"pusher";
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";

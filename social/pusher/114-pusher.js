@@ -128,8 +128,8 @@ var displayError = function(err) {
 
 // Register the node by name. This must be called before overriding any of the
 // Node functions.
-RED.nodes.registerType("Pusher out",PusherNodeSend);
-RED.nodes.registerType("Pusher",PusherNode);
+RED.nodes.registerType("pusher out",PusherNodeSend);
+RED.nodes.registerType("pusher in",PusherNode);
 
 var querystring = require('querystring');
 
