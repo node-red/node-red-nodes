@@ -51,7 +51,6 @@
         color:"#A9D0F5",
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
-            appkey_sub: {value:"", required:true},
             channel: {value:"", required:true},
             eventname: {value:"", required:true}
         },
@@ -75,6 +74,13 @@
                 type: 'POST',
                 data: credentials,
                 success: function(result){}
+            });
+        },
+        oneditprepare: function() {
+            $.getJSON('pusher/'+this.id,function(data) {
+                if (data.pusherappkey_sub) {
+                    $('#node-input-appkey_sub').val(data.pusherappkey_sub);
+                }
             });
         },
         ondelete: function() {
@@ -132,11 +138,9 @@
         color:"#A9D0F5",
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
-            appid: {value:"", required:true},
-            appkey: {value:"", required:true},
-            appsecret: {value:"", required:true},
             channel: {value:"", required:true},
-            eventname: {value:"", required:true}
+            eventname: {value:"", required:true},
+            appid: {value:"", required:true}
         },
         inputs:1,                // set the number of inputs - only 0 or 1
         outputs:0,               // set the number of outputs - 0 to n
@@ -163,6 +167,21 @@
                 type: 'POST',
                 data: credentials,
                 success: function(result){}
+            });
+        },
+        oneditprepare: function() {
+            $.getJSON('pusher/'+this.id,function(data) {
+                if (data.pusherappid) {
+                    $('#node-input-appid').val(data.pusherappid);
+                }
+                if (data.pusherappkey) {
+                    $('#node-input-appkey').val(data.pusherappkey);
+                } 
+
+                if (data.pusherappsecret) {
+                    $('#node-input-appsecret').val(data.pusherappsecret);
+                } 
+
             });
         },
         ondelete: function() {
