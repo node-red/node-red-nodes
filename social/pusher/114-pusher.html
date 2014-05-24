@@ -1,4 +1,5 @@
 <!--
+
   Copyright 2014 Charalampos Doukas, @BuildingIoT
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,52 +14,47 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-
 -->
 
 <script type="text/x-red" data-template-name="pusher in">
   <div class="form-row">
-     <label for="node-input-topic"><i class="icon-tasks"></i>App Key:</label>
+     <label for="node-input-topic"><i class="icon-tasks"></i>App Key</label>
      <input type="text" id="node-input-appkey_sub" placeholder="apikey">
   </div>
-
   <div class="form-row">
-     <label for="node-input-topic"><i class="icon-tasks"></i>Channel:</label>
+     <label for="node-input-topic"><i class="icon-tasks"></i>Channel</label>
      <input type="text" id="node-input-channel" placeholder="channel">
   </div>
-
   <div class="form-row">
-     <label for="node-input-topic"><i class="icon-tasks"></i>Even Name:</label>
+     <label for="node-input-topic"><i class="icon-tasks"></i>Event Name</label>
      <input type="text" id="node-input-eventname" placeholder="eventname">
   </div>
-
-  
   <div class="form-row">
     <label for="node-input-name"><i class="icon-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
 </script>
 
-<!-- Next, some simple help text is provided for the node.                   -->
+<!-- Next, some simple help text is provided for the node. -->
 <script type="text/x-red" data-help-name="pusher in">
     <p>Pusher input mode. Use this node to subscribe to a Pusher channel/event. You need a valid Pusher App key.</p>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- Finally, the node type is registered along with all of its properties -->
 <script type="text/javascript">
     RED.nodes.registerType('pusher in',{
-        category: 'social-output',      // the palette category
+        category: 'social-input', // the palette category
         color:"#A9D0F5",
-        defaults: {             // defines the editable properties of the node
-            name: {value:""},   //  along with default values.
+        defaults: { // defines the editable properties of the node
+            name: {value:""}, // along with default values.
             channel: {value:"", required:true},
             eventname: {value:"", required:true}
         },
-        inputs:0,                // set the number of inputs - only 0 or 1
-        outputs:1,               // set the number of outputs - 0 to n
-        icon: "pusher.png",    // set the icon (held in public/icons)
-        label: function() {      // sets the default label contents
-            return this.name||this.topic||"pusher";
+        inputs:0, // set the number of inputs - only 0 or 1
+        outputs:1, // set the number of outputs - 0 to n
+        icon: "pusher.png", // set the icon (held in public/icons)
+        label: function() { // sets the default label contents
+            return this.name||"pusher";
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
@@ -67,8 +63,6 @@
             var credentials = {};
             var newAppKey_sub = $('#node-input-appkey_sub').val();
             credentials.pusherappkey_sub = newAppKey_sub;
-            
-            
             $.ajax({
                 url: 'pusher/'+this.id,
                 type: 'POST',
@@ -119,35 +113,33 @@
      <input type="text" id="node-input-eventname" placeholder="eventname">
   </div>
 
-  
   <div class="form-row">
     <label for="node-input-name"><i class="icon-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
 </script>
 
-<!-- Next, some simple help text is provided for the node.                   -->
+<!-- Next, some simple help text is provided for the node. -->
 <script type="text/x-red" data-help-name="pusher out">
     <p>Pusher output node for sending messages to a specific channel/event. You need an App key, secret and ID of a Pusher app. The node will send the payload of the incoming message.</p>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- Finally, the node type is registered along with all of its properties -->
 <script type="text/javascript">
     RED.nodes.registerType('pusher out',{
-        category: 'social-input',      // the palette category
+        category: 'social-output', // the palette category
         color:"#A9D0F5",
-        defaults: {             // defines the editable properties of the node
-            name: {value:""},   //  along with default values.
+        defaults: { // defines the editable properties of the node
+            name: {value:""}, // along with default values.
             channel: {value:"", required:true},
-            eventname: {value:"", required:true},
-            appid: {value:"", required:true}
+            eventname: {value:"", required:true}
         },
-        inputs:1,                // set the number of inputs - only 0 or 1
-        outputs:0,               // set the number of outputs - 0 to n
-        icon: "pusher.png",    // set the icon (held in public/icons)
+        inputs:1, // set the number of inputs - only 0 or 1
+        outputs:0, // set the number of outputs - 0 to n
+        icon: "pusher.png", // set the icon (held in public/icons)
         align: "right",
-        label: function() {      // sets the default label contents
-            return this.name||this.topic||"pusher";
+        label: function() { // sets the default label contents
+            return this.name||"pusher";
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
@@ -160,8 +152,6 @@
             credentials.pusherappid = newAppID;
             credentials.pusherappkey = newAppKey;
             credentials.pusherappsecret = newAppSecret;
-
-            
             $.ajax({
                 url: 'pusher/'+this.id,
                 type: 'POST',
@@ -176,12 +166,10 @@
                 }
                 if (data.pusherappkey) {
                     $('#node-input-appkey').val(data.pusherappkey);
-                } 
-
+                }
                 if (data.pusherappsecret) {
                     $('#node-input-appsecret').val(data.pusherappsecret);
-                } 
-
+                }
             });
         },
         ondelete: function() {
