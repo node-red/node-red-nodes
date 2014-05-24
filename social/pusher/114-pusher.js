@@ -45,7 +45,8 @@ var RED = require(process.env.NODE_RED_HOME+"/red/red");
     socket.bind(''+this.eventname,
         function(data) {
             var msg = {};
-            msg.payload = data;
+            if (data.hasOwnProperty("payload")) { msg.payload = data.payload; }
+            else { msg.payload = data; }
             node.send(msg);
         }
     );
@@ -76,14 +77,14 @@ function PusherNodeSend(n) {
     this.eventname = n.eventname;
 
     var pusher = new Pusher({
-            appId: this.appid,
-            key: this.appkey,
-            secret: this.appsecret
+        appId: this.appid,
+        key: this.appkey,
+        secret: this.appsecret
     });
 
     this.on("input", function(msg){
         pusher.trigger(this.channel, this.eventname, {
-            "message": ""+msg.payload
+            "payload": msg.payload
         });
     });
 
