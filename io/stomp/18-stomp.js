@@ -83,22 +83,42 @@ module.exports = function(RED) {
 
         var node = this;
         var msg = {topic:this.topic};
+        var closing = false;
 
         node.client = new StompClient(node.host, node.port, node.userid, node.password, '1.0');
+        node.status({fill:"grey",shape:"ring",text:"connecting"},true);
 
-        node.client.connect(function(sessionId) {
-            node.log('subscribed to: '+node.topic);
-            node.client.subscribe(node.topic, function(body, headers) {
-                msg.payload = JSON.parse(body);
-                node.send(msg);
+        var doConnect = function() {
+            node.client.connect(function(sessionId) {
+                node.status({fill:"green",shape:"dot",text:"connected"},true);
+                node.log('subscribed to: '+node.topic);
+                node.client.subscribe(node.topic, function(body, headers) {
+                    msg.payload = JSON.parse(body);
+                    node.send(msg);
+                });
+            }, function(error) {
+                node.status({fill:"grey",shape:"dot",text:"error"},true);
+                node.warn(error);
             });
-        }, function(error) { node.warn(error); });
+        }
 
-        node.client.on("error", function(error) {
-            node.log(error);
+        node.client.on("disconnect", function() {
+            node.status({fill:"red",shape:"ring",text:"disconnected"},true);
+            node.log("disconnected at "+Date().toString());
+            if (!closing) {
+                setTimeout( function () { doConnect(); }, 15000);
+            }
         });
 
+        node.client.on("error", function(error) {
+            node.status({fill:"grey",shape:"dot",text:"error"},true);
+            node.log("error: "+error);
+        });
+
+        doConnect();
+
         node.on("close", function(done) {
+            closing = true;
             if (node.client) {
                 node.client.on("disconnect", function() {
                     done();
@@ -124,10 +144,25 @@ module.exports = function(RED) {
 
         var node = this;
         var msg = {topic:this.topic};
+        var closing = false;
 
         node.client = new StompClient(node.host, node.port, node.userid, node.password, '1.0');
+        node.status({fill:"grey",shape:"ring",text:"connecting"},true);
 
-        node.client.connect();
+        node.client.connect( function(sessionId) {
+            node.status({fill:"green",shape:"dot",text:"connected"},true);
+        }, function(error) {
+            node.status({fill:"grey",shape:"dot",text:"error"},true);
+            node.warn(error);
+        });
+
+        node.client.on("disconnect", function() {
+            node.status({fill:"red",shape:"ring",text:"disconnected"},true);
+            node.log("disconnected at "+Date().toString());
+            if (!closing) {
+                setTimeout( function () { node.client.connect(); }, 15000);
+            }
+        });
 
         node.client.on("error", function(error) {
             node.log(error);
@@ -138,6 +173,7 @@ module.exports = function(RED) {
         });
 
         node.on("close", function(done) {
+            closing = true;
             if (client) { client.disconnect(); }
         });
     }
