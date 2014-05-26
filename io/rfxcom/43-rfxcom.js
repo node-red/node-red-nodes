@@ -99,6 +99,34 @@ var parseUnitAddress = function (str) {
     }
 };
 
+var getTransmitter = function (rfxtrx, txType)
+    {
+        var subtype;
+        if (rfxtrx.transmitters.hasOwnProperty(txType) === false) {
+            if ((subtype = rfxcom.lighting1[txType]) !== undefined) {
+                rfxtrx.transmitters[txType] = {
+                    tx: new rfxcom.Lighting1(rfxtrx, subtype),
+                    type: txTypes.LIGHTING1
+                };
+            } else if ((subtype = rfxcom.lighting2[txType]) !== undefined) {
+                rfxtrx.transmitters[txType] = {
+                    tx: new rfxcom.Lighting2(rfxtrx, subtype),
+                    type: txTypes.LIGHTING2
+                };
+            } else if ((subtype = rfxcom.lighting5[txType]) !== undefined) {
+                rfxtrx.transmitters[txType] = {
+                    tx: new rfxcom.Lighting5(rfxtrx, subtype),
+                    type: txTypes.LIGHTING5
+                };
+            } else {
+                throw new Error("Transmission type '" + txType + "' not supported");
+            }
+        } else {
+            subtype = rfxtrx.transmitters[txType].tx.subtype;
+        }
+        return subtype;
+    };
+
 function RfxTxNode(n) {
     RED.nodes.createNode(this,n);
     this.port = n.port;
@@ -139,40 +167,18 @@ function RfxTxNode(n) {
         node.rfxtrx = rfxcomPool.get(this.rfxtrxPort.port, {debug: true});
         
         node.on("input", function(msg) {
+                var path, txType, subtype, address;
                 if (msg.topic === undefined) {
                     node.error("rfxtrx-tx: missing topic");
                     return;
                 }
             // Split the topic to get the components of the address (remove empty components)
-                var path = msg.topic.split('/').filter(function (str) { return str !== ""; });
+                path = msg.topic.split('/').filter(function (str) { return str !== ""; });
             // See if the topic subtype (first path component) already has a transmitter,
             // if not, create one
-                var subtype,
-                    txType = path[0].trim().replace(/ +/g, '_').toUpperCase();
-                if (node.rfxtrx.transmitters.hasOwnProperty(txType) === false) {
-                    if ((subtype = rfxcom.lighting1[txType]) !== undefined) {
-                        node.rfxtrx.transmitters[txType] = {
-                            tx: new rfxcom.Lighting1(node.rfxtrx, subtype),
-                            type: txTypes.LIGHTING1
-                        };
-                    } else if ((subtype = rfxcom.lighting2[txType]) !== undefined) {
-                        node.rfxtrx.transmitters[txType] = {
-                            tx: new rfxcom.Lighting2(node.rfxtrx, subtype),
-                            type: txTypes.LIGHTING2
-                        };
-                    } else if ((subtype = rfxcom.lighting5[txType]) !== undefined) {
-                        node.rfxtrx.transmitters[txType] = {
-                            tx: new rfxcom.Lighting5(node.rfxtrx, subtype),
-                            type: txTypes.LIGHTING5
-                        };
-                    } else {
-                        node.error("rfxtrx: transmission type '" + txType + "' not supported");
-                        return;
-                    }
-                } else {
-                    subtype = node.rfxtrx.transmitters[txType].tx.subtype;
-                }
-                var address = parseUnitAddress(path[2]);
+                txType = path[0].trim().replace(/ +/g, '_').toUpperCase();
+                subtype = getTransmitter(node.rfxtrx, txType);
+                address = parseUnitAddress(path[2]);
                 switch (node.rfxtrx.transmitters[txType].type) {
                 case txTypes.LIGHTING1 :
                     // expect X10|ARC|ELRO|WAVEMAN|CHACON|IMPULS|RISING_SUN|PHILIPS_SBC|ENERGENIE_ENER010|ENERGENIE_5_GANG|COCO /
@@ -225,3 +231,109 @@ function RfxTxNode(n) {
 }
 
 RED.nodes.registerType("rfxtrx-tx", RfxTxNode);
+
+function RfxLightsNode(n) {
+    RED.nodes.createNode(this, n);
+    this.port = n.port;
+    this.rfxtrxPort = RED.nodes.getNode(this.port);
+
+    var node = this;
+
+    var parseDimLevel = function (str, levelRange) {
+        if (levelRange.length === 0) { // empty level range means accept Dim/Bright or Dim-/Dim+ commands only
+            if (/dim *\+/i.test(str)) {
+                return "+";
+            } else if (/dim/i.test(str)) {
+                return "-";
+            } else if (/bright/i.test(str)) {
+                return "+";
+            }
+        }
+        if (/[0-9]+/.test(str) === false) {
+            if (/\+/.test(str)) {
+                return "+";
+            } else if (/-/.test(str)) {
+                return "-";
+            }
+        }
+        var value = parseFloat(/[0-9]+(\.[0-9]*)?/.exec(str)[0]);
+        if (str.match(/[0-9] *%/)) {
+            value = value / 100;
+        }
+        value = Math.max(0, Math.min(1, value));
+        if (levelRange == undefined) {
+            return NaN;
+        } else {
+            return Math.round(levelRange[0] + value * (levelRange[1] - levelRange[0]));
+        }
+    };
+
+    var parseCommand = function (txType, deviceID, msg, levelRange) {
+        var level;
+        try {
+            if (/on/i.test(msg.payload) || msg.payload == 1) {
+                node.rfxtrx.transmitters[txType].tx.switchOn(deviceID);
+            } else if (/off/i.test(msg.payload) || msg.payload == 0) {
+                node.rfxtrx.transmitters[txType].tx.switchOff(deviceID);
+            } else if (/dim|level|%|[0-9]\.|\.[0-9]/i.test(msg.payload)) {
+                level = parseDimLevel(msg.payload, levelRange);
+                if (isFinite(level)) {
+                    node.rfxtrx.transmitters[txType].tx.setLevel(deviceID, level);
+                } else if (level === '+') {
+                    node.rfxtrx.transmitters[txType].tx.inreaseLevel(deviceID);
+                } else if (level === '-') {
+                    node.rfxtrx.transmitters[txType].tx.decreaseLevel(deviceID);
+
+                }
+            } else if (/mood/i.test(msg.payload)) {
+                var mood = parseInt(/([0-9]+)/.exec(msg.payload));
+                if (isFinite(mood)) {
+                    node.rfxtrx.transmitters[txType].tx.setMood(deviceID, mood);
+                }
+            } else if (/toggle/i.test(msg.payload)) {
+                node.rfxtrx.transmitters[txType].tx.toggleOnOff(deviceID);
+            }
+        } catch (exception) {
+            node.warn("Command '" + exception.arguments[0] + "' not supported by device")
+        }
+    };
+
+    if (node.rfxtrxPort) {
+        node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
+
+        node.on("close", function() {
+                if (node.rfxtrxPort) {
+                    rfxcomPool.release(node.rfxtrxPort.port);
+                }
+            });
+
+        node.on("input", function(msg) {
+                var path, txType, subtype, address;
+                if (msg.topic === undefined) {
+                    node.warn("rfx-lights: missing topic"); // TODO - get a default topic from the node
+                    return;
+                }
+                // Split the topic to get the components of the address (remove empty components)
+                path = msg.topic.split('/').filter(function (str) { return str !== ""; });
+                // See if the topic subtype (first path component) already has a transmitter,
+                // if not, create one
+                txType = path[0].trim().replace(/ +/g, '_').toUpperCase();
+                subtype = getTransmitter(node.rfxtrx, txType);
+                address = parseUnitAddress(path[2]);
+                switch (node.rfxtrx.transmitters[txType].type) {
+                    case txTypes.LIGHTING1 :
+                        parseCommand(txType, [path[1], address], msg, []);
+                        break;
+
+                    case txTypes.LIGHTING2 :
+                    case txTypes.LIGHTING5 :
+                        parseCommand(txType, [path[1], address], msg, [0, 15]);
+                        break;
+                }
+            });
+    } else {
+        node.error("missing config: rfxtrx-port");
+    }
+}
+
+RED.nodes.registerType("rfx-lights", RfxLightsNode);

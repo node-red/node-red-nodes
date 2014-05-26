@@ -1,3 +1,4 @@
+<!-- This is the config node for the RFXtrx433 attached to a particular (pseudo) serial port -->
 <script type="text/x-red" data-template-name="rfxtrx-port">
     <div class="form-row">
         <label for="node-config-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
@@ -17,6 +18,7 @@
     });
 </script>
 
+<!-- This is a 'generic' transmitter node, supposed to be capable of understanding all commands. Deprecated -->
 <script type="text/x-red" data-template-name="rfxtrx-tx">
     <div class="form-row node-input-port">
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
@@ -43,6 +45,63 @@
         label: function() {
             var rfxtrxNode = RED.nodes.node(this.rfxtrx);
             return this.name || (rfxtrxNode ? rfxtrxNode.label() : "RFXtrx");
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- This is a transmitter node for lighting-type commands and the devices that receive tham -->
+<script type="text/x-red" data-template-name="rfx-lights">
+    <div class="form-row node-input-port">
+        <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
+        <input type="text" id="node-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<!-- Help text for bbb-analogue-in -->
+<script type="text/x-red" data-help-name="rfx-lights">
+<p>
+Sends lighting control commands to remote devices using an RFXtrx433 transceiver
+</p>
+<p>The input message topic is the device 'address'. The input message payload is the command
+</p>
+<p>
+Addresses take the form 'TYPE/DEVICE ADDRESS/UNIT ADDRESS', where TYPE is the name of the family
+of devices (see RFXCOM documentation), DEVICE ADDRESS is the address of the remote device, and UNIT ADDRESS is the switch or
+channel number of the addressed device. Address 0 is used for group switching where supported.
+</p>
+<p>
+For example 'AC/0x1ef1ce/4' is a HomeEasy switched socket paired with address 0x1ef1ce on channel 4, and 'X10/D/1' is
+an X10 light switch with house code D and unit code 1.
+</p>
+<p>
+Typical commands are 'On' & 'Off' (or equivalently 1 & 0); 'Bright' or 'Dim+' to increase brightness; 'Dim' or 'Dim-' to
+reduce brightness, or 'level <i>number</i>' (where <i>number</i> is a value between 0 and 1) to set the brightness to a given level.
+Not all devices support all commands. There are a few other commands...
+</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rfx-lights', {
+        category: 'output',
+        defaults: {
+            name: {name:""},
+            port: {type:"rfxtrx-port", required:true}
+        },
+        color:"BurlyWood",
+        inputs:1,
+        outputs:0,
+        icon: "serial.png",
+        align: "right",
+        label: function() {
+            var rfxtrxNode = RED.nodes.node(this.rfxtrx);
+            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-lights");
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
