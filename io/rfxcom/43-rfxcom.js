@@ -17,8 +17,7 @@
 var RED = require(process.env.NODE_RED_HOME + "/red/red"),
     rfxcom = require("rfxcom");
 
-// The config node holding the (serial) port device path for one or more
-// rfxtrx-tx & rfxtrx-rx nodes
+// The config node holding the (serial) port device path for one or more rfxcom family nodes
 function RfxtrxPortNode(n) {
     RED.nodes.createNode(this,n);
     this.port = n.port;
@@ -32,11 +31,13 @@ var rfxcomPool = function () {
         var pool = {};
         return {
             get: function (port, options) {
+                // Returns the RfxCom object associated with port, or creates a new RfxCom object,
+                // associates it with the port, and returns it. 'port' is the device file path to
+                // the pseudo-serialport, e.g. '/dev/tty.usb-123456'
                     var id = port; //TODO - I don't think we need this?
                     if (!pool[id]) {
                         try {
                             var rfxtrx = new rfxcom.RfxCom(port, options || {});
-                            //var rfxtrx = new rfxcom.RfxCom(port, {debug: true});
                             rfxtrx.ready = false;
                             rfxtrx.initialise(function (error, response, sequenceNumber) {
                                 rfxtrx.ready = true;
@@ -55,10 +56,12 @@ var rfxcomPool = function () {
                             return null;
                         }
                     }
+                    // Maintain a reference count for each RfxCom object
                     pool[id].refcount = pool[id].refcount + 1;
                     return pool[id].rfxtrx;
                 },
             release: function (port) {
+                // Decrement the reference count, and delete the RfxCom object if the count goes to 0
                     if (pool[port]) {
                         pool[port].refcount = pool[port].refcount - 1;
                         if (pool[port].refcount <= 0) {
@@ -69,169 +72,54 @@ var rfxcomPool = function () {
         }
     } ();
 
-var txTypes = { LIGHTING1: 1, LIGHTING2: 2, LIGHTING5: 3, CURTAIN1: 4};
-
-var parseDimLevel = function (str, levelRange) {
-    if (/[0-9]+/.test(str) === false) {
-        if (/\+/.test(str)) {
-            return "+";
-        } else if (/-/.test(str)) {
-            return "-";
-        }
-    }
-    var value = parseFloat(/[0-9]+(\.[0-9]*)?/.exec(str)[0]);
-    if (str.match(/[0-9] *%/)) {
-        value = value / 100;
-    }
-    value = Math.max(0, Math.min(1, value));
-    if (levelRange == undefined) {
-        return NaN;
-    } else {
-        return Math.round(levelRange[0] + value * (levelRange[1] - levelRange[0]));
-    }
-};
-
+// Utility function: normalises the accepted representations of 'unit addresses' to be
+// an integer, and ensures all variants of the 'group address' are converted to 0
 var parseUnitAddress = function (str) {
-    if (str == undefined || /all|group|\+/i.test(str)) {
-        return 0;
-    } else {
-        return Math.round(Number(str));
-    }
-};
+        if (str == undefined || /all|group|\+/i.test(str)) {
+            return 0;
+        } else {
+            return Math.round(Number(str));
+        }
+    };
 
-var getTransmitter = function (rfxtrx, txType)
-    {
+// Flag values for the different types of message packet recognised by the nodes in this file
+// By convention, the all-uppercase equivalent of the node-rfxcom object implementing the
+// message packet type. The numeric values are the protocol codes used by the RFXCOM API,
+// though this is also an arbitrary choice
+var txTypeNumber = { LIGHTING1: 0x10, LIGHTING2: 0x11, LIGHTING5: 0x14, CURTAIN1: 0x18};
+
+// This function takes a protocol name and returns the subtype number (defined by the RFXCOM
+// API) for that protocol. It also creates the node-rfxcom object implementing the message packet type
+// corresponding to that subtype, or re-uses a pre-existing object that implements it. These objects
+// are stored in the transmitters property of rfxcomObject
+var getRfxcomSubtype = function (rfxcomObject, protocolName) {
         var subtype;
-        if (rfxtrx.transmitters.hasOwnProperty(txType) === false) {
-            if ((subtype = rfxcom.lighting1[txType]) !== undefined) {
-                rfxtrx.transmitters[txType] = {
-                    tx: new rfxcom.Lighting1(rfxtrx, subtype),
-                    type: txTypes.LIGHTING1
+        if (rfxcomObject.transmitters.hasOwnProperty(protocolName) === false) {
+            if ((subtype = rfxcom.lighting1[protocolName]) !== undefined) {
+                rfxcomObject.transmitters[protocolName] = {
+                    tx: new rfxcom.Lighting1(rfxcomObject, subtype),
+                    type: txTypeNumber.LIGHTING1
                 };
-            } else if ((subtype = rfxcom.lighting2[txType]) !== undefined) {
-                rfxtrx.transmitters[txType] = {
-                    tx: new rfxcom.Lighting2(rfxtrx, subtype),
-                    type: txTypes.LIGHTING2
+            } else if ((subtype = rfxcom.lighting2[protocolName]) !== undefined) {
+                rfxcomObject.transmitters[protocolName] = {
+                    tx: new rfxcom.Lighting2(rfxcomObject, subtype),
+                    type: txTypeNumber.LIGHTING2
                 };
-            } else if ((subtype = rfxcom.lighting5[txType]) !== undefined) {
-                rfxtrx.transmitters[txType] = {
-                    tx: new rfxcom.Lighting5(rfxtrx, subtype),
-                    type: txTypes.LIGHTING5
+            } else if ((subtype = rfxcom.lighting5[protocolName]) !== undefined) {
+                rfxcomObject.transmitters[protocolName] = {
+                    tx: new rfxcom.Lighting5(rfxcomObject, subtype),
+                    type: txTypeNumber.LIGHTING5
                 };
             } else {
-                throw new Error("Transmission type '" + txType + "' not supported");
+                throw new Error("Protocol type '" + protocolName + "' not supported");
             }
         } else {
-            subtype = rfxtrx.transmitters[txType].tx.subtype;
+            subtype = rfxcomObject.transmitters[protocolName].tx.subtype;
         }
         return subtype;
     };
 
-function RfxTxNode(n) {
-    RED.nodes.createNode(this,n);
-    this.port = n.port;
-    this.rfxtrxPort = RED.nodes.getNode(this.port);
-
-    var parseCommand = function (txType, deviceID, msg, levelRange) {
-        var level;
-        try {
-            if (/on/i.test(msg.payload) || msg.payload == 1) {
-                node.rfxtrx.transmitters[txType].tx.switchOn(deviceID);
-            } else if (/off/i.test(msg.payload) || msg.payload == 0) {
-                node.rfxtrx.transmitters[txType].tx.switchOff(deviceID);
-            } else if (/dim|level|%|[0-9]\.|\.[0-9]/i.test(msg.payload)) {
-                level = parseDimLevel(msg.payload, levelRange);
-                if (isFinite(level)) {
-                    node.rfxtrx.transmitters[txType].tx.setLevel(deviceID, level);
-                } else if (level === '+') {
-                    node.rfxtrx.transmitters[txType].tx.inreaseLevel(deviceID);
-                } else if (level === '-') {
-                    node.rfxtrx.transmitters[txType].tx.decreaseLevel(deviceID);
-
-                }
-            } else if (/mood/i.test(msg.payload)) {
-                var mood = parseInt(/([0-9]+)/.exec(msg.payload));
-                if (isFinite(mood)) {
-                    node.rfxtrx.transmitters[txType].tx.setMood(deviceID, mood);
-                }
-            } else if (/toggle/i.test(msg.payload)) {
-                node.rfxtrx.transmitters[txType].tx.toggleOnOff(deviceID);
-            }
-        } catch (exception) {
-            node.warn("Command '" + exception.arguments[0] + "' not supported by device")
-        }
-    };
-
-    if (this.rfxtrxPort) {
-        var node = this;
-        node.rfxtrx = rfxcomPool.get(this.rfxtrxPort.port, {debug: true});
-        
-        node.on("input", function(msg) {
-                var path, txType, subtype, address;
-                if (msg.topic === undefined) {
-                    node.error("rfxtrx-tx: missing topic");
-                    return;
-                }
-            // Split the topic to get the components of the address (remove empty components)
-                path = msg.topic.split('/').filter(function (str) { return str !== ""; });
-            // See if the topic subtype (first path component) already has a transmitter,
-            // if not, create one
-                txType = path[0].trim().replace(/ +/g, '_').toUpperCase();
-                subtype = getTransmitter(node.rfxtrx, txType);
-                address = parseUnitAddress(path[2]);
-                switch (node.rfxtrx.transmitters[txType].type) {
-                case txTypes.LIGHTING1 :
-                    // expect X10|ARC|ELRO|WAVEMAN|CHACON|IMPULS|RISING_SUN|PHILIPS_SBC|ENERGENIE_ENER010|ENERGENIE_5_GANG|COCO /
-                    //         [A-P] / [1-16]|GROUP|ALL|+|0
-                    if (address >= 0) {
-                        if (((subtype == 0 || subtype == 1 || subtype == 3) && address <= 16) ||
-                            ((subtype == 2  || subtype == 5) && address <= 64) ||
-                            (subtype == 7 && address <= 8) ||
-                            (subtype == 9 && address <= 10) ||
-                            ((subtype == 4 || subtype == 6 || subtype == 8 || subtype == 11) && address <= 4)) {
-                            parseCommand(txType, [path[1], address], msg, [1, 2])
-                        }
-                    } else {
-                        node.warn("rfxtrx-tx: Invalid address '" + path[2] + "' for device type " + path[0]);
-                    }
-                    break;
-
-                case txTypes.LIGHTING2 :
-                    // expect AC|HOMEEASY_EU|ANSLUT / 0x00123456|00123456 / [1-16]|GROUP|ALL|+|0
-                    if (address >= 0  && address <= 16) {
-                         parseCommand(txType, [path[1], address], msg, [0, 15])
-                    } else {
-                        node.warn("rfxtrx-tx: Invalid address '" + path[2] + "' for device type " + path[0]);
-                    }
-                    break;
-
-                case txTypes.LIGHTING5 :
-                    if (address >= 0) {
-                        if (((subtype == 0 || subtype == 4) && address <= 16) ||
-                            (subtype == 1 && address <= 4) ||
-                            (subtype == 2 && address <= 6) ||
-                            ((subtype == 3 || subtype == 5 || subtype == 6) && address == 0)) {
-                            parseCommand(txType, [path[1], address], msg, [0, 15])
-                        }
-                    } else {
-                        node.warn("rfxtrx-tx: Invalid address '" + path[2] + "' for device type " + path[0]);
-                    }
-                    break;
-                }
-            });
-    } else {
-        this.error("missing config: rfxtrx-port");
-    }
-
-    this.on("close", function() {
-        if (this.rfxtrxPort) {
-            rfxcomPool.release(this.rfxtrxPort.port);
-        }
-    });
-}
-
-RED.nodes.registerType("rfxtrx-tx", RfxTxNode);
-
+// An output node for sending messages to light switches & dimmers (including most types of plug-in switch)
 function RfxLightsNode(n) {
     RED.nodes.createNode(this, n);
     this.port = n.port;
@@ -239,9 +127,15 @@ function RfxLightsNode(n) {
 
     var node = this;
 
+    // Parse a string to obtain the normalised representation of the 'level' associated with a dimming
+    // command. The result is either an integer in the range levelRange[0]..levelRange[1], '+' (meaning increase
+    // the brightness level), or '-' (meaning reduce it). A numeric value should be in the range 0..1, or
+    // equivalently in the range 0%..100%
+    // Called from parseCommand
     var parseDimLevel = function (str, levelRange) {
-        if (levelRange.length === 0) { // empty level range means accept Dim/Bright or Dim-/Dim+ commands only
-            if (/dim *\+/i.test(str)) {
+        // An empty level range means accept Dim/Bright or Dim-/Dim+ commands only
+        if (levelRange.length === 0) {
+            if (/dim *\+/i.test(str)) { // 'dim+' means 'bright'
                 return "+";
             } else if (/dim/i.test(str)) {
                 return "-";
@@ -268,33 +162,39 @@ function RfxLightsNode(n) {
         }
     };
 
-    var parseCommand = function (txType, deviceID, msg, levelRange) {
+    // Parses msg.payload looking for lighting command messages, calling the corresponding function in the
+    // node-rfxcom API to implement it. All parameter checking is delegated to this API. If no valid command is
+    // recognised, does nothing (quietly).
+    var parseCommand = function (protocolName, address, str, levelRange) {
         var level;
         try {
-            if (/on/i.test(msg.payload) || msg.payload == 1) {
-                node.rfxtrx.transmitters[txType].tx.switchOn(deviceID);
-            } else if (/off/i.test(msg.payload) || msg.payload == 0) {
-                node.rfxtrx.transmitters[txType].tx.switchOff(deviceID);
-            } else if (/dim|level|%|[0-9]\.|\.[0-9]/i.test(msg.payload)) {
-                level = parseDimLevel(msg.payload, levelRange);
+            if (/on/i.test(str) || str == 1) {
+                node.rfxtrx.transmitters[protocolName].tx.switchOn(address);
+            } else if (/off/i.test(str) || str == 0) {
+                node.rfxtrx.transmitters[protocolName].tx.switchOff(address);
+            } else if (/dim|level|%|[0-9]\.|\.[0-9]/i.test(str)) {
+                level = parseDimLevel(str, levelRange);
                 if (isFinite(level)) {
-                    node.rfxtrx.transmitters[txType].tx.setLevel(deviceID, level);
+                    node.rfxtrx.transmitters[protocolName].tx.setLevel(address, level);
                 } else if (level === '+') {
-                    node.rfxtrx.transmitters[txType].tx.inreaseLevel(deviceID);
+                    node.rfxtrx.transmitters[protocolName].tx.increaseLevel(address);
                 } else if (level === '-') {
-                    node.rfxtrx.transmitters[txType].tx.decreaseLevel(deviceID);
-
+                    node.rfxtrx.transmitters[protocolName].tx.decreaseLevel(address);
                 }
-            } else if (/mood/i.test(msg.payload)) {
-                var mood = parseInt(/([0-9]+)/.exec(msg.payload));
+            } else if (/mood/i.test(str)) {
+                var mood = parseInt(/([0-9]+)/.exec(str));
                 if (isFinite(mood)) {
-                    node.rfxtrx.transmitters[txType].tx.setMood(deviceID, mood);
+                    node.rfxtrx.transmitters[protocolName].tx.setMood(address, mood);
                 }
-            } else if (/toggle/i.test(msg.payload)) {
-                node.rfxtrx.transmitters[txType].tx.toggleOnOff(deviceID);
+            } else if (/toggle/i.test(str)) {
+                node.rfxtrx.transmitters[protocolName].tx.toggleOnOff(address);
             }
         } catch (exception) {
-            node.warn("Command '" + exception.arguments[0] + "' not supported by device")
+            if (exception.arguments !== undefined) {
+                node.warn("Input '" + str + "': generated command '" + exception.arguments[0] + "' not supported by device");
+            } else {
+                node.warn(exception);
+            }
         }
     };
 
@@ -302,32 +202,34 @@ function RfxLightsNode(n) {
         node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
 
         node.on("close", function() {
+            // Decrement the reference count on the port
                 if (node.rfxtrxPort) {
                     rfxcomPool.release(node.rfxtrxPort.port);
                 }
             });
 
         node.on("input", function(msg) {
-                var path, txType, subtype, address;
+            // Get the device address from the message topic, the device command from the message payload,
+            // and send the command to the address
+                var path, protocolName, subtype, deviceAddress, unitAddress;
                 if (msg.topic === undefined) {
                     node.warn("rfx-lights: missing topic"); // TODO - get a default topic from the node
                     return;
                 }
                 // Split the topic to get the components of the address (remove empty components)
                 path = msg.topic.split('/').filter(function (str) { return str !== ""; });
-                // See if the topic subtype (first path component) already has a transmitter,
-                // if not, create one
-                txType = path[0].trim().replace(/ +/g, '_').toUpperCase();
-                subtype = getTransmitter(node.rfxtrx, txType);
-                address = parseUnitAddress(path[2]);
-                switch (node.rfxtrx.transmitters[txType].type) {
-                    case txTypes.LIGHTING1 :
-                        parseCommand(txType, [path[1], address], msg, []);
+                protocolName = path[0].trim().replace(/ +/g, '_').toUpperCase();
+                deviceAddress = path[1];
+                unitAddress = parseUnitAddress(path[2]);
+                subtype = getRfxcomSubtype(node.rfxtrx, protocolName);
+                switch (node.rfxtrx.transmitters[protocolName].type) {
+                    case txTypeNumber.LIGHTING1 :
+                        parseCommand(protocolName, [deviceAddress, unitAddress], msg.payload, []);
                         break;
 
-                    case txTypes.LIGHTING2 :
-                    case txTypes.LIGHTING5 :
-                        parseCommand(txType, [path[1], address], msg, [0, 15]);
+                    case txTypeNumber.LIGHTING2 :
+                    case txTypeNumber.LIGHTING5 :
+                        parseCommand(protocolName, [deviceAddress, unitAddress], msg.payload, [0, 15]);
                         break;
                 }
             });

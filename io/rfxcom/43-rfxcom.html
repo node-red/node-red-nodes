@@ -1,8 +1,28 @@
+<!--
+  Copyright 2014 Maxwell R Hadley
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
 <!-- This is the config node for the RFXtrx433 attached to a particular (pseudo) serial port -->
 <script type="text/x-red" data-template-name="rfxtrx-port">
     <div class="form-row">
         <label for="node-config-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-config-input-port" placeholder="/dev/ttyUSB0" style="width:50%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-debug"> Debug</label>
+        <input type="checkbox" id="node-config-input-debug" style="display:inline-block; width:auto; vertical-align:top;">
     </div>
 </script>
 
@@ -10,44 +30,11 @@
     RED.nodes.registerType('rfxtrx-port', {
         category: 'config',
         defaults: {
-            port: {value:"", required:true}
+            port: { value:"", required:true },
+            debug: { value:"true" }
         },
         label: function () {
             return this.port;
-        }
-    });
-</script>
-
-<!-- This is a 'generic' transmitter node, supposed to be capable of understanding all commands. Deprecated -->
-<script type="text/x-red" data-template-name="rfxtrx-tx">
-    <div class="form-row node-input-port">
-        <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
-        <input type="text" id="node-input-port">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('rfxtrx-tx', {
-        category: 'output',
-        defaults: {
-            name: {name:""},
-            port: {type:"rfxtrx-port", required:true}
-        },
-        color:"BurlyWood",
-        inputs:1,
-        outputs:0,
-        icon: "serial.png",
-        align: "right",
-        label: function() {
-            var rfxtrxNode = RED.nodes.node(this.rfxtrx);
-            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "RFXtrx");
-        },
-        labelStyle: function() {
-            return this.name ? "node_label_italic" : "";
         }
     });
 </script>
@@ -64,17 +51,17 @@
     </div>
 </script>
 
-<!-- Help text for bbb-analogue-in -->
+<!-- Help text for rfx-lights -->
 <script type="text/x-red" data-help-name="rfx-lights">
 <p>
-Sends lighting control commands to remote devices using an RFXtrx433 transceiver
+Sends commands to remote lighting control devices using an RFXtrx433 transceiver
 </p>
 <p>The input message topic is the device 'address'. The input message payload is the command
 </p>
 <p>
-Addresses take the form 'TYPE/DEVICE ADDRESS/UNIT ADDRESS', where TYPE is the name of the family
-of devices (see RFXCOM documentation), DEVICE ADDRESS is the address of the remote device, and UNIT ADDRESS is the switch or
-channel number of the addressed device. Address 0 is used for group switching where supported.
+Addresses take the form '<b>type</b>/<b>device address</b>/<b>unit address</b>', where <b>type</b> is the name of the family
+of devices (see RFXCOM documentation), <b>device address</b> is the address of the remote device, and <b>unit address</b> is the unit or
+channel number of the addressed device. Channel 0 or '+' is used for group switching (or the equivalent) where supported.
 </p>
 <p>
 For example 'AC/0x1ef1ce/4' is a HomeEasy switched socket paired with address 0x1ef1ce on channel 4, and 'X10/D/1' is
@@ -83,7 +70,7 @@ an X10 light switch with house code D and unit code 1.
 <p>
 Typical commands are 'On' & 'Off' (or equivalently 1 & 0); 'Bright' or 'Dim+' to increase brightness; 'Dim' or 'Dim-' to
 reduce brightness, or 'level <i>number</i>' (where <i>number</i> is a value between 0 and 1) to set the brightness to a given level.
-Not all devices support all commands. There are a few other commands...
+Not all devices support all commands. Less common commands include 'Toggle' and 'Mood <i>number</i>'
 </p>
 </script>
 
