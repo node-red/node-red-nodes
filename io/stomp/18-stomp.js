@@ -104,7 +104,6 @@ module.exports = function(RED) {
 
         node.client.on("disconnect", function() {
             node.status({fill:"red",shape:"ring",text:"disconnected"},true);
-            node.log("disconnected at "+Date().toString());
             if (!closing) {
                 setTimeout( function () { doConnect(); }, 15000);
             }
@@ -112,7 +111,7 @@ module.exports = function(RED) {
 
         node.client.on("error", function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"},true);
-            node.log("error: "+error);
+            node.log(error);
         });
 
         doConnect();
@@ -158,7 +157,6 @@ module.exports = function(RED) {
 
         node.client.on("disconnect", function() {
             node.status({fill:"red",shape:"ring",text:"disconnected"},true);
-            node.log("disconnected at "+Date().toString());
             if (!closing) {
                 setTimeout( function () { node.client.connect(); }, 15000);
             }
