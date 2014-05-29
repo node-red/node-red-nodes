@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2013,2014 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,12 +14,59 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="xmpp">
+<script type="text/x-red" data-template-name="xmpp in">
     <div class="form-row">
         <label for="node-input-server"><i class="icon-bookmark"></i> Server</label>
-        <input type="text" id="node-input-server" placeholder="talk.google.com"  style="width: 40%;" >
-        <label for="node-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
-        <input type="text" id="node-input-port" placeholder="Port" style="width:45px">
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-to"><i class="icon-envelope"></i> Buddy</label>
+        <input type="text" id="node-input-to" placeholder="joe@gmail.com">
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-join" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-join" style="width: 70%;">Is a Chat Room ?</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="xmpp in">
+    <p>Connects to an XMPP server to receive messages.</p>
+    <p>The <b>Buddy</b> field is the id of the buddy or room you want to receive messages from.</p>
+    <p>Incoming messages will appear as <b>msg.payload</b> on the first output, while <b>msg.topic</b> will contain who it is from.</p>
+    <p>The second output will show the presence and status of a user in <b>msg.payload</b>. Again <b>msg.topic</b> will hold the user.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xmpp in',{
+        category: 'social-input',
+        color:"#F4F492",
+        defaults: {
+            name: {value:""},
+            server: {type:"xmpp-server",required:true},
+            to: {value:"",required:true},
+            join: {value:false}
+        },
+        inputs:0,
+        outputs:2,
+        icon: "xmpp.png",
+        label: function() {
+            return this.name||"xmpp";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="xmpp out">
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-bookmark"></i> Server</label>
+        <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
@@ -36,51 +83,112 @@
         <label for="node-input-join" style="width: 70%;">Is a Chat Room ?</label>
     </div>
     <div class="form-row">
-        <label for="node-input-nick"><i class="icon-user"></i> Nickname</label>
-        <input type="text" id="node-input-nick" placeholder="Joe">
-    </div>
-    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">The <b>To</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</div>
 </script>
 
-<script type="text/x-red" data-help-name="xmpp">
-    <p>Connects to an XMPP server to send and receive messages.</p>
-    <p>Incoming messages will appear as <b>msg.payload</b> on the first output, while <b>msg.topic</b> will contain who it is from.</p>
-    <p>The second output will user presence and status in <b>msg.payload</b>.</p>
-    <p>The <b>To</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</p>
+<script type="text/x-red" data-help-name="xmpp out">
+    <p>Connects to an XMPP server to send messages.</p>
+    <p>The <b>To</b> field is optional. If not set the <b>msg.topic</b> property of the message is used.</p>
     <p>If you are joining a room then the <b>To</b> field must be filled in.</p>
-    <p>Uses the simple-xmpp module - you may also need to pre-configure your xmpp settings as per below.</p>
-    <p>Either add to your settings.js file...</p>
-    <p><pre>xmpp : { jid : "yourid", password: "password" },</pre></p>
-    <p>Or create a file xmppkeys.js containing</p>
-    <p><pre>module.exports = { jid: "yourid", password: "password" }</pre></p>
-    <p>This <b>must</b> be located in the directory above node-red.</p>
+    <p>You may also send a msg with <b>msg.presence</b> to set your presence to one of <i>chat, away, dnd</i> or <i>xa</i>.
+    If you do so then the <b>msg.payload</b> will set your status message.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('xmpp',{
-        category: 'advanced-function',
-        color:"Silver",
+    RED.nodes.registerType('xmpp out',{
+        category: 'social-output',
+        color:"#F4F492",
         defaults: {
             name: {value:""},
-            server: { value:"",required:true},
-            port: {value:5222,required:true},
+            server: {type:"xmpp-server",required:true},
             to: {value:""},
             join: {value:false},
-            sendObject: {value:false},
-            nick: {value:""}
+            sendObject: {value:false}
         },
         inputs:1,
-        outputs:2,
+        outputs:0,
         icon: "xmpp.png",
+        align: "right",
         label: function() {
-            return this.name||this.server||"xmpp";
+            return this.name||"xmpp";
         },
         labelStyle: function() {
-            return (this.name||!this.server)?"node_label_italic":"";
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="xmpp-server">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="icon-bookmark"></i> Server</label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-nickname"><i class="icon-user"></i> Nickname</label>
+        <input type="text" id="node-config-input-nickname" placeholder="Joe">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-user"></i> Username</label>
+        <input type="text" id="node-config-input-user">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-pass"><i class="icon-lock"></i> Password</label>
+        <input type="password" id="node-config-input-pass">
+    </div>
+    <div class="form-tips" id="node-config-cred-tip"><b>Note:</b> Using credentials from global xmppkey.js file.</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('xmpp-server',{
+        category: 'config',
+        defaults: {
+            server: {required:true},
+            port: {value:5222,required:true,validate:RED.validators.number()},
+            nickname: {}
+        },
+        label: function() {
+            return (this.nickname?this.nickname+"@":"")+this.server+":"+this.port;
+        },
+        oneditprepare: function() {
+            $.getJSON('xmpp-server/'+this.id,function(data) {
+                if (data.user) {
+                    $('#node-config-input-user').val(data.user);
+                }
+                if (data.hasPassword) {
+                    $('#node-config-input-pass').val('__PWRD__');
+                } else {
+                    $('#node-config-input-pass').val('');
+                }
+                if (data.global) $('#node-config-cred-tip').show();
+                else $('#node-config-cred-tip').hide();
+            });
+        },
+        oneditsave: function() {
+            var credentials = {};
+            var newUser = $('#node-config-input-user').val();
+            var newPass = $('#node-config-input-pass').val();
+            credentials.user = newUser;
+            if (newPass != '__PWRD__') {
+                credentials.password = newPass;
+            }
+            $.ajax({
+                url: 'xmpp-server/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success: function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'xmpp-server/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
         }
     });
 </script>
