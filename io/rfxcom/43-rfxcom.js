@@ -209,7 +209,7 @@ function RfxLightsNode(n) {
 
     if (node.rfxtrxPort) {
         node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
-        node.on("close", releasePort);
+        node.on("close", function () { releasePort(node); });
         node.on("input", function(msg) {
             // Get the device address from the node topic, or the message topic if the node topic is undefined;
             // parse the device command from the message payload; and send the appropriate command to the address
