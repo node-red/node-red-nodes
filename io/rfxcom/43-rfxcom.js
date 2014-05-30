@@ -72,6 +72,13 @@ var rfxcomPool = function () {
         }
     } ();
 
+var releasePort = function (node) {
+        // Decrement the reference count on the node port
+        if (node.rfxtrxPort) {
+            rfxcomPool.release(node.rfxtrxPort.port);
+        }
+    };
+
 // Utility function: normalises the accepted representations of 'unit addresses' to be
 // an integer, and ensures all variants of the 'group address' are converted to 0
 var parseUnitAddress = function (str) {
@@ -123,6 +130,8 @@ var getRfxcomSubtype = function (rfxcomObject, protocolName) {
 function RfxLightsNode(n) {
     RED.nodes.createNode(this, n);
     this.port = n.port;
+    this.topicSource = n.topicSource;
+    this.topic = n.topic;
     this.rfxtrxPort = RED.nodes.getNode(this.port);
 
     var node = this;
@@ -200,27 +209,25 @@ function RfxLightsNode(n) {
 
     if (node.rfxtrxPort) {
         node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
-
-        node.on("close", function() {
-            // Decrement the reference count on the port
-                if (node.rfxtrxPort) {
-                    rfxcomPool.release(node.rfxtrxPort.port);
-                }
-            });
-
+        node.on("close", releasePort);
         node.on("input", function(msg) {
-            // Get the device address from the message topic, the device command from the message payload,
-            // and send the command to the address
+            // Get the device address from the node topic, or the message topic if the node topic is undefined;
+            // parse the device command from the message payload; and send the appropriate command to the address
                 var path, protocolName, subtype, deviceAddress, unitAddress;
-                if (msg.topic === undefined) {
-                    node.warn("rfx-lights: missing topic"); // TODO - get a default topic from the node
+                if (node.topicSource == "node" && node.topic !== undefined) {
+                    path = node.topic;
+                } else if (msg.topic !== undefined) {
+                    path = msg.topic;
+                } else {
+                    node.warn("rfx-lights: missing topic");
                     return;
                 }
-                // Split the topic to get the components of the address (remove empty components)
-                path = msg.topic.split('/').filter(function (str) { return str !== ""; });
+                // Split the path to get the components of the address (remove empty components)
+                path = path.split('/').filter(function (str) { return str !== ""; });
                 protocolName = path[0].trim().replace(/ +/g, '_').toUpperCase();
                 deviceAddress = path[1];
                 unitAddress = parseUnitAddress(path[2]);
+                // The subtype is needed because subtypes within the same protocol may have different dim level ranges
                 subtype = getRfxcomSubtype(node.rfxtrx, protocolName);
                 switch (node.rfxtrx.transmitters[protocolName].type) {
                     case txTypeNumber.LIGHTING1 :

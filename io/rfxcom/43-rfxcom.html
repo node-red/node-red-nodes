@@ -20,18 +20,13 @@
         <label for="node-config-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-config-input-port" placeholder="/dev/ttyUSB0" style="width:50%;">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-debug"> Debug</label>
-        <input type="checkbox" id="node-config-input-debug" style="display:inline-block; width:auto; vertical-align:top;">
-    </div>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('rfxtrx-port', {
         category: 'config',
         defaults: {
-            port: { value:"", required:true },
-            debug: { value:"true" }
+            port: { value:"", required:true }
         },
         label: function () {
             return this.port;
@@ -45,6 +40,17 @@
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-input-port">
     </div>
+    <div class="form-row node-input-topic">
+        <label for="node-input-topicSource"><i class="icon-envelope"></i> Address</label>
+        <select id="node-input-topicSource" style="width:73% !important">
+          <option value="msg">get address from message topic</option>
+          <option value="node">send all commands to the same address</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-input-row-topic">
+        <label for="node-input-topic"></label>
+        <input type="text" id="node-input-topic" placeholder="protocol/device address/unit address">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -56,7 +62,8 @@
 <p>
 Sends commands to remote lighting control devices using an RFXtrx433 transceiver
 </p>
-<p>The input message topic is the device 'address'. The input message payload is the command
+<p>The input message topic is the device 'address'. The input message payload is the command. Alternatively, the
+same device address can be used for all messages.
 </p>
 <p>
 Addresses take the form '<b>type</b>/<b>device address</b>/<b>unit address</b>', where <b>type</b> is the name of the family
@@ -79,7 +86,9 @@ Not all devices support all commands. Less common commands include 'Toggle' and 
         category: 'output',
         defaults: {
             name: {name:""},
-            port: {type:"rfxtrx-port", required:true}
+            port: {type:"rfxtrx-port", required:true},
+            topicSource: { value:"msg", required:true },
+            topic: { value:"" }
         },
         color:"BurlyWood",
         inputs:1,
@@ -92,6 +101,35 @@ Not all devices support all commands. Less common commands include 'Toggle' and 
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            /*
+            if (this.topicSource == null) {
+                if (this.topic == "") {
+                    this.topicSource = "msg";
+                } else {
+                    this.topicSource = "node";
+                }
+            }
+            */
+            $("#node-input-topicSource").change(function() {
+                var id = $("#node-input-topicSource option:selected").val();
+                if (id == "node") {
+                    $("#node-input-row-topic").show();
+                } else {
+                    $("#node-input-row-topic").hide();
+                }
+            });
+            $("#node-input-topicSource").val(this.topicSource);
+            $("#node-input-topicSource").change();
+        },
+        /*
+        oneditsave: function () {
+        /*
+            var node = this;
+            node.topicSource = $("#node-input-topicSource option:selected").val();
+            node.topic = $("#node-input-topic").val();
         }
+        */
     });
 </script>
