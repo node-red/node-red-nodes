@@ -98,7 +98,7 @@ function XmppInNode(n) {
 
     xmpp.on('online', function() {
         node.log('connected to '+node.host+":"+node.port);
-        node.status({fill:"green",shape:"dot",text:"connected"},true);
+        node.status({fill:"green",shape:"dot",text:"connected"});
         //xmpp.setPresence('online', node.nick+' online');
         if (node.join) {
             xmpp.join(node.to+'/'+node.nick);
@@ -133,7 +133,7 @@ function XmppInNode(n) {
 
     xmpp.on('close', function(err) {
         node.log('connection closed');
-        node.status({fill:"red",shape:"ring",text:"not connected"},true);
+        node.status({fill:"red",shape:"ring",text:"not connected"});
     });
 
     xmpp.on('subscribe', function(from) {
@@ -152,7 +152,7 @@ function XmppInNode(n) {
         });
     } catch(e) {
         node.error("Bad xmpp configuration");
-        node.status({fill:"red",shape:"ring",text:"not connected"},true);
+        node.status({fill:"red",shape:"ring",text:"not connected"});
     }
 
     node.on("close", function(done) {
@@ -184,7 +184,7 @@ function XmppOutNode(n) {
 
     xmpp.on('online', function() {
         node.log('connected to '+node.host+":"+node.port);
-        node.status({fill:"green",shape:"dot",text:"connected"},true);
+        node.status({fill:"green",shape:"dot",text:"connected"});
         xmpp.setPresence('online', node.nick+' online');
         if (node.join) {
             xmpp.join(node.to+'/'+node.nick);
@@ -197,7 +197,7 @@ function XmppOutNode(n) {
 
     xmpp.on('close', function(err) {
         node.log('connection closed');
-        node.status({fill:"red",shape:"ring",text:"not connected"},true);
+        node.status({fill:"red",shape:"ring",text:"not connected"});
     });
 
     xmpp.on('subscribe', function(from) {
@@ -216,7 +216,7 @@ function XmppOutNode(n) {
         });
     } catch(e) {
         node.error("Bad xmpp configuration");
-        node.status({fill:"red",shape:"ring",text:"not connected"},true);
+        node.status({fill:"red",shape:"ring",text:"not connected"});
     }
 
     node.on("input", function(msg) {

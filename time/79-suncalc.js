@@ -42,8 +42,8 @@ module.exports = function(RED) {
             msg = { payload:0, topic:"sun", moon:moon };
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
             if (oldval == null) { oldval = msg.payload; }
-            if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"day"},true); }
-            else { node.status({fill:"blue",shape:"dot",text:"night"},true); }
+            if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"day"}); }
+            else { node.status({fill:"blue",shape:"dot",text:"night"}); }
             if (msg.payload != oldval) {
                 oldval = msg.payload;
                 msg2 = msg;

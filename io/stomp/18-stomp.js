@@ -86,31 +86,31 @@ module.exports = function(RED) {
         var closing = false;
 
         node.client = new StompClient(node.host, node.port, node.userid, node.password, '1.0');
-        node.status({fill:"grey",shape:"ring",text:"connecting"},true);
+        node.status({fill:"grey",shape:"ring",text:"connecting"});
 
         var doConnect = function() {
             node.client.connect(function(sessionId) {
-                node.status({fill:"green",shape:"dot",text:"connected"},true);
+                node.status({fill:"green",shape:"dot",text:"connected"});
                 node.log('subscribed to: '+node.topic);
                 node.client.subscribe(node.topic, function(body, headers) {
                     msg.payload = JSON.parse(body);
                     node.send(msg);
                 });
             }, function(error) {
-                node.status({fill:"grey",shape:"dot",text:"error"},true);
+                node.status({fill:"grey",shape:"dot",text:"error"});
                 node.warn(error);
             });
         }
 
         node.client.on("disconnect", function() {
-            node.status({fill:"red",shape:"ring",text:"disconnected"},true);
+            node.status({fill:"red",shape:"ring",text:"disconnected"});
             if (!closing) {
                 setTimeout( function () { doConnect(); }, 15000);
             }
         });
 
         node.client.on("error", function(error) {
-            node.status({fill:"grey",shape:"dot",text:"error"},true);
+            node.status({fill:"grey",shape:"dot",text:"error"});
             node.log(error);
         });
 
@@ -146,17 +146,17 @@ module.exports = function(RED) {
         var closing = false;
 
         node.client = new StompClient(node.host, node.port, node.userid, node.password, '1.0');
-        node.status({fill:"grey",shape:"ring",text:"connecting"},true);
+        node.status({fill:"grey",shape:"ring",text:"connecting"});
 
         node.client.connect( function(sessionId) {
-            node.status({fill:"green",shape:"dot",text:"connected"},true);
+            node.status({fill:"green",shape:"dot",text:"connected"});
         }, function(error) {
-            node.status({fill:"grey",shape:"dot",text:"error"},true);
+            node.status({fill:"grey",shape:"dot",text:"error"});
             node.warn(error);
         });
 
         node.client.on("disconnect", function() {
-            node.status({fill:"red",shape:"ring",text:"disconnected"},true);
+            node.status({fill:"red",shape:"ring",text:"disconnected"});
             if (!closing) {
                 setTimeout( function () { node.client.connect(); }, 15000);
             }
