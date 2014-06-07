@@ -34,7 +34,73 @@
     });
 </script>
 
-<!-- This is a transmitter node for lighting-type commands and the devices that receive tham -->
+<!-- This is a receiver node for listening to messages from lighting remote controls -->
+<script type="text/x-red" data-template-name="rfx-remotes">
+    <div class="form-row node-input-port">
+        <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
+        <input type="text" id="node-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rfx-remotes', {
+        category: 'input',
+        defaults: {
+            name: {name:""},
+            port: {type:"rfxtrx-port", required:true}
+        },
+        color:"BurlyWood",
+        inputs:0,
+        outputs:1,
+        icon: "serial.png",
+        label: function() {
+            var rfxtrxNode = RED.nodes.node(this.rfxtrx);
+            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-remotes");
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- This is a receiver node for listening to messages from temperature & humidity sensors -->
+<script type="text/x-red" data-template-name="rfx-sensor">
+    <div class="form-row node-input-port">
+        <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
+        <input type="text" id="node-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rfx-sensor', {
+        category: 'input',
+        defaults: {
+            name: {name:""},
+            port: {type:"rfxtrx-port", required:true}
+        },
+        color:"BurlyWood",
+        inputs:0,
+        outputs:1,
+        icon: "serial.png",
+        label: function() {
+            var rfxtrxNode = RED.nodes.node(this.rfxtrx);
+            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-sensor");
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        }
+    });
+</script>
+
+<!-- This is a transmitter node for lighting-type commands and the devices that receive them -->
 <script type="text/x-red" data-template-name="rfx-lights">
     <div class="form-row node-input-port">
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
@@ -103,16 +169,17 @@ Not all devices support all commands. Less common commands include 'Toggle' and 
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function() {
-            $("#node-input-topicSource").change(function() {
-                var id = $("#node-input-topicSource option:selected").val();
+            var topicSource = $("#node-input-topicSource");
+            topicSource.change(function() {
+                var id = topicSource.find("option:selected").val();
                 if (id == "node") {
                     $("#node-input-row-topic").show();
                 } else {
                     $("#node-input-row-topic").hide();
                 }
             });
-            $("#node-input-topicSource").val(this.topicSource);
-            $("#node-input-topicSource").change();
+            topicSource.val(this.topicSource);
+            topicSource.change();
         }
     });
 </script>

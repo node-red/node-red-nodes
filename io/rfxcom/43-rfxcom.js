@@ -93,7 +93,7 @@ var parseUnitAddress = function (str) {
 // By convention, the all-uppercase equivalent of the node-rfxcom object implementing the
 // message packet type. The numeric values are the protocol codes used by the RFXCOM API,
 // though this is also an arbitrary choice
-var txTypeNumber = { LIGHTING1: 0x10, LIGHTING2: 0x11, LIGHTING5: 0x14, CURTAIN1: 0x18};
+var txTypeNumber = { LIGHTING1: 0x10, LIGHTING2: 0x11, LIGHTING5: 0x14, LIGHTING6: 0x15, CURTAIN1: 0x18};
 
 // This function takes a protocol name and returns the subtype number (defined by the RFXCOM
 // API) for that protocol. It also creates the node-rfxcom object implementing the message packet type
@@ -109,13 +109,19 @@ var getRfxcomSubtype = function (rfxcomObject, protocolName) {
                 };
             } else if ((subtype = rfxcom.lighting2[protocolName]) !== undefined) {
                 rfxcomObject.transmitters[protocolName] = {
-                    tx: new rfxcom.Lighting2(rfxcomObject, subtype),
+//                    tx: new rfxcom.Lighting2(rfxcomObject, subtype),
+                    tx: new rfxcom.lighting2.transmitter(rfxcomObject, subtype),
                     type: txTypeNumber.LIGHTING2
                 };
             } else if ((subtype = rfxcom.lighting5[protocolName]) !== undefined) {
                 rfxcomObject.transmitters[protocolName] = {
                     tx: new rfxcom.Lighting5(rfxcomObject, subtype),
                     type: txTypeNumber.LIGHTING5
+                };
+            } else if ((subtype = rfxcom.lighting6[protocolName]) !== undefined) {
+                rfxcomObject.transmitters[protocolName] = {
+                    tx: new rfxcom.Lighting6(rfxcomObject, subtype),
+                    type: txTypeNumber.LIGHTING6
                 };
             } else {
                 throw new Error("Protocol type '" + protocolName + "' not supported");
@@ -125,6 +131,213 @@ var getRfxcomSubtype = function (rfxcomObject, protocolName) {
         }
         return subtype;
     };
+
+// An input node for listening to messages from lighting remote controls
+function RfxRemotesNode(n) {
+    RED.nodes.createNode(this, n);
+    this.port = n.port;
+    this.rfxtrxPort = RED.nodes.getNode(this.port);
+
+    var node = this;
+    if (node.rfxtrxPort) {
+        node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
+
+        node.rfxtrx.on("lighting1", function (evt) {
+            var msg = {};
+            msg.topic = evt.subtype + "/" + evt.housecode;
+            if (evt.commandNumber === 5 || evt.commandNumber === 6 ) {
+                msg.topic = msg.topic + "/+";
+            } else {
+                msg.topic = msg.topic + "/" + evt.unitcode;
+            }
+            switch (evt.commandNumber) {
+                case 0 : case 5 :
+                    msg.payload = "Off";
+                    break;
+
+                case 1 : case 6 :
+                    msg.payload = "On";
+                    break;
+
+                case 2 :
+                    msg.payload = "Dim";
+                    break;
+
+                case 3 :
+                    msg.payload = "Bright";
+                    break;
+
+                case 7 :    // The ARC 'Chime' command - handled in rfx-doorbells so ignore it here
+                    return;
+
+                default:
+                    node.warn("rfx-remotes: unrecognised Lighting1 command " + evt.commandNumber.toString(16));
+                    return;
+            }
+            node.send(msg);
+        });
+
+        node.rfxtrx.on("lighting2", function (evt) {
+            var msg = {};
+            msg.topic = evt.subtype + "/" + evt.id;
+            if (evt.commandNumber > 2) {
+                msg.topic = msg.topic + "/+";
+            } else {
+                msg.topic = msg.topic + "/" + evt.unitcode;
+            }
+            switch (evt.commandNumber) {
+                case 0: case 3:
+                    msg.payload = "Off";
+                    break;
+
+                case 1: case 4:
+                    msg.payload = "On";
+                    break;
+
+                case 2: case 5:
+                    msg.payload = "Dim " + evt.level/15*100 + "%";
+                    break;
+
+                default:
+                    node.warn("rfx-remotes: unrecognised Lighting2 command " + evt.commandNumber.toString(16));
+                    return;
+            }
+            node.send(msg);
+        });
+
+        node.rfxtrx.on("lighting5", function (evt) {
+            var msg = {};
+            msg.topic = evt.subtype + "/" + evt.id;
+            if ((evt.commandNumber == 2 && (evt.subtype == 0 || evt.subtype == 2 || evt.subtype == 4) ) ||
+                (evt.commandNumber == 3) && (evt.subtype == 2 || evt.subtype == 4)) {
+                msg.topic = msg.topic + "/+";
+            } else {
+                msg.topic = msg.topic + "/" + evt.unitcode;
+            }
+            switch (evt.subtype) {
+                case 0: // Lightwave RF
+                    switch(evt.commandNumber) {
+                        case 0: case 2:
+                            msg.payload = "Off";
+                            break;
+
+                        case 1:
+                            msg.payload = "On";
+                            break;
+
+                        case 3: case 4: case 5: case 6: case 7:
+                            msg.payload = "Mood " + evt.commandNumber - 2;
+                            break;
+
+                        case 16:
+                            msg.payload = "Dim " + evt.level/15*100 + "%";
+                            break;
+
+                        case 17: case 18: case 19:
+                            node.warn("Lighting5: LightwaveRF colour commands not implemented");
+                            break;
+
+                        default:
+                            return;
+                    }
+                    break;
+
+                case 2: case 4: // BBSB & CONRAD
+                    switch(evt.commandNumber) {
+                        case 0: case 2:
+                            msg.payload = "Off";
+                            break;
+
+                        case 1: case 3:
+                            msg.payload = "On";
+                            break;
+
+                        default:
+                            return;
+                    }
+                    break;
+
+                case 6: // TRC02
+                    switch(evt.commandNumber) {
+                        case 0:
+                            msg.payload = "Off";
+                            break;
+
+                        case 1:
+                            msg.payload = "On";
+                            break;
+
+                        case 2:
+                            msg.payload = "Bright";
+                            break;
+
+                        case 3:
+                            msg.payload = "Dim";
+                            break;
+
+                        default:
+                            node.warn("Lighting5: TRC02 colour commands not implemented");
+                            return;
+                    }
+                    break;
+            }
+            node.send(msg);
+        });
+
+        node.rfxtrx.on("lighting6", function (evt) {
+            var msg = {};
+            msg.topic = evt.subtype + "/" + evt.id + "/" + evt.groupcode;
+            if (evt.commandNumber > 1) {
+                msg.topic = msg.topic + "/+";
+            } else {
+                msg.topic = msg.topic + "/" + evt.unitcode;
+            }
+            switch (evt.commandNumber) {
+                case 1: case 3:
+                    msg.payload = "Off";
+                    break;
+
+                case 0: case 2:
+                    msg.payload = "On";
+                    break;
+
+                default:
+                    node.warn("rfx-remotes: unrecognised Lighting6 command " + evt.commandNumber.toString(16));
+                    return;
+            }
+            node.send(msg);
+        });
+
+
+    } else {
+        node.error("missing config: rfxtrx-port");
+    }
+}
+
+RED.nodes.registerType("rfx-remotes", RfxRemotesNode);
+
+// An input node for listening to messages from temperature and humidity sensors
+function RfxTemperatureHumidityNode(n) {
+    RED.nodes.createNode(this, n);
+    this.port = n.port;
+    this.rfxtrxPort = RED.nodes.getNode(this.port);
+
+    var node = this;
+    if (node.rfxtrxPort) {
+        node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
+
+        node.rfxtrx.on("th1", function (evt) {
+            var msg = {};
+            msg.topic = evt.id;
+            msg.payload = evt.temperature + '˚C, ' + evt.humidity + '% (' + rfxcom.humidity[evt.humidityStatus] + ')';
+            node.send(msg);
+        });
+    } else {
+        node.error("missing config: rfxtrx-port");
+    }
+}
+
+RED.nodes.registerType("rfx-sensor", RfxTemperatureHumidityNode);
 
 // An output node for sending messages to light switches & dimmers (including most types of plug-in switch)
 function RfxLightsNode(n) {
@@ -225,18 +438,19 @@ function RfxLightsNode(n) {
                 // Split the path to get the components of the address (remove empty components)
                 path = path.split('/').filter(function (str) { return str !== ""; });
                 protocolName = path[0].trim().replace(/ +/g, '_').toUpperCase();
-                deviceAddress = path[1];
-                unitAddress = parseUnitAddress(path[2]);
+                deviceAddress = path.slice(1, -1);
+                unitAddress = parseUnitAddress(path.slice(-1)[0]);
                 // The subtype is needed because subtypes within the same protocol may have different dim level ranges
                 subtype = getRfxcomSubtype(node.rfxtrx, protocolName);
                 switch (node.rfxtrx.transmitters[protocolName].type) {
                     case txTypeNumber.LIGHTING1 :
-                        parseCommand(protocolName, [deviceAddress, unitAddress], msg.payload, []);
+                    case txTypeNumber.LIGHTING6 :
+                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, []);
                         break;
 
                     case txTypeNumber.LIGHTING2 :
                     case txTypeNumber.LIGHTING5 :
-                        parseCommand(protocolName, [deviceAddress, unitAddress], msg.payload, [0, 15]);
+                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, [0, 15]);
                         break;
                 }
             });
