@@ -35,12 +35,11 @@ function RawSerialInNode(n) {
     if (this.splitc == '\\n') this.splitc = "\n";
     if (this.splitc == '\\r') this.splitc = "\r";
     if (!isNaN(parseInt(this.splitc))) { this.splitc = parseInt(this.splitc); }
-    console.log("Split is",this.out,this.splitc);
     var node = this;
 
     var setupSerial = function() {
         node.inp = fs.createReadStream(pre+node.port);
-        node.log("opened "+pre+node.port);
+        node.log("open "+pre+node.port);
         node.tout = null;
         var line = "";
         var buf = new Buffer(32768);
@@ -83,14 +82,14 @@ function RawSerialInNode(n) {
         });
         //node.inp.on('end', function (error) {console.log("End", error);});
         node.inp.on('close', function (error) {
-            util.log("[rawserial] "+node.port+" closed");
+            node.log(node.port+" closed");
             node.tout = setTimeout(function() {
                 setupSerial();
             },settings.serialReconnectTime);
         });
         node.inp.on('error', function(error) {
-            if (error.code == "ENOENT") { util.log("[rawserial] port "+node.port+" not found"); }
-            else { util.log("[rawserial] "+node.port+" error "+error); }
+            if (error.code == "ENOENT") { node.log(node.port+" not found"); }
+            else { node.log(node.port+" error "+error); }
             node.tout = setTimeout(function() {
                 setupSerial();
             },settings.serialReconnectTime);
@@ -119,18 +118,18 @@ function RawSerialOutNode(n) {
                 node.oup.write(msg.payload);
             }
         });
-        node.oup.on('open', function (error) { util.log("[rawserial] opened "+node.port); });
-        node.oup.on('end', function (error) { console.log("End",error); });
+        node.oup.on('open', function (error) { node.log("opened "+node.port); });
+        node.oup.on('end', function (error) { node.log("end :"+error); });
         node.oup.on('close', function (error) {
-            util.log("[rawserial] "+node.port+" closed");
+            node.log(node.port+" closed");
             node.tout = setTimeout(function() {
                 setupSerial();
             },settings.serialReconnectTime);
         });
         node.oup.on('error', function(error) {
-            if (error.code == "EACCES") { util.log("[rawserial] can't access port "+node.port); }
-            else if (error.code == "EIO") { util.log("[rawserial] can't write to port "+node.port); }
-            else { util.log("[rawserial] "+node.port+" error "+error); }
+            if (error.code == "EACCES") { node.log("can't access port "+node.port); }
+            else if (error.code == "EIO") { node.log("can't write to port "+node.port); }
+            else { node.log(node.port+" error "+error); }
             node.tout = setTimeout(function() {
                 setupSerial();
             },settings.serialReconnectTime);
