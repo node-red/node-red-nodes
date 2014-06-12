@@ -1,0 +1,66 @@
+<!--
+  Copyright 2014 Nicholas Humfrey.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+
+<!--  The Output Node  -->
+<script type="text/x-red" data-template-name="osc out">
+    <div class="form-row">
+        <label for="node-input-addr" id="node-input-addr-label"><i class="icon-list"></i> Address</label>
+        <input type="text" id="node-input-addr" placeholder="destination ip" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port" id="node-input-port-label"><i class="icon-list"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="destination port" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tasks"></i> Path</label>
+        <input type="text" id="node-input-path" placeholder="OSC Path">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: leave path blank if you want to set using <b>msg.topic</b>.</div>
+</script>
+
+<script type="text/x-red" data-help-name="osc out">
+    <p>Send messages using the Open Sound Control (OSC) protocol.</p>
+    <p>This node sends <b>msg.payload</b> to the designated OSC host and port.</p>
+    <p>On some systems you may need to be root to use ports below 1024 and/or broadcast.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('osc out',{
+        category: 'output',
+        color:"#0099FF",
+        defaults: {
+            name: {value:""},
+            addr: {value:"localhost",required:true},
+            port: {value:"",required:true, validate:RED.validators.number()},
+            path: {value:""},
+        },
+        inputs:1,
+        outputs:0,
+        icon: "bridge-dash.png",
+        align: "right",
+        label: function() {
+            return this.name||"osc "+(this.addr+":"+this.port);
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
