@@ -15,6 +15,52 @@
 -->
 
 
+<!--  The Input Node  -->
+<script type="text/x-red" data-template-name="osc in">
+    <div class="form-row">
+        <label for="node-input-addr" id="node-input-addr-label"><i class="icon-list"></i> Address</label>
+        <input type="text" id="node-input-addr" placeholder="destination ip" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port" id="node-input-port-label"><i class="icon-list"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="destination port" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: Make sure your firewall will allow the data in.</div>
+</script>
+
+<script type="text/x-red" data-help-name="osc in">
+    <p>A Open Source Control (OSC) input node, that produces a <b>msg.payload</b> containing an message and <b>msg.topic</b> contains the path.</p>
+    <p>If the message contains multiple values then an array will be returned.</b>
+    <p>It also provides <b>msg.ip</b> and <b>msg.port</b> to the ip address and port from which the message was received.</b>
+    <p>On some systems you may need to be root to use ports below 1024.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('osc in',{
+        category: 'input',
+        color:"#0099FF",
+        defaults: {
+            name: {value:""},
+            addr: {value:"0.0.0.0", required:true},
+            port: {value:"", required:true, validate:RED.validators.number()},
+        },
+        inputs:0,
+        outputs:1,
+        icon: "bridge-dash.png",
+        label: function() {
+            return this.name||"osc "+(this.addr+":"+this.port);
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
 <!--  The Output Node  -->
 <script type="text/x-red" data-template-name="osc out">
     <div class="form-row">
