@@ -49,14 +49,6 @@ module.exports = function(RED) {
                 }
             }
         });
-
-        node.on("close", function() {
-            try {
-                node.log('OSC output stopped');
-            } catch (err) {
-                node.error(err);
-            }
-        });
     }
     RED.nodes.registerType("osc out", OSCout);
 }
