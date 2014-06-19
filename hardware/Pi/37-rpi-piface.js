@@ -19,14 +19,12 @@ var util = require("util");
 var exec = require('child_process').exec;
 var fs =  require('fs');
 
-if (!fs.existsSync("/usr/local/bin/gpio")) {
-    exec("cat /proc/cpuinfo | grep BCM27",function(err,stdout,stderr) {
-        if (stdout.indexOf('BCM27') > -1) {
-            util.log('[37-rpi-piface.js] Error: Cannot find Wiring-Pi "gpio" command');
-        }
-        // else not on a Pi so don't worry anyone with needless messages.
-    });
-    return;
+if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
+    throw "Info : Ignoring Raspberry Pi specific node.";
+}
+
+if (!fs.existsSync("/usr/local/bin/gpio")) { // gpio command not installed
+    throw "Info : Can't find Raspberry Pi wiringPi gpio command.";
 }
 
 // Map names of pins to Gordon's gpio PiFace pin numbers
@@ -109,13 +107,16 @@ function PiFACEInNode(n) {
                             }
                         }
                     });
-                }, 250);
+                }, 200);
             }
         });
     }
     else {
         node.error("Invalid PiFACE pin: "+node.pin);
     }
+    node.on("close", function() {
+        clearInterval(node._interval);
+    });
 }
 
 function PiFACEOutNode(n) {
@@ -141,21 +142,10 @@ function PiFACEOutNode(n) {
 }
 
 
-
 exec("gpio load spi",function(err,stdout,stderr) {
     if (err) {
         util.log('[37-rpi-piface.js] Error: "gpio load spi" command failed for some reason.');
     }
-    exec("gpio -p reset",function(err,stdout,stderr) {
-        if (err) {
-            util.log('[37-rpi-piface.js] Error: "gpio -p reset" command failed for some reason.');
-        }
-        RED.nodes.registerType("rpi-piface in",PiFACEInNode);
-        RED.nodes.registerType("rpi-piface out",PiFACEOutNode);
-        PiFACEInNode.prototype.close = function() {
-            clearInterval(this._interval);
-        }
-        PiFACEOutNode.prototype.close = function() {
-        }
-    });
+    RED.nodes.registerType("rpi-piface in",PiFACEInNode);
+    RED.nodes.registerType("rpi-piface out",PiFACEOutNode);
 });

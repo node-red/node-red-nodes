@@ -1,0 +1,169 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="stomp in">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="icon-bookmark"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic" style="width: 110px;"><i class="icon-envelope"></i> Destination</label>
+        <input type="text" id="node-input-topic" placeholder="topic or queue">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="stomp in">
+    <p>Connects to a server using the Stomp protocol to receive messages.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('stomp in',{
+        category: 'input',
+        color:"#e8cfe8",
+        defaults: {
+            name: {value:""},
+            server: {type:"stomp-server",required:true},
+            topic: {value:"",required:true}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "bridge.png",
+        label: function() {
+            return this.name||"stomp";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="stomp out">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="icon-bookmark"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic" style="width: 110px;"><i class="icon-envelope"></i> Destination</label>
+        <input type="text" id="node-input-topic" placeholder="topic or queue">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">The <b>Destination</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</div>
+</script>
+
+<script type="text/x-red" data-help-name="stomp out">
+    <p>Connects to an Stomp capable server to send messages.</p>
+    <p>The <b>Destination</b> field is optional. If set it overrides the <b>msg.topic</b> property of the message.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('stomp out',{
+        category: 'output',
+        color:"#e8cfe8",
+        defaults: {
+            name: {value:""},
+            server: {type:"stomp-server",required:true},
+            topic: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "bridge.png",
+        align: "right",
+        label: function() {
+            return this.name||"stomp";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="stomp-server">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="icon-bookmark"></i> Server</label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 45%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-user"></i> Username</label>
+        <input type="text" id="node-config-input-user">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-pass"><i class="icon-lock"></i> Password</label>
+        <input type="password" id="node-config-input-pass">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('stomp-server',{
+        category: 'config',
+        defaults: {
+            server: {required:true},
+            port: {value:61618,required:true,validate:RED.validators.number()},
+            name: {}
+        },
+        label: function() {
+            return (this.name?this.name:this.server+":"+this.port);
+        },
+        oneditprepare: function() {
+            $.getJSON('stomp-server/'+this.id,function(data) {
+                if (data.user) {
+                    $('#node-config-input-user').val(data.user);
+                }
+                if (data.hasPassword) {
+                    $('#node-config-input-pass').val('__PWRD__');
+                } else {
+                    $('#node-config-input-pass').val('');
+                }
+                if (data.global) $('#node-config-cred-tip').show();
+                else $('#node-config-cred-tip').hide();
+            });
+        },
+        oneditsave: function() {
+            var credentials = {};
+            var newUser = $('#node-config-input-user').val();
+            var newPass = $('#node-config-input-pass').val();
+            credentials.user = newUser;
+            if (newPass != '__PWRD__') {
+                credentials.password = newPass;
+            }
+            $.ajax({
+                url: 'stomp-server/'+this.id,
+                type: 'POST',
+                data: credentials,
+                success: function(result){}
+            });
+        },
+        ondelete: function() {
+            $.ajax({
+                url: 'stomp-server/'+this.id,
+                type: 'DELETE',
+                success: function(result) {}
+            });
+        }
+    });
+</script>

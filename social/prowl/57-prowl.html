@@ -32,6 +32,7 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips" id="node-tip"><b>Note:</b> Using credentials from global pushkey.js file.</div>
 </script>
 
 <script type="text/x-red" data-help-name="prowl">
@@ -69,6 +70,8 @@
                 } else {
                     $('#node-config-input-pushkey').val('');
                 }
+                if (data.global) $('#node-tip').show();
+                else $('#node-tip').hide();
             });
         },
         oneditsave: function() {

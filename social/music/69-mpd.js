@@ -21,15 +21,13 @@ var komponist = require('komponist');
 var mpc = null;
 exec("which mpd",function(err,stdout,stderr) {
     if (stdout.indexOf('mpd') == -1) {
-        util.log('[69-mpd.js] Error: Cannot find "mpd" command. Please install MPD.');
-        return;
+        throw 'Error: Cannot find "mpd" command. Please install MPD.';
     }
 });
 
 exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
     if (stdout.indexOf('6600') == -1) {
-        util.log('[69-mpd.js] Warning: MPD daemon not listening on port 6600. Please start MPD.');
-        return;
+        throw '[69-mpd.js] Error: MPD daemon not listening on port 6600. Please start MPD.';
     }
     komponist.createConnection(6600, 'localhost', function(err, client) {
         if (err) node.error("MPD: Failed to connect to MPD server");
@@ -46,19 +44,18 @@ function MPDOut(n) {
     if (mpc != null) {
         this.on("input", function(msg) {
             if (msg != null) {
-                console.log(msg);
                 try {
                     //node.mpc.command(msg.payload);
                     node.mpc.command(msg.payload, msg.param, function(err, results) {
-                        if (err) { console.log("MPD: Error:",err); }
+                        if (err) { node.log("error: "+err); }
                         //else { console.log(results); }
                     });
-                } catch (err) { console.log("MPD: Error:",err); }
+                } catch (err) { node.log("error: "+err); }
             }
         });
 
         node.mpc.on('error', function(err) {
-            console.log("MPD: Error:",err);
+            node.log("error: "+err);
         });
     }
     else { node.warn("MPD not running"); }
@@ -76,7 +73,7 @@ function MPDIn(n) {
 
         function getSong() {
             node.mpc.currentsong(function(err, info) {
-                if (err) console.log(err);
+                if (err) node.log(err);
                 else {
                     var msg = {payload:{},topic:"music"};
                     msg.payload.Artist = info.Artist;

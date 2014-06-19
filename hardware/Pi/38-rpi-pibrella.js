@@ -67,7 +67,7 @@ function PibrellaIn(n) {
     this.pin = pintable[n.pin];
     var node = this;
 
-    if (this.pin) {
+    if (node.pin) {
         exec("gpio mode "+node.pin+" in", function(err,stdout,stderr) {
             if (err) node.error(err);
             else {
@@ -90,11 +90,11 @@ function PibrellaIn(n) {
         });
     }
     else {
-        this.error("Invalid GPIO pin: "+this.pin);
+        node.error("Invalid GPIO pin: "+node.pin);
     }
 
-    this.on("close", function() {
-        clearInterval(this._interval);
+    node.on("close", function() {
+        clearInterval(node._interval);
     });
 }
 
@@ -103,7 +103,7 @@ function PibrellaOut(n) {
     this.pin = pintable[n.pin];
     var node = this;
 
-    if (this.pin == "1") {
+    if (node.pin == "1") {
         exec("gpio mode 1 pwm");
         process.nextTick(function() {
             exec("gpio pwm-ms");
@@ -121,7 +121,7 @@ function PibrellaOut(n) {
             });
         });
     }
-    else if (this.pin) {
+    else if (node.pin) {
         process.nextTick(function() {
             exec("gpio mode "+node.pin+" out", function(err,stdout,stderr) {
                 if (err) node.error(err);
@@ -142,31 +142,31 @@ function PibrellaOut(n) {
         });
     }
     else {
-        this.error("Invalid GPIO pin: "+this.pin);
+        node.error("Invalid GPIO pin: "+node.pin);
     }
 
-    this.on("close", function() {
-        exec("gpio mode "+this.pin+" in");
+    node.on("close", function() {
+        exec("gpio mode "+node.pin+" in");
     });
 }
 
-exec("gpio mode 0 out",function(err,stdout,stderr) {
-    if (err) {
-        util.log('[36-rpi-gpio.js] Error: "gpio" command failed for some reason.');
-    }
-    exec("gpio mode 1 out");
-    exec("gpio mode 2 out");
-    exec("gpio mode 3 out");
-    exec("gpio mode 4 out");
-    exec("gpio mode 5 out");
-    exec("gpio mode 6 out");
-    exec("gpio mode 7 out");
-    exec("gpio mode 10 in");
-    exec("gpio mode 11 in");
-    exec("gpio mode 12 in");
-    exec("gpio mode 13 in");
-    exec("gpio mode 14 in");
-});
+//exec("gpio mode 0 out",function(err,stdout,stderr) {
+    //if (err) {
+        //util.log('[36-rpi-gpio.js] Error: "gpio" command failed for some reason.');
+    //}
+    //exec("gpio mode 1 out");
+    //exec("gpio mode 2 out");
+    //exec("gpio mode 3 out");
+    //exec("gpio mode 4 out");
+    //exec("gpio mode 5 out");
+    //exec("gpio mode 6 out");
+    //exec("gpio mode 7 out");
+    //exec("gpio mode 10 in");
+    //exec("gpio mode 11 in");
+    //exec("gpio mode 12 in");
+    //exec("gpio mode 13 in");
+    //exec("gpio mode 14 in");
+//});
 
 RED.nodes.registerType("rpi-pibrella in",PibrellaIn);
 RED.nodes.registerType("rpi-pibrella out",PibrellaOut);
