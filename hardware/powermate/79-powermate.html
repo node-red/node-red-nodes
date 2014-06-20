@@ -1,0 +1,74 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+
+<!-- First, the content of the edit dialog is defined.                       -->
+
+<script type="text/x-red" data-template-name="powerMate">
+   <!-- data-template-name identifies the node type this is for              -->
+
+   <!-- Each of the following divs creates a field in the edit dialog.       -->
+   <!-- Generally, there should be an input for each property of the node.   -->
+   <!-- The for and id attributes identify the corresponding property        --> 
+   <!-- (with the 'node-input-' prefix).                                     -->
+   <!-- The available icon classes are defined in Twitter Bootstrap          -->
+
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field.                                       -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
+        <input type="text" id="node-input-topic" >
+    </div>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="powerMate">
+   <!-- data-help-name identifies the node type this help is for             -->
+   <!-- This content appears in the Info sidebar when a node is selected     -->
+   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
+   <!-- node in the palette.                                                 -->
+   <p>Input node for the <a href="http://www.amazon.co.uk/gp/product/B003VWU2WA/ref=as_li_ss_tl?ie=UTF8&camp=1634&creative=19450&creativeASIN=B003VWU2WA&linkCode=as2&tag=bespl-21">Griffin Powermate</a></p>
+   <p>The topic setting is a prefix that will be pre-pended to button or wheel. e.g. <i>powermate/button</i> or <i>powermate/wheel</i></p>
+   <p>For wheel inputs the payload will be +ve for clockwise and -ve for anti-clockwise.</p>
+   <p>For button inputs the payload will be 'up' or 'down'</p>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('powerMate',{
+        category: 'advanced-function',      // the palette category
+        color:"GoldenRod",
+        defaults: {             // defines the editable properties of the node
+            name: {value:"powermate"},   //  along with default values.
+            topic: {value:"powermate"}
+        },
+        inputs:0,                // set the number of inputs - only 0 or 1
+        outputs:1,               // set the number of outputs - 0 to n
+        icon: "powermate.png",    // set the icon (held in public/icons)
+        label: function() {      // sets the default label contents
+            return this.name||this.topic||"powermate";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
