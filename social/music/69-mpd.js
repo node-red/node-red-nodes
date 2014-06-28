@@ -14,89 +14,91 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var util = require("util");
-var exec = require('child_process').exec;
-var komponist = require('komponist');
-var mpc = null;
-exec("which mpd",function(err,stdout,stderr) {
-    if (stdout.indexOf('mpd') == -1) {
-        throw 'Error: Cannot find "mpd" command. Please install MPD.';
-    }
-});
-
-exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
-    if (stdout.indexOf('6600') == -1) {
-        throw '[69-mpd.js] Error: MPD daemon not listening on port 6600. Please start MPD.';
-    }
-    komponist.createConnection(6600, 'localhost', function(err, client) {
-        if (err) node.error("MPD: Failed to connect to MPD server");
-        mpc = client;
+module.exports = function(RED) {
+    "use strict";
+    var util = require("util");
+    var exec = require('child_process').exec;
+    var komponist = require('komponist');
+    var mpc = null;
+    exec("which mpd",function(err,stdout,stderr) {
+        if (stdout.indexOf('mpd') == -1) {
+            throw 'Error: Cannot find "mpd" command. Please install MPD.';
+        }
     });
-});
 
-
-function MPDOut(n) {
-    RED.nodes.createNode(this,n);
-    var node = this;
-    node.mpc = mpc;
-
-    if (mpc != null) {
-        this.on("input", function(msg) {
-            if (msg != null) {
-                try {
-                    //node.mpc.command(msg.payload);
-                    node.mpc.command(msg.payload, msg.param, function(err, results) {
-                        if (err) { node.log("error: "+err); }
-                        //else { console.log(results); }
-                    });
-                } catch (err) { node.log("error: "+err); }
-            }
+    exec("netstat -an | grep LISTEN | grep 6600",function(err,stdout,stderr) {
+        if (stdout.indexOf('6600') == -1) {
+            throw '[69-mpd.js] Error: MPD daemon not listening on port 6600. Please start MPD.';
+        }
+        komponist.createConnection(6600, 'localhost', function(err, client) {
+            if (err) { node.error("MPD: Failed to connect to MPD server"); }
+            mpc = client;
         });
+    });
 
-        node.mpc.on('error', function(err) {
-            node.log("error: "+err);
-        });
-    }
-    else { node.warn("MPD not running"); }
-}
-RED.nodes.registerType("mpd out",MPDOut);
 
-function MPDIn(n) {
-    RED.nodes.createNode(this,n);
-    var node = this;
-    node.mpc = mpc;
-    var oldMsg = "";
+    function MPDOut(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.mpc = mpc;
 
-    if (mpc != null) {
-        getSong();
-
-        function getSong() {
-            node.mpc.currentsong(function(err, info) {
-                if (err) node.log(err);
-                else {
-                    var msg = {payload:{},topic:"music"};
-                    msg.payload.Artist = info.Artist;
-                    msg.payload.Album = info.Album;
-                    msg.payload.Title = info.Title;
-                    msg.payload.Genre = info.Genre;
-                    msg.payload.Date = info.Date;
-                    if (JSON.stringify(msg) != oldMsg) {
-                        node.send(msg);
-                        oldMsg = JSON.stringify(msg);
-                    }
+        if (mpc != null) {
+            this.on("input", function(msg) {
+                if (msg != null) {
+                    try {
+                        //node.mpc.command(msg.payload);
+                        node.mpc.command(msg.payload, msg.param, function(err, results) {
+                            if (err) { node.log("error: "+err); }
+                            //else { console.log(results); }
+                        });
+                    } catch (err) { node.log("error: "+err); }
                 }
             });
+
+            node.mpc.on('error', function(err) {
+                node.log("error: "+err);
+            });
         }
-
-        node.mpc.on('changed', function(system) {
-            getSong();
-        });
-
-        this.on("close", function() {
-           // node.mpc.command("stop");
-        });
+        else { node.warn("MPD not running"); }
     }
-    else { node.warn("MPD not running"); }
+    RED.nodes.registerType("mpd out",MPDOut);
+
+    function MPDIn(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.mpc = mpc;
+        var oldMsg = "";
+
+        if (mpc != null) {
+            getSong();
+
+            var getSong = function() {
+                node.mpc.currentsong(function(err, info) {
+                    if (err) { node.log(err); }
+                    else {
+                        var msg = {payload:{},topic:"music"};
+                        msg.payload.Artist = info.Artist;
+                        msg.payload.Album = info.Album;
+                        msg.payload.Title = info.Title;
+                        msg.payload.Genre = info.Genre;
+                        msg.payload.Date = info.Date;
+                        if (JSON.stringify(msg) != oldMsg) {
+                            node.send(msg);
+                            oldMsg = JSON.stringify(msg);
+                        }
+                    }
+                });
+            }
+
+            node.mpc.on('changed', function(system) {
+                getSong();
+            });
+
+            this.on("close", function() {
+               // node.mpc.command("stop");
+            });
+        }
+        else { node.warn("MPD not running"); }
+    }
+    RED.nodes.registerType("mpd in",MPDIn);
 }
-RED.nodes.registerType("mpd in",MPDIn);

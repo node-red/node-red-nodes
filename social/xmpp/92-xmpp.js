@@ -39,11 +39,11 @@ var querystring = require('querystring');
 RED.httpAdmin.get('/xmpp-server/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!=="")}));
     } else if (xmppkey && xmppkey.jid && xmppkey.password) {
         RED.nodes.addCredentials(req.params.id,{user:xmppkey.jid, password:xmppkey.password, global:true});
         credentials = RED.nodes.getCredentials(req.params.id);
-        res.send(JSON.stringify({user:credentials.user,global:credentials.global,hasPassword:(credentials.password&&credentials.password!="")}));
+        res.send(JSON.stringify({user:credentials.user,global:credentials.global,hasPassword:(credentials.password&&credentials.password!=="")}));
     } else {
         res.send(JSON.stringify({}));
     }
@@ -62,12 +62,12 @@ RED.httpAdmin.post('/xmpp-server/:id',function(req,res) {
     req.on('end', function(){
         var newCreds = querystring.parse(body);
         var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.user == null || newCreds.user == "") {
+        if (newCreds.user == null || newCreds.user === "") {
             delete credentials.user;
         } else {
             credentials.user = newCreds.user;
         }
-        if (newCreds.password == "") {
+        if (newCreds.password === "") {
             delete credentials.password;
         } else {
             credentials.password = newCreds.password||credentials.password;
@@ -228,7 +228,7 @@ function XmppOutNode(n) {
         }
         else {
             var to = msg.topic;
-            if (node.to != "") { to = node.to; }
+            if (node.to !== "") { to = node.to; }
             if (node.sendAll) {
                 xmpp.send(to, JSON.stringify(msg), node.join);
             }
