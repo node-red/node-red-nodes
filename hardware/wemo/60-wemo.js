@@ -14,47 +14,49 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var WeMo = new require('wemo');
+module.exports = function(RED) {
+    "use strict";
+    var WeMo = new require('wemo');
 
-function WeMoOut(n) {
-    RED.nodes.createNode(this,n);
-    this.ipaddr = n.ipaddr;
-    this.wemoSwitch = new WeMo(n.ipaddr);
-    var node = this;
+    function WeMoOut(n) {
+        RED.nodes.createNode(this,n);
+        this.ipaddr = n.ipaddr;
+        this.wemoSwitch = new WeMo(n.ipaddr);
+        var node = this;
 
-    this.on("input", function(msg) {
-        if (msg != null) {
-            var state = 0;
-            if ( msg.payload == 1 || msg.payload == true || msg.payload == "on" ) { var state = 1; }
-            node.wemoSwitch.setBinaryState(state, function(err, result) {
-                if (err) node.warn(err);
-                //else { node.log(result); }
-            });
-        }
-    });
-}
-RED.nodes.registerType("wemo out",WeMoOut);
-
-function WeMoIn(n) {
-    RED.nodes.createNode(this,n);
-    this.ipaddr = n.ipaddr;
-    this.wemoSwitch = new WeMo(n.ipaddr);
-    this.wemoSwitch.state = 0;
-    var node = this;
-
-    var tick = setInterval(function() {
-        wemoSwitch.getBinaryState(function(err, result) {
-            if (err) node.warn(err);
-            if (parseInt(result) != wemoSwitch.state) {
-                wemoSwitch.state = parseInt(result);
-                node.send({payload:wemoSwitch.state,topic:"wemo/"+node.ipaddr});
+        this.on("input", function(msg) {
+            if (msg != null) {
+                var state = 0;
+                if ( msg.payload == 1 || msg.payload === true || msg.payload == "on" ) { state = 1; }
+                node.wemoSwitch.setBinaryState(state, function(err, result) {
+                    if (err) { node.warn(err); }
+                    //else { node.log(result); }
+                });
             }
         });
-    }, 2000);
+    }
+    RED.nodes.registerType("wemo out",WeMoOut);
 
-    this.on("close", function() {
-        clearInterval(tick);
-    });
+    function WeMoIn(n) {
+        RED.nodes.createNode(this,n);
+        this.ipaddr = n.ipaddr;
+        this.wemoSwitch = new WeMo(n.ipaddr);
+        this.wemoSwitch.state = 0;
+        var node = this;
+
+        var tick = setInterval(function() {
+            wemoSwitch.getBinaryState(function(err, result) {
+                if (err) { node.warn(err); }
+                if (parseInt(result) != wemoSwitch.state) {
+                    wemoSwitch.state = parseInt(result);
+                    node.send({payload:wemoSwitch.state,topic:"wemo/"+node.ipaddr});
+                }
+            });
+        }, 2000);
+
+        this.on("close", function() {
+            clearInterval(tick);
+        });
+    }
+    RED.nodes.registerType("wemo in",WeMoOut);
 }
-RED.nodes.registerType("wemo in",WeMoOut);
