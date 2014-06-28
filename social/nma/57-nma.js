@@ -14,68 +14,70 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var nma = require('nma');
-var util = require('util');
+module.exports = function(RED) {
+    "use strict";
+    var nma = require('nma');
+    var util = require('util');
 
-function NMANode(n) {
-    RED.nodes.createNode(this,n);
-    this.title = n.title;
-    var credentials = RED.nodes.getCredentials(n.id);
-    if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
-    else { this.error("No NMA API key set"); }
-    var node = this;
-    this.on("input",function(msg) {
-        var titl = this.title||msg.topic||"Node-RED";
-        if (typeof(msg.payload) === 'object') {
-            msg.payload = JSON.stringify(msg.payload);
-        }
-        else { msg.payload = msg.payload.toString(); }
-        if (node.pushkey) {
-            try {
-                nma(node.pushkey, "Node-RED", titl, msg.payload, 0 );
-            } catch (e) {
-                node.warn("NMA error: "+ e);
+    function NMANode(n) {
+        RED.nodes.createNode(this,n);
+        this.title = n.title;
+        var credentials = RED.nodes.getCredentials(n.id);
+        if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
+        else { this.error("No NMA API key set"); }
+        var node = this;
+        this.on("input",function(msg) {
+            var titl = this.title||msg.topic||"Node-RED";
+            if (typeof(msg.payload) === 'object') {
+                msg.payload = JSON.stringify(msg.payload);
             }
-        }
-        else {
-            node.warn("NMA credentials not set.");
-        }
-    });
-}
-
-RED.nodes.registerType("nma",NMANode);
-
-var querystring = require('querystring');
-
-RED.httpAdmin.get('/nma/:id',function(req,res) {
-    var credentials = RED.nodes.getCredentials(req.params.id);
-    if (credentials) {
-        res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!="")}));
-    } else {
-        res.send(JSON.stringify({}));
+            else { msg.payload = msg.payload.toString(); }
+            if (node.pushkey) {
+                try {
+                    nma(node.pushkey, "Node-RED", titl, msg.payload, 0 );
+                } catch (e) {
+                    node.warn("NMA error: "+ e);
+                }
+            }
+            else {
+                node.warn("NMA credentials not set.");
+            }
+        });
     }
-});
 
-RED.httpAdmin.delete('/nma/:id',function(req,res) {
-    RED.nodes.deleteCredentials(req.params.id);
-    res.send(200);
-});
+    RED.nodes.registerType("nma",NMANode);
 
-RED.httpAdmin.post('/nma/:id',function(req,res) {
-    var body = "";
-    req.on('data', function(chunk) {
-        body+=chunk;
-    });
-    req.on('end', function(){
-        var newCreds = querystring.parse(body);
-        var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.pushkey == "") {
-            delete credentials.pushkey;
+    var querystring = require('querystring');
+
+    RED.httpAdmin.get('/nma/:id',function(req,res) {
+        var credentials = RED.nodes.getCredentials(req.params.id);
+        if (credentials) {
+            res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!=="")}));
         } else {
-            credentials.pushkey = newCreds.pushkey||credentials.pushkey;
+            res.send(JSON.stringify({}));
         }
-        RED.nodes.addCredentials(req.params.id,credentials);
+    });
+
+    RED.httpAdmin.delete('/nma/:id',function(req,res) {
+        RED.nodes.deleteCredentials(req.params.id);
         res.send(200);
     });
-});
+
+    RED.httpAdmin.post('/nma/:id',function(req,res) {
+        var body = "";
+        req.on('data', function(chunk) {
+            body+=chunk;
+        });
+        req.on('end', function(){
+            var newCreds = querystring.parse(body);
+            var credentials = RED.nodes.getCredentials(req.params.id)||{};
+            if (newCreds.pushkey === "") {
+                delete credentials.pushkey;
+            } else {
+                credentials.pushkey = newCreds.pushkey||credentials.pushkey;
+            }
+            RED.nodes.addCredentials(req.params.id,credentials);
+            res.send(200);
+        });
+    });
+}
