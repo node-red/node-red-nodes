@@ -15,6 +15,7 @@
  **/
 
 module.exports = function(RED) {
+    "use strict";
     var SunCalc = require('suncalc');
 
     function SunNode(n) {
