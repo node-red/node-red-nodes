@@ -14,42 +14,44 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var spawn = require('child_process').spawn;
-var plat = require('os').platform();
+module.exports = function(RED) {
+    "use strict";
+    var spawn = require('child_process').spawn;
+    var plat = require('os').platform();
 
-function PingNode(n) {
-    RED.nodes.createNode(this,n);
-    this.host = n.host;
-    this.timer = n.timer * 1000;
-    var node = this;
+    function PingNode(n) {
+        RED.nodes.createNode(this,n);
+        this.host = n.host;
+        this.timer = n.timer * 1000;
+        var node = this;
 
-    node.tout = setInterval(function() {
-        var ex;
-        if (plat == "linux") ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]);
-        else if (plat.match(/^win/)) ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]);
-        else if (plat == "darwin") ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]);
-        else node.error("Sorry - your platform - "+plat+" - is not recognised.");
-        var res = false;
-        ex.stdout.on('data', function (data) {
-            //console.log('[ping] stdout: ' + data.toString());
-            var regex = /from.*time.(.*)ms/;
-            var m = regex.exec(data.toString())||"";
-            if (m != '') { res = Number(m[1]); }
-        });
-        ex.stderr.on('data', function (data) {
-            //console.log('[ping] stderr: ' + data);
-        });
-        ex.on('close', function (code) {
-            //console.log('[ping] result: ' + code);
-            var msg = { payload:false, topic:node.host };
-            if (code == 0) msg = { payload:res, topic:node.host };
-            node.send(msg);
-        });
-    }, node.timer);
+        node.tout = setInterval(function() {
+            var ex;
+            if (plat == "linux") { ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); }
+            else if (plat.match(/^win/)) { ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); }
+            else if (plat == "darwin") { ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); }
+            else { node.error("Sorry - your platform - "+plat+" - is not recognised."); }
+            var res = false;
+            ex.stdout.on('data', function (data) {
+                //console.log('[ping] stdout: ' + data.toString());
+                var regex = /from.*time.(.*)ms/;
+                var m = regex.exec(data.toString())||"";
+                if (m !== '') { res = Number(m[1]); }
+            });
+            ex.stderr.on('data', function (data) {
+                //console.log('[ping] stderr: ' + data);
+            });
+            ex.on('close', function (code) {
+                //console.log('[ping] result: ' + code);
+                var msg = { payload:false, topic:node.host };
+                if (code === 0) { msg = { payload:res, topic:node.host }; }
+                node.send(msg);
+            });
+        }, node.timer);
 
-    this.on("close", function() {
-        clearInterval(this.tout);
-    });
+        this.on("close", function() {
+            clearInterval(this.tout);
+        });
+    }
+    RED.nodes.registerType("ping",PingNode);
 }
-RED.nodes.registerType("ping",PingNode);

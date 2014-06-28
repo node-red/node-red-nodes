@@ -14,28 +14,30 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var wol = require('wake_on_lan');
-var chk = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+module.exports = function(RED) {
+    "use strict";
+    var wol = require('wake_on_lan');
+    var chk = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
 
-function WOLnode(n) {
-    RED.nodes.createNode(this,n);
-    this.mac = n.mac.trim();
-    var node = this;
+    function WOLnode(n) {
+        RED.nodes.createNode(this,n);
+        this.mac = n.mac.trim();
+        var node = this;
 
-    this.on("input", function(msg) {
-        if (msg != null) {
-            var mac = this.mac || msg.mac || null;
-            if (mac != null) {
-                if (chk.test(mac)) {
-                    wol.wake(mac, function(error) {
-                        if (error) { node.warn(error); }
-                    });
+        this.on("input", function(msg) {
+            if (msg != null) {
+                var mac = this.mac || msg.mac || null;
+                if (mac != null) {
+                    if (chk.test(mac)) {
+                        wol.wake(mac, function(error) {
+                            if (error) { node.warn(error); }
+                        });
+                    }
+                    else { node.warn('WOL: bad mac address "'+mac+'"'); }
                 }
-                else { node.warn('WOL: bad mac address "'+mac+'"'); }
+                else { node.warn("WOL: no mac address specified"); }
             }
-            else { node.warn("WOL: no mac address specified"); }
-        }
-    });
+        });
+    }
+    RED.nodes.registerType("wake on lan",WOLnode);
 }
-RED.nodes.registerType("wake on lan",WOLnode);

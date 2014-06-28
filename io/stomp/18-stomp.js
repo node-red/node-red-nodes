@@ -35,7 +35,7 @@ module.exports = function(RED) {
     RED.httpAdmin.get('/stomp-server/:id',function(req,res) {
         var credentials = RED.nodes.getCredentials(req.params.id);
         if (credentials) {
-            res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+            res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!=="")}));
         } else {
             res.send(JSON.stringify({}));
         }
@@ -54,12 +54,12 @@ module.exports = function(RED) {
         req.on('end', function(){
             var newCreds = querystring.parse(body);
             var credentials = RED.nodes.getCredentials(req.params.id)||{};
-            if (newCreds.user == null || newCreds.user == "") {
+            if (newCreds.user == null || newCreds.user === "") {
                 delete credentials.user;
             } else {
                 credentials.user = newCreds.user;
             }
-            if (newCreds.password == "") {
+            if (newCreds.password === "") {
                 delete credentials.password;
             } else {
                 credentials.password = newCreds.password||credentials.password;
