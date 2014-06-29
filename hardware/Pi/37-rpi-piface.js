@@ -56,37 +56,11 @@ module.exports = function(RED) {
             "LED 6":"206",
             "LED 7":"207"
     }
-    var tablepin = {
-    // WiringPi : Physical
-            "200":"S1",
-            "201":"S2",
-            "202":"S3",
-            "203":"S4",
-            "204":"I5",
-            "205":"I6",
-            "206":"I7",
-            "207":"I8",
-            "208":"O0",
-            "209":"O1",
-            "210":"O2",
-            "211":"O3",
-            "212":"O4",
-            "213":"O5",
-            "214":"O6",
-            "215":"O7",
-            "200":"L0",
-            "201":"L1",
-            "202":"L2",
-            "203":"L3",
-            "204":"L4",
-            "205":"L5",
-            "206":"L6",
-            "207":"L7"
-    }
 
     function PiFACEInNode(n) {
         RED.nodes.createNode(this,n);
         this.buttonState = -1;
+        this.npin = n.pin;
         this.pin = pintable[n.pin];
         this.intype = n.intype;
         var node = this;
@@ -102,7 +76,7 @@ module.exports = function(RED) {
                                     var previousState = node.buttonState;
                                     node.buttonState = Number(stdout);
                                     if (previousState !== -1) {
-                                        var msg = {topic:"piface/"+tablepin[node.pin], payload:node.buttonState};
+                                        var msg = {topic:"piface/"+node.npin, payload:node.buttonState};
                                         node.send(msg);
                                     }
                                 }
