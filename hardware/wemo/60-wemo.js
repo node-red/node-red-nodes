@@ -16,12 +16,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    var WeMo = new require('wemo');
+    var Wemo = require('wemo');
 
-    function WeMoOut(n) {
+    function WemoOut(n) {
         RED.nodes.createNode(this,n);
         this.ipaddr = n.ipaddr;
-        this.wemoSwitch = new WeMo(n.ipaddr);
+        this.wemoSwitch = new Wemo(n.ipaddr);
         var node = this;
 
         this.on("input", function(msg) {
@@ -35,9 +35,9 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("wemo out",WeMoOut);
+    RED.nodes.registerType("wemo out",WemoOut);
 
-    function WeMoIn(n) {
+    function WemoIn(n) {
         RED.nodes.createNode(this,n);
         this.ipaddr = n.ipaddr;
         this.wemoSwitch = new WeMo(n.ipaddr);
@@ -58,5 +58,5 @@ module.exports = function(RED) {
             clearInterval(tick);
         });
     }
-    RED.nodes.registerType("wemo in",WeMoOut);
+    RED.nodes.registerType("wemo in",WemoIn);
 }
