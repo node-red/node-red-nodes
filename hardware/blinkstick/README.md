@@ -1,6 +1,6 @@
 node-red-node-blinkstick
 ========================
-A Node-Red node to control a <a href="http://blinkstick.com/" target="_new">Blinkstick</a>.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://blinkstick.com/" target="_new">Blinkstick</a>.
 
 Install
 -------
