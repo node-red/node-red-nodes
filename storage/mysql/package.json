@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-mysql",
+    "version"       : "0.0.3",
+    "description"   : "A Node-RED node to read and write to a MySQL database",
+    "dependencies"  : {
+        "mysql"   : "2.3.*"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/storage/mysql"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "mysql" ],
+    "node-red"      : {
+        "nodes"     : {
+            "mysql": "68-mysql.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

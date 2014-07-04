@@ -62,6 +62,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.host = n.host;
         this.port = n.port;
+        this.tz = n.tz || "local";
 
         this.connected = false;
         this.connecting = false;
@@ -92,6 +93,7 @@ module.exports = function(RED) {
                 user : node.user,
                 password : node.password,
                 database : node.dbname,
+                timezone : node.tz,
                 insecureAuth: true
             });
 
@@ -163,35 +165,4 @@ module.exports = function(RED) {
         }
     }
     RED.nodes.registerType("mysql",MysqlDBNodeIn);
-
-
-    //function MysqlDBNodeOut(n) {
-        //RED.nodes.createNode(this,n);
-        //this.level = n.level;
-        //this.operation = n.operation;
-        //this.levelConfig = RED.nodes.getNode(this.level);
-
-        //if (this.levelConfig) {
-            //var node = this;
-            //node.on("input", function(msg) {
-                //if (typeof msg.topic === 'string') {
-                    //if (node.operation === "delete") {
-                        //node.levelConfig.db.del(msg.topic);
-                    //}
-                    //else {
-                        //node.levelConfig.db.put(msg.topic, msg.payload, function(err) {
-                            //if (err) node.error(err);
-                        //});
-                    //}
-                //}
-                //else {
-                    //if (typeof msg.topic !== 'string') node.error("msg.topic : the key is not defined");
-                //}
-            //});
-        //}
-        //else {
-            //this.error("MySQL database not configured");
-        //}
-    //}
-    //RED.nodes.registerType("mysql out",MysqlDBNodeOut);
 }
