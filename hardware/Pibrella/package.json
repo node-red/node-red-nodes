@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pibrella",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to read from and write to a Pibrella Raspberry Pi add-on board",
     "dependencies"  : {
     },
@@ -12,7 +12,7 @@
     "keywords": [ "node-red", "pibrella" ],
     "node-red"      : {
         "nodes"     : {
-            "pibrella": "38-rpi-pirella.js"
+            "pibrella": "38-rpi-pibrella.js"
         }
     },
     "author": {
