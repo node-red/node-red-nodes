@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-wordpos",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that breaks a sentence into the various parts of (English) speech.",
+    "dependencies"  : {
+        "wordpos"   : "0.1.*"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/wordpos"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "wordpos" ],
+    "node-red"      : {
+        "nodes"     : {
+            "wordpos": "72-wordpos.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
