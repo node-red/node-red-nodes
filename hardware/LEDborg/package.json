@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-ledborg",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to control a PiBorg LedBorg board for a Raspberry Pi.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/ledborg"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "ledborg" ],
+    "node-red"      : {
+        "nodes"     : {
+            "ledborg": "78-ledborg.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-digirgb",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to control a Digispark RGB LED",
+    "dependencies"  : {
+        "node-hid"   : "0.3.1"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/digiRGB"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "digiRGB" ],
+    "node-red"      : {
+        "nodes"     : {
+            "digiRGB": "78-digiRGB.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

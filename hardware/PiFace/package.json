@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-piface",
+    "version"       : "0.0.1",
+    "description"   : "Node-RED nodes to read from and write to a PiFace Digital Raspberry Pi add-on board",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/PiFace"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "piface" ],
+    "node-red"      : {
+        "nodes"     : {
+            "piface": "37-rpi-piface.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
