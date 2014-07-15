@@ -40,7 +40,7 @@ module.exports = function(RED) {
             var e1 = (hour*60+mins) - (hour1*60+mins1);
             var e2 = (hour*60+mins) - (hour2*60+mins2);
             var moon = SunCalc.getMoonIllumination(now).fraction;
-            msg = { payload:0, topic:"sun", moon:moon };
+            var msg = { payload:0, topic:"sun", moon:moon };
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
             if (oldval == null) { oldval = msg.payload; }
             if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"day"}); }
