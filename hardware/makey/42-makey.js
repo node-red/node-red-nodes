@@ -14,71 +14,73 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var hids = require('hidstream');
+module.exports = function(RED) {
+    "use strict";
+    var hids = require('hidstream');
 
-function MakeyNode(n) {
-    RED.nodes.createNode(this,n);
-    this.vid = 0x1b4f;      // MakeyMakey vendor ID
-    this.pid = 0x2b75;      // MakeyMakey product ID
-    var node = this;
-    var path = null;
-    var tout;
-    var click = false;
-    var keylookup = { "44":"space", "82":"up", "81":"down", "79":"right", "80":"left",
-                        "26":"w", "4":"a", "22":"s", "7":"d", "9":"f", "10":"g" };
+    function MakeyNode(n) {
+        RED.nodes.createNode(this,n);
+        this.vid = 0x1b4f;      // MakeyMakey vendor ID
+        this.pid = 0x2b75;      // MakeyMakey product ID
+        var node = this;
+        var path = null;
+        var tout;
+        var click = false;
+        var keylookup = { "44":"space", "82":"up", "81":"down", "79":"right", "80":"left",
+                            "26":"w", "4":"a", "22":"s", "7":"d", "9":"f", "10":"g" };
 
-    var findmakey = function() {
-        node.log("looking for MakeyMakey");
-        var devices = hids.getDevices();
-        for (var dev = 0; dev < devices.length; dev++) {
-            //node.log("Find:"+devices[dev].vendorId.toString(16)+":"+devices[dev].productId.toString(16));
-            if ((devices[dev].vendorId == node.vid) && (devices[dev].productId == node.pid)) {
-                path = devices[dev].path;
-                node.log("found MakeyMakey at: "+path);     //path = "0003:0004:00";
-                break; // stop on first match
+        var findmakey = function() {
+            node.log("looking for MakeyMakey");
+            var devices = hids.getDevices();
+            for (var dev = 0; dev < devices.length; dev++) {
+                //node.log("Find:"+devices[dev].vendorId.toString(16)+":"+devices[dev].productId.toString(16));
+                if ((devices[dev].vendorId == node.vid) && (devices[dev].productId == node.pid)) {
+                    path = devices[dev].path;
+                    node.log("found MakeyMakey at: "+path);     //path = "0003:0004:00";
+                    break; // stop on first match
+                }
+            }
+            if (path === null) {
+                tout = setTimeout( function () {
+                    findmakey();
+                },15000);
             }
         }
-        if (path === null) {
-            tout = setTimeout( function () {
-                findmakey();
-            },15000);
-        }
-    }
-    findmakey();
+        findmakey();
 
-    if (path != null) {
-        try {
-            node.makey = new hids.device(path);
-            node.makey.on("data", function(key) {
-                var msg = {payload:[]};
-                //console.log(key);
-                if (key.modKeys[0] === "shift") {
-                    for (var keys = 0; keys < key.keyCodes.length; keys++) {
-                        node.log(key.keyCodes[keys]+" : "+keylookup[key.keyCodes[keys].toString()]);
-                        msg.payload.push(keylookup[key.keyCodes[keys].toString()]);
-                    }
-                    msg.payload = msg.payload.join();
-                    node.send(msg);
-                }
-                else if (key.modKeys[0] === "ctrl") {
-                    if (key.charCodes.length === 0) {
-                        click = !click;
-                        msg.payload = (click) ? "click" : "clock";
+        if (path != null) {
+            try {
+                node.makey = new hids.device(path);
+                node.makey.on("data", function(key) {
+                    var msg = {payload:[]};
+                    //console.log(key);
+                    if (key.modKeys[0] === "shift") {
+                        for (var keys = 0; keys < key.keyCodes.length; keys++) {
+                            node.log(key.keyCodes[keys]+" : "+keylookup[key.keyCodes[keys].toString()]);
+                            msg.payload.push(keylookup[key.keyCodes[keys].toString()]);
+                        }
+                        msg.payload = msg.payload.join();
                         node.send(msg);
                     }
-                }
-                else { console.log(key); }
-            });
-        } catch(err) { node.warn("can't open MakeyMakey: Do you need root access ?"); }
-    }
-    else {
-        findmakey();
-    }
+                    else if (key.modKeys[0] === "ctrl") {
+                        if (key.charCodes.length === 0) {
+                            click = !click;
+                            msg.payload = (click) ? "click" : "clock";
+                            node.send(msg);
+                        }
+                    }
+                    else { console.log(key); }
+                });
+            } catch(err) { node.warn("can't open MakeyMakey: Do you need root access ?"); }
+        }
+        else {
+            findmakey();
+        }
 
-    this.on("close", function() {
-        if (tout) { clearTimeout(tout); }
-        if (node.makey) { node.makey.device.close(); }
-    });
+        this.on("close", function() {
+            if (tout) { clearTimeout(tout); }
+            if (node.makey) { node.makey.device.close(); }
+        });
+    }
+    RED.nodes.registerType("makeymakey",MakeyNode);
 }
-RED.nodes.registerType("makeymakey",MakeyNode);
