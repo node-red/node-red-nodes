@@ -40,16 +40,16 @@ module.exports = function(RED) {
     function WemoIn(n) {
         RED.nodes.createNode(this,n);
         this.ipaddr = n.ipaddr;
-        this.wemoSwitch = new WeMo(n.ipaddr);
+        this.wemoSwitch = new Wemo(n.ipaddr);
         this.wemoSwitch.state = 0;
         var node = this;
 
         var tick = setInterval(function() {
-            wemoSwitch.getBinaryState(function(err, result) {
+            node.wemoSwitch.getBinaryState(function(err, result) {
                 if (err) { node.warn(err); }
-                if (parseInt(result) != wemoSwitch.state) {
-                    wemoSwitch.state = parseInt(result);
-                    node.send({payload:wemoSwitch.state,topic:"wemo/"+node.ipaddr});
+                if (parseInt(result) != node.wemoSwitch.state) {
+                    node.wemoSwitch.state = parseInt(result);
+                    node.send({payload:node.wemoSwitch.state,topic:"wemo/"+node.ipaddr});
                 }
             });
         }, 2000);
