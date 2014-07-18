@@ -18,6 +18,8 @@ As this requires an underlying npm this also requires it's pre-reqs, see <a href
  - libudev-dev (Linux only)
  - libusb-1.0-0-dev (Ubuntu versions missing libusb.h only)
 
+As this uses the raw HID strea mit often requires you to run Node-RED as root, unless you have correct priviliges.
+
 Usage
 -----
 
@@ -30,4 +32,6 @@ The MakeyMakey can of course be re-programmed to re-assign the keys - but this n
 Known Issues
 ------------
 
-Every now and then something causes the MakeyMakey HID to become detached (lose focus) from this app and re-attach to another (the in focus) app... whereupon the emulated keys will end up in the wrong window... - Any ideas on how to stop this would be greatly appreciated - but I suspect it's a fundamental issue with the MakeyMakey pretending to be a HID.
+1) Every now and then something causes the MakeyMakey HID to become detached (lose focus) from this app and re-attach to another (the in focus) app... whereupon the emulated keys will end up in the wrong window... - Any ideas on how to stop this would be greatly appreciated - but I suspect it's a fundamental issue with the MakeyMakey pretending to be a HID.
+
+2) Default usage is such that you have to run as root. On Debian based systems you can copy the file 82-makey.rules to the /etc/udev/rules.d folder - this should let anyone then access the MakeyMakey .
