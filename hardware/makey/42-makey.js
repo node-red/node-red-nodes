@@ -22,7 +22,6 @@ function MakeyNode(n) {
     this.vid = 0x1b4f;      // MakeyMakey vendor ID
     this.pid = 0x2b75;      // MakeyMakey product ID
     var node = this;
-    //node.log("Want:"+node.vid.toString(16)+":"+node.pid.toString(16));
     var path = null;
     var tout;
     var click = false;
@@ -65,13 +64,12 @@ function MakeyNode(n) {
                 else if (key.modKeys[0] === "ctrl") {
                     if (key.charCodes.length === 0) {
                         click = !click;
-                        (click) ? (msg.payload = "click") : (msg.payload = "clock");
+                        msg.payload = (click) ? "click" : "clock";
                         node.send(msg);
                     }
                 }
                 else { console.log(key); }
             });
-
         } catch(err) { node.warn("can't open MakeyMakey: Do you need root access ?"); }
     }
     else {

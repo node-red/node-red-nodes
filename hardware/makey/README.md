@@ -34,4 +34,4 @@ Known Issues
 
 1) Every now and then something causes the MakeyMakey HID to become detached (lose focus) from this app and re-attach to another (the in focus) app... whereupon the emulated keys will end up in the wrong window... - Any ideas on how to stop this would be greatly appreciated - but I suspect it's a fundamental issue with the MakeyMakey pretending to be a HID.
 
-2) Default usage is such that you have to run as root. On Debian based systems you can copy the file 82-makey.rules to the /etc/udev/rules.d folder - this should let anyone then access the MakeyMakey .
+2) Default usage is such that you have to run as root. On Debian based systems you can copy the file <i>42-makey.rules</i> to the <code>/etc/udev/rules.d/</code> folder - this should let anyone then access the MakeyMakey. To restart udev use <pre>sudo udevadm control --reload-rules</pre>
