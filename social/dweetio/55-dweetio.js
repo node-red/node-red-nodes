@@ -17,7 +17,6 @@
 module.exports = function(RED) {
     "use strict";
     var DweetClient = require("node-dweetio");
-    var util = require('util');
     var dweetio = null;
 
     function DweetioOutNode(n) {

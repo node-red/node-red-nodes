@@ -36,7 +36,7 @@ function DDBOutNode(n) {
             ddb.putItem({ "TableName": this.table,
                           "Item": attrWrapper.wrap(msg.payload) },
             function(err, data) {
-                err && util.log(err);
+                if (err) { util.log(err); }
             });
         }
     });
