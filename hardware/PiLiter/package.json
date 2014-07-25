@@ -1,5 +1,5 @@
 {
-    "name"          : "node-red-node-pilter",
+    "name"          : "node-red-node-piliter",
     "version"       : "0.0.1",
     "description"   : "A Node-RED node to drive a Raspberry Pi Pi-LITEr 8 LED board.",
     "dependencies"  : {
