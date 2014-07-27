@@ -17,22 +17,22 @@
 
 <script type="text/x-red" data-template-name="twilio out">
     <div class="form-row" id="node-input-credentials-row">
-        <label for="node-input-creds"><i class="icon-folder-close"></i> Credentials</label>
+        <label for="node-input-creds"><i class="fa fa-folder-o"></i> Credentials</label>
         <select id="node-input-creds">
             <option value="global">Use global credentials</option>
             <option value="local">Use local credentials</option>
         </select>
     </div>
     <div class="form-row" id="node-input-twilio-row">
-        <label for="node-input-twilio"><i class="icon-user"></i> Twilio</label>
+        <label for="node-input-twilio"><i class="fa fa-user"></i> Twilio</label>
         <input type="text" id="node-input-twilio">
     </div>
     <div class="form-row">
-        <label for="node-input-number"><i class="icon-envelope"></i> SMS to</label>
+        <label for="node-input-number"><i class="fa fa-envelope-o"></i> SMS to</label>
         <input type="text" id="node-input-number" placeholder="01234 5678901">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -73,13 +73,13 @@
 
 
     (function() {
-    
+
         var hasGlobal = false;
         $.getJSON('twilio-api/global',function(data) {
             hasGlobal = data.hasToken;
         });
-        
-    
+
+
         RED.nodes.registerType('twilio-api',{
             category: 'config',
             defaults: {
@@ -98,7 +98,7 @@
                     } else {
                         $('#node-config-input-token').val('');
                     }
-    
+
                 });
             },
             oneditsave: function() {
@@ -122,7 +122,7 @@
                 });
             }
         });
-        
+
         RED.nodes.registerType('twilio out',{
             category: 'output',
             defaults: {

@@ -1,5 +1,5 @@
-node-red-node-pushbullet
-========================
+node-red-node-twilio
+====================
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to send SMS messages via the <a href="http://twilio.com" target="_new">Twilio</a> service.
 
