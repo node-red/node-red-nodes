@@ -17,7 +17,6 @@
 module.exports = function(RED) {
     "use strict";
     var Prowl = require('node-prowl');
-    var util = require('util');
 
     // Either add a line like this to settings.js
     //    prowl: {prowlkey:'My-API-KEY'},

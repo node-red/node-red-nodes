@@ -17,7 +17,6 @@
 module.exports = function(RED) {
     "use strict";
     var nma = require('nma');
-    var util = require('util');
 
     function NMANode(n) {
         RED.nodes.createNode(this,n);

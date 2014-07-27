@@ -1,13 +1,13 @@
 {
-    "name"          : "node-red-contrib-sqlite",
-    "version"       : "0.0.3",
+    "name"          : "node-red-node-sqlite",
+    "version"       : "0.0.2",
     "description"   : "A sqlite node for Node-RED",
     "dependencies"  : {
         "sqlite3"   : "2.x"
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/dceejay/node-red-contrib-sqlite.git"
+        "url":"https://github.com/node-red/node-red-nodes/storage/sqlite/"
     },
     "license": "Apache",
     "keywords": [ "node-red", "sqlite" ],

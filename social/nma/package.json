@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-nma",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to send alerts via Notify-My-Android",
+    "dependencies"  : {
+        "nma"   : "0.1.8"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/nma"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "nma", "notify my android" ],
+    "node-red"      : {
+        "nodes"     : {
+            "nma": "57-nma.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
