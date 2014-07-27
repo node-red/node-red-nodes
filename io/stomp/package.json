@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-stomp",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to publish and subscribe to/from a Stomp server",
+    "dependencies"  : {
+        "stomp-client"   : "0.5.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/stomp"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "stomp", "stomp-client" ],
+    "node-red"      : {
+        "nodes"     : {
+            "stomp": "18-stomp.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
