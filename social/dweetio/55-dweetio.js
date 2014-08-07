@@ -29,7 +29,7 @@ module.exports = function(RED) {
             //if (typeof(msg.payload) === 'object') {
                 var thing = node.thing || msg.thing;
                 try {
-                    dweetio.dweet_for(thing, {some:msg.payload}, function(err, dweet) {
+                    dweetio.dweet_for(thing, {payload:msg.payload}, function(err, dweet) {
                         //console.log(dweet.thing); // "my-thing"
                         //console.log(dweet.content); // The content of the dweet
                         //console.log(dweet.created); // The create date of the dweet
@@ -52,7 +52,11 @@ module.exports = function(RED) {
 
         dweetio.listen_for(node.thing, function(dweet){
             // This will be called anytime there is a new dweet for my-thing
-            dweet.payload = dweet.content.some;
+            if (dweet.content.hasOwnProperty("payload")) {
+                dweet.payload=dweet.content.payload;
+            } else {
+            dweet.payload = dweet.content;
+            }
             delete dweet.content;
             node.send(dweet);
         });
