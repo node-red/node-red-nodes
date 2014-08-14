@@ -44,8 +44,11 @@
         icon: "light.png",
         align: "right",
         label: function() {
-            if (this.mac != "") { return "WOL: "+this.mac; }
-            else { return this.name||"wake on lan"; }
+            if(this.mac != "") {
+              return this.name ? this.name : "WOL"+this.mac;
+            } else {
+              return "wake on lan";
+            }
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
