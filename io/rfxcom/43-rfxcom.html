@@ -35,10 +35,21 @@
 </script>
 
 <!-- This is a receiver node for listening to messages from lighting remote controls -->
-<script type="text/x-red" data-template-name="rfx-remotes">
+<script type="text/x-red" data-template-name="rfx-lights-in">
     <div class="form-row node-input-port">
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-input-port">
+    </div>
+    <div class="form-row node-input-topic">
+        <label for="node-input-topicSource"><i class="icon-envelope"></i> Address</label>
+        <select id="node-input-topicSource" style="width:73% !important">
+          <option value="all">listen for commands sent to any address</option>
+          <option value="single">only listen for addresses matching a pattern</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-input-row-topic">
+        <label for="node-input-topic"></label>
+        <input type="text" id="node-input-topic" placeholder="protocol/device address">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -46,12 +57,40 @@
     </div>
 </script>
 
+<!-- Help text for rfx-lights-in -->
+<script type="text/x-red" data-help-name="rfx-lights-in">
+<p>
+Listens for commands from lighting remote control transmitters using an RFXtrx433 transceiver
+</p>
+<p>The output message topic is the 'address' of the device being controlled. The output message payload is the command (a string).
+</p>
+<p>
+Addresses take the form '<b>type</b>/<b>device address</b>/<b>unit address</b>', where <b>type</b> is the name of the family
+of devices (see RFXCOM documentation), <b>device address</b> is the address of the remote device, and <b>unit address</b> is the unit or
+channel number of the addressed device. Channel 0 or '+' is used for group switching (or the equivalent) where supported.
+</p>
+<p>
+For example 'BLYSS/0x0123/K/4' is a Blyss switched light paired with remote 0x0123, with groupcode 'K' and unit number 4.
+</p>
+<p>
+The node can either receive all commands sent to any address, or only commands sent to a restricted subset of adresses
+matching a topic template. For example, the address above would be matched by 'BLYSS', 'BLYSS/0x0123', 'BLYSS/0x0123/K',
+'BLYSS/0x0123/K/4', or 'BLYSS/0x0123/K/+' (where the '+' character matches any unit number)
+</p>
+<p>
+Typical commands are 'On' & 'Off' (or equivalently 1 & 0); 'Bright' or 'Dim+' to increase brightness; 'Dim' or 'Dim-' to
+reduce brightness, or 'level <i>number</i>' (where <i>number</i> is a value between 0 and 1) to set the brightness to a given level.
+</p>
+</script>
+
 <script type="text/javascript">
-    RED.nodes.registerType('rfx-remotes', {
+    RED.nodes.registerType('rfx-lights-in', {
         category: 'input',
         defaults: {
             name: {name:""},
-            port: {type:"rfxtrx-port", required:true}
+            port: {type:"rfxtrx-port", required:true},
+            topicSource: { value:"all", required:true },
+            topic: { value:"" }
         },
         color:"BurlyWood",
         inputs:0,
@@ -59,10 +98,23 @@
         icon: "serial.png",
         label: function() {
             var rfxtrxNode = RED.nodes.node(this.rfxtrx);
-            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-remotes");
+            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-lights-in");
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            var topicSource = $("#node-input-topicSource");
+            topicSource.change(function() {
+                var id = topicSource.find("option:selected").val();
+                if (id == "single") {
+                    $("#node-input-row-topic").show();
+                } else {
+                    $("#node-input-row-topic").hide();
+                }
+            });
+            topicSource.val(this.topicSource);
+            topicSource.change();
         }
     });
 </script>
@@ -73,10 +125,46 @@
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-input-port">
     </div>
+    <div class="form-row node-input-topic">
+        <label for="node-input-topicSource"><i class="icon-envelope"></i> Address</label>
+        <select id="node-input-topicSource" style="width:73% !important">
+          <option value="all">listen for data messages from any address</option>
+          <option value="single">only listen to addresses matching a pattern</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-input-row-topic">
+        <label for="node-input-topic"></label>
+        <input type="text" id="node-input-topic" placeholder="protocol/device address">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+</script>
+
+<!-- Help text for rfx-sensor -->
+<script type="text/x-red" data-help-name="rfx-sensor">
+<p>
+Listens for measurement messages from temperature and other weather sensors using an RFXtrx433 transceiver
+</p>
+<p>The output message topic is the type and ID of the sensor. The output message payload is an object containing the
+sensor measurement types, values & units of measurement, with status information.
+</p>
+<p>
+For example an Oregon THGN132 temperature & humidity sensor may generate a message with a topic 'TH1/0xE801' and a payload
+<i>
+{"temperature":{"value":15.1, "unit":"degC"}, "humidity":{"value":60, "unit":"%", "status":"NORMAL"},
+"status":{"rssi":5, "battery":9}}</i>.
+</p>
+<p>
+The node can either receive measurement messages from any address, or only from a restricted subset of adresses
+matching a topic template. For example, 'TH4' would receive messages only from Oregon THGR328 temperature/humidity sensors,
+and 'TH1/0xE801' would receive only messages from the sensor described above.
+</p>
+<p>
+Depending on the sensor type, the available data may include temperature, humidity, barometric pressure, UV index, wind speed
+& direction, and rainfall.
+</p>
 </script>
 
 <script type="text/javascript">
@@ -84,7 +172,9 @@
         category: 'input',
         defaults: {
             name: {name:""},
-            port: {type:"rfxtrx-port", required:true}
+            port: {type:"rfxtrx-port", required:true},
+            topicSource: { value:"all", required:true },
+            topic: { value:"" }
         },
         color:"BurlyWood",
         inputs:0,
@@ -96,12 +186,25 @@
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            var topicSource = $("#node-input-topicSource");
+            topicSource.change(function() {
+                var id = topicSource.find("option:selected").val();
+                if (id == "single") {
+                    $("#node-input-row-topic").show();
+                } else {
+                    $("#node-input-row-topic").hide();
+                }
+            });
+            topicSource.val(this.topicSource);
+            topicSource.change();
         }
     });
 </script>
 
 <!-- This is a transmitter node for lighting-type commands and the devices that receive them -->
-<script type="text/x-red" data-template-name="rfx-lights">
+<script type="text/x-red" data-template-name="rfx-lights-out">
     <div class="form-row node-input-port">
         <label for="node-input-port"><i class="icon-bullhorn"></i> Serial Port</label>
         <input type="text" id="node-input-port">
@@ -123,8 +226,8 @@
     </div>
 </script>
 
-<!-- Help text for rfx-lights -->
-<script type="text/x-red" data-help-name="rfx-lights">
+<!-- Help text for rfx-lights-out -->
+<script type="text/x-red" data-help-name="rfx-lights-out">
 <p>
 Sends commands to remote lighting control devices using an RFXtrx433 transceiver
 </p>
@@ -148,7 +251,7 @@ Not all devices support all commands. Less common commands include 'Toggle' and 
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('rfx-lights', {
+    RED.nodes.registerType('rfx-lights-out', {
         category: 'output',
         defaults: {
             name: {name:""},
@@ -163,7 +266,7 @@ Not all devices support all commands. Less common commands include 'Toggle' and 
         align: "right",
         label: function() {
             var rfxtrxNode = RED.nodes.node(this.rfxtrx);
-            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-lights");
+            return this.name || (rfxtrxNode ? rfxtrxNode.label() : "rfx-lights-out");
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
