@@ -47,8 +47,7 @@ module.exports = function(RED) {
             else { node.status({fill:"blue",shape:"dot",text:"night"}); }
             if (msg.payload != oldval) {
                 oldval = msg.payload;
-                msg2 = msg;
-                node.send( [msg,msg2] );
+                node.send( [msg,msg] );
             }
             else { node.send(msg); }
         }, 60000);
