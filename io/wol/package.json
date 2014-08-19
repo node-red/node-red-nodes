@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-wol",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to send Wake-On-LAN (WOL) magic packets",
     "dependencies"  : {
         "wake_on_lan"   : "0.0.3"

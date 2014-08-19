@@ -17,7 +17,7 @@
 <script type="text/x-red" data-template-name="wake on lan">
     <div class="form-row">
         <label for="node-input-mac"><i class="fa fa-globe"></i> MAC Address</label>
-        <input type="text" id="node-input-mac" placeholder="DE:AD:BE:EF:FE:ED">
+        <input type="text" id="node-input-mac" placeholder="e.g. DE:AD:BE:EF:FE:ED">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -44,8 +44,7 @@
         icon: "light.png",
         align: "right",
         label: function() {
-            if (this.mac != "") { return "WOL: "+this.mac; }
-            else { return this.name||"wake on lan"; }
+            return this.name ? this.name : (this.mac ? "WOL: "+this.mac : "Wake on Lan") ;
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
