@@ -53,8 +53,9 @@ var rfxcomPool = function () {
                             pool[id] = {rfxtrx: rfxtrx, refcount: 0};
                         }
                         catch (exception) {
-                            console.log("bad serial port");
-                            return null;
+                            console.log("[43-rfxcom.js] " + exception.message);
+                        //    return null;
+                            pool[id] = {rfxtrx: null, refcount: 0};
                         }
                     }
                     // Maintain a reference count for each RfxCom object
@@ -190,203 +191,204 @@ function RfxLightsInNode(n) {
     this.port = n.port;
     this.topicSource = n.topicSource;
     this.topic = normaliseTopic(n.topic);
+    this.name = n.name;
     this.rfxtrxPort = RED.nodes.getNode(this.port);
 
     var node = this;
     if (node.rfxtrxPort) {
         node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
-
-        node.rfxtrx.on("lighting1", function (evt) {
-            var msg = {};
-            msg.topic = evt.subtype + "/" + evt.housecode;
-            if (evt.commandNumber === 5 || evt.commandNumber === 6) {
-                msg.topic = msg.topic + "/+";
-            } else {
-                msg.topic = msg.topic + "/" + evt.unitcode;
-            }
-            if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
-                switch (evt.commandNumber) {
-                    case 0 :
-                    case 5 :
-                        msg.payload = "Off";
-                        break;
-
-                    case 1 :
-                    case 6 :
-                        msg.payload = "On";
-                        break;
-
-                    case 2 :
-                        msg.payload = "Dim";
-                        break;
-
-                    case 3 :
-                        msg.payload = "Bright";
-                        break;
-
-                    case 7 :    // The ARC 'Chime' command - handled in rfx-doorbells so ignore it here
-                        return;
-
-                    default:
-                        node.warn("rfx-lights-in: unrecognised Lighting1 command " + evt.commandNumber.toString(16));
-                        return;
+        if (node.rfxtrx !== null) {
+            node.rfxtrx.on("lighting1", function (evt) {
+                var msg = {};
+                msg.topic = evt.subtype + "/" + evt.housecode;
+                if (evt.commandNumber === 5 || evt.commandNumber === 6) {
+                    msg.topic = msg.topic + "/+";
+                } else {
+                    msg.topic = msg.topic + "/" + evt.unitcode;
                 }
-                node.send(msg);
-            }
-        });
+                if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
+                    switch (evt.commandNumber) {
+                        case 0 :
+                        case 5 :
+                            msg.payload = "Off";
+                            break;
 
-        node.rfxtrx.on("lighting2", function (evt) {
-            var msg = {};
-            msg.topic = evt.subtype + "/" + evt.id;
-            if (evt.commandNumber > 2) {
-                msg.topic = msg.topic + "/+";
-            } else {
-                msg.topic = msg.topic + "/" + evt.unitcode;
-            }
-            if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
-                switch (evt.commandNumber) {
-                    case 0:
-                    case 3:
-                        msg.payload = "Off";
-                        break;
+                        case 1 :
+                        case 6 :
+                            msg.payload = "On";
+                            break;
 
-                    case 1:
-                    case 4:
-                        msg.payload = "On";
-                        break;
+                        case 2 :
+                            msg.payload = "Dim";
+                            break;
 
-                    case 2:
-                    case 5:
-                        msg.payload = "Dim " + evt.level/15*100 + "%";
-                        break;
+                        case 3 :
+                            msg.payload = "Bright";
+                            break;
 
-                    default:
-                        node.warn("rfx-lights-in: unrecognised Lighting2 command " + evt.commandNumber.toString(16));
-                        return;
+                        case 7 :    // The ARC 'Chime' command - handled in rfx-doorbells so ignore it here
+                            return;
+
+                        default:
+                            node.warn("rfx-lights-in: unrecognised Lighting1 command " + evt.commandNumber.toString(16));
+                            return;
+                    }
+                    node.send(msg);
                 }
-                node.send(msg);
-            }
-        });
+            });
 
-        node.rfxtrx.on("lighting5", function (evt) {
-            var msg = {};
-            msg.topic = evt.subtype + "/" + evt.id;
-            if ((evt.commandNumber == 2 && (evt.subtype == 0 || evt.subtype == 2 || evt.subtype == 4) ) ||
-                (evt.commandNumber == 3) && (evt.subtype == 2 || evt.subtype == 4)) {
-                msg.topic = msg.topic + "/+";
-            } else {
-                msg.topic = msg.topic + "/" + evt.unitcode;
-            }
-            if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
-                switch (evt.subtype) {
-                    case 0: // Lightwave RF
-                        switch (evt.commandNumber) {
-                            case 0:
-                            case 2:
-                                msg.payload = "Off";
-                                break;
-
-                            case 1:
-                                msg.payload = "On";
-                                break;
-
-                            case 3:
-                            case 4:
-                            case 5:
-                            case 6:
-                            case 7:
-                                msg.payload = "Mood " + evt.commandNumber - 2;
-                                break;
-
-                            case 16:
-                                msg.payload = "Dim " + evt.level/31*100 + "%";
-                                break;
-
-                            case 17:
-                            case 18:
-                            case 19:
-                                node.warn("Lighting5: LightwaveRF colour commands not implemented");
-                                break;
-
-                            default:
-                                return;
-                        }
-                        break;
-
-                    case 2:
-                    case 4: // BBSB & CONRAD
-                        switch (evt.commandNumber) {
-                            case 0:
-                            case 2:
-                                msg.payload = "Off";
-                                break;
-
-                            case 1:
-                            case 3:
-                                msg.payload = "On";
-                                break;
-
-                            default:
-                                return;
-                        }
-                        break;
-
-                    case 6: // TRC02
-                        switch (evt.commandNumber) {
-                            case 0:
-                                msg.payload = "Off";
-                                break;
-
-                            case 1:
-                                msg.payload = "On";
-                                break;
-
-                            case 2:
-                                msg.payload = "Bright";
-                                break;
-
-                            case 3:
-                                msg.payload = "Dim";
-                                break;
-
-                            default:
-                                node.warn("Lighting5: TRC02 colour commands not implemented");
-                                return;
-                        }
-                        break;
+            node.rfxtrx.on("lighting2", function (evt) {
+                var msg = {};
+                msg.topic = evt.subtype + "/" + evt.id;
+                if (evt.commandNumber > 2) {
+                    msg.topic = msg.topic + "/+";
+                } else {
+                    msg.topic = msg.topic + "/" + evt.unitcode;
                 }
-                node.send(msg);
-            }
-        });
+                if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
+                    switch (evt.commandNumber) {
+                        case 0:
+                        case 3:
+                            msg.payload = "Off";
+                            break;
 
-        node.rfxtrx.on("lighting6", function (evt) {
-            var msg = {};
-            msg.topic = evt.subtype + "/" + evt.id + "/" + evt.groupcode;
-            if (evt.commandNumber > 1) {
-                msg.topic = msg.topic + "/+";
-            } else {
-                msg.topic = msg.topic + "/" + evt.unitcode;
-            }
-            if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
-                switch (evt.commandNumber) {
-                    case 1:
-                    case 3:
-                        msg.payload = "Off";
-                        break;
+                        case 1:
+                        case 4:
+                            msg.payload = "On";
+                            break;
 
-                    case 0:
-                    case 2:
-                        msg.payload = "On";
-                        break;
+                        case 2:
+                        case 5:
+                            msg.payload = "Dim " + evt.level/15*100 + "%";
+                            break;
 
-                    default:
-                        node.warn("rfx-lights-in: unrecognised Lighting6 command " + evt.commandNumber.toString(16));
-                        return;
+                        default:
+                            node.warn("rfx-lights-in: unrecognised Lighting2 command " + evt.commandNumber.toString(16));
+                            return;
+                    }
+                    node.send(msg);
                 }
-                node.send(msg);
-            }
-        });
+            });
 
+            node.rfxtrx.on("lighting5", function (evt) {
+                var msg = {};
+                msg.topic = evt.subtype + "/" + evt.id;
+                if ((evt.commandNumber == 2 && (evt.subtype == 0 || evt.subtype == 2 || evt.subtype == 4) ) ||
+                    (evt.commandNumber == 3) && (evt.subtype == 2 || evt.subtype == 4)) {
+                    msg.topic = msg.topic + "/+";
+                } else {
+                    msg.topic = msg.topic + "/" + evt.unitcode;
+                }
+                if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
+                    switch (evt.subtype) {
+                        case 0: // Lightwave RF
+                            switch (evt.commandNumber) {
+                                case 0:
+                                case 2:
+                                    msg.payload = "Off";
+                                    break;
+
+                                case 1:
+                                    msg.payload = "On";
+                                    break;
+
+                                case 3:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                    msg.payload = "Mood " + evt.commandNumber - 2;
+                                    break;
+
+                                case 16:
+                                    msg.payload = "Dim " + evt.level/31*100 + "%";
+                                    break;
+
+                                case 17:
+                                case 18:
+                                case 19:
+                                    node.warn("Lighting5: LightwaveRF colour commands not implemented");
+                                    break;
+
+                                default:
+                                    return;
+                            }
+                            break;
+
+                        case 2:
+                        case 4: // BBSB & CONRAD
+                            switch (evt.commandNumber) {
+                                case 0:
+                                case 2:
+                                    msg.payload = "Off";
+                                    break;
+
+                                case 1:
+                                case 3:
+                                    msg.payload = "On";
+                                    break;
+
+                                default:
+                                    return;
+                            }
+                            break;
+
+                        case 6: // TRC02
+                            switch (evt.commandNumber) {
+                                case 0:
+                                    msg.payload = "Off";
+                                    break;
+
+                                case 1:
+                                    msg.payload = "On";
+                                    break;
+
+                                case 2:
+                                    msg.payload = "Bright";
+                                    break;
+
+                                case 3:
+                                    msg.payload = "Dim";
+                                    break;
+
+                                default:
+                                    node.warn("Lighting5: TRC02 colour commands not implemented");
+                                    return;
+                            }
+                            break;
+                    }
+                    node.send(msg);
+                }
+            });
+
+            node.rfxtrx.on("lighting6", function (evt) {
+                var msg = {};
+                msg.topic = evt.subtype + "/" + evt.id + "/" + evt.groupcode;
+                if (evt.commandNumber > 1) {
+                    msg.topic = msg.topic + "/+";
+                } else {
+                    msg.topic = msg.topic + "/" + evt.unitcode;
+                }
+                if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
+                    switch (evt.commandNumber) {
+                        case 1:
+                        case 3:
+                            msg.payload = "Off";
+                            break;
+
+                        case 0:
+                        case 2:
+                            msg.payload = "On";
+                            break;
+
+                        default:
+                            node.warn("rfx-lights-in: unrecognised Lighting6 command " + evt.commandNumber.toString(16));
+                            return;
+                    }
+                    node.send(msg);
+                }
+            });
+        }
     } else {
         node.error("missing config: rfxtrx-port");
     }
@@ -396,10 +398,12 @@ RED.nodes.registerType("rfx-lights-in", RfxLightsInNode);
 
 // Remove the message event handlers on close
 RfxLightsInNode.prototype.close = function () {
-    this.rfxtrx.removeAllListeners("lighting1");
-    this.rfxtrx.removeAllListeners("lighting2");
-    this.rfxtrx.removeAllListeners("lighting5");
-    this.rfxtrx.removeAllListeners("lighting6");
+    if (this.rfxtrx !== null) {
+        this.rfxtrx.removeAllListeners("lighting1");
+        this.rfxtrx.removeAllListeners("lighting2");
+        this.rfxtrx.removeAllListeners("lighting5");
+        this.rfxtrx.removeAllListeners("lighting6");
+    }
 };
 
 // An input node for listening to messages from (mainly weather) sensors
@@ -408,9 +412,11 @@ function RfxWeatherSensorNode(n) {
     this.port = n.port;
     this.topicSource = n.topicSource;
     this.topic = normaliseTopic(n.topic);
+    this.name = n.name;
     this.rfxtrxPort = RED.nodes.getNode(this.port);
 
     var node = this;
+    var i;
 
     var weatherEventHandler = function (evt) {
             var msg = {};
@@ -470,31 +476,31 @@ function RfxWeatherSensorNode(n) {
 
     if (node.rfxtrxPort) {
         node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
-
-        var i;
-        for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
-            node.rfxtrx.on("temprain" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.temperature1.length; i++) {
-            node.rfxtrx.on("temp" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.humidity1.length; i++) {
-            node.rfxtrx.on("humidity" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.temperatureHumidity1.length; i++) {
-            node.rfxtrx.on("th" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.tempHumBaro1.length; i++) {
-            node.rfxtrx.on("thb" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
-            node.rfxtrx.on("rain" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.wind1.length; i++) {
-            node.rfxtrx.on("wind" + i, weatherEventHandler);
-        }
-        for (i = 1; i < rfxcom.uv1.length; i++) {
-            node.rfxtrx.on("uv" + i, weatherEventHandler);
+        if (node.rfxtrx !== null) {
+            for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
+                node.rfxtrx.on("temprain" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.temperature1.length; i++) {
+                node.rfxtrx.on("temp" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.humidity1.length; i++) {
+                node.rfxtrx.on("humidity" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.temperatureHumidity1.length; i++) {
+                node.rfxtrx.on("th" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.tempHumBaro1.length; i++) {
+                node.rfxtrx.on("thb" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
+                node.rfxtrx.on("rain" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.wind1.length; i++) {
+                node.rfxtrx.on("wind" + i, weatherEventHandler);
+            }
+            for (i = 1; i < rfxcom.uv1.length; i++) {
+                node.rfxtrx.on("uv" + i, weatherEventHandler);
+            }
         }
     } else {
         node.error("missing config: rfxtrx-port");
@@ -506,29 +512,31 @@ RED.nodes.registerType("rfx-sensor", RfxWeatherSensorNode);
 // Remove the message event handlers on close
 RfxWeatherSensorNode.prototype.close = function () {
     var i;
-    for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
-        this.rfxtrx.removeAllListeners("temprain" + i);
-    }
-    for (i = 1; i < rfxcom.temperature1.length; i++) {
-        this.rfxtrx.removeAllListeners("temp" + i);
-    }
-    for (i = 1; i < rfxcom.humidity1.length; i++) {
-        this.rfxtrx.removeAllListeners("humidity" + i);
-    }
-    for (i = 1; i < rfxcom.temperatureHumidity1.length; i++) {
-        this.rfxtrx.removeAllListeners("th" + i);
-    }
-    for (i = 1; i < rfxcom.tempHumBaro1.length; i++) {
-        this.rfxtrx.removeAllListeners("thb" + i);
-    }
-    for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
-        this.rfxtrx.removeAllListeners("rain" + i);
-    }
-    for (i = 1; i < rfxcom.wind1.length; i++) {
-        this.rfxtrx.removeAllListeners("wind" + i);
-    }
-    for (i = 1; i < rfxcom.uv1.length; i++) {
-        this.rfxtrx.removeAllListeners("uv" + i);
+    if (this.rfxtrx !== null) {
+        for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
+            this.rfxtrx.removeAllListeners("temprain" + i);
+        }
+        for (i = 1; i < rfxcom.temperature1.length; i++) {
+            this.rfxtrx.removeAllListeners("temp" + i);
+        }
+        for (i = 1; i < rfxcom.humidity1.length; i++) {
+            this.rfxtrx.removeAllListeners("humidity" + i);
+        }
+        for (i = 1; i < rfxcom.temperatureHumidity1.length; i++) {
+            this.rfxtrx.removeAllListeners("th" + i);
+        }
+        for (i = 1; i < rfxcom.tempHumBaro1.length; i++) {
+            this.rfxtrx.removeAllListeners("thb" + i);
+        }
+        for (i = 1; i < rfxcom.temperatureRain1.length; i++) {
+            this.rfxtrx.removeAllListeners("rain" + i);
+        }
+        for (i = 1; i < rfxcom.wind1.length; i++) {
+            this.rfxtrx.removeAllListeners("wind" + i);
+        }
+        for (i = 1; i < rfxcom.uv1.length; i++) {
+            this.rfxtrx.removeAllListeners("uv" + i);
+        }
     }
 };
 
@@ -538,6 +546,7 @@ function RfxLightsOutNode(n) {
     this.port = n.port;
     this.topicSource = n.topicSource;
     this.topic = n.topic;
+    this.name = n.name;
     this.rfxtrxPort = RED.nodes.getNode(this.port);
 
     var node = this;
@@ -583,7 +592,7 @@ function RfxLightsOutNode(n) {
     // node-rfxcom API to implement it. All parameter checking is delegated to this API. If no valid command is
     // recognised, does nothing (quietly).
     var parseCommand = function (protocolName, address, str, levelRange) {
-        var level;
+        var level, mood;
         try {
             if (/on/i.test(str) || str == 1) {
                 node.rfxtrx.transmitters[protocolName].tx.switchOn(address);
@@ -599,7 +608,7 @@ function RfxLightsOutNode(n) {
                     node.rfxtrx.transmitters[protocolName].tx.decreaseLevel(address);
                 }
             } else if (/mood/i.test(str)) {
-                var mood = parseInt(/([0-9]+)/.exec(str));
+                mood = parseInt(/([0-9]+)/.exec(str));
                 if (isFinite(mood)) {
                     node.rfxtrx.transmitters[protocolName].tx.setMood(address, mood);
                 }
@@ -623,7 +632,7 @@ function RfxLightsOutNode(n) {
         node.on("input", function(msg) {
             // Get the device address from the node topic, or the message topic if the node topic is undefined;
             // parse the device command from the message payload; and send the appropriate command to the address
-                var path, protocolName, subtype, deviceAddress, unitAddress;
+                var path, protocolName, subtype, deviceAddress, unitAddress, levelRange;
                 if (node.topicSource == "node" && node.topic !== undefined) {
                     path = node.topic;
                 } else if (msg.topic !== undefined) {
@@ -639,24 +648,31 @@ function RfxLightsOutNode(n) {
                 unitAddress = parseUnitAddress(path.slice(-1)[0]);
                 // The subtype is needed because subtypes within the same protocol might have different dim level ranges
                 //noinspection JSUnusedAssignment
-                subtype = getRfxcomSubtype(node.rfxtrx, protocolName);
-                switch (node.rfxtrx.transmitters[protocolName].type) {
-                    case txTypeNumber.LIGHTING1 :
-                    case txTypeNumber.LIGHTING6 :
-                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, []);
-                        break;
+                try {
+                    subtype = getRfxcomSubtype(node.rfxtrx, protocolName);
+                    switch (node.rfxtrx.transmitters[protocolName].type) {
+                        case txTypeNumber.LIGHTING1 :
+                        case txTypeNumber.LIGHTING6 :
+                            levelRange = [];
+                            break;
 
-                    case txTypeNumber.LIGHTING2 :
-                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, [0, 15]);
-                        break;
+                        case txTypeNumber.LIGHTING2 :
+                            levelRange = [0, 15];
+                            break;
 
-                    case txTypeNumber.LIGHTING3 :
-                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, [0, 10]);
-                        break;
+                        case txTypeNumber.LIGHTING3 :
+                            levelRange = [0, 10];
+                            break;
 
-                    case txTypeNumber.LIGHTING5 :
-                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, [0, 31]);
-                        break;
+                        case txTypeNumber.LIGHTING5 :
+                            levelRange = [0, 31];
+                            break;
+                    }
+                    if (levelRange !== undefined) {
+                        parseCommand(protocolName, deviceAddress.concat(unitAddress), msg.payload, levelRange);
+                    }
+                } catch (exception) {
+                    node.warn((node.name || "rfx-lights-out ") + ": serial port " + node.rfxtrxPort.port + " does not exist");
                 }
             });
     } else {
