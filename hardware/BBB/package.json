@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-beaglebone",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "A set of Node-RED nodes to interface to the GPIO pins of a Beaglebone Black board",
     "dependencies"  : {
     },
