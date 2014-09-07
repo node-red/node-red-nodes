@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2013,2014 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@
             name: {value:""},
             lat: {value:"", required:true, validate:RED.validators.number()},
             lon: {value:"", required:true, validate:RED.validators.number()},
-            start: {value:"", required:true},
-            end: {value:"", required:true}
+            start: {value:"sunrise", required:true},
+            end: {value:"sunset", required:true}
         },
         inputs:0,
         outputs:2,
@@ -78,6 +78,16 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (($("#node-input-lat").val() === "") && ($("#node-input-lon").val() === "")) {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        $("#node-input-lat").val(Number(position.coords.latitude.toFixed(5)));
+                        $("#node-input-lon").val(Number(position.coords.longitude.toFixed(5)));
+                    });
+                }
+            }
         }
     });
 </script>
