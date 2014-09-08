@@ -42,8 +42,7 @@ module.exports = function(RED) {
         var p2 = /[0-9]+,[0-9]+,[0-9]+/
 
         if (device) {
-        this.on("input", function(msg) {
-            if (msg != null) {
+            this.on("input", function(msg) {
                 if (p1.test(msg.payload)) {
                     var r = parseInt(msg.payload.slice(1,3),16);
                     var g = parseInt(msg.payload.slice(3,5),16);
@@ -57,8 +56,7 @@ module.exports = function(RED) {
                 } else {
                     node.warn("incompatable input - " + msg.payload);
                 }
-            }
-        });
+            });
         } else {
             node.warn("no digispark RGB found");
         }

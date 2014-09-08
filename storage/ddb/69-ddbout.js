@@ -32,13 +32,11 @@ function DDBOutNode(n) {
     var ddb = new aws.DynamoDB();
 
     this.on("input", function(msg) {
-        if (msg != null) {
-            ddb.putItem({ "TableName": this.table,
-                          "Item": attrWrapper.wrap(msg.payload) },
+        ddb.putItem({ "TableName": this.table,
+                      "Item": attrWrapper.wrap(msg.payload) },
             function(err, data) {
                 if (err) { util.log(err); }
-            });
-        }
+        });
     });
 }
 RED.nodes.registerType("ddb out", DDBOutNode);

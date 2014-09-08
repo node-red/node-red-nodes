@@ -44,15 +44,13 @@ module.exports = function(RED) {
 
         if (mpc != null) {
             this.on("input", function(msg) {
-                if (msg != null) {
-                    try {
-                        //node.mpc.command(msg.payload);
-                        node.mpc.command(msg.payload, msg.param, function(err, results) {
-                            if (err) { node.log("error: "+err); }
-                            //else { console.log(results); }
-                        });
-                    } catch (err) { node.log("error: "+err); }
-                }
+                try {
+                    //node.mpc.command(msg.payload);
+                    node.mpc.command(msg.payload, msg.param, function(err, results) {
+                        if (err) { node.log("error: "+err); }
+                        //else { console.log(results); }
+                    });
+                } catch (err) { node.log("error: "+err); }
             });
 
             node.mpc.on('error', function(err) {

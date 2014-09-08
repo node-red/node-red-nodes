@@ -25,18 +25,16 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input", function(msg) {
-            if (msg != null) {
-                var mac = this.mac || msg.mac || null;
-                if (mac != null) {
-                    if (chk.test(mac)) {
-                        wol.wake(mac, function(error) {
-                            if (error) { node.warn(error); }
-                        });
-                    }
-                    else { node.warn('WOL: bad mac address "'+mac+'"'); }
+            var mac = this.mac || msg.mac || null;
+            if (mac != null) {
+                if (chk.test(mac)) {
+                    wol.wake(mac, function(error) {
+                        if (error) { node.warn(error); }
+                    });
                 }
-                else { node.warn("WOL: no mac address specified"); }
+                else { node.warn('WOL: bad mac address "'+mac+'"'); }
             }
+            else { node.warn("WOL: no mac address specified"); }
         });
     }
     RED.nodes.registerType("wake on lan",WOLnode);
