@@ -25,14 +25,12 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input", function(msg) {
-            if (msg != null) {
-                var state = 0;
-                if ( msg.payload == 1 || msg.payload === true || msg.payload == "on" ) { state = 1; }
-                node.wemoSwitch.setBinaryState(state, function(err, result) {
-                    if (err) { node.warn(err); }
-                    //else { node.log(result); }
-                });
-            }
+            var state = 0;
+            if ( msg.payload == 1 || msg.payload === true || msg.payload == "on" ) { state = 1; }
+            node.wemoSwitch.setBinaryState(state, function(err, result) {
+                if (err) { node.warn(err); }
+                //else { node.log(result); }
+            });
         });
     }
     RED.nodes.registerType("wemo out",WemoOut);
