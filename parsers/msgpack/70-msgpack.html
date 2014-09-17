@@ -1,0 +1,49 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="msgpack">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Only supports object to/from msgpack buffer.</div>
+</script>
+
+<script type="text/x-red" data-help-name="msgpack">
+    <p>A function that converts the <b>msg.payload</b> to and from <a href = "https://github.com/msgpack/msgpack-node"><i>msgpack</i></a> format.</p>
+    <p>If the input is an object it converts it to a msgpack buffer.</p>
+    <p>If the input is a msgpack buffer it converts it back to an object.</p>
+    <p>Current only supports object type.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('msgpack',{
+        category: 'function',
+        color:"#DEBD5C",
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"msgpack";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
