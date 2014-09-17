@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-xmpp",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to talk to an XMPP server",
     "dependencies"  : {
         "simple-xmpp"   : "0.1.19"
@@ -9,7 +9,7 @@
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/social/xmpp"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "xmpp" ],
     "node-red"      : {
         "nodes"     : {
