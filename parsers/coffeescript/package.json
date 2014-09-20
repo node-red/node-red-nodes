@@ -1,24 +1,24 @@
 {
-    "name"          : "node-red-node-msgpack",
+    "name"          : "node-red-node-coffeescript",
     "version"       : "0.0.1",
-    "description"   : "A Node-RED node to pack and unpack objects to msgpack format",
+    "description"   : "A Node-RED node to execute coffeescript",
     "dependencies"  : {
-        "msgpack"   : "0.2.4"
+        "coffee-script"   : ""
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/parsers/msgpack"
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/parsers/coffeescript"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "msgpack" ],
+    "keywords": [ "node-red", "coffeescript" ],
     "node-red"      : {
         "nodes"     : {
-            "msgpack": "70-msgpack.js"
+            "coffeescript": "81-coffee.js"
         }
     },
     "author": {
-        "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
-        "url": "http://nodered.org"
+        "name": "Leon van Kammen",
+        "email": "info@leon.vankammen.eu",
+        "url": "http://github.com/coderofsalvation"
     }
 }

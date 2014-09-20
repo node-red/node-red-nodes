@@ -6,9 +6,9 @@ This node will allow the enduser to use beautifull compact (sandboxed) coffeescr
 
 # Installation
 
-This is a drop-in node, so just put the files into your /nodes directory somewhere.
+Run: 
 
-Also make sure to run: npm install coffee-script
+    npm install node-red-node-coffeescript
 
 # Extra notes
 
