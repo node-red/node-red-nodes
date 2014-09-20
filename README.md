@@ -2,6 +2,8 @@
 
 A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
+<img src="https://david-dm.org/node-red/node-red-nodes.png">
+
 ## Installation
 
 Many of these nodes are available as an npm package. See the respective README.md for the npm package name. 
@@ -48,6 +50,8 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 # Extra Node Information
 
 ### Analysis
+
+**[17-smooth](analysis/smooth)**  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
 
 **[72-wordpos](analysis/wordpos)** - Analyses the payload and classifies the part-of-speech of each word. The resulting message has msg.pos added with the results. A word may appear in multiple categories (eg, 'great' is both a noun and an adjective).
 
