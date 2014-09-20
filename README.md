@@ -2,7 +2,7 @@
 
 A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
-<img src="https://david-dm.org/node-red/node-red-nodes.png">
+![](https://david-dm.org/node-red/node-red-nodes.png)
 
 ## Installation
 
