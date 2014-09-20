@@ -2,8 +2,6 @@
 
 A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
-![](https://david-dm.org/node-red/node-red-nodes.png)
-
 ## Installation
 
 Many of these nodes are available as an npm package. See the respective README.md for the npm package name. 
