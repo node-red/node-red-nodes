@@ -49,6 +49,8 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 ### Analysis
 
+**[17-smooth](analysis/smooth)**  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
+
 **[72-wordpos](analysis/wordpos)** - Analyses the payload and classifies the part-of-speech of each word. The resulting message has msg.pos added with the results. A word may appear in multiple categories (eg, 'great' is both a noun and an adjective).
 
 **[74-swearfilter](analysis/swearfilter)** - Analyses the payload and tries to filter out any messages containing bad swear words. This only operates on payloads of type string. Everything else is blocked.
