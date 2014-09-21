@@ -21,6 +21,8 @@
 // Require main module
 module.exports = function(RED) {
     "use strict";
+    // require any external libraries we may need....
+    //var foo = require("foo-library");
 
     // The main node definition - most things happen in here
     function SampleNode(n) {
@@ -40,6 +42,13 @@ module.exports = function(RED) {
 
         // send out the message to the rest of the workspace.
         this.send(msg);
+
+        // respond to inputs....
+        this.on('input', function (msg) {
+            node.warn("I saw a payload: "+msg.payload);
+            // in this example just send it straight on... should process it here really
+            this.send(msg);
+        }
 
         this.on("close", function() {
             // Called when the node is shutdown - eg on redeploy.

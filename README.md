@@ -4,9 +4,9 @@ A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
 ## Installation
 
-Many of these nodes are available as an npm package. See the respective README.md for the npm package name. 
+Many of these nodes are available as an npm package. See the respective README.md for the npm package name.
 
-To manually install using this repo: 
+To manually install using this repo:
 
 1. cd into the `nodes` directory of Node-RED
 2. Either:
@@ -49,11 +49,13 @@ Copyright 2013 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 ### Analysis
 
-**[17-smooth](analysis/smooth)**  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
-
 **[72-wordpos](analysis/wordpos)** - Analyses the payload and classifies the part-of-speech of each word. The resulting message has msg.pos added with the results. A word may appear in multiple categories (eg, 'great' is both a noun and an adjective).
 
 **[74-swearfilter](analysis/swearfilter)** - Analyses the payload and tries to filter out any messages containing bad swear words. This only operates on payloads of type string. Everything else is blocked.
+
+### Function
+
+**[17-smooth](analysis/smooth)**  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
 
 ### Hardware
 
