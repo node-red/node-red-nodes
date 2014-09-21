@@ -1,0 +1,69 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.32
+4 verbose publish [ '.' ]
+5 verbose cache add [ '.', null ]
+6 verbose cache add name=undefined spec="." args=[".",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: '.',
+7 verbose parsed url   path: '.',
+7 verbose parsed url   href: '.' }
+8 silly lockFile 3a52ce78- .
+9 verbose lock . /home/conway/.npm/3a52ce78-.lock
+10 verbose tar pack [ '/home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz',
+10 verbose tar pack   '.' ]
+11 verbose tarball /home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz
+12 verbose folder .
+13 info prepublish node-red-node-smooth@0.0.1
+14 silly lockFile 1f1177db-tar tar://.
+15 verbose lock tar://. /home/conway/.npm/1f1177db-tar.lock
+16 silly lockFile 4b60630a-ed-node-smooth-0-0-1-package-tgz tar:///home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz
+17 verbose lock tar:///home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz /home/conway/.npm/4b60630a-ed-node-smooth-0-0-1-package-tgz.lock
+18 silly lockFile 1f1177db-tar tar://.
+19 silly lockFile 1f1177db-tar tar://.
+20 silly lockFile 4b60630a-ed-node-smooth-0-0-1-package-tgz tar:///home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz
+21 silly lockFile 4b60630a-ed-node-smooth-0-0-1-package-tgz tar:///home/conway/.npm/node-red-node-smooth/0.0.1/package.tgz
+22 silly lockFile e098ce82-de-red-node-smooth-0-0-1-package /home/conway/.npm/node-red-node-smooth/0.0.1/package
+23 verbose lock /home/conway/.npm/node-red-node-smooth/0.0.1/package /home/conway/.npm/e098ce82-de-red-node-smooth-0-0-1-package.lock
+24 silly lockFile e098ce82-de-red-node-smooth-0-0-1-package /home/conway/.npm/node-red-node-smooth/0.0.1/package
+25 silly lockFile e098ce82-de-red-node-smooth-0-0-1-package /home/conway/.npm/node-red-node-smooth/0.0.1/package
+26 silly lockFile 3a52ce78- .
+27 silly lockFile 3a52ce78- .
+28 silly publish { name: 'node-red-node-smooth',
+28 silly publish   version: '0.0.1',
+28 silly publish   description: 'A Node-RED node that provides several simple smoothing algorithms for incoming data values.',
+28 silly publish   dependencies: {},
+28 silly publish   repository:
+28 silly publish    { type: 'git',
+28 silly publish      url: 'https://github.com/node-red/node-red-nodes/tree/master/analysis/smooth' },
+28 silly publish   license: 'Apache',
+28 silly publish   keywords: [ 'node-red', 'smooth', 'average' ],
+28 silly publish   'node-red': { nodes: { smooth: '17-smooth.js' } },
+28 silly publish   author:
+28 silly publish    { name: 'Dave Conway-Jones',
+28 silly publish      email: 'ceejay@vnet.ibm.com',
+28 silly publish      url: 'http://nodered.org' },
+28 silly publish   readme: 'node-red-node-smooth\n====================\n\nA <a href="http://nodered.org" target="_new">Node-RED</a> node that provides several simple smoothing algorithms for incoming data values.\n\nInstall\n-------\n\nRun the following command in the root directory of your Node-RED install\n\n    npm install node-red-node-smooth\n\n\nUsage\n-----\n\nA simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.\n\nMax, Min and Mean work over a specified number of previous values.\n\nThe High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is similar to an &alpha; of 0.1. It is analogous to an RC time constant - but there is no time component to this as the code is based on events arriving.\n\n\n**Note:** This only operates on **numbers**. Anything else will try to be made into a number and rejected if that fails.\n',
+28 silly publish   readmeFilename: 'README.md',
+28 silly publish   _id: 'node-red-node-smooth@0.0.1',
+28 silly publish   scripts: {},
+28 silly publish   _shasum: '61d81cdc39b16d5c24c7875fa33fba229d65ec77',
+28 silly publish   _from: '.' }
+29 error need auth auth and email required for publishing
+29 error need auth You need to authorize this machine using `npm adduser`
+30 error System Linux 3.2.0-68-generic-pae
+31 error command "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+32 error cwd /home/conway/node-red/nodes/node-red-nodes/function/smooth
+33 error node -v v0.10.32
+34 error npm -v 1.4.28
+35 error code ENEEDAUTH
+36 verbose exit [ 1, true ]
