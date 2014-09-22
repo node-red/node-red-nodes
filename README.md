@@ -70,15 +70,15 @@ NPM name - File-link - Description
 
 **N/A** - *[79-sensorTag](hardware/sensorTag)* - Reads data from the Ti Bluetooh Low Energy (BLE) SensorTag device.
 
-**N/A** - *100-heatmiser-in* - Writes settings for temperature and frost protection to Heatmiser thermostats.
+**N/A** - *[100-heatmiser-in](hardware/heatmiser)* - Writes settings for temperature and frost protection to Heatmiser thermostats.
 
-**N/A** - *101-heatmiser-out* - Reads settings from Heatmiser thermostats at a polling interval.
+**N/A** - *[101-heatmiser-out](hardware/heatmiser)* - Reads settings from Heatmiser thermostats at a polling interval.
 
-**N/A** - *101-scanBLE* - Scans for a particular Bluetooth Low Energy (BLE) device.
+**N/A** - *[101-scanBLE](hardware/scanBLE)* - Scans for a particular Bluetooth Low Energy (BLE) device.
 
-**N/A** - *103-hue_discover* - Looks for a Philips Hue Bridge in the local network.
+**N/A** - *[103-hue_discover](hardware/hue)* - Looks for a Philips Hue Bridge in the local network.
 
-**N/A** - *104-hue_manag* - Implements some basic functionality for managing a Philips Hue wireless Lamp system.
+**N/A** - *[104-hue_manage](hardware/hue)* - Implements some basic functionality for managing a Philips Hue wireless Lamp system.
 
 ### IO
 
@@ -88,20 +88,20 @@ NPM name - File-link - Description
 
 **node-red-node-ping** - *[88-ping](io/ping)* - Pings a machine and returns the trip time in mS. Returns false if no response received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
 
-**N/A** - *88-emoncms* - Adds node to post to an [Emoncms](http://emoncms.org/) server.
+**N/A** - *[88-emoncms](io/emoncms)* - Adds node to post to an [Emoncms](http://emoncms.org/) server.
 
-**N/A** - *26-rawserial* - Only really needed for Windows boxes without serialport npm module installed.
+**N/A** - *[26-rawserial](io/rawserial)* - Only really needed for Windows boxes without serialport npm module installed.
 Uses a simple read of the serial port as a file to input data. You **must** set the baud rate etc externally *before* starting Node-RED. This node does not implement pooling of connections so only one instance of each port may be used - so in **or** out but **not** both.
 
 ### Social
 
 **node-red-node-twilio** - *[56-twilio](social/twilio)* - Uses [Twilio](https://www.twilio.com/) service to send/receive text messages.
 
-**node-red-node-dweetio** - *55-dweetio* - Uses [dweetio](https://dweet.io/) to send/receive messages.
+**node-red-node-dweetio** - *[55-dweetio](social/dweetio)* - Uses [dweetio](https://dweet.io/) to send/receive messages.
 
 **node-red-node-nma** - *[57-nma](social/nma)* - Sends alerts to Android devices via the [Notify-My-Android](http://www.notifymyandroid.com/) app.
 
-**node-red-node-notify** - *57-notify* - Uses [Growl](http://growl.info/) to provide a desktop popup containing the payload. Only useful on the local Apple machine.
+**node-red-node-notify** - *[57-notify](social/notify)* - Uses [Growl](http://growl.info/) to provide a desktop popup containing the payload. Only useful on the local Apple machine.
 
 **node-red-node-prowl** - *[57-prowl](social/prowl)* - Uses [Prowl](http://www.prowlapp.com/) to push the payload to an Apple device that has the Prowl app installed.
 
@@ -111,11 +111,11 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-xmpp** - *[92-xmpp](social/xmpp)* - Connects to an XMPP server to send and receive messages.
 
-**N/A** - *69-mpd* - MPD music control nodes. Output node expects payload to be a valid mpc command. Currently only simple commands that expect no reply are supported. Input node creates a payload object with Artist, Album, Title, Genre and Date.
+**N/A** - *[69-mpd](social/music)* - MPD music control nodes. Output node expects payload to be a valid mpc command. Currently only simple commands that expect no reply are supported. Input node creates a payload object with Artist, Album, Title, Genre and Date.
 
-**N/A** - *79-snapchat* - Downloads [SnapChat](https://www.snapchat.com/) images from the account specified.
+**N/A** - *[79-snapchat](social/snapchat)* - Downloads [SnapChat](https://www.snapchat.com/) images from the account specified.
 
-**N/A** - *114-pusher* - Publish-Subscribe to a [Pusher](http://pusher.com/) channel/event.
+**N/A** - *[114-pusher](social/pusher)* - Publish-Subscribe to a [Pusher](http://pusher.com/) channel/event.
 
 ### Storage
 
@@ -125,9 +125,9 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-sqlite** - *[sqlite](storage/sqlite)* - Supports read and write to a local sqlite database.
 
-**N/A** - *69-ddbout* - Support output to Amazon DynamoDB.
+**N/A** - *[69-ddbout](storage/ddb)* - Support output to Amazon DynamoDB.
 
-**N/A** - *110-postgres* - PostgreSql I/O node.
+**N/A** - *[110-postgres](storage/postgres)* - PostgreSql I/O node.
 
 ### Time
 
@@ -135,4 +135,4 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 ### Misc
 
-**N/A** - *99-sample* - A sample node with more comments than most to try to help you get started without any other docs...
+**N/A** - *[99-sample](./)* - A sample node with more comments than most to try to help you get started without any other docs...
