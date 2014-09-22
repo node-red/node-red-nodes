@@ -138,6 +138,8 @@ var getRfxcomSubtype = function (rfxcomObject, protocolName) {
         return subtype;
     };
 
+// Convert a string - the rawTopic - into a normalised form (an Array) so that checkTopic() can easily compare
+// a topic against a pattern
 var normaliseTopic = function (rawTopic) {
         var parts;
         if (rawTopic == undefined || typeof rawTopic !== "string") {
@@ -174,6 +176,7 @@ var normaliseTopic = function (rawTopic) {
         return parts;
     };
 
+// Check if the supplied topic starts with the given pattern (both being normalised topics)
 var checkTopic = function (topic, pattern) {
         var parts, i;
         parts = normaliseTopic(topic);
@@ -422,7 +425,7 @@ function RfxWeatherSensorNode(n) {
             var msg = {};
             msg.topic = evt.subtype + "/" + evt.id;
             if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
-                msg.payload = {};
+                msg.payload = { status: { rssi: evt.rssi } };
                 if (evt.hasOwnProperty("temperature")) {
                     msg.payload.temperature = { value: evt.temperature, unit: "degC" };
                 }
@@ -458,16 +461,7 @@ function RfxWeatherSensorNode(n) {
                 if (evt.hasOwnProperty("forecast")) {
                     msg.payload.forecast = rfxcom.forecast[evt.forecast];
                 }
-                if (evt.hasOwnProperty("rssi")) {
-                    if (msg.payload.hasOwnProperty("status") === false) {
-                        msg.payload.status = {};
-                    }
-                    msg.payload.status.rssi = evt.rssi;
-                }
                 if (evt.hasOwnProperty("batteryLevel")) {
-                    if (msg.payload.hasOwnProperty("status") === false) {
-                        msg.payload.status = {};
-                    }
                     msg.payload.status.battery = evt.batteryLevel;
                 }
                 node.send(msg);
@@ -539,6 +533,66 @@ RfxWeatherSensorNode.prototype.close = function () {
         }
     }
 };
+
+// An input node for listening to messages from (electrical) energy & current monitors
+function RfxEnergyMeterNode(n) {
+    RED.nodes.createNode(this, n);
+    this.port = n.port;
+    this.topicSource = n.topicSource;
+    this.topic = normaliseTopic(n.topic);
+    this.name = n.name;
+    this.rfxtrxPort = RED.nodes.getNode(this.port);
+
+    var node = this;
+
+    var meterEventHandler = function (evt) {
+            var msg = {};
+            msg.topic = evt.subtype + "/" + evt.id;
+            if (node.topicSource === "all" || checkTopic(msg.topic, node.topic)) {
+                msg.payload = { status: { rssi: evt.rssi } };
+                if (evt.hasOwnProperty("voltage")) {
+                    msg.payload.voltage = { value: evt.voltage, unit: "V"}
+                }
+                if (evt.hasOwnProperty("current")) {
+                    msg.payload.current = { value: evt.current, unit: "A"}
+                }
+                if (evt.hasOwnProperty("power")) {
+                    msg.payload.power = { value: evt.power, unit: "W" }
+                }
+                if (evt.hasOwnProperty("energy")) {
+                    msg.payload.energy = { value: evt.energy, unit: "Wh" }
+                }
+                if (evt.hasOwnProperty("powerFactor")) {
+                    msg.payload.powerFactor = { value: evt.powerFactor, unit: "" }
+                }
+                if (evt.hasOwnProperty("frequency")) {
+                    msg.payload.frequency = { value: evt.frequency, unit: "Hz" }
+                }
+                if (evt.hasOwnProperty("batteryLevel")) {
+                    msg.payload.status.battery = evt.batteryLevel;
+                }
+                node.send(msg);
+            }
+        };
+
+    if (node.rfxtrxPort) {
+        node.rfxtrx = rfxcomPool.get(node.rfxtrxPort.port, {debug: true});
+        if (node.rfxtrx !== null) {
+            node.rfxtrx.on("elec", meterEventHandler)
+        }
+    } else {
+        node.error("missing config: rfxtrx-port");
+    }
+}
+
+RED.nodes.registerType("rfx-meter", RfxEnergyMeterNode);
+
+// Remove the message event handler on close
+RfxEnergyMeterNode.prototype.close = function () {
+        if (this.rfxtrx !== null) {
+            this.rfxtrx.removeAllListeners("elec");
+        }
+    };
 
 // An output node for sending messages to light switches & dimmers (including most types of plug-in switch)
 function RfxLightsOutNode(n) {
