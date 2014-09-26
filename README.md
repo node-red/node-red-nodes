@@ -125,7 +125,7 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-sqlite** - *[sqlite](storage/sqlite)* - Supports read and write to a local sqlite database.
 
-**N/A** - *[69-ddbout](storage/ddb)* - Support output to Amazon DynamoDB.
+**node-red-node-ddb** - *[69-ddbout](storage/ddb)* - Support output to Amazon DynamoDB. (contributed by @wnagele)
 
 **N/A** - *[110-postgres](storage/postgres)* - PostgreSql I/O node.
 
