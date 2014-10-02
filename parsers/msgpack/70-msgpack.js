@@ -16,7 +16,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var msgpack = require('msgpack');
+    var msgpack = require('msgpack-js');
 
     function MsgPackNode(n) {
         RED.nodes.createNode(this,n);
@@ -24,7 +24,7 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             if (Buffer.isBuffer(msg.payload)) {
                 var l = msg.payload.length;
-                msg.payload = msgpack.unpack(msg.payload);
+                msg.payload = msgpack.decode(msg.payload);
                 if (typeof msg.payload === "object") {
                     node.send(msg);
                     node.status({text:l +" b->o "+ JSON.stringify(msg.payload).length});
@@ -36,7 +36,7 @@ module.exports = function(RED) {
             }
             else if (typeof msg.payload === "object") {
                 var l = JSON.stringify(msg.payload).length;
-                msg.payload = msgpack.pack(msg.payload);
+                msg.payload = msgpack.encode(msg.payload);
                 node.send(msg);
                 node.status({text:l +" o->b "+ msg.payload.length});
             }
