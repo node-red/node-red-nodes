@@ -16,7 +16,8 @@
 
 <script type="text/x-red" data-template-name="smooth">
     <div class="form-row">
-        <select id="node-input-action" style="width:80%; margin-right:5px;">
+    <label for="node-input-action"><i class="fa fa-bolt"></i> Action</label>
+        <select id="node-input-action" style="width:60%; margin-right:5px;">
             <option value="max">Return the maximum value seen</option>
             <option value="min">Return the minimum value seen</option>
             <option value="mean">Return the mean value seen</option>
@@ -25,13 +26,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-count">&nbsp;</label>
         <span id="node-over">over the most recent </span>
         <input type="text" id="node-input-count" placeholder="10" style="width:80px;"/>
         <span id="node-over2"> values.</span>
     </div>
     <div class="form-row">
-        <label for="node-input-round" style="width:200px;">Round to nearest integer ?</label>
-        <input type="checkbox" id="node-input-round" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-round">&nbsp;</label>
+        <input type="checkbox" id="node-input-round" style="display: inline-block; width: auto; vertical-align: top;"> Round to the nearest integer ?
     </div>
     <br/>
     <div class="form-row">
