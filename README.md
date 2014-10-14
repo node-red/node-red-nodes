@@ -125,7 +125,7 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-sqlite** - *[sqlite](storage/sqlite)* - Supports read and write to a local sqlite database.
 
-**node-red-node-ddb** - *[69-ddbout](https://github.com/wnagele/node-red-node-ddb)* - Support output to Amazon DynamoDB. This version deprecated - now moved to it's own npm.
+**node-red-node-ddb** - *[69-ddbout](https://github.com/wnagele/node-red-node-ddb)* - Support output to Amazon DynamoDB. This version deprecated - now moved to it's own npm. **Note:** you cannot have both version installed - if you do install from npm then please manually delete the version from your node-red-nodes/storage/ddb directory.
 
 **N/A** - *[110-postgres](storage/postgres)* - PostgreSql I/O node.
 
