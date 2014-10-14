@@ -21,6 +21,7 @@ var attrWrapper = require("dynamodb-data-types").AttributeValue;
 
 function DDBOutNode(n) {
     RED.nodes.createNode(this, n);
+    this.warn("This node has been deprecated and will be deleted in a future release. Please update your flow to use the version from npm. Note: you cannot have both this and the npm version installed at the same time.");
     this.credentials = RED.nodes.getNode(n.credentials);
     this.region = n.region || "us-east-1";
     this.table = n.table;
