@@ -1,0 +1,124 @@
+<!--
+  Copyright 2013,2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="ldap">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="fa fa-globe"> Server</i></label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-tls" style="margin-left: 22%; width: 60px"><i> Use TLS</i></label>
+        <input id="node-config-input-tls" style="width:  20px" type="checkbox" disabled="true">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-binddn"><i class="fa fa-user"> Bind DN</i></label>
+        <input type="text" id="node-config-input-binddn">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"> Password</i></label>
+        <input type="password" id="node-config-input-password">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ldap',{
+        category: 'config',
+        defaults: {
+            server: {value:"",required:true},
+            port: {value:389,required:true,validate:RED.validators.number()},
+            tls: {value: false},
+            clientid: { value:"" }
+        },
+        credentials: {
+            binddn: {type:"text"},
+            password: {type: "password"}
+        },
+        label: function() {
+            if (this.server == "") { this.server = "localhost"; }
+            return (this.clientid?this.clientid+"@":"")+this.server+":"+this.port;
+        },
+        oneditprepare: function() {
+            $("#node-config-input-tls").change(function() {
+                var port = $("#node-config-input-port").val();
+                var tls = $("#node-config-input-tls").is(':checked');
+                if (tls == true) {
+                    if (port == 389) {
+                        $("#node-config-input-port").val(636);
+                    }
+                } else {
+                    if (port == 636) {
+                        $("#node-config-input-port").val(389);
+                    }
+                }
+
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ldap out">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-globe"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-base"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-base" placeholder="Base DN">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filter"><i class="fa fa-tasks"></i> Filter</label>
+        <input type="text" id="node-input-filter" placeholder="Filter">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ldap out">
+    <p>LDAP Search node</p>
+    <p>Filter is a mustache capable field e.g. <i>mail={{payload.email}}</i> will take the email field from the msg.payload and insert it in the correct place</p>
+    <p>The node returns an array of objects that represent matching records in the LDAP</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ldap out',{
+        category: 'storage-output',
+        defaults: {
+            name: {value:""},
+            topic: {value:""},
+            base: {value:""},
+            filter: {value:""},
+            server: {type:"ldap", required:true}
+        },
+        color: "rgb(218, 196, 180)",
+        inputs:1,
+        outputs:1,
+        icon: "watch.png",
+        label: function() {
+            return this.name||this.topic||"ldap";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
