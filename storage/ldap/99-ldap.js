@@ -68,12 +68,16 @@ module.exports = function(RED) {
 
 			this.ldap = new LDAP(ldapOptions);
 			var node = this
+			this.status({fill:"red",shape:"ring",text:"disconnected"});
 			this.ldap.open(function(err){
 				if (err) {
-					node.log("open error")
-					console.log(err);
+					node.error("error opening connection to " + node.ldapServer.server +"\n" + err);
+					node.status({fill:"red",shape:"ring",text:"disconnected"});
 					return;
 				}
+
+				node.status({fill:"green",shape:"dot",text:"connected"});
+				node.connected = true;
 
 				if (credentials && credentials.binddn && credentials.password) {
 					var bindOptions = {
@@ -83,29 +87,33 @@ module.exports = function(RED) {
 
 					node.ldap.simplebind(bindOptions, function(err){
 						if (err) {
-							node.log(err);
+							node.error("failed to bind - " + err);
+						} else {
+							node.status({fill:"green",shape:"dot",text:"bound"});
 						}
 					});
 				}
 
-				node.status({fill:"green",shape:"ring",text:"connected"});
-
 			});
 			this.on('input', function(msg){
-				var options = {
-					base: node.base,
-					scope: '',
-					filter: mustache.render(node.filter,msg),
-					attrs: ''
-				};
-				node.ldap.search(options, function(err,data){
-					if (node.topic) {
-						msg.topic = node.topic;
-					}
+				if (node.connected) {
+					var options = {
+						base: node.base,
+						scope: '',
+						filter: mustache.render(node.filter,msg),
+						attrs: ''
+					};
+					node.ldap.search(options, function(err,data){
+						if (node.topic) {
+							msg.topic = node.topic;
+						}
 
-					msg.payload = data;
-					node.send(msg);
-				});
+						msg.payload = data;
+						node.send(msg);
+					});
+				} else {
+					node.error("not connected");
+				}
 			});
 			this.on('close',function() {
 				if(node.ldap) {

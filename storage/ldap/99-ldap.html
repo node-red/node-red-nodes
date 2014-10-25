@@ -21,7 +21,7 @@
         <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
         <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
     </div>
-    <div class="form-row">
+    <div class="form-row" hidden="true">
         <label for="node-config-input-tls" style="margin-left: 22%; width: 60px"><i> Use TLS</i></label>
         <input id="node-config-input-tls" style="width:  20px" type="checkbox" disabled="true">
     </div>
@@ -41,8 +41,7 @@
         defaults: {
             server: {value:"",required:true},
             port: {value:389,required:true,validate:RED.validators.number()},
-            tls: {value: false},
-            clientid: { value:"" }
+            tls: {value: false}
         },
         credentials: {
             binddn: {type:"text"},
@@ -50,13 +49,13 @@
         },
         label: function() {
             if (this.server == "") { this.server = "localhost"; }
-            return (this.clientid?this.clientid+"@":"")+this.server+":"+this.port;
+            return this.server+":"+this.port;
         },
         oneditprepare: function() {
             $("#node-config-input-tls").change(function() {
                 var port = $("#node-config-input-port").val();
                 var tls = $("#node-config-input-tls").is(':checked');
-                if (tls == true) {
+                if (tls === true) {
                     if (port == 389) {
                         $("#node-config-input-port").val(636);
                     }
@@ -77,7 +76,7 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-base"><i class="fa fa-tasks"></i> Topic</label>
+        <label for="node-input-base"><i class="fa fa-tasks"></i> Base DN</label>
         <input type="text" id="node-input-base" placeholder="Base DN">
     </div>
     <div class="form-row">
