@@ -16,6 +16,7 @@ module.exports = function(RED) {
 	"use strict";
 	var LDAP = require("LDAP");
 	var mustache = require("mustache");
+	// var util = require("util");
 
 	var connection;
 
@@ -51,7 +52,7 @@ module.exports = function(RED) {
 			var ldapOptions = {
 				uri:'ldap://' + this.ldapServer.server,
 				version: 3,
-				starttls: this.ldapServer.tls,
+				starttls: false,
 				connectiontimeout: 1,
 				reconnect: true
 
@@ -65,6 +66,8 @@ module.exports = function(RED) {
 					ldapOptions.uri = ldapOptions.uri + ":" + this.ldapServer.port;
 				}
 			}
+
+			// this.log(util.inspect(ldapOptions));
 
 			this.ldap = new LDAP(ldapOptions);
 			var node = this
