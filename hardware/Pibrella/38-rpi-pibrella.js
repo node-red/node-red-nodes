@@ -66,6 +66,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.buttonState = -1;
         this.pin = pintable[n.pin];
+        this.read = n.read || false;
+        if (this.read) { this.buttonState = -2; }
         var node = this;
 
         if (node.pin) {
@@ -102,6 +104,8 @@ module.exports = function(RED) {
     function PibrellaOut(n) {
         RED.nodes.createNode(this,n);
         this.pin = pintable[n.pin];
+        this.set = n.set || false;
+        this.level = n.level || 0;
         var node = this;
 
         if (node.pin == "1") {
@@ -123,23 +127,26 @@ module.exports = function(RED) {
             });
         }
         else if (node.pin) {
-            process.nextTick(function() {
-                exec("gpio mode "+node.pin+" out", function(err,stdout,stderr) {
-                    if (err) { node.error(err); }
-                    else {
-                        node.on("input", function(msg) {
-                            if (msg.payload === "true") { msg.payload = true; }
-                            if (msg.payload === "false") { msg.payload = false; }
-                            var out = Number(msg.payload);
-                            if ((out === 0)|(out === 1)) {
-                                exec("gpio write "+node.pin+" "+out, function(err,stdout,stderr) {
-                                    if (err) { node.error(err); }
-                                });
-                            }
-                            else { node.warn("Invalid input - not 0 or 1"); }
+            exec("gpio mode "+node.pin+" out", function(err,stdout,stderr) {
+                if (err) { node.error(err); }
+                else {
+                    if (node.set) {
+                        exec("gpio write "+node.pin+" "+node.level, function(err,stdout,stderr) {
+                            if (err) { node.error(err); }
                         });
                     }
-                });
+                    node.on("input", function(msg) {
+                        if (msg.payload === "true") { msg.payload = true; }
+                        if (msg.payload === "false") { msg.payload = false; }
+                        var out = Number(msg.payload);
+                        if ((out === 0)|(out === 1)) {
+                            exec("gpio write "+node.pin+" "+out, function(err,stdout,stderr) {
+                                if (err) { node.error(err); }
+                            });
+                        }
+                        else { node.warn("Invalid input - not 0 or 1"); }
+                    });
+                }
             });
         }
         else {

@@ -16,9 +16,9 @@
 
 <script type="text/x-red" data-template-name="rpi-pibrella in">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-asterisk"></i> Input</label>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Input</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-">select input</option>
+            <option value='' disabled selected style='display:none;'>select input</option>
             <option value="Red Button">Red Button</option>
             <option value="In A">In A</option>
             <option value="In B">In B</option>
@@ -26,6 +26,12 @@
             <option value="In D">In D</option>
          </select>
     </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-read" style="width: 70%;">Read initial state of pin on deploy/restart ?</label>
+    </div>
+    <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -41,11 +47,12 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rpi-pibrella in',{
-        category: 'advanced-input',
+        category: 'Raspberry Pi',
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
-            pin: { value:"",required:true,validate:RED.validators.regex(/ /) }
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) },
+            read: { value:false }
         },
         inputs:0,
         outputs:1,
@@ -62,9 +69,9 @@
 
 <script type="text/x-red" data-template-name="rpi-pibrella out">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-asterisk"></i> Output</label>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Output</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-">select output</option>
+            <option value='' disabled selected style='display:none;'>select output</option>
             <option value="Red LED">Red LED</option>
             <option value="Amber LED">Amber LED</option>
             <option value="Green LED">Green LED</option>
@@ -75,11 +82,24 @@
             <option value="Buzzer ">Buzzer</option>
          </select>
     </div>
+    <div class="form-row" id="node-set-check">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Initialise output state ?</label>
+    </div>
+    <div class="form-row" id="node-set-state" hidden>
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 300px;">
+            <option value="0">initial level of output - off - low - 0</option>
+            <option value="1">initial level of output - on - high - 1</option>
+        </select>
+    </div>
+    <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Buzzer takes <b>msg.payload</b> between 2 (high) and 512 (low), or 0 for off.</div>
+    <div class="form-tips" id="node-buzz-tip">Buzzer takes <b>msg.payload</b> between 2 (high) and 512 (low), or 0 for off.</div>
 </script>
 
 <script type="text/x-red" data-help-name="rpi-pibrella out">
@@ -91,11 +111,13 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rpi-pibrella out',{
-        category: 'advanced-output',
+        category: 'Raspberry Pi',
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
-            pin: { value:"",required:true,validate:RED.validators.regex(/ /) }
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) },
+            set: { value:false },
+            level: { value:"0" }
         },
         inputs:1,
         outputs:0,
@@ -106,6 +128,25 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-input-set").change(function() {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            });
+            $("#node-input-pin").change(function() {
+                if ($('#node-input-pin').val() !== "Buzzer ") {
+                    $("#node-set-check").show();
+                    $("#node-buzz-tip").hide();
+                } else {
+                    $("#node-set-check").hide();
+                    $("#node-buzz-tip").show();
+                }
+                $("#node-input-set").change();
+            });
         }
     });
 </script>

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2013,2014 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,8 @@ module.exports = function(RED) {
         this.npin = n.pin;
         this.pin = pintable[n.pin];
         this.intype = n.intype;
+        this.read = n.read || false;
+        if (this.read) { this.buttonState = -2; }
         var node = this;
         if (node.pin) {
             exec("gpio -p mode "+node.pin+" "+node.intype, function(err,stdout,stderr) {
@@ -99,6 +101,11 @@ module.exports = function(RED) {
         this.pin = pintable[n.pin];
         var node = this;
         if (node.pin) {
+            if (node.set) {
+                exec("gpio -p write "+node.pin+" "+node.level, function(err,stdout,stderr) {
+                    if (err) { node.error(err); }
+                });
+            }
             node.on("input", function(msg) {
                 if (msg.payload === "true") { msg.payload = true; }
                 if (msg.payload === "false") { msg.payload = false; }

@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2013,2014 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 <script type="text/x-red" data-template-name="rpi-piface in">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-asterisk"></i> GPIO Pin</label>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-" disabled>select pin</option>
+            <option value='' disabled selected style='display:none;'>select input</option>
             <option value="Button S1">Button S1</option>
             <option value="Button S2">Button S2</option>
             <option value="Button S3">Button S3</option>
@@ -38,12 +38,18 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-intype"><i class="fa fa-expand"></i> Resistor?</label>
+        <label for="node-input-intype"><i class="fa fa-level-up"></i> Resistor ?</label>
         <select type="text" id="node-input-intype" style="width: 150px;">
         <option value="up">pullup</option>
         <option value="tri">none</option>
         </select>
     </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-read" style="width: 70%;">Read initial state of pin on deploy/restart ?</label>
+    </div>
+    <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -61,12 +67,13 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rpi-piface in',{
-        category: 'advanced-input',
+        category: 'Raspberry Pi',
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
-            intype: { value: "up" },
             pin: { value:"",required:true},
+            intype: { value: "up" },
+            read: { value:false }
         },
         inputs:0,
         outputs:1,
@@ -83,9 +90,9 @@
 
 <script type="text/x-red" data-template-name="rpi-piface out">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-asterisk"></i> GPIO Pin</label>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
-            <option value="-" disabled>select pin</option>
+            <option value='' disabled selected style='display:none;'>select output</option>
             <option value="LED 0 / Relay 0">LED 0 / Relay 0</option>
             <option value="LED 1 / Relay 1">LED 1 / Relay 1</option>
             <option value="LED 2">LED 2</option>
@@ -96,6 +103,19 @@
             <option value="LED 7">LED 7</option>
          </select>
     </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Initialise output state ?</label>
+    </div>
+    <div class="form-row" id="node-set-state">
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 300px;">
+            <option value="0">initial level of output - off - low - 0</option>
+            <option value="1">initial level of output - on - high - 1</option>
+        </select>
+    </div>
+    <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -111,11 +131,13 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rpi-piface out',{
-        category: 'advanced-output',
+        category: 'Raspberry Pi',
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
             pin: { value:"",required:true},
+            set: { value:false },
+            level: { value:"0" }
         },
         inputs:1,
         outputs:0,
@@ -126,6 +148,15 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-input-set").change(function() {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            });
         }
     });
 </script>

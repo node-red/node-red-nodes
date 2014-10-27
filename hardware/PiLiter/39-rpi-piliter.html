@@ -16,8 +16,9 @@
 
 <script type="text/x-red" data-template-name="rpi-liter">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-asterisk"></i> Mode</label>
+        <label for="node-input-pin"><i class="fa fa-cog"></i> Mode</label>
         <select type="text" id="node-input-pin" style="width: 350px;">
+            <option value='' disabled selected style='display:none;'>select mode</option>
             <option value="pi-liter">0-255 : one bit per led</option>
             <option value="meter">0-8 : turns on led indicated - needle</option>
             <option value="bar">0-8 : turns on leds up to value - bar</option>
@@ -36,26 +37,26 @@
     <p>Raspberry Pi-LITEr output node. The Pi-LITEr must be fitted.</p>
     <p>Operates in one of 5 different modes :</p>
     <ul>
-    <li>Byte Mode - expects a value between 0 and 255, and each of the LEDs represent 1 bit.</li>
-    <li>Meter Mode - expects a value between 0 and 8, the led lit corresponds to the input value - like a meter needle.</li>
-    <li>Bar Mode - expects a value between 0 and 8, similar to meter - but all the leds up to the value are turned on - like a mini bar chart.</li>
-    <li>Object Mode - expects a object specifying the LED and state eg. <code>{led:3,state:0}</code> to set LED3 off.</li>
-    <li>All LEDs Mode - expects a 1 or 0 - turns on and off ALL the LEDs.</li>
+    <li><b>Byte Mode</b> - expects a value between 0 and 255, and each of the LEDs represent 1 bit.</li>
+    <li><b>Meter Mode</b> - expects a value between 0 and 8, the led lit corresponds to the input value - like a meter needle.</li>
+    <li><b>Bar Mode</b> - expects a value between 0 and 8, similar to meter - but all the leds up to the value are turned on - like a mini bar chart.</li>
+    <li><b>Object Mode</b> - expects a object specifying the LED and state eg. <code>{led:3,state:0}</code> to set LED3 off.</li>
+    <li><b>All LEDs Mode</b> - expects a 1 or 0 - turns on and off ALL the LEDs.</li>
     </ul>
     <p>Requires the WiringPi gpio command in order to work.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('rpi-liter',{
-        category: 'advanced-output',
-        color:"#c6dbef",
+        category: 'Raspberry Pi',
+        color:"GoldenRod",
         defaults: {
             name: { value:"" },
-            pin: { value:"" }
+            pin: { value:"",required:true }
         },
         inputs:1,
         outputs:0,
-        icon: "rpi.png",
+        icon: "light.png",
         align: "right",
         label: function() {
             return this.name||"Pi-LITEr";
