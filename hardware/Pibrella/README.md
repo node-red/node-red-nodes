@@ -27,6 +27,7 @@ The output node will set the selected output high (on) or low (off) depending on
 
 The Buzzer is a divider so low numbers are high notes. 0 is off, and the sensible lowest note is around 250-300. 2 is the highest note. 1 is just a buzz - so you can use 0/1 type inputs.
 
+**Note:** Using the buzzer is known to "kill" audio output via the 3.5mm socket.
 
 ###Input
 

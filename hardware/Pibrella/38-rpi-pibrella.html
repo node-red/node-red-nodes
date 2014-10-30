@@ -106,6 +106,7 @@
     <p>Raspberry Pi Pibrella output node. The Pibrella board must be fitted.</p>
     <p>Will set the selected output high (on) or low (off) depending on the value passed in. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
     <p>The Buzzer is a divider so low numbers are high notes. 0 is off, and the sensible lowest note is around 250-300. 2 is the highest note. 1 is just a buzz (so you can use 0/1 type inputs).</p>
+    <p><b>Note:</b> Using the buzzer is known to "kill" audio output via the 3.5mm socket.</p>
     <p>Requires the WiringPi gpio command in order to work.</p>
 </script>
 
