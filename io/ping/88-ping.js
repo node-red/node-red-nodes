@@ -34,9 +34,13 @@ module.exports = function(RED) {
             var res = false;
             ex.stdout.on('data', function (data) {
                 //console.log('[ping] stdout: ' + data.toString());
-                var regex = /from.*time.(.*)ms/;
+                var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9]*)/;
+                //var regex = /from.*time.(.*)ms/;
                 var m = regex.exec(data.toString())||"";
-                if (m !== '') { res = Number(m[1]); }
+                if (m !== '') {
+                    if (m[1]) { res = Number(m[1]); }
+                    if (m[2]) { res = Number(m[2]); }
+                }
             });
             ex.stderr.on('data', function (data) {
                 //console.log('[ping] stderr: ' + data);
