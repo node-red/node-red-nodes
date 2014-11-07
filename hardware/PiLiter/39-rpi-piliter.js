@@ -19,9 +19,9 @@ module.exports = function(RED) {
     var exec = require('child_process').exec;
     var fs =  require('fs');
 
-    //if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //throw "Info : Ignoring Raspberry Pi specific node.";
-    //}
+    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
+        throw "Info : Ignoring Raspberry Pi specific node.";
+    }
 
     if (!fs.existsSync("/usr/local/bin/gpio")) { // gpio command not installed
         throw "Info : Can't find Raspberry Pi wiringPi gpio command.";
