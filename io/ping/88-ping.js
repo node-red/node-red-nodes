@@ -32,21 +32,21 @@ module.exports = function(RED) {
             else if (plat == "darwin") { ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); }
             else { node.error("Sorry - your platform - "+plat+" - is not recognised."); }
             var res = false;
+            var line = "";
+            //var regex = /from.*time.(.*)ms/;
+            var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9\.]*)/;
             ex.stdout.on('data', function (data) {
-                //console.log('[ping] stdout: ' + data.toString());
-                var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9]*)/;
-                //var regex = /from.*time.(.*)ms/;
-                var m = regex.exec(data.toString())||"";
-                if (m !== '') {
-                    if (m[1]) { res = Number(m[1]); }
-                    if (m[2]) { res = Number(m[2]); }
-                }
+                line += data.toString();
             });
             ex.stderr.on('data', function (data) {
                 //console.log('[ping] stderr: ' + data);
             });
             ex.on('close', function (code) {
-                //console.log('[ping] result: ' + code);
+                var m = regex.exec(line)||"";
+                if (m !== '') {
+                    if (m[1]) { res = Number(m[1]); }
+                    if (m[2]) { res = Number(m[2]); }
+                }
                 var msg = { payload:false, topic:node.host };
                 if (code === 0) { msg = { payload:res, topic:node.host }; }
                 node.send(msg);
