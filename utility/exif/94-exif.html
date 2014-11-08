@@ -1,0 +1,49 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="exif">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="exif">
+    <p>Extract <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a> information from JPEG images.</p>
+    <p>This node expects an incoming JPEG image buffer. If Exif data is present,
+    it extracts the data into the <b>msg.exif</b> object.</p>
+    <p>The node then adds location data as <b>msg.location</b>, should the Exif data carry this information. 
+    <b>msg.payload</b> remains the original, unmodified image buffer. </p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('exif',{
+        category: 'utility',
+        color:"#f1c2f0",
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "watch.png",
+        label: function() {
+            return this.name||"exif";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
