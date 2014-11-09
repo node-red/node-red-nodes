@@ -24,25 +24,21 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             if (Buffer.isBuffer(msg.payload)) {
                 var l = msg.payload.length;
-                msg.payload = msgpack.decode(msg.payload);
-                if (typeof msg.payload === "object") {
+                try {
+                    msg.payload = msgpack.decode(msg.payload);
                     node.send(msg);
                     node.status({text:l +" b->o "+ JSON.stringify(msg.payload).length});
                 }
-                else {
-                    node.warn("Input not a MsgPack buffer");
+                catch (e) {
+                    node.warn("Bad decode: "+e);
                     node.status({text:"not a msgpack buffer"});
                 }
             }
-            else if (typeof msg.payload === "object") {
+            else {
                 var l = JSON.stringify(msg.payload).length;
                 msg.payload = msgpack.encode(msg.payload);
                 node.send(msg);
                 node.status({text:l +" o->b "+ msg.payload.length});
-            }
-            else {
-                node.warn("This node only handles js objects or msgpack buffers.");
-                node.status({text:"error"});
             }
         });
     }

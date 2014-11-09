@@ -24,9 +24,8 @@
 
 <script type="text/x-red" data-help-name="msgpack">
     <p>A function that converts the <b>msg.payload</b> to and from <a href = "https://github.com/msgpack/msgpack-node"><i>msgpack</i></a> format.</p>
-    <p>If the input is an object it converts it to a msgpack buffer.</p>
-    <p>If the input is a msgpack buffer it converts it back to an object.</p>
-    <p>Current only supports object type.</p>
+    <p>If the input is NOT a buffer it tries to convert it to a msgpack buffer.</p>
+    <p>If the input is a msgpack buffer it tries to decode it back.</p>
 </script>
 
 <script type="text/javascript">
