@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-pushbullet",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to send alerts via Pushbullet",
     "dependencies"  : {
-        "pushbullet"   : "1.*.*"
+        "pushbullet"   : "1.4.*"
     },
     "repository" : {
         "type":"git",

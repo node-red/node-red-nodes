@@ -20,6 +20,10 @@
         <input type="text" id="node-input-title" placeholder="Node-RED">
     </div>
     <div class="form-row">
+        <label for="node-input-chan"><i class="fa fa-random"></i> Channel</label>
+        <input type="text" id="node-input-chan" placeholder="channel name">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-deviceid"><i class="fa fa-user"></i> Device ID</label>
         <input type="text" id="node-config-input-deviceid">
     </div>
@@ -36,13 +40,13 @@
 </script>
 
 <script type="text/x-red" data-help-name="pushbullet">
-    <p>Uses PushBullet to push the <b>msg.payload</b> to an Android device that has the PushBullet app installed.</p>
+    <p>Uses PushBullet to push the <b>msg.payload</b> to a device that has the PushBullet app installed.</p>
     <p>Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.</p>
     <p>You need to configure both your <i>API key</i> and the target <i>device ID</i>.
-    The device ID may be passed in as <b>msg.deviceid</b>. You can set these per node in the edit dialog.
-    The old method of storing your credentials in the pushkey.js file in the directory <b>above</b> /node-red is being deprecated.</p>
-    <p><pre>module.exports = { pushbullet:'My-API-KEY', deviceid:'xyzzyWabc' }</pre></p>
-    <p>The deviceid can be found by hovering over your required device on the <a href="https://www.pushbullet.com/">PushBullet website</a>.</p>
+    The device ID may be passed in as <b>msg.deviceid</b>.</p>
+    <p>You can also push to any channels that you own either configured or via <b>msg.channel</b>.</p>
+    The old method of storing your credentials in the pushkey.js file in the directory <b>above</b> /node-red is deprecated.</p>
+    <p>The deviceid can be found by clicking on your required device on the <a href="https://www.pushbullet.com/">PushBullet website</a>, once you have logged in.</p>
 </script>
 
 <script type="text/javascript">
@@ -50,6 +54,7 @@
         category: 'output',
         defaults: {
             title: {value:""},
+            chan: {value:"" },
             name: {value:""}
         },
         color:"#a7c9a0",

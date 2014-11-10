@@ -33,6 +33,7 @@ module.exports = function(RED) {
     function PushbulletNode(n) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
+        this.chan = n.chan;
         var credentials = RED.nodes.getCredentials(n.id);
         if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
         else {
@@ -48,18 +49,22 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input",function(msg) {
-            var titl = node.title||msg.topic||"Node-RED";
-            var dev = msg.deviceid||node.deviceid;
+            var titl = node.title || msg.topic || "Node-RED";
+            var dev = node.deviceid || msg.deviceid;
+            var channel = node.chan || msg.chan;
+            if (channel != undefined) {
+                dev = { channel_tag : channel };
+            } else {
+                if (!isNaN(dev)) { dev = Number(dev); }
+            }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
             else { msg.payload = msg.payload.toString(); }
             if (node.pushkey && dev) {
                 try {
-                    if (!isNaN(dev)) { dev = Number(dev); }
                     node.pusher.note(dev, titl, msg.payload, function(err, response) {
-                        if (err) { node.error("Pushbullet error: "+err); }
-                        //console.log(response);
+                        if (err) { node.error("Pushbullet error"); }
                     });
                 }
                 catch (err) {
