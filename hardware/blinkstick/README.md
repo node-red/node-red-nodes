@@ -1,11 +1,12 @@
 node-red-node-blinkstick
 ========================
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://blinkstick.com/" target="_new">Blinkstick</a>.
+
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://www.blinkstick.com/" target="_new">BlinkStick</a>.
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in the root directory of your Node-RED install:
 
     npm install node-red-node-blinkstick
 
@@ -13,11 +14,19 @@ Run the following command in the root directory of your Node-RED install
 Usage
 -----
 
-The BlinkStick output node expects a <b>msg.payload</b> with either a hex string #rrggbb triple or red,green,blue as three 0-255 values.
+<i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <b>msg.payload</b> with one of:
 
+* A hex string <b>"#rrggbb"</b> triple
+* <b>"red,green,blue"</b> three 0-255 values as a string
+* <b>"random"</b> will generate a random color
+* <i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">Standard HTML color</a></i> name
+* <b>object</b> can override any of the parameters
 
-It can also accept <i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">standard HTML colour</a></i> names.
+An object payload can override any of the settings on the node. Omitted parameters are left intact. For example:
 
-<b>NOTE:</b> currently only works with a single BlinkStick. (As it uses the findFirst() function to attach).
+    { 'color': 'blue' }
+    { 'task': 'blink', 'color': 'red' }
+    { 'task': 'pulse', 'color': 'gree', 'duration': 500 }
+    { 'task': 'morph', 'color': 'orange', 'duration': 500, 'steps': 20 }
 
-For more info see the <i><a href="http://blinkstick.com/" target="_new">BlinkStick website</a></i> or the <i><a href="https://github.com/arvydas/blinkstick-node" target="_new">blinkstick npm</a></i> documentation.
+For more information see <i><a href="http://www.blinkstick.com/help/tutorials" target="_new">BlinkStick tutorials</a></i> or the <i><a href="https://github.com/arvydas/blinkstick-node" target="_new">node module</a></i> documentation.
