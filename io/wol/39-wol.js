@@ -28,9 +28,14 @@ module.exports = function(RED) {
             var mac = this.mac || msg.mac || null;
             if (mac != null) {
                 if (chk.test(mac)) {
-                    wol.wake(mac, function(error) {
-                        if (error) { node.warn(error); }
-                    });
+                    try {
+                        wol.wake(mac, function(error) {
+                            if (error) { node.warn(error); }
+                            else if (RED.settings.verbose) {
+                                node.log("sent WOL magic packet");
+                            }
+                        });
+                    } catch(e) { if (RED.settings.verbose) { node.log("WOL: socket error"); }
                 }
                 else { node.warn('WOL: bad mac address "'+mac+'"'); }
             }
