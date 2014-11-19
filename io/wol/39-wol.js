@@ -35,7 +35,9 @@ module.exports = function(RED) {
                                 node.log("sent WOL magic packet");
                             }
                         });
-                    } catch(e) { if (RED.settings.verbose) { node.log("WOL: socket error"); }
+                    } catch(e) {
+                        if (RED.settings.verbose) { node.log("WOL: socket error"); }
+                    }
                 }
                 else { node.warn('WOL: bad mac address "'+mac+'"'); }
             }
