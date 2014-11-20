@@ -165,7 +165,14 @@ module.exports = function(RED) {
                     node.led.setColor(node.color, blinkstickAnimationComplete);
                 }
             } catch (err) {
-                node.warn("BlinkStick missing ? " + err);
+                if (err.toString().indexOf("setColor") !== -1) {
+                    node.led.setColour(node.color, blinkstickAnimationComplete);
+                    node.warn("Old version - please upgrade Blinkstick npm");
+                }
+                else {
+                    node.warn("BlinkStick missing ? " + err);
+                }
+                console.log(err);
                 //Reset animation
                 animationComplete = true;
                 //Clear color
@@ -233,7 +240,8 @@ module.exports = function(RED) {
 
             if (Object.size(node.led) !== 0) {
                 //Close device and stop animations
-                this.led.close();
+                if (typeof this.led.close === "function") { this.led.close(); }
+                else { node.warn("Please upgrade blinkstick npm"); }
             }
         });
     }
