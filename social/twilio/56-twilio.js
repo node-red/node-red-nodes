@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Andrew D Lindsay @AndrewDLindsay
+ * Copyright 2014 Andrew D Lindsay @AndrewDLindsay
  * http://blog.thiseldo.co.uk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,20 +92,38 @@ module.exports = function(RED) {
             return;
         }
 
+	this.twilioType = n.twilioType;
+	this.url = n.url;
         var node = this;
         this.on("input",function(msg) {
             if (typeof(msg.payload) == 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
             try {
-                // Send SMS
+	//	console.log("Twilio SMS or Call");
+         //       console.log( this.twilioType);
+	//	console.log("-----");
+                // decide if we are to Send SMS
                 var tonum = node.number || msg.topic;
-                node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
-                    if (err) {
-                        node.error(err);
-                    }
-                    //console.log(response);
-                });
+		if( this.twilioType == "call" ) {
+		    // Make a call
+		    var twimlurl = node.url || msg.payload; 
+                    node.twilioClient.makeCall( {to: tonum, from: node.fromNumber, url: twimlurl}, function(err, response) {
+                        if (err) {
+                            node.error(err);
+                        }
+                        //console.log(response);
+                    });
+		} else {
+		    // Send SMS
+                    node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
+                        if (err) {
+                            node.error(err);
+                        }
+                        //console.log(response);
+                    });
+		}
+
             } catch (err) {
                 node.error(err);
             }
