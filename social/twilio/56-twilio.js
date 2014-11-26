@@ -100,9 +100,6 @@ module.exports = function(RED) {
                 msg.payload = JSON.stringify(msg.payload);
             }
             try {
-	//	console.log("Twilio SMS or Call");
-         //       console.log( this.twilioType);
-	//	console.log("-----");
                 // decide if we are to Send SMS
                 var tonum = node.number || msg.topic;
 		if( this.twilioType == "call" ) {
