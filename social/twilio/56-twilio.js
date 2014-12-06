@@ -92,8 +92,8 @@ module.exports = function(RED) {
             return;
         }
 
-	this.twilioType = n.twilioType;
-	this.url = n.url;
+        this.twilioType = n.twilioType;
+        this.url = n.url;
         var node = this;
         this.on("input",function(msg) {
             if (typeof(msg.payload) == 'object') {
@@ -102,24 +102,24 @@ module.exports = function(RED) {
             try {
                 // decide if we are to Send SMS
                 var tonum = node.number || msg.topic;
-		if( this.twilioType == "call" ) {
-		    // Make a call
-		    var twimlurl = node.url || msg.payload; 
+                if( this.twilioType == "call" ) {
+                    // Make a call
+                    var twimlurl = node.url || msg.payload;
                     node.twilioClient.makeCall( {to: tonum, from: node.fromNumber, url: twimlurl}, function(err, response) {
                         if (err) {
-                            node.error(err);
+                            node.error(err.message);
                         }
                         //console.log(response);
                     });
-		} else {
-		    // Send SMS
+                } else {
+                    // Send SMS
                     node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
                         if (err) {
-                            node.error(err);
+                            node.error(err.message);
                         }
                         //console.log(response);
                     });
-		}
+                }
 
             } catch (err) {
                 node.error(err);

@@ -34,12 +34,12 @@
           <option value="call">Call</option>
         </select>
     </div>
-    
+
     <div class="form-row">
-	<label for="node-input-number">
-		    <i class="fa fa-envelope-o" id="node-input-number-icon-sms"></i>
-		    <i class="fa fa-phone hidden" id="node-input-number-icon-call"></i>
-		    To</label>
+    <label for="node-input-number">
+            <i class="fa fa-envelope-o" id="node-input-number-icon-sms"></i>
+            <i class="fa fa-phone hidden" id="node-input-number-icon-call"></i>
+            To</label>
         <input type="text" id="node-input-number" placeholder="01234 5678901">
     </div>
     <div class="form-row hidden" id="node-input-twiliourl-row">
@@ -54,8 +54,11 @@
 
 <script type="text/x-red" data-help-name="twilio out">
     <p>Sends an SMS message or makes a call using the Twilio service.</p>
-    <p><code>msg.payload</code> is used as either the body of the SMS message or the URL of the TWiML to create the call. The node can be configured with the number
-    to send the message to. Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>. If the node is configured to make a call then the URL can be entered into the node or if left blank then the <code>msg.payload</code> is used.</p>
+    <p><code>msg.payload</code> can either contain the text of the SMS message,
+    <i>or</i> the URL of the <a href="https://www.twilio.com/docs/api/twiml" target = "_new">TWiML</a> used to create the call.
+    The node can be configured with the number to send the message to.
+    Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>.
+    If the node is configured to make a call then the TWiML URL must be publically accessible.
     <p>You must have an account with Twilio to use this node. You can register for one <a href="https://www.twilio.com/">here</a>.</p>
     <p>You can either set your account details within the node, or provide it globally using either the settings file or a file
     called 'twiliokey.js' located in the directory above node-red.</p>
@@ -85,15 +88,11 @@
 </script>
 
 <script type="text/javascript">
-
-
     (function() {
-
         var hasGlobal = false;
         $.getJSON('twilio-api/global',function(data) {
             hasGlobal = data.hasToken;
         });
-
 
         RED.nodes.registerType('twilio-api',{
             category: 'config',
@@ -144,8 +143,8 @@
                 twilio:{type:"twilio-api",validate:function(v) {
                     return hasGlobal || (v && v!="_ADD_");
                 }},
-		twilioType: {value:"sms"},
-		url: {value:""},
+                twilioType: {value:"sms"},
+                url: {value:""},
                 number: {value:""},
                 name: {value:""}
             },
@@ -193,18 +192,17 @@
                     var twilioType = $("#node-input-twilioType option:selected").val();
                     if (twilioType == "call") {
                         $("#node-input-twiliourl-row").show();
-			$("#node-input-number-icon-call").show();
-			$("#node-input-number-icon-sms").hide();
+                        $("#node-input-number-icon-call").show();
+                        $("#node-input-number-icon-sms").hide();
                     } else {
                         $("#node-input-twiliourl-row").hide();
-			$("#node-input-number-icon-call").hide();
-			$("#node-input-number-icon-sms").show();
+                        $("#node-input-number-icon-call").hide();
+                        $("#node-input-number-icon-sms").show();
                     }
                 });
- 		$("#node-input-twilioType").val(this.twilioType);
-            	$("#node-input-twilioType").change();
+                $("#node-input-twilioType").val(this.twilioType);
+                $("#node-input-twilioType").change();
             }
         });
     })();
-
 </script>
