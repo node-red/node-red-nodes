@@ -1,12 +1,12 @@
 {
     "name"         : "node-red-node-hbgpio",
-    "version"      : "0.0.1",
+    "version"      : "0.0.3",
     "description"  : "A Node-RED node for the GPIO of the Hummingboard",
     "dependencies": {
     },
     "repository" : {
         "type":"tgz",
-        "url":"http://dcj.dtdns.net/npms/hbgpio.tgz"
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/HummingboardGPIO"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "hummingboard", "gpio" ],

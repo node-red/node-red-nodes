@@ -6,6 +6,8 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to read and write
 Install
 -------
 
+**This install is for Debian based OS on Hummingboard.**
+
 Run the following command in the root directory of your Node-RED install:
 
     npm install node-red-node-hpgpio

@@ -21,12 +21,12 @@ module.exports = function(RED) {
 
     var gpioCommand = '/usr/local/bin/gpiohb';
 
-    //if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //throw "Info : Ignoring Raspberry Pi specific node.";
+    //if (!fs.existsSync("/etc/init.d/armhwinfo")) { // unlikely if not on a Hummingboard
+        //throw "Info : Ignoring Hummingboard specific node.";
     //}
 
     if (!fs.existsSync(gpioCommand)) { // gpio command not installed
-        throw "Info : Can't find "+gpioCommand+" command.";
+        throw "Error : Can't find "+gpioCommand+" command for Hummingboard.";
     }
 
     // Map physical P1 pins to Gordon's Wiring-Pi Pins (as they should be V1/V2 tolerant)
