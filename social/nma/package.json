@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-nma",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to send alerts via Notify-My-Android",
     "dependencies"  : {
-        "nma"   : "0.1.8"
+        "nma"   : ">=0.2.2"
     },
     "repository" : {
         "type":"git",
@@ -20,5 +20,9 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [{
+        "name": "Edwin Hermans",
+        "email": "edwin@madtech.cx"
+    }]
 }
