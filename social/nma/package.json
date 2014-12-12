@@ -3,7 +3,7 @@
     "version"       : "0.0.2",
     "description"   : "A Node-RED node to send alerts via Notify-My-Android",
     "dependencies"  : {
-        "nma"   : ">=0.2.2"
+        "nma"   : "0.2.2"
     },
     "repository" : {
         "type":"git",
