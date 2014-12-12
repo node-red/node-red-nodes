@@ -32,11 +32,17 @@ module.exports = function(RED) {
             }
             else { msg.payload = msg.payload.toString(); }
             if (node.pushkey) {
-                try {
-                    nma(node.pushkey, "Node-RED", titl, msg.payload, 0 );
-                } catch (e) {
-                    node.warn("NMA error: "+ e);
-                }
+               nma({
+                    "apikey": node.pushkey,
+                    "application": "Node-RED",
+                    "event": titl,
+                    "description": msg.payload,
+                    "priority": 0
+                }, function (error) {
+                    if (error) {
+                        node.warn("NMA error: " + error);
+                    }
+                });
             }
             else {
                 node.warn("NMA credentials not set.");
