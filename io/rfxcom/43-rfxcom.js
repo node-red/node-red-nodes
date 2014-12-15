@@ -150,20 +150,22 @@ var normaliseTopic = function (rawTopic) {
             parts[0] = parts[0].trim().replace(/ +/g, '_').toUpperCase();
         }
         if (parts.length >= 2) {
-            parts[1] = parseInt(parts[1].trim(), 16);
             // handle housecodes > "F" as a special case (X10, ARC)
             if (isNaN(parts[1])) {
                 parts[1] = parseInt(parts[1].trim(), 36);
+            } else {
+                parts[1] = parseInt(parts[1].trim(), 16);
             }
         }
         if (parts.length >= 3) {
             if (/0|all|group|\+/i.test(parts[2])) {
                 return parts.slice(0, 1);
             }
-            parts[2] = parseInt(parts[2].trim(), 10);
             // handle Blyss groupcodes as a special case
             if (isNaN(parts[2])) {
                 parts[2] = parseInt(parts[2].trim(), 36);
+            } else {
+                parts[2] = parseInt(parts[2].trim(), 10);
             }
         }
         if (parts.length >= 4) {
