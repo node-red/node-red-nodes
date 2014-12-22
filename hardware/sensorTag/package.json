@@ -1,24 +1,24 @@
 {
-	"name": "node-red-node-sensortag",
-	"description": "A Node-RED node to read data from a TI SensorTag",
-	"version": "0.0.1",
-	"keywords" : ["node-red","sensortag"],
-	"dependencies": {
-		"sensortag" : "0.1.9"
-	},
-	"license": "Apache",
-	"repository" : {
+    "name": "node-red-node-sensortag",
+    "description": "A Node-RED node to read data from a TI SensorTag",
+    "version": "0.0.1",
+    "keywords" : ["node-red","sensortag"],
+    "dependencies": {
+        "sensortag" : "0.1.9"
+    },
+    "license": "Apache",
+    "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensorTag"
     },
-	"node-red" : {
-		"nodes" : {
-			"sensortTag": "79-sensorTag.js"
-		}
-	},
-	"autor": {
-		"name": "Ben Hardill",
-		"email":"hardillb@gmail.com",
-		"url": "http://www.hardill.me.uk/wordpress"
-	}
+    "node-red" : {
+        "nodes" : {
+            "sensortTag": "79-sensorTag.js"
+        }
+    },
+    "author": {
+        "name": "Ben Hardill",
+        "email":"hardillb@gmail.com",
+        "url": "http://www.hardill.me.uk/wordpress"
+    }
 }
