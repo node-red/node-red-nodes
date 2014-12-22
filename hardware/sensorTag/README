@@ -1,5 +1,0 @@
-This currently requires the sensortag library
-
-To install use the following command in the Node-Red directory
-
-npm install sensortag
