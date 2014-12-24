@@ -21,7 +21,7 @@ module.exports = function(RED) {
 
     var gpioCommand = '/usr/local/bin/gpiohb';
 
-    //if (!fs.existsSync("/etc/init.d/armhwinfo")) { // unlikely if not on a Hummingboard
+    //if (!fs.existsSync("/sys/devices/soc0/machine")) { // unlikely if not on a Hummingboard
         //throw "Info : Ignoring Hummingboard specific node.";
     //}
 
