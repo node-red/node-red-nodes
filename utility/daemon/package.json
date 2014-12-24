@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-daemon",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that runs and monitors a long running system command.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/utility/daemon"
+    },
+    "license": "Apache-v2.0",
+    "keywords": [ "node-red", "daemon", "shell", "exec" ],
+    "node-red"      : {
+        "nodes"     : {
+            "daemon": "daemon.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
