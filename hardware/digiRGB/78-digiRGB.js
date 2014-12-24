@@ -15,7 +15,7 @@
  **/
 
 module.exports = function(RED) {
-    "use strict";
+    //"use strict";
     var HID = require('node-hid');
     var device;
     var node;
