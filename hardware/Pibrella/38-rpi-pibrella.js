@@ -18,48 +18,60 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var exec = require('child_process').exec;
+    var spawn = require('child_process').spawn;
     var fs =  require('fs');
 
+    var gpioCommand = __dirname+'/nrgpio';
+
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        throw "Info : Ignoring Raspberry Pi specific node.";
+        //util.log("Info : Ignoring Raspberry Pibrella specific node.");
+        throw "Info : Ignoring Raspberry Pibrella specific node.";
     }
 
-    if (!fs.existsSync("/usr/local/bin/gpio")) { // gpio command not installed
-        throw "Info : Can't find Raspberry Pi wiringPi gpio command.";
+    if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+        util.log("[rpi-pibrella] Info : Can't find RPi.GPIO python library.");
+        throw "Warning : Can't find RPi.GPIO python library.";
     }
 
-    // Map physical P1 pins to Gordon's Wiring-Pi Pins (as they should be V1/V2 tolerant)
+    if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
+        util.log("[rpi-pibrella] Error : "+gpioCommand+" needs to be executable.");
+        throw "Error : nrgpio must to be executable.";
+    }
+
+    var pinsInUse = {};
+    var pinTypes = {"out":"digital output", "tri":"input", "up":"input with pull up", "down":"input with pull down", "pwm":"PWM output"};
+
     var pintable = {
-    // Physical : WiringPi
-            "Amber LED":"0",
-            "Buzzer ":"1",
-            "Red LED":"2",
-            "Out E":"3",
-            "Out F":"4",
-            "Out G":"5",
-            "Out H":"6",
-            "Green LED":"7",
-            "In C":"10",
-            "In B":"11",
-            "In D":"12",
-            "In A":"13",
-            "Red Button":"14",
+        // Name : Pin
+        "Amber LED":"11",
+        "Buzzer ":"12",
+        "Red LED":"13",
+        "Out E":"15",
+        "Out F":"16",
+        "Out G":"18",
+        "Out H":"22",
+        "Green LED":"7",
+        "In D":"19",
+        "In A":"21",
+        "In B":"26",
+        "In C":"24",
+        "Red Button":"23"
     }
     var tablepin = {
-    // WiringPi : Physical
-            "0":"Amber",
-            "1":"Buzzer",
-            "2":"Red",
-            "3":"E",
-            "4":"F",
-            "5":"G",
-            "6":"H",
-            "7":"Green",
-           "10":"C",
-           "11":"B",
-           "12":"D",
-           "13":"A",
-           "14":"R",
+        // Pin : Name
+        "11":"Amber",
+        "12":"Buzzer",
+        "13":"Red",
+        "15":"E",
+        "16":"F",
+        "18":"G",
+        "22":"H",
+        "7":"Green",
+        "19":"D",
+        "21":"A",
+        "26":"B",
+        "24":"C",
+        "23":"R"
     }
 
     function PibrellaIn(n) {
@@ -69,113 +81,157 @@ module.exports = function(RED) {
         this.read = n.read || false;
         if (this.read) { this.buttonState = -2; }
         var node = this;
+        if (!pinsInUse.hasOwnProperty(this.pin)) {
+            pinsInUse[this.pin] = "tri";
+        }
+        else {
+            if ((pinsInUse[this.pin] !== "tri")||(pinsInUse[this.pin] === "pwm")) {
+                node.error("GPIO pin "+this.pin+" already set as "+pinTypes[pinsInUse[this.pin]]);
+            }
+        }
 
-        if (node.pin) {
-            exec("gpio mode "+node.pin+" in", function(err,stdout,stderr) {
-                if (err) { node.error(err); }
-                else {
-                    node._interval = setInterval( function() {
-                        exec("gpio read "+node.pin, function(err,stdout,stderr) {
-                            if (err) { node.error(err); }
-                            else {
-                                if (node.buttonState !== Number(stdout)) {
-                                    var previousState = node.buttonState;
-                                    node.buttonState = Number(stdout);
-                                    if (previousState !== -1) {
-                                        var msg = {topic:"pibrella/"+tablepin[node.pin], payload:node.buttonState};
-                                        node.send(msg);
-                                    }
-                                }
-                            }
-                        });
-                    }, 200);
+        if (node.pin !== undefined) {
+            node.child = spawn(gpioCommand, ["in",node.pin]);
+            node.running = true;
+            node.status({fill:"green",shape:"dot",text:"OK"});
+
+            node.child.stdout.on('data', function (data) {
+                data = data.toString().trim();
+                if (data.length > 0) {
+                    if (node.buttonState !== -1) {
+                        node.send({ topic:"pibrella/"+tablepin[node.pin], payload:Number(data) });
+                    }
+                    node.buttonState = data;
+                    node.status({fill:"green",shape:"dot",text:data});
+                    if (RED.settings.verbose) { node.log("out: "+data+" :"); }
                 }
             });
+
+            node.child.stderr.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("err: "+data+" :"); }
+            });
+
+            node.child.on('close', function (code) {
+                if (RED.settings.verbose) { node.log("ret: "+code+" :"); }
+                node.child = null;
+                node.running = false;
+                node.status({fill:"red",shape:"circle",text:""});
+            });
+
+            node.child.on('error', function (err) {
+                if (err.errno === "ENOENT") { node.warn('Command not found'); }
+                else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                else { node.log('error: ' + err); }
+            });
+
         }
         else {
             node.error("Invalid GPIO pin: "+node.pin);
         }
 
         node.on("close", function() {
-            clearInterval(node._interval);
+            if (node.child != null) {
+                node.child.stdin.write(" close "+node.pin);
+                node.child.kill('SIGKILL');
+            }
+            node.status({fill:"red",shape:"circle",text:""});
+            delete pinsInUse[node.pin];
+            if (RED.settings.verbose) { node.log("end"); }
         });
     }
+    RED.nodes.registerType("rpi-pibrella in",PibrellaIn);
+
 
     function PibrellaOut(n) {
         RED.nodes.createNode(this,n);
         this.pin = pintable[n.pin];
         this.set = n.set || false;
         this.level = n.level || 0;
+        this.out = n.out || "out";
         var node = this;
-
-        if (node.pin == "1") {
-            exec("gpio mode 1 pwm");
-            process.nextTick(function() {
-                exec("gpio pwm-ms");
-                node.on("input", function(msg) {
-                    var out = Number(msg.payload);
-                    if (out == 1) { // fixed buzz
-                        exec("gpio pwm 1 511");
-                        exec("gpio pwmc 100");
-                    }
-                    else if ((out >= 2) && (out <= 9999)) { // set buzz to a value
-                        exec("gpio pwm 1 511");
-                        exec("gpio pwmc "+out);
-                    }
-                    else { exec("gpio pwm 1 0"); } // turn it off
-                });
-            });
+        if (!pinsInUse.hasOwnProperty(this.pin)) {
+            pinsInUse[this.pin] = this.out;
         }
-        else if (node.pin) {
-            exec("gpio mode "+node.pin+" out", function(err,stdout,stderr) {
-                if (err) { node.error(err); }
-                else {
-                    if (node.set) {
-                        exec("gpio write "+node.pin+" "+node.level, function(err,stdout,stderr) {
-                            if (err) { node.error(err); }
-                        });
-                    }
-                    node.on("input", function(msg) {
-                        if (msg.payload === "true") { msg.payload = true; }
-                        if (msg.payload === "false") { msg.payload = false; }
-                        var out = Number(msg.payload);
-                        if ((out === 0)|(out === 1)) {
-                            exec("gpio write "+node.pin+" "+out, function(err,stdout,stderr) {
-                                if (err) { node.error(err); }
-                            });
-                        }
-                        else { node.warn("Invalid input - not 0 or 1"); }
-                    });
+        else {
+            if ((pinsInUse[this.pin] !== this.out)||(pinsInUse[this.pin] === "pwm")) {
+                node.error("GPIO pin "+this.pin+" already set as "+pinTypes[pinsInUse[this.pin]]);
+            }
+        }
+
+        function inputlistener(msg) {
+            if (msg.payload === "true") { msg.payload = true; }
+            if (msg.payload === "false") { msg.payload = false; }
+            var out = Number(msg.payload);
+            var limit = 1;
+            if (node.out === "pwm") { limit = 100; }
+            if (node.pin === "12") {
+                limit = 4096;
+                if (out === 1) { out = 262; }
+            }
+            if ((out >= 0) && (out <= limit)) {
+                if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
+                if (node.child !== null) { node.child.stdin.write(out+"\n"); }
+                else { node.warn("Command not running"); }
+                node.status({fill:"green",shape:"dot",text:msg.payload});
+            }
+            else { node.warn("Invalid input: "+out); }
+        }
+
+        if (node.pin !== undefined) {
+            if (node.pin === "12") {
+                node.child = spawn(gpioCommand, ["buzz",node.pin]);
+            } else {
+                if (node.set && (node.out === "out")) {
+                    node.child = spawn(gpioCommand, [node.out,node.pin,node.level]);
+                } else {
+                    node.child = spawn(gpioCommand, [node.out,node.pin]);
                 }
+            }
+            node.running = true;
+            node.status({fill:"green",shape:"dot",text:"OK"});
+
+            node.on("input", inputlistener);
+
+            node.child.stdout.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("out: "+data+" :"); }
             });
+
+            node.child.stderr.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("err: "+data+" :"); }
+            });
+
+            node.child.on('close', function (code) {
+                if (RED.settings.verbose) { node.log("ret: "+code+" :"); }
+                node.child = null;
+                node.running = false;
+                node.status({fill:"red",shape:"circle",text:""});
+            });
+
+            node.child.on('error', function (err) {
+                if (err.errno === "ENOENT") { node.warn('Command not found'); }
+                else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                else { node.log('error: ' + err); }
+            });
+
         }
         else {
             node.error("Invalid GPIO pin: "+node.pin);
         }
 
         node.on("close", function() {
-            exec("gpio mode "+node.pin+" in");
+            if (node.child != null) {
+                node.child.stdin.write(" close "+node.pin);
+                node.child.kill('SIGKILL');
+            }
+            node.status({fill:"red",shape:"circle",text:""});
+            delete pinsInUse[node.pin];
+            if (RED.settings.verbose) { node.log("end"); }
         });
+
     }
-
-    //exec("gpio mode 0 out",function(err,stdout,stderr) {
-        //if (err) {
-            //util.log('[36-rpi-gpio.js] Error: "gpio" command failed for some reason.');
-        //}
-        //exec("gpio mode 1 out");
-        //exec("gpio mode 2 out");
-        //exec("gpio mode 3 out");
-        //exec("gpio mode 4 out");
-        //exec("gpio mode 5 out");
-        //exec("gpio mode 6 out");
-        //exec("gpio mode 7 out");
-        //exec("gpio mode 10 in");
-        //exec("gpio mode 11 in");
-        //exec("gpio mode 12 in");
-        //exec("gpio mode 13 in");
-        //exec("gpio mode 14 in");
-    //});
-
-    RED.nodes.registerType("rpi-pibrella in",PibrellaIn);
     RED.nodes.registerType("rpi-pibrella out",PibrellaOut);
+
+    RED.httpAdmin.get('/rpi-pibpins/:id',function(req,res) {
+        res.send( JSON.stringify(pinsInUse) );
+    });
 }

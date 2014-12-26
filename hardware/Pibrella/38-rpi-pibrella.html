@@ -41,8 +41,7 @@
 <script type="text/x-red" data-help-name="rpi-pibrella in">
     <p>Raspberry Pi Pibrella input node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
     <p>The <b>msg.topic</b> is set to <i>pibrella/{the pin id}</i>, A, B, C, D or R</p>
-    <p><b>Note:</b> This node currently polls the pin every 250mS. This is not ideal as it loads the cpu.</p>
-    <p>Requires the WiringPi gpio command in order to work.</p>
+    <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
 </script>
 
 <script type="text/javascript">
@@ -82,6 +81,13 @@
             <option value="Buzzer ">Buzzer</option>
          </select>
     </div>
+    <div class="form-row" id="node-set-pwm">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;Type</label>
+        <select id="node-input-out" style="width: 250px;">
+            <option value="out">Digital output</option>
+            <option value="pwm">PWM output</option>
+        </select>
+    </div>
     <div class="form-row" id="node-set-check">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
@@ -99,15 +105,15 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="node-buzz-tip">Buzzer takes <b>msg.payload</b> between 2 (high) and 512 (low), or 0 for off.</div>
+    <div class="form-tips" id="node-buzz-tip">Buzzer expects <b>msg.payload</b> to be a number in Hz.</div>
 </script>
 
 <script type="text/x-red" data-help-name="rpi-pibrella out">
     <p>Raspberry Pi Pibrella output node. The Pibrella board must be fitted.</p>
     <p>Will set the selected output high (on) or low (off) depending on the value passed in. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
-    <p>The Buzzer is a divider so low numbers are high notes. 0 is off, and the sensible lowest note is around 250-300. 2 is the highest note. 1 is just a buzz (so you can use 0/1 type inputs).</p>
-    <p><b>Note:</b> Using the buzzer is known to "kill" audio output via the 3.5mm socket.</p>
-    <p>Requires the WiringPi gpio command in order to work.</p>
+    <p>In PWM mode you can dim the onboard LEDs - expects a number from 0 - 100 (%).</p>
+    <p>The Buzzer takes a number in Hz (up to about 4000), or 0 for off, and 1 is a shortcut for 262.</div></p>
+    <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
 </script>
 
 <script type="text/javascript">
@@ -118,7 +124,8 @@
             name: { value:"" },
             pin: { value:"",required:true,validate:RED.validators.regex(/ /) },
             set: { value:false },
-            level: { value:"0" }
+            level: { value:"0" },
+            out: { value:"out" }
         },
         inputs:1,
         outputs:0,
@@ -141,9 +148,12 @@
             $("#node-input-pin").change(function() {
                 if ($('#node-input-pin').val() !== "Buzzer ") {
                     $("#node-set-check").show();
+                    $("#node-set-pwm").show();
                     $("#node-buzz-tip").hide();
                 } else {
                     $("#node-set-check").hide();
+                    $("#node-set-pwm").hide();
+                    $("#node-set-state").hide();
                     $("#node-buzz-tip").show();
                 }
                 $("#node-input-set").change();
