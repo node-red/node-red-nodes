@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-msgpack",
+    "version"       : "0.0.3",
+    "description"   : "A Node-RED node to pack and unpack objects to msgpack format",
+    "dependencies"  : {
+        "msgpack-js"   : "0.3.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/parsers/msgpack"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "msgpack" ],
+    "node-red"      : {
+        "nodes"     : {
+            "msgpack": "70-msgpack.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

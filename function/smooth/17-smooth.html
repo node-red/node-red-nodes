@@ -1,0 +1,91 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="smooth">
+    <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-bolt"></i> Action</label>
+        <select id="node-input-action" style="width:60%; margin-right:5px;">
+            <option value="max">Return the maximum value seen</option>
+            <option value="min">Return the minimum value seen</option>
+            <option value="mean">Return the mean value seen</option>
+            <option value="low">Perform low pass filter</option>
+            <option value="high">Perform high pass filter</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-count">&nbsp;</label>
+        <span id="node-over">over the most recent </span>
+        <input type="text" id="node-input-count" placeholder="10" style="width:80px;"/>
+        <span id="node-over2"> values.</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-round">&nbsp;</label>
+        <input type="checkbox" id="node-input-round" style="display: inline-block; width: auto; vertical-align: top;"> Round to the nearest integer ?
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips" id="node-tip">Tip: This node ONLY works with numbers.</div>
+</script>
+
+<script type="text/x-red" data-help-name="smooth">
+    <p>A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.</p>
+    <p>Max, Min and Mean work over a specified number of previous values.</p>
+    <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the time is based on events arriving.</p>
+    <p><b>Note:</b> This only operates on <b>numbers</b>. Anything else will try to be made into a number and rejected if that fails.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('smooth', {
+        color: "#E2D96E",
+        category: 'function',
+        defaults: {
+            count: {value:"10",required:true,validate:RED.validators.number()},
+            action: {value:"mean"},
+            round: {value:false},
+            name: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "smooth.png",
+        label: function() {
+            return this.name || "smooth";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            $("#node-input-count").spinner({
+                min:1,
+                width:80
+            });
+            $("#node-input-action").change( function() {
+                var a = $("#node-input-action").val();
+                if ((a === "high") ||  ( a === "low" )) {
+                    $("#node-over").html("with a smoothing factor of ");
+                    $("#node-over2").html("");
+                }
+                else {
+                    $("#node-over").html("over the most recent ");
+                    $("#node-over2").html(" values.");
+                }
+            });
+            $("#node-input-action").change();
+        }
+    });
+</script>

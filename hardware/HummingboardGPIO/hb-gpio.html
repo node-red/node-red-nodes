@@ -1,0 +1,162 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="hb-gpio in">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'>select pin</option>
+            <option value="7">7 - GPIO 1</option>
+            <option value="11">11 - GPIO 73</option>
+            <option value="12">12 - GPIO 72</option>
+            <option value="13">13 - GPIO 71</option>
+            <option value="15">15 - GPIO 10</option>
+            <option value="16">16 - GPIO 194</option>
+            <option value="18">18 - GPIO 195</option>
+            <option value="22">22 - GPIO 87</option>
+         </select>
+         &nbsp;<span id="pitype"></span>
+    </div>
+    <!-- <div class="form-row">
+        <label for="node-input-intype"><i class="fa fa-level-up"></i> Resistor ?</label>
+        <select type="text" id="node-input-intype" style="width: 150px;">
+        <option value="tri">none</option>
+        <option value="up">pullup</option>
+        <option value="down">pulldown</option>
+        </select>
+    </div> -->
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-read" style="width: 70%;">Read initial state of pin on deploy/restart ?</label>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: Only Digital Input is supported - input must be 0 or 1.</div>
+</script>
+
+<script type="text/x-red" data-help-name="hb-gpio in">
+    <p>Hummingboard GPIO input pin node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>You may also enable the input pullup resitor or the pulldown resistor.</p>
+    <p>The <b>msg.topic</b> is set to <i>pi/{the pin number}</i></p>
+    <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
+    <p><b>Note:</b> requires the gpiohb command to be executeable as root in order to work.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('hb-gpio in',{
+        category: 'Hummingboard',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true,validate:RED.validators.number() },
+            intype: { value: "in" },
+            read: { value:false }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "arrow.png",
+        label: function() {
+            return this.name||"Pin: "+this.pin ;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="hb-gpio out">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'>select pin</option>
+            <option value="7">7 - GPIO 1</option>
+            <option value="11">11 - GPIO 73</option>
+            <option value="12">12 - GPIO 72</option>
+            <option value="13">13 - GPIO 71</option>
+            <option value="15">15 - GPIO 10</option>
+            <option value="16">16 - GPIO 194</option>
+            <option value="18">18 - GPIO 195</option>
+            <option value="22">22 - GPIO 87</option>
+         </select>
+         &nbsp;<span id="pitype"></span>
+    </div>
+    <div class="form-row" id="node-set-tick">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Initialise pin state ?</label>
+    </div>
+    <div class="form-row" id="node-set-state">
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 250px;">
+            <option value="0">initial level of pin - low (0)</option>
+            <option value="1">initial level of pin - high (1)</option>
+        </select>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips" id="dig-tip"><b>Tip</b>: For digital output - input must be 0 or 1.</div>
+    <!-- <div class="form-tips" id="pwm-tip"><b>Tip</b>: For PWM output - input must be between 0 to 1023.</div> -->
+</script>
+
+<script type="text/x-red" data-help-name="hb-gpio out">
+    <p>Hummingboard GPIO output pin node. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
+    <p>Will set the selected physical pin high or low depending on the value passed in.</p>
+    <p>The initial value of the pin at deploy time can also be set to 0 or 1.</p>
+    <p><b>Note:</b> we are using the actual physical pin numbers as they are easier to locate.</p>
+    <p><b>Note:</b> requires the gpiohb command to be executeable as root in order to work.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('hb-gpio out',{
+        category: 'Hummingboard',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true,validate:RED.validators.number() },
+            set: { value:"" },
+            level: { value:"0" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "arrow.png",
+        align: "right",
+        label: function() {
+            return this.name||"Pin: "+this.pin ;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var setstate = function () {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            };
+            $("#node-input-set").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>

@@ -1,0 +1,162 @@
+<!--
+  Copyright 2013,2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rpi-piface in">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
+        <select type="text" id="node-input-pin" style="width: 150px;">
+            <option value='' disabled selected style='display:none;'>select input</option>
+            <option value="Button S1">Button S1</option>
+            <option value="Button S2">Button S2</option>
+            <option value="Button S3">Button S3</option>
+            <option value="Button S4">Button S4</option>
+            <option value="Input 5">Input 5</option>
+            <option value="Input 6">Input 6</option>
+            <option value="Input 7">Input 7</option>
+            <option value="Input 8">Input 8</option>
+            <option value="Output0">Output 0</option>
+            <option value="Output1">Output 1</option>
+            <option value="Output2">Output 2</option>
+            <option value="Output3">Output 3</option>
+            <option value="Output4">Output 4</option>
+            <option value="Output5">Output 5</option>
+            <option value="Output6">Output 6</option>
+            <option value="Output7">Output 7</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-intype"><i class="fa fa-level-up"></i> Resistor ?</label>
+        <select type="text" id="node-input-intype" style="width: 150px;">
+        <option value="up">pullup</option>
+        <option value="tri">none</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-read" style="width: 70%;">Read initial state of pin on deploy/restart ?</label>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: Only Digital I/O is supported - input must be 0 or 1.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-piface in">
+    <p>Raspberry Pi PiFace input node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>You may also enable the input pullup resistor if required.</p>
+    <p>The <b>msg.topic</b> is set to <i>piface/{the pin number}</i></p>
+    <p>Requires the WiringPi gpio command in order to work.</p>
+    <p><b>Note:</b> This node currently polls the pin every 250mS. This is not ideal as it loads the cpu.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-piface in',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true},
+            intype: { value: "up" },
+            read: { value:false }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rpi.png",
+        label: function() {
+            return this.name||"PiFace: "+this.pin;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="rpi-piface out">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
+        <select type="text" id="node-input-pin" style="width: 150px;">
+            <option value='' disabled selected style='display:none;'>select output</option>
+            <option value="LED 0 / Relay 0">LED 0 / Relay 0</option>
+            <option value="LED 1 / Relay 1">LED 1 / Relay 1</option>
+            <option value="LED 2">LED 2</option>
+            <option value="LED 3">LED 3</option>
+            <option value="LED 4">LED 4</option>
+            <option value="LED 5">LED 5</option>
+            <option value="LED 6">LED 6</option>
+            <option value="LED 7">LED 7</option>
+         </select>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Initialise output state ?</label>
+    </div>
+    <div class="form-row" id="node-set-state">
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 300px;">
+            <option value="0">initial level of output - off - low - 0</option>
+            <option value="1">initial level of output - on - high - 1</option>
+        </select>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: Only Digital I/O is supported - input must be 0 or 1.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-piface out">
+    <p>Raspberry Pi PiFace output node. The PiFace board must be fitted.</p>
+    <p>Will set the selected relay, LED, or pin on or off depending on the value passed in. Expects a <b>msg.payload</b> with either a 1 or 0 (or true or false).</p>
+    <p>Requires the WiringPi gpio command in order to work.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-piface out',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true},
+            set: { value:false },
+            level: { value:"0" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||"PiFace: "+this.pin;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-input-set").change(function() {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            });
+        }
+    });
+</script>

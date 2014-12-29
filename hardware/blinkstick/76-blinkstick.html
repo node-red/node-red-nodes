@@ -1,0 +1,189 @@
+<!--
+  Copyright 2013-2014 Agile Innovative Ltd.
+  Based on code written by Dave Conway-Jones, IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="blinkstick">
+    <div class="form-row">
+        <div class="form-row" id="node-input-row-payload">
+            <label for="node-input-serial">Serial</label>
+            <input type="text" id="node-input-serial" placeholder="defaults to first found" style="width:60%">
+            <a id="node-lookup-serial" class="btn"><i id="node-lookup-serial-icon" class="fa fa-search"></i></a>
+        </div>
+        <div class="form-row">
+            <label for="node-input-task"><i class="fa fa-empire"></i> Task</label>
+            <select id="node-input-task" style="width:125px !important">
+                <option value="set_color">Set Color</option>
+                <option value="blink">Blink</option>
+                <option value="morph">Morph</option>
+                <option value="pulse">Pulse</option>
+            </select>
+        </div>
+
+        <div id="delay-details" class="form-row">
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <input type="text" id="node-input-delay" placeholder="Delay" style="direction:rtl; width:50px !important">
+            milliseconds
+        </div>
+        <div id="repeats-details" class="form-row">
+            <label for="node-input-repeats"><i class="fa fa-history"></i> Repeats</label>
+            <input type="text" id="node-input-repeats" placeholder="Times" style="direction:rtl; width:50px !important">
+        </div>
+
+        <div id="duration-details" class="form-row">
+            <label for="node-input-duration"><i class="fa fa-clock-o"></i> Duration</label>
+            <input type="text" id="node-input-duration" placeholder="Duration" style="direction:rtl; width:50px !important">
+            milliseconds
+        </div>
+        <div id="steps-details" class="form-row">
+            <label for="node-input-steps"><i class="fa fa-history"></i> Steps</label>
+            <input type="text" id="node-input-steps" placeholder="Steps" style="direction:rtl; width:50px !important">
+        </div>
+        <div id="repeat-details" class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-repeat" style="display: inline-block; width: auto; vertical-align: top;">
+            <label for="node-input-repeat" style="width: 70%;">Repeat &infin; until next payload received?</label>
+        </div>
+
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Expects a msg.payload with either hex "#rrggbb" or decimal "red,green,blue" string, or HTML color name.</div>
+</script>
+
+<script type="text/x-red" data-help-name="blinkstick">
+    <p><i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <b>msg.payload</b> with one of:</p>
+    <ul>
+        <li>A hex string <b>"#rrggbb"</b> triple</li>
+        <li><b>"red,green,blue"</b> three 0-255 values as a string</li>
+        <li><b>"random"</b> will generate a random color</li>
+        <li><i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">Standard HTML color</a></i> name</li>
+        <li><b>object</b> can override any of the parameters</li>
+    </ul>
+    <p>An object payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
+<pre>
+{ 'color': 'blue' }
+{ 'task': 'blink', 'color': 'red' }
+{ 'task': 'pulse', 'color': 'gree', 'duration': 500 }
+{ 'task': 'morph', 'color': 'orange', 'duration': 500, 'steps': 20 }
+</pre>
+    <p>For more info see <i><a href="http://www.blinkstick.com/help/tutorials" target="_new">BlinkStick tutorials</a></i>
+        or the <i><a href="https://github.com/arvydas/blinkstick-node" target="_new">node module</a></i> documentation.</p>
+</script>
+
+<script type="text/javascript">
+    function updateView(task) {
+        if (task == "set_color") {
+          $("#delay-details").hide();
+          $("#repeats-details").hide();
+          $("#duration-details").hide();
+          $("#steps-details").hide();
+          $("#repeat-details").hide();
+        } else if (task == "blink") {
+          $("#delay-details").show();
+          $("#repeats-details").show();
+          $("#duration-details").hide();
+          $("#steps-details").hide();
+          $("#repeat-details").show();
+        } else if (task == "morph") {
+          $("#delay-details").hide();
+          $("#repeats-details").hide();
+          $("#duration-details").show();
+          $("#steps-details").show();
+          $("#repeat-details").hide();
+        } else if (task == "pulse") {
+          $("#delay-details").hide();
+          $("#repeats-details").hide();
+          $("#duration-details").show();
+          $("#steps-details").show();
+          $("#repeat-details").show();
+        }
+    }
+
+    RED.nodes.registerType('blinkstick',{
+        category: 'output',
+        color:"GoldenRod",
+        defaults: {             // defines the default editable properties of the node
+            name: {value:""},   //  along with default values.
+            serial: {value:""},
+            task: {value:"set_color", validate:function(v) {return ((v === undefined)||v=="set_color"||v=="blink"||v=="morph"||v=="pulse"); }},
+            delay: {value:"500", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
+            repeats: {value:"1", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
+            duration: {value:"1000", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
+            steps: {value:"50", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
+            repeat: {value:false}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "light.png",
+        align: "right",
+        label: function() {
+            return this.name||"blinkstick";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+          if (!$("#node-input-task").val()) {
+              $("#node-input-task").val("set_color");
+          }
+
+          if (!$("#node-input-delay").val()) {
+              $("#node-input-delay").val(500);
+          }
+
+          if (!$("#node-input-repeats").val()) {
+              $("#node-input-repeats").val(1);
+          }
+
+          if (!$("#node-input-duration").val()) {
+              $("#node-input-duration").val(1000);
+          }
+
+          if (!$("#node-input-steps").val()) {
+              $("#node-input-steps").val(50);
+          }
+
+          $( "#node-input-repeats" ).spinner({min:1,max:100});
+          $( "#node-input-delay" ).spinner({min:10,max:5000});
+          $( "#node-input-duration" ).spinner({min:10,max:5000});
+          $( "#node-input-steps" ).spinner({min:10,max:255});
+
+          $("#node-input-task").on("change",function() {
+              updateView(this.value);
+          });
+
+          updateView(this.task);
+
+          $("#node-lookup-serial").click(function() {
+                $("#node-lookup-serial").addClass('disabled');
+                $.getJSON('blinksticklist',function(data) {
+                    $("#node-lookup-serial").removeClass('disabled');
+                    var sticks = [];
+                    $.each(data, function(i, stick){
+                        sticks.push(stick);
+                    });
+                    $("#node-input-serial").autocomplete({
+                        source:sticks,
+                        minLength:0,
+                        close: function( event, ui ) {
+                            $("#node-input-serial").autocomplete( "destroy" );
+                        }
+                    }).autocomplete("search","");
+                });
+            });
+        }
+    });
+</script>

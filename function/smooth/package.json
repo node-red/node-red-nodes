@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-smooth",
+    "version"       : "0.0.2",
+    "description"   : "A Node-RED node that provides several simple smoothing algorithms for incoming data values.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/smooth"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "smooth", "average" ],
+    "node-red"      : {
+        "nodes"     : {
+            "smooth": "17-smooth.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

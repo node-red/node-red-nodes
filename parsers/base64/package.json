@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-base64",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to pack and unpack objects to base64 format",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "path": "/tree/master/parsers/base64"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "base64" ],
+    "node-red"      : {
+        "nodes"     : {
+            "base64": "70-base64.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "name"          : "node-red-node-blinkstick",
+    "version"       : "0.1.1",
+    "description"   : "A Node-RED node to control a Blinkstick",
+    "dependencies"  : {
+        "blinkstick"   : "1.1.*"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/blinkstick"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "blinkstick" ],
+    "node-red"      : {
+        "nodes"     : {
+            "blinkstick": "76-blinkstick.js"
+        }
+    },
+    "author": {
+        "name": "Arvydas Juskevicius",
+        "email": "arvydas@agileinnovative.co.uk",
+        "url": "http://www.blinkstick.com"
+    },
+    "contributors": [
+        {
+            "name": "Dave Conway-Jones",
+            "email": "ceejay@vnet.ibm.com",
+            "url": "http://nodered.org"
+        }
+    ]
+}

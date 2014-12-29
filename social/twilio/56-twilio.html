@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 Andrew D Lindsay @AndrewDLindsay
+  Copyright 2014 Andrew D Lindsay @AndrewDLindsay
   http://blog.thiseldo.co.uk
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,30 +17,48 @@
 
 <script type="text/x-red" data-template-name="twilio out">
     <div class="form-row" id="node-input-credentials-row">
-        <label for="node-input-creds"><i class="icon-folder-close"></i> Credentials</label>
+        <label for="node-input-creds"><i class="fa fa-folder-o"></i> Credentials</label>
         <select id="node-input-creds">
             <option value="global">Use global credentials</option>
             <option value="local">Use local credentials</option>
         </select>
     </div>
     <div class="form-row" id="node-input-twilio-row">
-        <label for="node-input-twilio"><i class="icon-user"></i> Twilio</label>
+        <label for="node-input-twilio"><i class="fa fa-user"></i> Twilio</label>
         <input type="text" id="node-input-twilio">
     </div>
+    <div class="form-row node-input-twiliotype-row">
+        <label for="node-input-twilioType"><i class="fa fa-list-ul"></i> Output</label>
+        <select id="node-input-twilioType" style="width:125px !important">
+          <option value="sms">SMS</option>
+          <option value="call">Call</option>
+        </select>
+    </div>
+
     <div class="form-row">
-        <label for="node-input-number"><i class="icon-envelope"></i> SMS to</label>
+    <label for="node-input-number">
+            <i class="fa fa-envelope-o" id="node-input-number-icon-sms"></i>
+            <i class="fa fa-phone hidden" id="node-input-number-icon-call"></i>
+            To</label>
         <input type="text" id="node-input-number" placeholder="01234 5678901">
     </div>
+    <div class="form-row hidden" id="node-input-twiliourl-row">
+        <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+        <input type="text" id="node-input-url" placeholder="http://someurl.com/twiml.xml" >
+    </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="twilio out">
-    <p>Sends an SMS message using the Twilio service.</p>
-    <p><code>msg.payload</code> is used as the body of the message. The node can be configured with the number
-    to send the message to. Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>.</p>
+    <p>Sends an SMS message or makes a call using the Twilio service.</p>
+    <p><code>msg.payload</code> can either contain the text of the SMS message,
+    <i>or</i> the URL of the <a href="https://www.twilio.com/docs/api/twiml" target = "_new">TWiML</a> used to create the call.
+    The node can be configured with the number to send the message to.
+    Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>.
+    If the node is configured to make a call then the TWiML URL must be publically accessible.
     <p>You must have an account with Twilio to use this node. You can register for one <a href="https://www.twilio.com/">here</a>.</p>
     <p>You can either set your account details within the node, or provide it globally using either the settings file or a file
     called 'twiliokey.js' located in the directory above node-red.</p>
@@ -56,30 +74,26 @@
         <input type="text" id="node-config-input-sid">
     </div>
     <div class="form-row">
-        <label for="node-config-input-from"><i class="icon-envelope"></i> From</label>
+        <label for="node-config-input-from"><i class="fa fa-envelope"></i> From</label>
         <input type="text" id="node-config-input-from" placeholder="01234 5678901">
     </div>
     <div class="form-row">
-        <label for="node-config-input-token"><i class="icon-lock"></i> Token</label>
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> Token</label>
         <input type="password" id="node-config-input-token">
     </div>
     <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
 </script>
 
 <script type="text/javascript">
-
-
     (function() {
-    
         var hasGlobal = false;
         $.getJSON('twilio-api/global',function(data) {
             hasGlobal = data.hasToken;
         });
-        
-    
+
         RED.nodes.registerType('twilio-api',{
             category: 'config',
             defaults: {
@@ -98,7 +112,7 @@
                     } else {
                         $('#node-config-input-token').val('');
                     }
-    
+
                 });
             },
             oneditsave: function() {
@@ -122,13 +136,15 @@
                 });
             }
         });
-        
+
         RED.nodes.registerType('twilio out',{
             category: 'output',
             defaults: {
                 twilio:{type:"twilio-api",validate:function(v) {
                     return hasGlobal || (v && v!="_ADD_");
                 }},
+                twilioType: {value:"sms"},
+                url: {value:""},
                 number: {value:""},
                 name: {value:""}
             },
@@ -163,8 +179,30 @@
                 } else {
                     $("#node-input-credentials-row").hide();
                 }
+
+                if (this.twilioType == null) {
+                    if (this.url == "") {
+                        this.twilioType = "call";
+                    } else {
+                        this.twilioType = "sms";
+                    }
+                }
+
+                $("#node-input-twilioType").change(function() {
+                    var twilioType = $("#node-input-twilioType option:selected").val();
+                    if (twilioType == "call") {
+                        $("#node-input-twiliourl-row").show();
+                        $("#node-input-number-icon-call").show();
+                        $("#node-input-number-icon-sms").hide();
+                    } else {
+                        $("#node-input-twiliourl-row").hide();
+                        $("#node-input-number-icon-call").hide();
+                        $("#node-input-number-icon-sms").show();
+                    }
+                });
+                $("#node-input-twilioType").val(this.twilioType);
+                $("#node-input-twilioType").change();
             }
         });
     })();
-
 </script>

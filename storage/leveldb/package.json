@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-leveldb",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to read and write to a LevelDB database",
+    "dependencies"  : {
+        "level"   : "0.18.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/storage/leveldb"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "leveldb" ],
+    "node-red"      : {
+        "nodes"     : {
+            "leveldb": "67-leveldb.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-xmpp",
+    "version"       : "0.0.2",
+    "description"   : "A Node-RED node to talk to an XMPP server",
+    "dependencies"  : {
+        "simple-xmpp"   : "0.1.19"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/xmpp"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "xmpp" ],
+    "node-red"      : {
+        "nodes"     : {
+            "xmpp": "92-xmpp.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

@@ -16,24 +16,28 @@
 
 <script type="text/x-red" data-template-name="MySQLdatabase">
     <div class="form-row">
-        <label for="node-config-input-host"><i class="icon-briefcase"></i> Host</label>
+        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-config-input-host" placeholder="localhost">
     </div>
     <div class="form-row">
-        <label for="node-config-input-port"><i class="icon-briefcase"></i> Port</label>
+        <label for="node-config-input-port"><i class="fa fa-random"></i> Port</label>
         <input type="text" id="node-config-input-port" placeholder="3306">
     </div>
         <div class="form-row">
-        <label for="node-config-input-user"><i class="icon-briefcase"></i> User</label>
+        <label for="node-config-input-user"><i class="fa fa-user"></i> User</label>
         <input type="text" id="node-config-input-user" placeholder="JoeDemo">
     </div>
         <div class="form-row">
-        <label for="node-config-input-pass"><i class="icon-briefcase"></i> Password</label>
+        <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-pass" placeholder="mySecret">
     </div>
     <div class="form-row">
-        <label for="node-config-input-db"><i class="icon-briefcase"></i> Database</label>
+        <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-config-input-db" placeholder="myDatabase">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-tz"><i class="fa fa-clock-o"></i> Timezone</label>
+        <input type="text" id="node-config-input-tz" placeholder="local">
     </div>
 </script>
 
@@ -45,7 +49,8 @@
             port: {value:"3306",required:true},
             //user: {value:"",required:true},
             //pass: {value:"",required:true},
-            db: {value:"",required:true}
+            db: {value:"",required:true},
+            tz: {value:""}
         },
         label: function() {
             return this.db;
@@ -60,7 +65,7 @@
                 } else {
                     $('#node-config-input-pass').val('');
                 }
-                
+
             });
         },
         oneditsave: function() {
@@ -85,18 +90,18 @@
                 success: function(result) {}
             });
         }
-        
+
     });
 </script>
 
 
 <script type="text/x-red" data-template-name="mysql">
     <div class="form-row">
-        <label for="node-input-mydb"><i class="icon-briefcase"></i> Database</label>
+        <label for="node-input-mydb"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-input-mydb">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>

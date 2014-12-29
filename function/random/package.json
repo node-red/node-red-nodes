@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-random",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that that when triggered generates a random number between two values.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/function/random"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "random" ],
+    "node-red"      : {
+        "nodes"     : {
+            "random": "random.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

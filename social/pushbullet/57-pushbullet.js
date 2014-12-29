@@ -14,53 +14,112 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME+"/red/red");
-var PushBullet = require('pushbullet');
-var util = require('util');
+module.exports = function(RED) {
+    "use strict";
+    var PushBullet = require('pushbullet');
+    var util = require('util');
 
-// Either add a line like this to settings.js
-//    pushbullet: {pushbullet:'My-API-KEY', deviceid:'12345'},
-// or create pushkey.js in dir ABOVE node-red, it just needs to be like
-//    module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
+    // Either create pushkey.js in dir ABOVE node-red, it just needs to be like
+    // module.exports = {pushbullet:'My-API-KEY', deviceid:'12345'}
+    // or set them per node in the edit dialog
 
-try {
-    var pushkey = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
-}
-catch(err) {
-    util.log("[57-pushbullet.js] Error: Failed to load PushBullet credentials");
-}
+    try {
+        var pushkeys = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
+    }
+    catch(err) {
+        //util.log("[57-pushbullet.js] Warning: Failed to load global PushBullet credentials");
+    }
 
-if (pushkey) {
-    if (pushkey.pushbullet) { var pusher = new PushBullet(pushkey.pushbullet); }
-    if (pushkey.deviceid) { var deviceId = pushkey.deviceid; }
-}
-
-function PushbulletNode(n) {
-    RED.nodes.createNode(this,n);
-    this.title = n.title;
-    var node = this;
-    this.on("input",function(msg) {
-        var titl = this.title||msg.topic||"Node-RED";
-        if (typeof(msg.payload) === 'object') {
-            msg.payload = JSON.stringify(msg.payload);
+    function PushbulletNode(n) {
+        RED.nodes.createNode(this,n);
+        this.title = n.title;
+        this.chan = n.chan;
+        var credentials = RED.nodes.getCredentials(n.id);
+        if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
+        else {
+            if (pushkeys) { this.pushkey = pushkeys.pushbullet; }
+            else { this.error("No Pushbullet API key set"); }
         }
-        else { msg.payload = msg.payload.toString(); }
-        if (pushkey.pushbullet && pushkey.deviceid) {
-            try {
-                if (!isNaN(deviceId)) { deviceId = Number(deviceId); }
-                pusher.note(deviceId, titl, msg.payload, function(err, response) {
-                    if (err) node.error("Pushbullet error: "+err);
-                    //console.log(response);
-                });
+        if ((credentials) && (credentials.hasOwnProperty("deviceid"))) { this.deviceid = credentials.deviceid; }
+        else {
+            if (pushkeys) { this.deviceid = pushkeys.deviceid; }
+            else { this.warn("No deviceid set"); }
+        }
+        this.pusher = new PushBullet(this.pushkey);
+        var node = this;
+
+        this.on("input",function(msg) {
+            var titl = node.title || msg.topic || "Node-RED";
+            var dev = node.deviceid || msg.deviceid;
+            var channel = node.chan || msg.chan;
+            if (channel != undefined) {
+                dev = { channel_tag : channel };
+            } else {
+                if (!isNaN(dev)) { dev = Number(dev); }
             }
-            catch (err) {
-                node.error(err);
+            if (typeof(msg.payload) === 'object') {
+                msg.payload = JSON.stringify(msg.payload);
             }
+            else { msg.payload = msg.payload.toString(); }
+            if (node.pushkey && dev) {
+                try {
+                    node.pusher.note(dev, titl, msg.payload, function(err, response) {
+                        if (err) { node.error("Pushbullet error"); }
+                    });
+                }
+                catch (err) {
+                    node.error(err);
+                }
+            }
+            else {
+                node.warn("Pushbullet credentials not set/found. See node info.");
+            }
+        });
+    }
+    RED.nodes.registerType("pushbullet",PushbulletNode);
+
+    var querystring = require('querystring');
+
+    RED.httpAdmin.get('/pushbullet/:id',function(req,res) {
+        var credentials = RED.nodes.getCredentials(req.params.id);
+        if (credentials) {
+            res.send(JSON.stringify({deviceid:credentials.deviceid,hasPassword:(credentials.pushkey&&credentials.pushkey!=="")}));
+        }
+        else if (pushkeys && pushkeys.pushbullet && pushkeys.deviceid) {
+            RED.nodes.addCredentials(req.params.id,{pushkey:pushkeys.pushbullet,deviceid:pushkeys.deviceid,global:true});
+            credentials = RED.nodes.getCredentials(req.params.id);
+            res.send(JSON.stringify({deviceid:credentials.deviceid,global:credentials.global,hasPassword:(credentials.pushkey&&credentials.pushkey!=="")}));
         }
         else {
-            node.warn("Pushbullet credentials not set/found. See node info.");
+            res.send(JSON.stringify({}));
         }
     });
-}
 
-RED.nodes.registerType("pushbullet",PushbulletNode);
+    RED.httpAdmin.delete('/pushbullet/:id',function(req,res) {
+        RED.nodes.deleteCredentials(req.params.id);
+        res.send(200);
+    });
+
+    RED.httpAdmin.post('/pushbullet/:id',function(req,res) {
+        var body = "";
+        req.on('data', function(chunk) {
+            body+=chunk;
+        });
+        req.on('end', function(){
+            var newCreds = querystring.parse(body);
+            var credentials = RED.nodes.getCredentials(req.params.id)||{};
+            if (newCreds.deviceid === null || newCreds.deviceid === "") {
+                delete credentials.deviceid;
+            } else {
+                credentials.deviceid = newCreds.deviceid;
+            }
+            if (newCreds.pushkey === "") {
+                delete credentials.pushkey;
+            } else {
+                credentials.pushkey = newCreds.pushkey||credentials.pushkey;
+            }
+            RED.nodes.addCredentials(req.params.id,credentials);
+            res.send(200);
+        });
+    });
+}

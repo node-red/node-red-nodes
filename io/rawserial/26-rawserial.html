@@ -16,17 +16,43 @@
 
 <script type="text/x-red" data-template-name="rawserial in">
     <div class="form-row">
-        <label for="node-input-port"><i class="icon-random"></i> Port</label>
+        <label for="node-input-port"><i class="fa fa-random"></i> Port</label>
         <input type="text" id="node-input-port" placeholder="COM1">
     </div>
     <div class="form-row">
-        <label for="node-input-split"><i class="icon-edit"></i> Split on</label>
-        <input type="text" id="node-input-split" placeholder="\n">
+        <label for="node-input-out"><i class="fa fa-cut"></i> split input</label>
+        <select type="text" id="node-input-out" style="width:52%;">
+            <option value="char">when character received is</option>
+            <option value="time">after a fixed timeout of</option>
+        </select>
+        <input type="text" id="node-input-splitc"  style="width:50px;">
+        <span id="node-units"></span>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-bin"><i class="fa fa-sign-in"></i> and deliver</label>
+        <select type="text" id="node-input-bin" style="width: 77%;">
+            <option value="false">ascii strings</option>
+            <option value="true">binary buffers</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <script>
+        var previous = null;
+        $("#node-input-out").on('focus', function () { previous = this.value; }).change(function() {
+            if (previous == null) { previous = $("#node-input-out").val(); }
+            if ($("#node-input-out").val() == "char") {
+                if (previous != "char") { $("#node-input-splitc").val("\\n"); }
+                $("#node-units").text("");
+            }
+            else {
+                if (previous != "time") { $("#node-input-splitc").val("0"); }
+                $("#node-units").text("ms");
+            }
+        });
+    </script>
 </script>
 
 <script type="text/x-red" data-help-name="rawserial in">
@@ -44,7 +70,9 @@
         color:"BurlyWood",
         defaults: {
             name: {value:""},
-            split: {value:""},
+            splitc: {value:"\n"},
+            out: {value:"char"},
+            bin: {value:"false"},
             port: {value:"", required:true}
         },
         inputs:0,
@@ -61,11 +89,11 @@
 
 <script type="text/x-red" data-template-name="rawserial out">
     <div class="form-row">
-        <label for="node-input-port"><i class="icon-random"></i> Port</label>
+        <label for="node-input-port"><i class="fa fa-random"></i> Port</label>
         <input type="text" id="node-input-port" placeholder="COM1">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>

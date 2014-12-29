@@ -1,0 +1,153 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rpi-pibrella in">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Input</label>
+        <select type="text" id="node-input-pin" style="width: 150px;">
+            <option value='' disabled selected style='display:none;'>select input</option>
+            <option value="Red Button">Red Button</option>
+            <option value="In A">In A</option>
+            <option value="In B">In B</option>
+            <option value="In C">In C</option>
+            <option value="In D">In D</option>
+         </select>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-read" style="width: 70%;">Read initial state of pin on deploy/restart ?</label>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-pibrella in">
+    <p>Raspberry Pi Pibrella input node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>The <b>msg.topic</b> is set to <i>pibrella/{the pin id}</i>, A, B, C, D or R</p>
+    <p><b>Note:</b> This node currently polls the pin every 250mS. This is not ideal as it loads the cpu.</p>
+    <p>Requires the WiringPi gpio command in order to work.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-pibrella in',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) },
+            read: { value:false }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rpi.png",
+        label: function() {
+            return this.name||this.pin||"Pibrella";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="rpi-pibrella out">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Output</label>
+        <select type="text" id="node-input-pin" style="width: 150px;">
+            <option value='' disabled selected style='display:none;'>select output</option>
+            <option value="Red LED">Red LED</option>
+            <option value="Amber LED">Amber LED</option>
+            <option value="Green LED">Green LED</option>
+            <option value="Out E">Out E</option>
+            <option value="Out F">Out F</option>
+            <option value="Out G">Out G</option>
+            <option value="Out H">Out H</option>
+            <option value="Buzzer ">Buzzer</option>
+         </select>
+    </div>
+    <div class="form-row" id="node-set-check">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Initialise output state ?</label>
+    </div>
+    <div class="form-row" id="node-set-state" hidden>
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 300px;">
+            <option value="0">initial level of output - off - low - 0</option>
+            <option value="1">initial level of output - on - high - 1</option>
+        </select>
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips" id="node-buzz-tip">Buzzer takes <b>msg.payload</b> between 2 (high) and 512 (low), or 0 for off.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-pibrella out">
+    <p>Raspberry Pi Pibrella output node. The Pibrella board must be fitted.</p>
+    <p>Will set the selected output high (on) or low (off) depending on the value passed in. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
+    <p>The Buzzer is a divider so low numbers are high notes. 0 is off, and the sensible lowest note is around 250-300. 2 is the highest note. 1 is just a buzz (so you can use 0/1 type inputs).</p>
+    <p><b>Note:</b> Using the buzzer is known to "kill" audio output via the 3.5mm socket.</p>
+    <p>Requires the WiringPi gpio command in order to work.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-pibrella out',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pin: { value:"",required:true,validate:RED.validators.regex(/ /) },
+            set: { value:false },
+            level: { value:"0" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||this.pin||"Pibrella";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-input-set").change(function() {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            });
+            $("#node-input-pin").change(function() {
+                if ($('#node-input-pin').val() !== "Buzzer ") {
+                    $("#node-set-check").show();
+                    $("#node-buzz-tip").hide();
+                } else {
+                    $("#node-set-check").hide();
+                    $("#node-buzz-tip").show();
+                }
+                $("#node-input-set").change();
+            });
+        }
+    });
+</script>

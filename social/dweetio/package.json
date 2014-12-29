@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-dweetio",
+    "version"       : "0.0.5",
+    "description"   : "A Node-RED node to send and receive simple dweets",
+    "dependencies"  : {
+        "node-dweetio"   : "0.0.11"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/dweetio"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "dweetio" ],
+    "node-red"      : {
+        "nodes"     : {
+            "dweetio": "55-dweetio.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

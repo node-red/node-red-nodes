@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-blink1",
+    "version"       : "0.0.2",
+    "description"   : "A Node-RED node to control a Thingm Blink(1)",
+    "dependencies"  : {
+        "node-blink1"   : "0.1.2"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/blink1"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "blink1" ],
+    "node-red"      : {
+        "nodes"     : {
+            "blink1": "77-blink1.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

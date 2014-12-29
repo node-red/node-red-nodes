@@ -1,0 +1,66 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="random">
+    <div class="form-row">
+        <label for="node-input-inte"><i class="fa fa-random"></i> Generate</label>
+        <select type="text" id="node-input-inte" style="width: 300px;">
+            <option value="true">a whole number - integer</option>
+            <option value="false">a real number - floating point</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-low"><i class="fa fa-arrow-down"></i> From</label>
+        <input type="text" id="node-input-low" placeholder="lowest number"  style="width: 300px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-high"><i class="fa fa-arrow-up"></i> To</label>
+        <input type="text" id="node-input-high" placeholder="highest number"  style="width: 300px;">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 300px;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="random">
+    <p>Generates a random number between a low and high value.</p>
+    <p>If you return an integer it can <i>include</i> both the low and high values.</p>
+    <p>If you return a floating point value it will be <i>between</i> the low and high values.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('random',{
+        category: 'function',
+        color:"#E2D96E",
+        defaults: {
+            name: {value:""},
+            low: {value:"1"},
+            high: {value:"6"},
+            inte: {value:"true"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "debug.png",
+        label: function() {
+            return this.name||"random";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

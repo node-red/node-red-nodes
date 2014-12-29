@@ -1,0 +1,77 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="sqlitedb">
+    <div class="form-row">
+        <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-config-input-db" placeholder="/tmp/sqlite">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('sqlitedb',{
+        category: 'config',
+        defaults: {
+            db: {value:"",required:true}
+        },
+        label: function() {
+            return this.db;
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="sqlite">
+    <div class="form-row">
+        <label for="node-input-mydb"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-mydb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sqlite">
+    <p>Allows basic access to a Sqlite database.</p>
+    <p>This node uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
+    By it's very nature it is SQL injection... so <i>be careful out there...</i></p>
+    <p><b>msg.topic</b> must hold the <i>query</i> for the database, and the result is returned in <b>msg.payload</b>.</p>
+    <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
+    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
+    <pre>sqliteReconnectTime: 20000,</pre></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('sqlite',{
+        category: 'storage-input',
+        color:"#e97b00",
+        defaults: {
+            mydb: {type:"sqlitedb",required:true},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "sqlite.png",
+        label: function() {
+            var dbNode = RED.nodes.node(this.mydb);
+            return this.name||(dbNode?dbNode.label():"sqlite");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

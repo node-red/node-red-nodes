@@ -17,7 +17,7 @@
 <!-- Edit dialog for bbb-analogue-in -->
 <script type="text/x-red" data-template-name="bbb-analogue-in">
    <div class="form-row">
-       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <label for="node-input-pin"><i class="fa fa-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 150px;">
            <option value="">select pin</option>
            <option value="P9_39">AIN0 (P9 pin 39)</option>
@@ -30,7 +30,7 @@
        </select>
    </div>
     <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
@@ -43,13 +43,13 @@
         </div>
     </div>
     <div class="form-row">
-        <a href="#" class="btn btn-mini" id="node-input-add-breakpoint" style="margin-top: 4px;"><i class="icon-plus"></i> Add Breakpoint</a>
+        <a href="#" class="btn btn-mini" id="node-input-add-breakpoint" style="margin-top: 4px;"><i class="fa fa-plus"></i> Add Breakpoint</a>
         <span style="float:right; margin-top:4px">
             <input type="checkbox" id="node-input-averaging" style="display:inline-block; width:auto; vertical-align:top;"> Averaging&nbsp;
-        </span> 
+        </span>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -78,7 +78,7 @@ voltage ten times in rapid succession for each input message and output the mean
 <!-- Register bbb-analogue-in node -->
 <script type="text/javascript">
     RED.nodes.registerType('bbb-analogue-in', {
-        category: 'advanced-input', // the palette category
+        category: 'Beaglebone', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
@@ -124,11 +124,11 @@ voltage ten times in rapid succession for each input message and output the mean
                             });
                     } else {
                         mutableFlag.attr("mutable", "false");
-                    }                   
+                    }
                     if (insert === true) {
                         var last = $("#node-input-breakpoint-container").children().last();
                         var prev = last.prev();
-                        inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) + 
+                        inputValueField.val((Number(last.find(".node-input-breakpoint-input-value").val()) +
                                                 Number(prev.find(".node-input-breakpoint-input-value").val()))/2);
                         outputValueField.val((Number(last.find(".node-input-breakpoint-output-value").val()) +
                                                 Number(prev.find(".node-input-breakpoint-output-value").val()))/2);
@@ -139,17 +139,17 @@ voltage ten times in rapid succession for each input message and output the mean
                         $("#node-input-breakpoint-container").append(container);
                     }
                 }
-                
+
                 $("#node-input-add-breakpoint").click(function () {
                         generateBreakpoint({input:0, output:0, mutable:true}, true);
                         $("#node-input-breakpoint-container-div").scrollTop($("#node-input-breakpoint-container-div").get(0).scrollHeight);
                     });
-                    
+
                 for (var i = 0; i < this.breakpoints.length; i++) {
                     var breakpoint = this.breakpoints[i];
                     generateBreakpoint(breakpoint, false);
                 }
-                
+
                 // Handle resizing the Input Scaling div when the dialog is resized - this isn't quite right!
                 function switchDialogResize(ev, ui) {
                     $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 299) + "px");
@@ -186,7 +186,7 @@ voltage ten times in rapid succession for each input message and output the mean
 <!-- Edit dialog for bbb-discrete-in -->
 <script type="text/x-red" data-template-name="bbb-discrete-in">
    <div class="form-row">
-       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <label for="node-input-pin"><i class="fa fa-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
            <option value="">select pin</option>
            <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
@@ -239,16 +239,16 @@ voltage ten times in rapid succession for each input message and output the mean
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
+        <label for="node-input-updateInterval"><i class="fa fa-repeat"></i> Update at</label>
         <input id="node-input-updateInterval" type="text" style="width: 65px">
         <label>sec intervals</label>
     </div>
     <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -279,7 +279,7 @@ press. When using buttons or switches, enable debouncing to improve reliability.
 <!-- Register bbb-discrete-in node -->
 <script type="text/javascript">
     RED.nodes.registerType('bbb-discrete-in', {
-        category: 'advanced-input', // the palette category
+        category: 'Beaglebone', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
@@ -305,7 +305,7 @@ press. When using buttons or switches, enable debouncing to improve reliability.
 <!-- Edit dialog for bbb-pulse-in -->
 <script type="text/x-red" data-template-name="bbb-pulse-in">
    <div class="form-row">
-       <label for="node-input-pin"><i class="icon-asterisk"></i>Input pin</label>
+       <label for="node-input-pin"><i class="fa fa-asterisk"></i>Input pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
            <option value="">select pin</option>
            <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
@@ -359,16 +359,16 @@ press. When using buttons or switches, enable debouncing to improve reliability.
         <label style="width: 60%"> units per count/second</label>
     </div>
     <div class="form-row">
-        <label for="node-input-updateInterval"><i class="icon-repeat"></i> Update at</label>
+        <label for="node-input-updateInterval"><i class="fa fa-repeat"></i> Update at</label>
         <input id="node-input-updateInterval" type="text" style="width: 65px">
         <label>sec intervals</label>
     </div>
     <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -390,7 +390,7 @@ any other input message will reset it to zero.
 <!-- Register bbb-pulse-in node -->
 <script type="text/javascript">
     RED.nodes.registerType('bbb-pulse-in', {
-        category: 'advanced-input', // the palette category
+        category: 'Beaglebone', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
@@ -416,7 +416,7 @@ any other input message will reset it to zero.
 <!-- Edit dialog for bbb-discrete-out -->
 <script type="text/x-red" data-template-name="bbb-discrete-out">
    <div class="form-row">
-       <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
+       <label for="node-input-pin"><i class="fa fa-asterisk"></i>Output pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
            <option value="">select pin</option>
            <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
@@ -472,7 +472,7 @@ any other input message will reset it to zero.
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -501,7 +501,7 @@ the Inverting property is not applied to this value.
 <!-- Register bbb-discrete-out node -->
 <script type="text/javascript">
     RED.nodes.registerType('bbb-discrete-out', {
-        category: 'advanced-input', // the palette category
+        category: 'Beaglebone', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
@@ -526,7 +526,7 @@ the Inverting property is not applied to this value.
 <!-- Edit dialog for bbb-pulse-out -->
 <script type="text/x-red" data-template-name="bbb-pulse-out">
    <div class="form-row">
-       <label for="node-input-pin"><i class="icon-asterisk"></i>Output pin</label>
+       <label for="node-input-pin"><i class="fa fa-asterisk"></i>Output pin</label>
        <select type="text" id="node-input-pin" style="width: 200px;">
            <option value="">select pin</option>
            <option value="P8_7">GPIO2_2 (P8 pin 7)</option>
@@ -567,7 +567,7 @@ the Inverting property is not applied to this value.
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-pulseTime"><i class="icon-repeat"></i> Pulse time</label>
+        <label for="node-input-pulseTime"><i class="fa fa-repeat"></i> Pulse time</label>
         <input id="node-input-pulseTime" type="text" style="width: 65px">
         <label> seconds</label>
     </div>
@@ -583,7 +583,7 @@ the Inverting property is not applied to this value.
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -614,7 +614,7 @@ the pin changes state: its payload is the new state (0 or 1).
 <!-- Register bbb-pulse-out node -->
 <script type="text/javascript">
     RED.nodes.registerType('bbb-pulse-out', {
-        category: 'advanced-input', // the palette category
+        category: 'Beaglebone', // the palette category
         color:"#de7224",
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
@@ -635,4 +635,3 @@ the pin changes state: its payload is the new state (0 or 1).
         }
     });
 </script>
-

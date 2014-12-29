@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# There is NO error checking in this program - you can mess up pins big time if you want.
+
+# gpio mode pin inputtype
+# gpio read pin
+# gpio write pin level
+# gpio pwm pin level
+# gpio close pin
+
+declare -A pins
+# Map the GPIO names to actual underlying IO numbers
+pins=(["0"]="73" ["1"]="72" ["2"]="71" ["3"]="70" ["4"]="194" ["5"]="195" ["6"]="67" ["7"]="1")
+
+usage() {
+    echo ""
+    echo "  gpiohb mode  {pin} {in|out}"
+    echo "  gpiohb read  {pin}"
+    echo "  gpiohb write {pin} {0|1}"
+    echo "  gpiohb wfi   {pin} {rising|falling|both|none}"
+    #echo "  gpiohb pwm   {pin} {0-1023}"
+    echo "  gpiohb close {pin}"
+    echo ""
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help | -?)
+            usage
+            exit
+            ;;
+        mode)
+            echo $1 $2 $3
+            if [ "$3" != "out" ] ; then
+                $3="in"
+            fi
+            pin=${pins[$2]}
+            echo $pin > /sys/class/gpio/export
+            echo $3 > /sys/class/gpio/gpio$pin/direction
+            exit
+            ;;
+        read)
+            pin=${pins[$2]}
+            cat /sys/class/gpio/gpio$pin/value
+            exit
+            ;;
+        write)
+            pin=${pins[$2]}
+            echo $3 > /sys/class/gpio/gpio$pin/value
+            exit
+            ;;
+        wfi)
+            pin=${pins[$2]}
+            echo $3 > /sys/class/gpio/gpio$pin/edge
+            exit
+            ;;
+        pwm)
+            # Not implemented yet....
+            pin=${pins[$2]}
+            exit
+            ;;
+        close)
+            pin=${pins[$2]}
+            echo $pin > /sys/class/gpio/unexport
+            exit
+            ;;
+        *)
+            echo "ERROR: unknown parameter \"$PARAM\""
+            usage
+            exit 1
+        ;;
+    esac
+    shift
+done

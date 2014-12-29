@@ -1,0 +1,22 @@
+{
+    "name"          : "node-red-node-beaglebone",
+    "version"       : "0.0.3",
+    "description"   : "A set of Node-RED nodes to interface to the GPIO pins of a Beaglebone Black board",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/BBB"
+    },
+    "license": "Apache-v2.0",
+    "keywords": [ "node-red", "beagleboneblack", "beaglebone", "bbb" ],
+    "node-red"      : {
+        "nodes"     : {
+            "bbb": "145-BBB-hardware.js"
+        }
+    },
+    "contributors": [
+        {"name": "Max Hadley"},
+        {"name": "Dave Conway-Jones"}
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-badwords",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that attempts to filter out messages containing swearwords.",
+    "dependencies"  : {
+        "badwords"   : "0.0.1"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/swearfilter"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "badwords", "swearfilter" ],
+    "node-red"      : {
+        "nodes"     : {
+            "badwords": "74-swearfilter.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

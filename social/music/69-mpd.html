@@ -16,7 +16,7 @@
 
 <script type="text/x-red" data-template-name="mpd out">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Expects a msg.payload with a valid mpc command.</div>
@@ -24,7 +24,7 @@
 
 <script type="text/x-red" data-help-name="mpd out">
     <p>MPD music control output node.</p>
-    <p>Expects <b>msg.payload</b> to be a valid mpc command. Currently only simple commands that expect no reply are supported.</p>
+    <p>Expects <b>msg.payload</b> to be a valid mpc command. Currently only simple commands that expect no reply are supported. play, pause, next, previous, stop, etc.</p>
 </script>
 
 <script type="text/javascript">
@@ -49,7 +49,7 @@
 
 <script type="text/x-red" data-template-name="mpd in">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Creates a msg.payload object with Artist, Album, Title, Genre and Date.</div>
@@ -57,7 +57,7 @@
 
 <script type="text/x-red" data-help-name="mpd in">
     <p>MPD music control input node.</p>
-    <p>Creates a <b>msg.payload</b> object with Artist, Album, Track, Genre and Date.</p>
+    <p>Creates a <b>msg.payload</b> object containing Artist, Album, Track, Genre and Date.</p>
 </script>
 
 <script type="text/javascript">
