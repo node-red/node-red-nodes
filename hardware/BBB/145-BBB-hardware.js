@@ -14,18 +14,50 @@
  * limitations under the License.
  **/
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     "use strict";
-    var bonescript = require("bonescript");
+    var bonescript, adjustName, setPinMode;
+    var analogInputPins = ["P9_39", "P9_40", "P9_37", "P9_38", "P9_33", "P9_36", "P9_35"];
+    var gpioPins = ["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
+        "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
+        "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
+        "P9_27", "P9_30", "P9_41", "P9_42"];
+    var usrLEDs = ["USR0", "USR1", "USR2", "USR3"];
+    // Load the hardware library and set up polymorphic functions to suit it. Prefer
+    // octalbonescript (faster & less buggy) but drop back to bonescript if not available
+    try {
+        bonescript = require("octalbonescript");
+        adjustName = function (pin) {
+            if (pin === "P8_7") {
+                pin = "P8_07";
+            } else if (pin === "P8_8") {
+                pin = "P8_08";
+            } else if (pin === "P8_9") {
+                pin = "P8_09";
+            }
+            return pin;
+        };
+        setPinMode = function (pin, direction, callback) {
+            bonescript.pinMode(pin, direction, callback);
+        }
+    } catch (e) {
+        bonescript = require("bonescript");
+        adjustName = function (pin) {
+            return pin;
+        };
+        setPinMode = function (pin, direction, callback) {
+            bonescript.pinMode(pin, direction, undefined, undefined, undefined, callback);
+        }
+    }
 
-    // Node constructor for bbb-analogue-in
+// Node constructor for bbb-analogue-in
     function AnalogueInputNode(n) {
-        // Create a RED node
         RED.nodes.createNode(this, n);
+        var node = this;
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;
-        this.pin = n.pin;
+        this.pin = n.pin;                               // The Beaglebone Black pin identifying string
         this.breakpoints = n.breakpoints;
         this.averaging = n.averaging;
         if (this.averaging) {
@@ -33,9 +65,6 @@ module.exports = function(RED) {
         } else {
             this.averages = 1;
         }
-
-        // Define 'node' to allow us to access 'this' from within callbacks
-        var node = this;
 
         // Variables used for input averaging
         var sum;    // accumulates the input readings to be averaged
@@ -45,49 +74,51 @@ module.exports = function(RED) {
         // measurements, then divides the total number, applies output scaling and
         // sends the result
         var analogReadCallback = function (x) {
-                sum = sum + x.value;
-                count = count - 1;
-                if (count > 0) {
-                    bonescript.analogRead(node.pin, analogReadCallback);
-                } else {
-                    var msg = {};
-                    msg.topic = node.topic;
-                    sum = sum/node.averages;
-                    // i is the index of the first breakpoint where the 'input' value is strictly
-                    // greater than the measurement (note: a measurement can never be == 1)
-                    var i = node.breakpoints.map(function (breakpoint) { return sum >= breakpoint.input; }).indexOf(false);
-                    msg.payload = node.breakpoints[i-1].output + (node.breakpoints[i].output - node.breakpoints[i-1].output) *
-                                    (sum - node.breakpoints[i-1].input)/(node.breakpoints[i].input - node.breakpoints[i-1].input);
-                    node.send(msg);
-                }
-            };
+            sum = sum + x.value;
+            count = count - 1;
+            if (count > 0) {
+                bonescript.analogRead(node._pin, analogReadCallback);
+            } else {
+                var msg = {};
+                msg.topic = node.topic;
+                sum = sum/node.averages;
+                // i is the index of the first breakpoint where the 'input' value is strictly
+                // greater than the measurement (note: a measurement can never be == 1)
+                var i = node.breakpoints.map(function (breakpoint) {
+                    return sum >= breakpoint.input;
+                }).indexOf(false);
+                msg.payload = node.breakpoints[i - 1].output + (node.breakpoints[i].output - node.breakpoints[i - 1].output)*
+                (sum - node.breakpoints[i - 1].input)/(node.breakpoints[i].input - node.breakpoints[i - 1].input);
+                node.send(msg);
+            }
+        };
 
         // If we have a valid pin, set the input event handler to Bonescript's analogRead
-        if (["P9_39", "P9_40", "P9_37", "P9_38", "P9_33", "P9_36", "P9_35"].indexOf(node.pin) >= 0) {
-            node.on("input", function (msg) {
-                    sum = 0;
-                    count = node.averages;
-                    bonescript.analogRead(node.pin, analogReadCallback);
-                });
+        if (analogInputPins.indexOf(node.pin) >= 0) {
+            node.on("input", function () {
+                sum = 0;
+                count = node.averages;
+                bonescript.analogRead(node._pin, analogReadCallback);
+            });
         } else {
             node.error("Unconfigured input pin");
         }
     }
 
-    // Node constructor for bbb-discrete-in
+// Node constructor for bbb-discrete-in
     function DiscreteInputNode(n) {
         RED.nodes.createNode(this, n);
+        var node = this;
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;                           // the topic is not currently used
         this.pin = n.pin;                               // The Beaglebone Black pin identifying string
-        if (n.activeLow) {                               // Set the 'active' state 0 or 1 as appropriate
+        this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
+        if (n.activeLow)                                // Set the 'active' state 0 or 1 as appropriate
             this.activeState = 0;
-        }
-        else {
+        else
             this.activeState = 1;
-        }
-        this.updateInterval = n.updateInterval * 1000;  // How often to send totalActiveTime messages
+        this.updateInterval = n.updateInterval*1000;    // How often to send totalActiveTime messages
         this.debounce = n.debounce;                     // Enable switch contact debouncing algorithm
         if (n.outputOn === "rising") {
             this.activeEdges = [false, true];
@@ -110,150 +141,156 @@ module.exports = function(RED) {
         this.debouncing = false;        // True after a change of state while waiting for the 7ms debounce time to elapse
         this.debounceTimer = null;
 
-        // Define 'node' to allow us to access 'this' from within callbacks
-        var node = this;
-
         // This function is called by the input pin change-of-state interrupt. If
         // debounce is disabled, send the output message. Otherwise, if we are
         // currently debouncing, ignore this interrupt. If we are not debouncing,
         // schedule a re-read of the input pin in 7ms time, and set the debouncing flag
-        // Note: this function gets called spuriously when the interrupt is first enabled:
-        // in this case x.value is undefined - we must test for this
+        // Note: if x has an 'attached' field and no 'value' field, the callback is reporting
+        // the success or failure of attaching the interrupt - we must handle this
         var interruptCallback = function (x) {
-                if (x.value !== undefined && node.currentState !== Number(x.value)) {
-                    if (node.debounce) {
-                        if (node.debouncing === false) {
-                            node.debouncing = true;
-                            node.debounceTimer = setTimeout(function () { bonescript.digitalRead(node.pin, debounceCallback); }, 7);
-                        }
-                    } else {
-                        sendStateMessage(x);
-                    }
+            if (x.value === undefined) {
+                if (x.attached === true) {
+                    node.interruptAttached = true;
+                    node.on("input", inputCallback);
+                    node.intervalId = setInterval(timerCallback, node.updateInterval);
+                } else {
+                    node.error("Failed to attach interrupt");
                 }
-            };
+            } else if (node.currentState !== Number(x.value)) {
+                if (node.debounce) {
+                    if (node.debouncing === false) {
+                        node.debouncing = true;
+                        node.debounceTimer = setTimeout(function () {
+                            bonescript.digitalRead(node._pin, debounceCallback);
+                        }, 7);
+                    }
+                } else {
+                    sendStateMessage(x);
+                }
+            }
+        };
 
         // This function is called approx 7ms after a potential change-of-state which is
         // being debounced. Terminate the debounce, and send a message if the state has
         // actually changed
         var debounceCallback = function (x) {
-                node.debounceTimer = null;
-                node.debouncing = false;
-                if (x.value !== undefined && node.currentState !== Number(x.value)) {
-                    sendStateMessage(x);
-                }
-            };
+            node.debounceTimer = null;
+            node.debouncing = false;
+            if (x.value !== undefined && node.currentState !== Number(x.value)) {
+                sendStateMessage(x);
+            }
+        };
 
         // This function is called when either the interruptCallback or the debounceCallback
         // have determined we have a 'genuine' change of state. Update the currentState and
         // ActiveTime variables, and send a message on the first output with the new state
         var sendStateMessage = function (x) {
-                node.currentState = Number(x.value);
-                var now = Date.now();
-                if (node.currentState === node.activeState) {
-                    node.lastActiveTime = now;
-                } else if (!isNaN(node.lastActiveTime)) {
-                    node.totalActiveTime += now - node.lastActiveTime;
-                }
-                if (node.activeEdges[node.currentState]) {
-                    var msg = {};
-                    msg.topic = node.topic;
-                    msg.payload = node.currentState;
-                    node.send([msg, null]);
-                }
-            };
+            node.currentState = Number(x.value);
+            var now = Date.now();
+            if (node.currentState === node.activeState) {
+                node.lastActiveTime = now;
+            } else if (!isNaN(node.lastActiveTime)) {
+                node.totalActiveTime += now - node.lastActiveTime;
+            }
+            if (node.activeEdges[node.currentState]) {
+                var msg = {};
+                msg.topic = node.topic;
+                msg.payload = node.currentState;
+                node.send([msg, null]);
+            }
+        };
 
         // This function is called by the timer. It updates the ActiveTime variables, and sends a
         // message on the second output with the latest value of the total active time, in seconds
         var timerCallback = function () {
-                if (node.currentState === node.activeState) {
-                    var now = Date.now();
-                    node.totalActiveTime += now - node.lastActiveTime;
-                    node.lastActiveTime = now;
-                }
-                var msg = {};
-                msg.topic = node.topic;
-                msg.payload = node.totalActiveTime / 1000;
-                node.send([null, msg]);
-                // Re-synchronise the pin state if we have missed a state change interrupt for some
-                // reason, and we are not in the process of debouncing one
-                if (node.debouncing === false) {
-                    bonescript.digitalRead(node.pin, interruptCallback);
-                }
-            };
+            if (node.currentState === node.activeState) {
+                var now = Date.now();
+                node.totalActiveTime += now - node.lastActiveTime;
+                node.lastActiveTime = now;
+            }
+            var msg = {};
+            msg.topic = node.topic;
+            msg.payload = node.totalActiveTime/1000;
+            node.send([null, msg]);
+            // Re-synchronise the pin state if we have missed a state change interrupt for some
+            // reason, and we are not in the process of debouncing one
+            if (node.debouncing === false) {
+                bonescript.digitalRead(node._pin, interruptCallback);
+            }
+        };
 
         // This function is called when we receive an input message. If the topic contains
         // 'load' (case insensitive) set the totalActiveTime to the numeric value of the
         // payload, if possible. Otherwise clear the totalActiveTime (so we start counting
         // from zero again)
         var inputCallback = function (ipMsg) {
-                if (String(ipMsg.topic).search(/load/i) < 0 || isFinite(ipMsg.payload) === false) {
-                    node.totalActiveTime = 0;
+            if (String(ipMsg.topic).search(/load/i) < 0 || isFinite(ipMsg.payload) == false) {
+                node.totalActiveTime = 0;
+            } else {
+                node.totalActiveTime = Number(ipMsg.payload);
+            }
+            if (node.currentState === node.activeState) {
+                node.lastActiveTime = Date.now();
+            }
+            // On startup, send an initial activeTime message, but only send an
+            // initial currentState message if we are in both edges active mode
+            if (node.starting) {
+                node.starting = false;
+                var msg;
+                if (node.activeEdges[0] && node.activeEdges[1]) {
+                    msg = [{topic: node.topic}, {topic: node.topic}];
+                    msg[0].payload = node.currentState;
                 } else {
-                    node.totalActiveTime = Number(ipMsg.payload);
+                    msg = [null, {topic: node.topic}];
                 }
-                if (node.currentState === node.activeState) {
-                    node.lastActiveTime = Date.now();
-                }
-                // On startup, send an initial activeTime message, but only send an
-                // initial currentState message if we are in both edges active mode
-                if (node.starting) {
-                    node.starting = false;
-                    var msg;
-                    if (node.activeEdges[0] && node.activeEdges[1]) {
-                        msg = [{topic:node.topic}, {topic:node.topic}];
-                        msg[0].payload = node.currentState;
-                    } else {
-                        msg = [null, {topic:node.topic}];
-                    }
-                    msg[1].payload = node.totalActiveTime;
-                    node.send(msg);
-                }
-            };
+                msg[1].payload = node.totalActiveTime;
+                node.send(msg);
+            }
+        };
 
         // If we have a valid pin, set it as an input and read the (digital) state
-        if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
-             "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
-             "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
-             "P9_27", "P9_30", "P9_41", "P9_42"].indexOf(node.pin) >= 0) {
+        if (gpioPins.indexOf(node.pin) >= 0) {
             // Don't set up interrupts & intervals until after the close event handler has been installed
-            bonescript.detachInterrupt(node.pin);
+            bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
-                bonescript.pinMode(node.pin, bonescript.INPUT);
-                bonescript.digitalRead(node.pin, function (x) {
-                            // Initialise the currentState and lastActveTime variables based on the value read
+                setPinMode(node._pin, bonescript.INPUT, function (response, pin) {
+                    if (response.value === true) {
+                        bonescript.digitalRead(node._pin, function (x) {
+                            // Initialise the currentState and lastActiveTime variables based on the value read
                             node.currentState = Number(x.value);
                             if (node.currentState === node.activeState) {
                                 node.lastActiveTime = Date.now();
-                                // switch to process.hrtime()
                             }
                             // Attempt to attach a change-of-state interrupt handler to the pin. If we succeed,
-                            // set the input event and interval handlers, then send an initial message with the
-                            // pin state on the first output
-                            if (bonescript.attachInterrupt(node.pin, true, bonescript.CHANGE, interruptCallback)) {
-                                node.interruptAttached = true;
-                                node.on("input", inputCallback);
-                                node.intervalId = setInterval(timerCallback, node.updateInterval);
-                            } else {
-                                node.error("Failed to attach interrupt");
-                            }
-                            setTimeout(function () { node.emit("input", {}); }, 50);
+                            // the input event and interval handlers will be installed by interruptCallback
+                            bonescript.attachInterrupt(node._pin, true, bonescript.CHANGE, interruptCallback);
+                            // Send an initial message with the pin state on the first output
+                            setTimeout(function () {
+                                node.emit("input", {});
+                            }, 50);
                         });
-                    });
+                    } else {
+                        node.error("Unable to set " + pin + " as input: " + response.err);
+                    }
+                });
+            });
         } else {
             node.error("Unconfigured input pin");
         }
     }
 
-    // Node constructor for bbb-pulse-in
+// Node constructor for bbb-pulse-in
     function PulseInputNode(n) {
         RED.nodes.createNode(this, n);
+        var node = this;
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;                           // the topic is not currently used
         this.pin = n.pin;                               // The Beaglebone Black pin identifying string
-        this.updateInterval = n.updateInterval * 1000;  // How often to send output messages
+        this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
+        this.updateInterval = n.updateInterval*1000;    // How often to send output messages
         this.countType = n.countType;                   // Sets either 'edge' or 'pulse' counting
-        this.countUnit = n.countUnit;                   // Scaling appling to count output
+        this.countUnit = n.countUnit;                   // Scaling applied to count output
         this.countRate = n.countRate;                   // Scaling applied to rate output
 
         // Working variables
@@ -263,54 +300,58 @@ module.exports = function(RED) {
         // Hold the hrtime of the last two pulses (with ns resolution)
         this.pulseTime = [[NaN, NaN], [NaN, NaN]];
 
-        // Define 'node' to allow us to access 'this' from within callbacks
-        var node = this;
-
-        // Called by the edge or pulse interrupt. If this is a valid interrupt, record the
-        // pulse time and count the pulse
+        // Called by the edge or pulse interrupt. Record the pulse time and count the pulse
+        // Note: if x has an 'attached' field and no 'value' field, the callback is reporting
+        // the success or failure of attaching the interrupt - we must handle this
         var interruptCallback = function (x) {
-                if (x.value !== undefined) {
-                    node.pulseTime = [node.pulseTime[1], process.hrtime()];
-                    node.pulseCount = node.pulseCount + 1;
+            if (x.value === undefined) {
+                if (x.attached === true) {
+                    node.interruptAttached = true;
+                    node.on("input", inputCallback);
+                    node.intervalId = setInterval(timerCallback, node.updateInterval);
+                } else {
+                    node.error("Failed to attach interrupt");
                 }
-            };
+            } else {
+                node.pulseTime = [node.pulseTime[1], process.hrtime()];
+                node.pulseCount = node.pulseCount + 1;
+            }
+        };
 
         // Called when an input message arrives. If the topic contains 'load' (case
         // insensitive) and the payload is a valid number, set the count to that
         // number, otherwise set it to zero
         var inputCallback = function (msg) {
-                if (String(msg.topic).search(/load/i) < 0 || isFinite(msg.payload) === false) {
-                    node.pulseCount = 0;
-                } else {
-                    node.pulseCount = Number(msg.payload);
-                }
-            };
+            if (String(msg.topic).search(/load/i) < 0 || isFinite(msg.payload) == false) {
+                node.pulseCount = 0;
+            } else {
+                node.pulseCount = Number(msg.payload);
+            }
+        };
 
         // Called by the message timer. Send two messages: the scaled pulse count on
         // the first output and the scaled instantaneous pulse rate on the second.
         // The instantaneous pulse rate is the reciprocal of the larger of either the
         // time interval between the last two pulses, or the time interval since the last pulse.
         var timerCallback = function () {
-                var now = process.hrtime();
-                var lastTime = node.pulseTime[1][0] - node.pulseTime[0][0] + (node.pulseTime[1][1] - node.pulseTime[0][1]) / 1e9;
-                var thisTime = now[0] - node.pulseTime[1][0] + (now[1] - node.pulseTime[1][1]) / 1e9;
-                var msg = [{ topic:node.topic }, { topic:node.topic }];
-                msg[0].payload = node.countUnit * node.pulseCount;
-                // At startup, pulseTime contains NaN's: force the rate output to 0
-                msg[1].payload = node.countRate / Math.max(thisTime, lastTime) || 0;
-                node.send(msg);
-            };
+            var now = process.hrtime();
+            var lastTime = node.pulseTime[1][0] - node.pulseTime[0][0] + (node.pulseTime[1][1] - node.pulseTime[0][1])/1e9;
+            var thisTime = now[0] - node.pulseTime[1][0] + (now[1] - node.pulseTime[1][1])/1e9;
+            var msg = [{topic: node.topic}, {topic: node.topic}];
+            msg[0].payload = node.countUnit*node.pulseCount;
+            // At startup, pulseTime contains NaN's: force the rate output to 0
+            msg[1].payload = node.countRate/Math.max(thisTime, lastTime) || 0;
+            node.send(msg);
+        };
 
         // If we have a valid pin, set it as an input and read the (digital) state
-        if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
-             "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
-             "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
-             "P9_27", "P9_30", "P9_41", "P9_42"].indexOf(node.pin) >= 0) {
+        if (gpioPins.indexOf(node.pin) >= 0) {
             // Don't set up interrupts & intervals until after the close event handler has been installed
-            bonescript.detachInterrupt(node.pin);
+            bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
-                    bonescript.pinMode(node.pin, bonescript.INPUT);
-                    bonescript.digitalRead(node.pin, function (x) {
+                setPinMode(node._pin, bonescript.INPUT, function (response, pin) {
+                    if (response.value === true) {
+                        bonescript.digitalRead(node._pin, function (x) {
                             // Initialise the currentState based on the value read
                             node.currentState = Number(x.value);
                             // Attempt to attach an interrupt handler to the pin. If we succeed,
@@ -322,27 +363,29 @@ module.exports = function(RED) {
                             } else {
                                 interruptType = bonescript.CHANGE;
                             }
-                            if (bonescript.attachInterrupt(node.pin, true, interruptType, interruptCallback)) {
-                                node.interruptAttached = true;
-                                node.on("input", inputCallback);
-                                node.intervalId = setInterval(timerCallback, node.updateInterval);
-                            } else {
-                                node.error("Failed to attach interrupt");
-                            }
+                            // Attempt to attach the required interrupt handler to the pin. If we succeed,
+                            // the input event and interval handlers will be installed by interruptCallback
+                            bonescript.attachInterrupt(node._pin, true, interruptType, interruptCallback)
                         });
+                    } else {
+                        node.error("Unable to set " + pin + " as input: " + response.err);
+                    }
                 });
+            });
         } else {
             node.error("Unconfigured input pin");
         }
     }
 
-    // Node constructor for bbb-discrete-out
+// Node constructor for bbb-discrete-out
     function DiscreteOutputNode(n) {
         RED.nodes.createNode(this, n);
+        var node = this;
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;                           // the topic is not currently used
         this.pin = n.pin;                               // The Beaglebone Black pin identifying string
+        this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
         this.defaultState = Number(n.defaultState);     // What state to set up as
         this.inverting = n.inverting;
         this.toggle = n.toggle;
@@ -350,64 +393,66 @@ module.exports = function(RED) {
         // Working variables
         this.currentState = this.defaultState;
 
-        var node = this;
-
-        // If the input message paylod is numeric, values > 0.5 are 'true', otherwise use
+        // If the input message payload is numeric, values > 0.5 are 'true', otherwise use
         // the truthiness of the payload. Apply the inversion flag before setting the output
         var inputCallback = function (msg) {
-                var newState;
-                if (node.toggle) {
-                    newState = node.currentState === 0 ? 1 : 0;
+            var newState;
+            if (node.toggle) {
+                newState = node.currentState === 0 ? 1 : 0;
+            } else {
+                if (isFinite(Number(msg.payload))) {
+                    newState = Number(msg.payload) > 0.5;
+                } else if (msg.payload) {
+                    newState = true;
                 } else {
-                    if (isFinite(Number(msg.payload))) {
-                        newState = Number(msg.payload) > 0.5 ? true : false;
-                    } else if (msg.payload) {
-                        newState = true;
-                    } else {
-                        newState = false;
-                    }
-                    if (node.inverting) {
-                        newState = !newState;
-                    }
+                    newState = false;
                 }
-                bonescript.digitalWrite(node.pin, newState ? 1 : 0);
-                node.send({ topic:node.topic, payload:newState });
-                node.currentState = newState;
-            };
+                if (node.inverting) {
+                    newState = !newState;
+                }
+            }
+            bonescript.digitalWrite(node._pin, newState ? 1 : 0);
+            node.send({topic: node.topic, payload: newState});
+            node.currentState = newState;
+        };
 
         // If we have a valid pin, set it as an output and set the default state
-        if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
-             "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
-             "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
-             "P9_27", "P9_30", "P9_41", "P9_42", "USR0", "USR1", "USR2", "USR3"].indexOf(node.pin) >= 0) {
+        if (gpioPins.concat(usrLEDs).indexOf(node.pin) >= 0) {
             // Don't set up interrupts & intervals until after the close event handler has been installed
-            bonescript.detachInterrupt(node.pin);
+            bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
-                    bonescript.pinMode(node.pin, bonescript.OUTPUT);
-                    node.on("input", inputCallback);
-                    setTimeout(function () { bonescript.digitalWrite(node.pin, node.defaultState); }, 50);
+                setPinMode(node._pin, bonescript.OUTPUT, function (response, pin) {
+                    if (response.value === true) {
+                        node.on("input", inputCallback);
+                        setTimeout(function () {
+                            bonescript.digitalWrite(node._pin, node.defaultState);
+                        }, 50);
+                    } else {
+                        node.error("Unable to set " + pin + " as output: " + response.err);
+                    }
                 });
+            });
         } else {
             node.error("Unconfigured output pin");
         }
     }
 
-    // Node constructor for bbb-pulse-out
+// Node constructor for bbb-pulse-out
     function PulseOutputNode(n) {
         RED.nodes.createNode(this, n);
+        var node = this;
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;                           // the topic is not currently used
         this.pin = n.pin;                               // The Beaglebone Black pin identifying string
+        this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
         this.pulseState = Number(n.pulseState);         // What state the pulse will be..
         this.defaultState = this.pulseState === 1 ? 0 : 1;
         this.retriggerable = n.retriggerable;
-        this.pulseTime = n.pulseTime * 1000;          // Pulse width in milliseconds
+        this.pulseTime = n.pulseTime*1000;              // Pulse width in milliseconds
 
         // Working variables
         this.pulseTimer = null;                         // Non-null while a pulse is being generated
-
-        var node = this;
 
         // Generate a pulse in response to an input message. If the topic includes the text
         // 'time' (case insensitive) and the payload is numeric, use this value as the
@@ -418,65 +463,67 @@ module.exports = function(RED) {
         // If no timer is active, set the pulse output. In both cases schedule a new pulse
         // timer.
         var inputCallback = function (msg) {
-                var time = node.pulseTime;
-                if (String(msg.topic).search(/time/i) >= 0 && isFinite(msg.payload)) {
-                    time = msg.payload * 1000;
-                }
-                if (time >= 1) {
-                    if (node.retriggerable === false) {
-                        if (node.pulseTimer === null) {
-                            node.pulseTimer = setTimeout(endPulseCallback, time);
-                            bonescript.digitalWrite(node.pin, node.pulseState);
-                            node.send({ topic:node.topic, payload:node.pulseState });
-                        }
-                    } else {
-                        if (node.pulseTimer !== null) {
-                            clearTimeout(node.pulseTimer);
-                        } else {
-                            bonescript.digitalWrite(node.pin, node.pulseState);
-                            node.send({ topic:node.topic, payload:node.pulseState });
-                        }
+            var time = node.pulseTime;
+            if (String(msg.topic).search(/time/i) >= 0 && isFinite(msg.payload)) {
+                time = msg.payload*1000;
+            }
+            if (time >= 1) {
+                if (node.retriggerable === false) {
+                    if (node.pulseTimer === null) {
                         node.pulseTimer = setTimeout(endPulseCallback, time);
+                        bonescript.digitalWrite(node._pin, node.pulseState);
+                        node.send({topic: node.topic, payload: node.pulseState});
                     }
+                } else {
+                    if (node.pulseTimer !== null) {
+                        clearTimeout(node.pulseTimer);
+                    } else {
+                        bonescript.digitalWrite(node._pin, node.pulseState);
+                        node.send({topic: node.topic, payload: node.pulseState});
+                    }
+                    node.pulseTimer = setTimeout(endPulseCallback, time);
                 }
-            };
+            }
+        };
 
         // At the end of the pulse, restore the default state and set the timer to null
         var endPulseCallback = function () {
-                node.pulseTimer = null;
-                bonescript.digitalWrite(node.pin, node.defaultState);
-                node.send({ topic:node.topic, payload:node.defaultState });
-            };
+            node.pulseTimer = null;
+            bonescript.digitalWrite(node._pin, node.defaultState);
+            node.send({topic: node.topic, payload: node.defaultState});
+        };
 
         // If we have a valid pin, set it as an output and set the default state
-        if (["P8_7", "P8_8", "P8_9", "P8_10", "P8_11", "P8_12", "P8_13", "P8_14", "P8_15",
-             "P8_16", "P8_17", "P8_18", "P8_19", "P8_26", "P9_11", "P9_12", "P9_13", "P9_14",
-             "P9_15", "P9_16", "P9_17", "P9_18", "P9_21", "P9_22", "P9_23", "P9_24", "P9_26",
-             "P9_27", "P9_30", "P9_41", "P9_42", "USR0", "USR1", "USR2", "USR3"].indexOf(node.pin) >= 0) {
+        if (gpioPins.concat(usrLEDs).indexOf(node.pin) >= 0) {
             // Don't set up interrupts & intervals until after the close event handler has been installed
-            bonescript.detachInterrupt(node.pin);
+            bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
-                    bonescript.pinMode(node.pin, bonescript.OUTPUT);
-                    node.on("input", inputCallback);
-                    // Set the pin to the default stte once the dust settles
-                    setTimeout(endPulseCallback, 50);
+                setPinMode(node._pin, bonescript.OUTPUT, function (response, pin) {
+                    if (response.value === true) {
+                        node.on("input", inputCallback);
+                        // Set the pin to the default state once the dust settles
+                        setTimeout(endPulseCallback, 50);
+                    } else {
+                        node.error("Unable to set " + pin + " as output: " + response.err);
+                    }
                 });
+            });
         } else {
             node.error("Unconfigured output pin");
         }
     }
 
-    // Register the nodes by name. This must be called before overriding any of the Node functions.
+// Register the nodes by name. This must be called before overriding any of the Node functions.
     RED.nodes.registerType("bbb-analogue-in", AnalogueInputNode);
     RED.nodes.registerType("bbb-discrete-in", DiscreteInputNode);
     RED.nodes.registerType("bbb-pulse-in", PulseInputNode);
     RED.nodes.registerType("bbb-discrete-out", DiscreteOutputNode);
     RED.nodes.registerType("bbb-pulse-out", PulseOutputNode);
 
-    // On close, detach the interrupt (if we attached one) and clear any active timers
+// On close, detach the interrupt (if we attached one) and clear any active timers
     DiscreteInputNode.prototype.close = function () {
         if (this.interruptAttached) {
-            bonescript.detachInterrupt(this.pin);
+            bonescript.detachInterrupt(this._pin);
         }
         if (this.intervalId !== null) {
             clearInterval(this.intervalId);
@@ -486,20 +533,20 @@ module.exports = function(RED) {
         }
     };
 
-    // On close, detach the interrupt (if we attached one) and clear the interval (if we set one)
+// On close, detach the interrupt (if we attached one) and clear the interval (if we set one)
     PulseInputNode.prototype.close = function () {
         if (this.interruptAttached) {
-            bonescript.detachInterrupt(this.pin);
+            bonescript.detachInterrupt(this._pin);
         }
         if (this.intervalId !== null) {
             clearInterval(this.intervalId);
         }
     };
 
-    // On close, clear an active pulse timer
+// On close, clear an active pulse timer
     PulseOutputNode.prototype.close = function () {
         if (this.pulseTimer !== null) {
             clearTimeout(this.pulseTimer);
         }
     };
-}
+};
