@@ -15,6 +15,8 @@ Run the following command in the root directory of your Node-RED install
 
     npm install node-red-node-beaglebone
 
+v0.4 now also supports <a href="http://octalbonejs.com/" target="_new">OctaBoneScript</a> if installed.
+
 
 Usage
 -----
