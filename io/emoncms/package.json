@@ -1,0 +1,29 @@
+{
+    "name"          : "node-red-node-emoncms",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to send energy data to emoncms.org.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/emoncms"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "emoncms" ],
+    "node-red"      : {
+        "nodes"     : {
+            "emoncms": "88-emoncms.js"
+        }
+    },
+    "author": {
+        "name": "Henrik Olsson",
+        "email": "henols@gmail.com",
+        "url": "http://nodered.org"
+    },
+    "maintainers": [
+        {
+            "name": "dceejay",
+            "email": "ceejay@vnet.ibm.com"
+        }
+    ],
+}
