@@ -1,0 +1,111 @@
+<!--
+  Copyright 2014 Sean Bedford
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="heatmiser-in">
+    <div class="form-row">
+        <label for="node-input-uuid"><i class="fa fa-bookmark"></i> IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="192.168.0.1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-lock"></i> PIN</label>
+        <input type="text" id="node-input-pin" placeholder="1234">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-repeat"></i> Poll time</label>
+        <input type="text" id="node-input-pollTime" placeholder="30" style="width:50%"> minutes
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Expects a msg.payload with a JSON object that contains settings for the Heatmiser thermostat</div>
+</script>
+
+<script type="text/x-red" data-help-name="heatmiser-in">
+    <p>Heatmiser input node.</p>
+    <p>Will read and send a status update at a configurable time interval. This is set to every 30 minutes by default</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('heatmiser-in',{
+        category: 'advanced-function',
+        color:"GoldenRod",
+        defaults: {
+            name: {value:""},
+            ip: {value:""},
+            pin: {value:""},
+            pollTime : {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "timer.png",
+        label: function() {
+            return this.name||"heatmiser";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="heatmiser-out">
+    <div class="form-row">
+        <label for="node-input-uuid"><i class="fa fa-bookmark"></i> IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="192.168.0.1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-lock"></i> PIN</label>
+        <input type="text" id="node-input-pin" placeholder="1234">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Expects a msg.payload with a JSON object that contains settings for the Heatmiser thermostat</div>
+</script>
+
+<script type="text/x-red" data-help-name="heatmiser-out">
+    <p>Heatmiser output node.</p>
+    <p>Expects a msg.payload with a JSON object that contains settings for the Heatmiser thermostat</p>
+    <p>msg.payload can currently be either a heating boost option, or a run mode, as below:</p>
+    <p><b>Heating boost</b></p>
+    <p><pre>{heating: {target: TARGET_TEMPERATURE, hold: MINUTES_TO_STAY_ON_FOR}}</pre></p>
+    <p><b>Run mode</b></p>
+    <p><pre>{runmode:"frost" OR "heating"}</pre></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('heatmiser-out',{
+        category: 'advanced-function',
+        color:"GoldenRod",
+        defaults: {
+            name: {value:""},
+            ip: {value:""},
+            pin: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "timer.png",
+        align: "right",
+        label: function() {
+            return this.name||"heatmiser";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
