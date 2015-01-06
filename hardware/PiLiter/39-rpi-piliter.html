@@ -17,7 +17,7 @@
 <script type="text/x-red" data-template-name="rpi-liter">
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-cog"></i> Mode</label>
-        <select type="text" id="node-input-pin" style="width: 350px;">
+        <select type="text" id="node-input-pin" style="width: 300px;">
             <option value='' disabled selected style='display:none;'>select mode</option>
             <option value="pi-liter">0-255 : one bit per led</option>
             <option value="meter">0-8 : turns on led indicated - needle</option>
@@ -25,6 +25,11 @@
             <option value="pin">object : select led and set state</option>
             <option value="all">0/1 : turn off/on ALL leds</option>
          </select>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-dir" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-dir" style="width: 70%;">Reverse bar direction ?</label>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -49,10 +54,11 @@
 <script type="text/javascript">
     RED.nodes.registerType('rpi-liter',{
         category: 'Raspberry Pi',
-        color:"GoldenRod",
+        color:"#c6dbef",
         defaults: {
-            name: { value:"" },
-            pin: { value:"",required:true }
+            name: {value:""},
+            pin: {value:"",required:true},
+            dir: {value:""}
         },
         inputs:1,
         outputs:0,

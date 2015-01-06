@@ -14,8 +14,13 @@ Run the following command in the root directory of your Node-RED install
 Pre-reqs
 --------
 
-Requires the WiringPi gpio command to be installed in order to work. See the <a href="http://wiringpi.com" target="new">WiringPi site</a> for details on how to do this.
+Requires the python RPi.GPIO library v0.58 (or better) to be installed in order to work.
+See the <a href="http://sourceforge.net/p/raspberry-gpio-python/wiki/install/" target="new">RPi.GPIO site</a> for details on how to do this.
 
+This is built into most recent Raspbian versions so no install should be necessary - but if necessary
+
+    $ sudo apt-get update
+    $ sudo apt-get install python-rpi.gpio python3-rpi.gpio
 
 Usage
 -----
@@ -30,4 +35,8 @@ Operates in one of 5 different modes :
  - All LEDs Mode - expects a 1 or 0 - turns on and off ALL the LEDs
  - Object Mode - expects a object specifying the LED and state eg. <code>{led:3,state:0}</code> to set LED3 off.
 
-Requires the WiringPi gpio command in order to work.
+Requires the RPi.GPIO library installed in order to work.
+
+In order to access the GPIO the nrgpio.py command (installed as part of this package) must be run as root (sudo).
+The default Pi user can do this so it "should just work" - however if you are running Node-RED as not the Pi user then
+you may need to give your user sudo rights - or specifically sudo rights to python.
