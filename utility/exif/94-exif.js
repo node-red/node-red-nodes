@@ -17,13 +17,13 @@
 module.exports = function(RED) {
     "use strict";
     var ExifImage = require('exif').ExifImage;
-    
+
     function convertDegreesMinutesSecondsToDecimals(degrees, minutes, seconds) {
         var result;
         result = degrees + (minutes / 60) + (seconds / 3600);
         return result;
     }
-    
+
     /***
      * Extracts GPS location information from Exif data. If enough information is
      * provided, convert the Exif data into a pair of single floating point number
@@ -46,7 +46,7 @@ module.exports = function(RED) {
                     if(gpsData.GPSLongitude.length === 3) { // OK to convert longitude
                         var latitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLatitude[0], gpsData.GPSLatitude[1], gpsData.GPSLatitude[2]);
                         latitude = Math.round(latitude * 100000)/100000;
-                        
+
                         // (N)orth means positive latitude
                         // (S)outh means negative latitude
                         // (E)ast means positive longitude
@@ -54,10 +54,10 @@ module.exports = function(RED) {
                         if(gpsData.GPSLatitudeRef.toString() === 'S' || gpsData.GPSLatitudeRef.toString() === 's') {
                             latitude = latitude * -1;
                         }
-                        
+
                         var longitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLongitude[0], gpsData.GPSLongitude[1], gpsData.GPSLongitude[2]);
                         longitude = Math.round(longitude * 100000)/100000;
-                        
+
                         if(gpsData.GPSLongitudeRef.toString() === 'W' || gpsData.GPSLongitudeRef.toString() === 'w') {
                             longitude = longitude * -1;
                         }
@@ -86,25 +86,24 @@ module.exports = function(RED) {
         var node = this;
         this.on("input", function(msg) {
             try {
-                
-                if(msg.payload) {
-                    var isBuffer = Buffer.isBuffer(msg.payload);
-                    if(isBuffer === true) {
+                if (msg.payload) {
+                    if (Buffer.isBuffer(msg.payload)) {
                         new ExifImage({ image : msg.payload }, function (error, exifData) {
-                                if (error) {
-                                    node.error('Failed to extract Exif data from image.');
-                                    node.log('Failed to extract Exif data from image. '+ error);
+                            if (error) {
+                                //node.error('Failed to extract Exif data from image.');
+                                //node.log('Failed to extract Exif data from image. '+ error);
+                                node.log(error);
+                            } else {
+                                //msg.payload remains the same buffer
+                                if(exifData) {
+                                    msg.exif = exifData;
+                                    addMsgLocationDataFromExifGPSData(msg);
                                 } else {
-                                    //msg.payload remains the same buffer
-                                    if(exifData) {
-                                        msg.exif = exifData;
-                                        addMsgLocationDataFromExifGPSData(msg);
-                                    } else {
-                                        node.warn("The incoming buffer did not contain Exif data, nothing to do. ");
-                                    }
+                                    node.warn("The incoming buffer did not contain Exif data, nothing to do. ");
                                 }
-                                node.send(msg);
-                            });
+                            }
+                            node.send(msg);
+                        });
                     } else {
                         node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.");
                         return;
