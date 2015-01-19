@@ -17,27 +17,27 @@
 <script type="text/x-red" data-template-name="MySQLdatabase">
     <div class="form-row">
         <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-config-input-host" placeholder="localhost">
+        <input type="text" id="node-config-input-host">
     </div>
     <div class="form-row">
         <label for="node-config-input-port"><i class="fa fa-random"></i> Port</label>
-        <input type="text" id="node-config-input-port" placeholder="3306">
+        <input type="text" id="node-config-input-port">
     </div>
         <div class="form-row">
         <label for="node-config-input-user"><i class="fa fa-user"></i> User</label>
-        <input type="text" id="node-config-input-user" placeholder="JoeDemo">
+        <input type="text" id="node-config-input-user">
     </div>
         <div class="form-row">
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
-        <input type="password" id="node-config-input-pass" placeholder="mySecret">
+        <input type="password" id="node-config-input-password">
     </div>
     <div class="form-row">
         <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
-        <input type="text" id="node-config-input-db" placeholder="myDatabase">
+        <input type="text" id="node-config-input-db">
     </div>
     <div class="form-row">
         <label for="node-config-input-tz"><i class="fa fa-clock-o"></i> Timezone</label>
-        <input type="text" id="node-config-input-tz" placeholder="local">
+        <input type="text" id="node-config-input-tz">
     </div>
 </script>
 
@@ -52,45 +52,13 @@
             db: {value:"",required:true},
             tz: {value:""}
         },
+        credentials: {
+            user: {type: "text"},
+            password: {type: "password"}
+        },
         label: function() {
             return this.db;
-        },
-        oneditprepare: function() {
-            $.getJSON('MySQLdatabase/'+this.id,function(data) {
-                if (data.user) {
-                    $('#node-config-input-user').val(data.user);
-                }
-                if (data.hasPassword) {
-                    $('#node-config-input-pass').val('__PWRD__');
-                } else {
-                    $('#node-config-input-pass').val('');
-                }
-
-            });
-        },
-        oneditsave: function() {
-            var newUser = $('#node-config-input-user').val();
-            var newPass = $('#node-config-input-pass').val();
-            var credentials = {};
-            credentials.user = newUser;
-            if (newPass != '__PWRD__') {
-                credentials.password = newPass;
-            }
-            $.ajax({
-                url: 'MySQLdatabase/'+this.id,
-                type: 'POST',
-                data: credentials,
-                success:function(result){}
-            });
-        },
-        ondelete: function() {
-            $.ajax({
-                url: 'MySQLdatabase/'+this.id,
-                type: 'DELETE',
-                success: function(result) {}
-            });
         }
-
     });
 </script>
 
