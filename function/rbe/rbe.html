@@ -1,0 +1,72 @@
+<!--
+  Copyright 2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rbe">
+    <div class="form-row">
+        <label for="node-input-func"><i class="fa fa-wrench"></i> Mode</label>
+        <select type="text" id="node-input-func" style="width:74%;">
+            <option value="rbe">RBE - report if value changed</option>
+            <option value="deadband">Deadband - report if changed more than</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-bandgap">
+        <label for="node-input-gap"><i class="fa fa-random"></i> Band gap</label>
+        <input type="text" id="node-input-gap" placeholder="e.g. 10" style="width:71%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"/> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:71%;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="rbe">
+    <p>Report by Exception node - only passes on data if it has changed.</p>
+    <p>In RBE mode this node only outputs the msg if the <b>msg.payload</b> is
+    different to the previous one. Works on numbers and strings.</p>
+    <p>In deadband mode the incoming payload should contain a parseable <i>number</i> and is
+    output only if greater than + or - the <i>band gap</i> away from the previous output.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rbe',{
+        color:"#E2D96E",
+        category: 'function',
+        defaults: {
+            name: {value:""},
+            func: {value:"rbe"},
+            gap: {value:"",validate:RED.validators.regex(/^(\d*|)$/)}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "function.png",
+        label: function() {
+            return this.name||this.func||"rbe";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            //$( "#node-input-gap" ).spinner({min:0});
+            $("#node-input-func").on("change",function() {
+                if ($("#node-input-func").val() === "rbe") {
+                    $("#node-bandgap").hide();
+                } else {
+                    $("#node-bandgap").show();
+                }
+            });
+        }
+    });
+</script>
