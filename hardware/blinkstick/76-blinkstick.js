@@ -101,7 +101,7 @@ module.exports = function(RED) {
                         node.error("BlinkStick with serial number " + node.serial + " not found");
                     } else {
                         node.status({fill:"green",shape:"dot",text:"connected"});
-                        if (callback) callback();
+                        if (callback) { callback(); }
                     }
                 });
             } else {
@@ -112,7 +112,7 @@ module.exports = function(RED) {
                     node.error("No BlinkStick found");
                 } else {
                     node.status({fill:"green",shape:"dot",text:"connected"});
-                    if (callback) callback();
+                    if (callback) { callback(); }
                 }
             }
         };

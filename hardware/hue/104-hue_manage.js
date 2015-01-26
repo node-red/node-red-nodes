@@ -73,7 +73,7 @@ function HueNode(n) {
 
                 var msg2 = {};
                 msg2.topic = this.topic;
-                if (err) throw err;
+                if (err) { throw err; }
                 //check for found bridges
                 if(result[0]!=null) {
                     //save the IP address of the 1st bridge found
@@ -125,16 +125,20 @@ function HueNode(n) {
                     }
                     else {
                         //set lamp according to node settings
-                        if(node.lamp_status=="ON") 
-                             api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
-                        else
+                        if(node.lamp_status=="ON") {
+                            api.setLightState(node.lamp_id, state.on().rgb(hexToRgb(node.color).r,hexToRgb(node.color).g,hexToRgb(node.color).b).brightness(node.brightness)).then(displayResult).fail(displayError).done();
+                        }
+                        else {
                             api.setLightState(node.lamp_id, state.off()).then(displayResult).fail(displayError).done();
+                        }
                     }
 
-                    if(lamp!=-1)
+                    if(lamp!=-1) {
                         msg2.payload = 'Light with ID: '+lamp+ ' was set to '+myMsg.payload;
-                    else
+                    }
+                    else {
                         msg2.payload = 'Light with ID: '+node.lamp_id+ ' was set to '+node.lamp_status;
+                    }
                     node.send(msg2);
                 }
                 else {

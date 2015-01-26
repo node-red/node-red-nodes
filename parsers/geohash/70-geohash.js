@@ -27,18 +27,19 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg) {
+            var pos, lat, lon, len;
             if (msg.hasOwnProperty("location")) {
                 if (msg.location.hasOwnProperty("geohash")) {
-                    var pos = geohash.decode(msg.location.geohash);
+                    pos = geohash.decode(msg.location.geohash);
                     msg.location.lat = round(pos.latitude,5);
                     msg.location.lon = round(pos.longitude,5);
                     msg.location.error = { lat:round(pos.error.latitude,5), lon:round(pos.error.longitude,5) };
                     node.send(msg);
                 }
                 else {
-                    var lat = msg.location.lat;
-                    var lon = msg.location.lon;
-                    var len = parseInt(msg.location.precision || msg.location.payload || 9);
+                    lat = msg.location.lat;
+                    lon = msg.location.lon;
+                    len = parseInt(msg.location.precision || msg.location.payload || 9);
                     if (len < 1) { len = 1; }
                     if (len > 9) { len = 9; }
                     if (lat && lon) {
@@ -51,7 +52,7 @@ module.exports = function(RED) {
                 // try to decode it...
                 var regexp = new RegExp('^[a-z0-9]{1,9}$'); // can only contain a-z or 0-9 and length 1-9
                 if (regexp.test(msg.payload)) {
-                    var pos = geohash.decode(msg.payload);
+                    pos = geohash.decode(msg.payload);
                     msg.payload = { lat:round(pos.latitude,5), lon:round(pos.longitude,5) };
                     msg.payload.error = { lat:round(pos.error.latitude,5), lon:round(pos.error.longitude,5) };
                     node.send(msg);
@@ -74,9 +75,9 @@ module.exports = function(RED) {
                 else { node.warn("Unexpected string format - should either be lat,lon or geohash"); }
             }
             else if (typeof msg.payload === "object") {
-                var lat = msg.payload.lat || msg.payload.latitude;
-                var lon = msg.payload.lon || msg.payload.longitude;
-                var len = parseInt(msg.payload.precision || 9);
+                lat = msg.payload.lat || msg.payload.latitude;
+                lon = msg.payload.lon || msg.payload.longitude;
+                len = parseInt(msg.payload.precision || 9);
                 if (len < 1) { len = 1; }
                 if (len > 9) { len = 9; }
                 if (lat && lon) {

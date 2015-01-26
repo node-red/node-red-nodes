@@ -22,7 +22,7 @@ var querystring = require('querystring');
 RED.httpAdmin.get('/postgresdb/:id',function(req,res) {
     var credentials = RED.nodes.getCredentials(req.params.id);
     if (credentials) {
-        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!="")}));
+        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!=="")}));
     } else {
         res.send(JSON.stringify({}));
     }
@@ -41,12 +41,12 @@ RED.httpAdmin.post('/postgresdb/:id',function(req,res) {
     req.on('end', function(){
         var newCreds = querystring.parse(body);
         var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.user == null || newCreds.user == "") {
+        if (newCreds.user == null || newCreds.user === "") {
             delete credentials.user;
         } else {
             credentials.user = newCreds.user;
         }
-        if (newCreds.password == "") {
+        if (newCreds.password === "") {
             delete credentials.password;
         } else {
             credentials.password = newCreds.password||credentials.password;
@@ -95,7 +95,7 @@ function PostgresNode(n) {
 				else {
 					node.on('input', 
 						function(msg){
-							if(!msg.queryParameters) msg.queryParameters={};
+							if(!msg.queryParameters) { msg.queryParameters={}; }
 							node.clientdb.query(msg.payload,
 										 msg.queryParameters,
 										 function (err, results) {
@@ -116,7 +116,7 @@ function PostgresNode(n) {
     }
     
     this.on("close", function() {
-        if(node.clientdb) node.clientdb.end();
+        if(node.clientdb) { node.clientdb.end(); }
     });
 }
 

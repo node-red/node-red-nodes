@@ -20,10 +20,10 @@ module.exports = function(RED) {
 
     function MsgPackNode(n) {
         RED.nodes.createNode(this,n);
-        var node = this;
+        var node = this, l;
         this.on("input", function(msg) {
             if (Buffer.isBuffer(msg.payload)) {
-                var l = msg.payload.length;
+                l = msg.payload.length;
                 try {
                     msg.payload = msgpack.decode(msg.payload);
                     node.send(msg);
@@ -35,7 +35,7 @@ module.exports = function(RED) {
                 }
             }
             else {
-                var l = JSON.stringify(msg.payload).length;
+                l = JSON.stringify(msg.payload).length;
                 msg.payload = msgpack.encode(msg.payload);
                 node.send(msg);
                 node.status({text:l +" o->b "+ msg.payload.length});

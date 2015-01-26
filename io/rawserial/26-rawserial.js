@@ -23,9 +23,9 @@ module.exports = function(RED) {
     var pre = "\\\\.\\";
 
     if (!plat.match(/^win/)) {
+        pre = "";
         throw "Info : only really needed for Windows boxes without serialport npm module installed.";
         //util.log("[26-rawserial.js] Info : only really needed for Windows boxes without serialport npm module installed.");
-        pre = "";
     }
 
     function RawSerialInNode(n) {

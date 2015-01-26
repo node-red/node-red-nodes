@@ -52,7 +52,7 @@ module.exports = function(RED) {
             var titl = node.title || msg.topic || "Node-RED";
             var dev = node.deviceid || msg.deviceid;
             var channel = node.chan || msg.chan;
-            if (channel != undefined) {
+            if (channel !== undefined) {
                 dev = { channel_tag : channel };
             } else {
                 if (!isNaN(dev)) { dev = Number(dev); }

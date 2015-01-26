@@ -114,10 +114,13 @@ module.exports = function (RED) {
         this.topic = n.topic;                           // the topic is not currently used
         this.pin = n.pin;                               // The Beaglebone Black pin identifying string
         this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
-        if (n.activeLow)                                // Set the 'active' state 0 or 1 as appropriate
+        if (n.activeLow) {                              // Set the 'active' state 0 or 1 as appropriate
             this.activeState = 0;
-        else
+        }
+        else {
             this.activeState = 1;
+        }
+
         this.updateInterval = n.updateInterval*1000;    // How often to send totalActiveTime messages
         this.debounce = n.debounce;                     // Enable switch contact debouncing algorithm
         if (n.outputOn === "rising") {
@@ -224,7 +227,7 @@ module.exports = function (RED) {
         // payload, if possible. Otherwise clear the totalActiveTime (so we start counting
         // from zero again)
         var inputCallback = function (ipMsg) {
-            if (String(ipMsg.topic).search(/load/i) < 0 || isFinite(ipMsg.payload) == false) {
+            if (String(ipMsg.topic).search(/load/i) < 0 || isFinite(ipMsg.payload) === false) {
                 node.totalActiveTime = 0;
             } else {
                 node.totalActiveTime = Number(ipMsg.payload);
@@ -322,7 +325,7 @@ module.exports = function (RED) {
         // insensitive) and the payload is a valid number, set the count to that
         // number, otherwise set it to zero
         var inputCallback = function (msg) {
-            if (String(msg.topic).search(/load/i) < 0 || isFinite(msg.payload) == false) {
+            if (String(msg.topic).search(/load/i) < 0 || isFinite(msg.payload) === false) {
                 node.pulseCount = 0;
             } else {
                 node.pulseCount = Number(msg.payload);
