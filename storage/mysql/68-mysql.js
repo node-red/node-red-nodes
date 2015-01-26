@@ -101,7 +101,8 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (typeof msg.topic === 'string') {
                     //console.log("query:",msg.topic);
-                    node.mydbConfig.connection.query(msg.topic, function(err, rows) {
+                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                    node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                         if (err) { node.warn(err); }
                         else {
                             msg.payload = rows;

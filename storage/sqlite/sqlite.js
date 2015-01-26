@@ -57,7 +57,8 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (typeof msg.topic === 'string') {
                     //console.log("query:",msg.topic);
-                    node.mydbConfig.db.all(msg.topic, function(err, row) {
+                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                    node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
                         if (err) { node.warn(err); }
                         else {
                             msg.payload = row;

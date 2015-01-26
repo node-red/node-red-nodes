@@ -79,6 +79,7 @@
     <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
     By it's very nature it allows SQL injection... so <i>be careful out there...</i></p>
     <p><b>msg.topic</b> must hold the <i>query</i> for the database, and the result is returned in <b>msg.payload</b>.</p>
+    <p><b>msg.payload</b> can contain an array of values to bind to the topic.</p>
     <p>Typically the returned payload will be an array of the result rows.</p>
     <p>If nothing is found for the key then <i>null</i> is returned,</p>
     <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
