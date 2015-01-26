@@ -50,7 +50,7 @@ function HueNodeDiscovery(n) {
         //start with detecting the IP address of the Hue gateway in the local network:
         hue.locateBridges(function(err, result) {
             var msg = {};
-            if (err) throw err;
+            if (err) { throw err; }
             //check for found bridges
             if(result[0]!=null) {
                 //save the IP address of the 1st bridge found
@@ -61,7 +61,7 @@ function HueNodeDiscovery(n) {
                 var api = new HueApi(this.gw_ipaddress, node.username);
                 api.lights(function(err, lights) {
                     var msg2 = {};
-                    if (err) throw err;
+                    if (err) { throw err; }
                     var lights_discovered = JSON.stringify(lights, null, 2);
                     msg2.topic = "Lights";
                     msg2.payload = lights_discovered;
@@ -71,7 +71,7 @@ function HueNodeDiscovery(n) {
             }
             else {
                 //bridge not found:
-                var msg = {};
+                msg = {};
                 msg.payload = "Bridge not found!";
                 node.send(msg);
             }

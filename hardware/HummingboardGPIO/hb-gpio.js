@@ -147,7 +147,7 @@ module.exports = function(RED) {
         this.level = n.level || 0;
         this.out = n.out || "out";
         var node = this;
-        (node.out === "pwm") ? (node.op = "pwm") : (node.op = "write");
+        node.op = (node.out === "pwm") ? "pwm" : "write";
 
         if (node.pin !== undefined) {
             exec(gpioCommand+" mode "+node.pin+" "+node.out, function(err,stdout,stderr) {

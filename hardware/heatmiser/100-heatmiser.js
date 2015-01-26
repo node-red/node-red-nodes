@@ -147,6 +147,7 @@ module.exports = function(RED) {
 
         this.validateAndWrite = function(message) {
             for (var key in message.payload) {
+                if(message.payload.hasOwnProperty(key)) {
                     // Ensure our valid keys contain valid values
                     switch(key) {
                         case "runmode" :
@@ -206,10 +207,10 @@ module.exports = function(RED) {
                             // Set sane temp and time ranges and sanitise to float/int
                             var target = parseFloat(message.payload[key].target);
                             var hold = parseInt(message.payload[key].hold);
-                            (target > 30.0) ? message.payload[key].target = 30.0 : message.payload[key].target = target;
-                            (hold > 1440) ? message.payload[key].hold = 1440 : message.payload[key].hold = hold;
-                            (target <= 10.0) ? message.payload[key].target = 10.0 : message.payload[key].target = target;
-                            (hold <= 0) ? message.payload[key].hold = 0 : message.payload[key].hold = hold;
+                            message.payload[key].target = (target > 30.0) ? 30.0 : target;
+                            message.payload[key].hold = (hold > 1440) ?  1440 : hold;
+                            message.payload[key].target = (target <= 10.0) ? 10.0 : target;
+                            message.payload[key].hold = (hold <= 0) ? 0 : hold;
 
                             // Ensure hminnode runmode == heating first
                             if (hminnode.currentStatus.run_mode === "frost_protection") {
@@ -226,13 +227,14 @@ module.exports = function(RED) {
                         default :
                             break;
                     }
+                    // Valid set of key messages, construct DCB and write
+                    var dcb = message.payload;
+                    if (DEBUG) {
+                        hminnode.log("Injecting " + JSON.stringify(dcb));
+                    }
+                    hminnode.write(dcb);
                 }
-                // Valid set of key messages, construct DCB and write
-                var dcb = message.payload;
-                if (DEBUG) {
-                    hminnode.log("Injecting " + JSON.stringify(dcb));
-                }
-                hminnode.write(dcb);
+            }
         };
 
         this.on("input", function(message) {

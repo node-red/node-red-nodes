@@ -1,0 +1,3 @@
+[submodule "node-red"]
+	path = .node-red
+	url = https://github.com/node-red/node-red.git

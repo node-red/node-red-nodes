@@ -52,7 +52,7 @@ module.exports = function(RED) {
         req.on('end', function(){
             var newCreds = querystring.parse(body);
             var credentials = RED.nodes.getCredentials(req.params.id)||{};
-            if (newCreds.token == "") {
+            if (newCreds.token === "") {
                 delete credentials.token;
             } else {
                 credentials.token = newCreds.token;

@@ -53,7 +53,7 @@ RED.httpAdmin.post('/emoncms-server/:id',function(req,res) {
     req.on('end', function(){
         var newCreds = querystring.parse(body);
         var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.apikey == null || newCreds.apikey == "") {
+        if (newCreds.apikey == null || newCreds.apikey === "") {
             delete credentials.apikey;
         } else {
             credentials.apikey = newCreds.apikey;
@@ -72,9 +72,9 @@ function Emoncms(n) {
     this.apikey = sc.apikey;
 
     this.nodegroup = n.nodegroup || "";
-    var node = this;
-    if (this.baseurl.substring(0,5) === "https") { var http = require("https"); }
-    else { var http = require("http"); }
+    var node = this, http;
+    if (this.baseurl.substring(0,5) === "https") { http = require("https"); }
+    else { http = require("http"); }
     this.on("input", function(msg) {
         this.url = this.baseurl + '/input/post.json?';
         if(msg.payload.indexOf(':') > -1){
@@ -84,7 +84,7 @@ function Emoncms(n) {
         }
         this.url += '&apikey='+this.apikey;
         var nodegroup = this.nodegroup || msg.nodegroup;
-        if(nodegroup != ""){
+        if(nodegroup !== ""){
             this.url += '&node=' + nodegroup;
         }
         if(typeof msg.time !== 'undefined'){
