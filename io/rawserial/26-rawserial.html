@@ -56,6 +56,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="rawserial in">
+    <p><b>DEPERECATED :</b> Rawseerial is now deprecated as the serialport npm now provide pre-compiled binaries for Windows.</p>
     <p>Uses a simple read of the serial port as a file to input data.</p>
     <p>You MUST set the baud rate etc <i>externally</i> before starting Node-RED. For example.</p>
     <p>Windows<pre>mode COM1:9600,n,8,1</pre>
@@ -66,7 +67,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rawserial in',{
-        category: 'advanced-input',
+        category: 'deprecated',
         color:"BurlyWood",
         defaults: {
             name: {value:""},
@@ -99,6 +100,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="rawserial out">
+    <p><b>DEPERECATED :</b> Rawseerial is now deprecated as the serialport npm now provide pre-compiled binaries for Windows.</p>
     <p>Uses a simple file write to output <b>msg.payload</b> to the serial port.</p>
     <p>You MUST set the baud rate etc <i>externally</i> before starting Node-RED. For example.</p>
     <p>Windows<pre>mode COM1:9600,n,8,1</pre>
@@ -109,7 +111,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('rawserial out',{
-        category: 'advanced-input',
+        category: 'deprecated',
         color:"BurlyWood",
         defaults: {
             name: {value:""},
