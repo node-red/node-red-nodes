@@ -17,6 +17,7 @@
 -->
 
 <script type="text/x-red" data-template-name="HueNode">
+
   <div class="form-row">
      <label for="node-input-topic"><i class="fa fa-tasks"></i>Hue App Username:</label>
      <input type="text" id="node-input-username" placeholder="username">
@@ -28,7 +29,12 @@
   </div>
 
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i>Lamp Status:</label>
+     <label for="node-input-ip_address"><i class="fa fa-tag"></i>Hue Bridge IP Address:</label>
+     <input type="text" id="node-input-ip_address" placeholder="IP Address (optional)">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-lamp_status"><i class="fa fa-tag"></i>Lamp Status:</label>
     <select id="node-input-lamp_status" placeholder="lamp_status">
     <option value="AUTO">AUTO</option>
     <option value="ON">ON</option>
@@ -65,6 +71,8 @@
     </ul>
 
     <p>Please note, by setting the status to AUTO on the node configuration, the rest of the node parameters are ignored, you need to set all parameters through the message input.</p>
+    <p>By default, the node will search for Philips Hue Bridges. However, by specifying an IP address, you can find Hue systems when this may not be possible due to network configuration.
+    </p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -77,6 +85,7 @@
             username: {value:"", required:true},
             discovery_mode: {value: "", required:false},
             lamp_id: {value:"", required:false},
+            ip_address: {value:"", required:false},
             color: {value:"EBF5FF"},
             brightness: {value:"100"},
             lamp_status:{}
