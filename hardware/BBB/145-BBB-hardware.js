@@ -41,12 +41,16 @@ module.exports = function (RED) {
             bonescript.pinMode(pin, direction, callback);
         }
     } catch (e) {
-        bonescript = require("bonescript");
-        adjustName = function (pin) {
-            return pin;
-        };
-        setPinMode = function (pin, direction, callback) {
-            bonescript.pinMode(pin, direction, undefined, undefined, undefined, callback);
+        try {
+            bonescript = require("bonescript");
+            adjustName = function (pin) {
+                return pin;
+            };
+            setPinMode = function (pin, direction, callback) {
+                bonescript.pinMode(pin, direction, undefined, undefined, undefined, callback);
+            }
+        } catch (e) {
+            throw "Info : Ignoring Beaglebone specific node.";
         }
     }
 
