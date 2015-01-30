@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2013,2015 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@
 <script type="text/x-red" data-help-name="ledborg">
     <p>PiBorg LedBorg LED output node. Expects a <b>msg.payload</b> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
     <p>See <i><a href="http://www.piborg.com/ledborg/install" target="_new">the PiBorg site</a></i> for more information.</p>
-    <p>You can also use a <b>msg.payload</b> in the standard hex format "#rrggbb". The clip levels are :</p>
-    <p><pre>0x00 - 0x57 = off<br/>0x58 - 0xA7 = 50%<br/>0xA8 - 0xFF = fully on</pre></p>
+    <p>You can also use a <b>msg.payload</b> in the standard hex format "#rrggbb".</p>
     <p>You can also use the @cheerlight colour names - red, amber, green, blue, cyan, magenta, yellow, orange, pink, purple,
        white, warmwhite, black</p>
+    <p>You may also supply a comma seperated rrr,ggg,bbb where the value can be between 0 and 255.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('ledborg',{
-        category: 'Rapsberry Pi',
+        category: 'Raspberry Pi',
         color:"GoldenRod",
         defaults: {
             name: {value:""}
