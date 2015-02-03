@@ -14,7 +14,7 @@
     "keywords": [ "node-red", "growl", "notify"],
     "node-red"      : {
         "nodes"     : {
-            "notofy": "57-notify.js"
+            "notify": "57-notify.js"
         }
     },
     "author": {
