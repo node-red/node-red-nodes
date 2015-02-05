@@ -14,46 +14,48 @@
  * limitations under the License.
  **/
 
-var RED = require(process.env.NODE_RED_HOME + "/red/red");
+module.exports = function(RED) {
+    "use strict";
 
-function SmoothNode(n) {
-    RED.nodes.createNode(this, n);
-    this.action = n.action;
-    this.round = n.round || false;
-    this.count = Number(n.count);
-    var node = this;
-    var a = [];
-    var tot = 0;
-    var pop = 0;
-    var old = null;
+    function SmoothNode(n) {
+        RED.nodes.createNode(this, n);
+        this.action = n.action;
+        this.round = n.round || false;
+        this.count = Number(n.count);
+        var node = this;
+        var a = [];
+        var tot = 0;
+        var pop = 0;
+        var old = null;
 
-    this.on('input', function (msg) {
-        var n = Number(msg.payload);
-        if (!isNaN(n)) {
-            if ((node.action === "low") || (node.action === "high")) {
-                if (old == null) { old = n; }
-                old = old + (n - old) / node.count;
-                if (node.action === "low") { msg.payload = old; }
-                else { msg.payload = n - old; }
+        this.on('input', function (msg) {
+            var n = Number(msg.payload);
+            if (!isNaN(n)) {
+                if ((node.action === "low") || (node.action === "high")) {
+                    if (old == null) { old = n; }
+                    old = old + (n - old) / node.count;
+                    if (node.action === "low") { msg.payload = old; }
+                    else { msg.payload = n - old; }
+                }
+                else {
+                    a.push(n);
+                    if (a.length > node.count) { pop = a.shift(); }
+                    if (node.action === "max") {
+                        msg.payload = Math.max.apply(Math, a);
+                    }
+                    if (node.action === "min") {
+                        msg.payload = Math.min.apply(Math, a);
+                    }
+                    if (node.action === "mean") {
+                        tot = tot + n - pop;
+                        msg.payload = tot / a.length;
+                    }
+                }
+                if (node.round) { msg.payload = Math.round(msg.payload); }
+                node.send(msg);
             }
-            else {
-                a.push(n);
-                if (a.length > node.count) { pop = a.shift(); }
-                if (node.action === "max") {
-                    msg.payload = Math.max.apply(Math, a);
-                }
-                if (node.action === "min") {
-                    msg.payload = Math.min.apply(Math, a);
-                }
-                if (node.action === "mean") {
-                    tot = tot + n - pop;
-                    msg.payload = tot / a.length;
-                }
-            }
-            if (node.round) { msg.payload = Math.round(msg.payload); }
-            node.send(msg);
-        }
-        else { node.log("Not a number: "+msg.payload); }
-    });
+            else { node.log("Not a number: "+msg.payload); }
+        });
+    }
+    RED.nodes.registerType("smooth", SmoothNode);
 }
-RED.nodes.registerType("smooth", SmoothNode);

@@ -35,10 +35,10 @@ module.exports = function(RED) {
                 }
             }
             else {
-                var l = JSON.stringify(msg.payload).length;
+                var le = JSON.stringify(msg.payload).length;
                 msg.payload = msgpack.encode(msg.payload);
                 node.send(msg);
-                node.status({text:l +" o->b "+ msg.payload.length});
+                node.status({text:le +" o->b "+ msg.payload.length});
             }
         });
     }

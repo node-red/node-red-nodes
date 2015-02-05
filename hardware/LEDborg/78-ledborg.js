@@ -42,9 +42,6 @@ module.exports = function(RED) {
 
     function LedBorgNode(n) {
         RED.nodes.createNode(this,n);
-        var node = this;
-
-        RED.nodes.createNode(this,n);
         this.pin = n.pin;
         this.set = n.set || false;
         this.level = n.level || 0;
@@ -69,10 +66,10 @@ module.exports = function(RED) {
             }
             else if (p3.test(msg.payload)) {
                 var c = msg.payload.split(",");
-                var r = Math.floor(parseInt(c[0])*100/256).toString();
-                var g = Math.floor(parseInt(c[1])*100/256).toString();
-                var b = Math.floor(parseInt(c[2])*100/256).toString();
-                rgb = r+","+g+","+b;
+                var r1 = Math.floor(parseInt(c[0])*100/256).toString();
+                var g1 = Math.floor(parseInt(c[1])*100/256).toString();
+                var b1 = Math.floor(parseInt(c[2])*100/256).toString();
+                rgb = r1+","+g1+","+b1;
             }
             else {
                 // you can add fancy colours by name here if you want...

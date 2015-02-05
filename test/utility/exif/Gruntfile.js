@@ -15,7 +15,8 @@
  **/
 
 module.exports = function(grunt) {
-    
+    "use strict";
+
     // Project configuration.
     grunt.initConfig({
         simplemocha: {
@@ -51,7 +52,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-lint-inline');
 
-    grunt.registerTask('default',
-                       ['jshint:all', 'simplemocha:all']);
-
+    grunt.registerTask('default', ['jshint:all', 'simplemocha:all']);
 };
