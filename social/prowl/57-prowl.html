@@ -32,7 +32,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="node-tip"><b>Note:</b> Using credentials from global pushkey.js file.</div>
 </script>
 
 <script type="text/x-red" data-help-name="prowl">
@@ -52,6 +51,9 @@
             priority: {value:0,required:true,validate:RED.validators.number()},
             name: {value:""}
         },
+        credentials: {
+            pushkey: {type: "password"}
+        }
         color:"#a7c9a0",
         inputs:1,
         outputs:0,
@@ -62,37 +64,6 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            $.getJSON('prowl/'+this.id,function(data) {
-                if (data.hasPassword) {
-                    $('#node-config-input-pushkey').val('__PWRD__');
-                } else {
-                    $('#node-config-input-pushkey').val('');
-                }
-                if (data.global) $('#node-tip').show();
-                else $('#node-tip').hide();
-            });
-        },
-        oneditsave: function() {
-            var credentials = {};
-            var newPass = $('#node-config-input-pushkey').val();
-            if (newPass != '__PWRD__') {
-                credentials.pushkey = newPass;
-                $.ajax({
-                    url: 'prowl/'+this.id,
-                    type: 'POST',
-                    data: credentials,
-                    success: function(result){}
-                });
-            }
-        },
-        ondelete: function() {
-            $.ajax({
-                url: 'prowl/'+this.id,
-                type: 'DELETE',
-                success: function(result) {}
-            });
         }
     });
 </script>

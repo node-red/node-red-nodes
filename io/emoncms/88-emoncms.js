@@ -20,47 +20,11 @@ function EmoncmsServerNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
     this.name = n.name;
-    var credentials = RED.nodes.getCredentials(n.id);
-    if (credentials) {
-        this.apikey = credentials.apikey;
-    }
-
 }
-RED.nodes.registerType("emoncms-server",EmoncmsServerNode);
-
-var querystring = require('querystring');
-
-RED.httpAdmin.get('/emoncms-server/:id',function(req,res) {
-    var credentials = RED.nodes.getCredentials(req.params.id);
-    if (credentials) {
-        res.send(JSON.stringify({apikey:credentials.apikey}));
-    } else {
-        res.send(JSON.stringify({}));
+RED.nodes.registerType("emoncms-server",EmoncmsServerNode,{
+    credentials: {
+        apikey: {type:"text"}
     }
-});
-
-RED.httpAdmin.delete('/emoncms-server/:id',function(req,res) {
-    RED.nodes.deleteCredentials(req.params.id);
-    res.send(200);
-});
-
-RED.httpAdmin.post('/emoncms-server/:id',function(req,res) {
-
-    var body = "";
-    req.on('data', function(chunk) {
-        body+=chunk;
-    });
-    req.on('end', function(){
-        var newCreds = querystring.parse(body);
-        var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.apikey == null || newCreds.apikey == "") {
-            delete credentials.apikey;
-        } else {
-            credentials.apikey = newCreds.apikey;
-        }
-        RED.nodes.addCredentials(req.params.id,credentials);
-        res.send(200);
-    });
 });
 
 function Emoncms(n) {
@@ -69,7 +33,7 @@ function Emoncms(n) {
     var sc = RED.nodes.getNode(this.emonServer);
 
     this.baseurl = sc.server;
-    this.apikey = sc.apikey;
+    this.apikey = sc.credentials.apikey;
 
     this.nodegroup = n.nodegroup || "";
     var node = this;

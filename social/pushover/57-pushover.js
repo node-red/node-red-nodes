@@ -23,7 +23,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
         this.priority = n.priority;
-        var credentials = RED.nodes.getCredentials(n.id);
+        var credentials = this.credentials;
         if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
         else { this.error("No Pushover api token set"); }
         if ((credentials) && (credentials.hasOwnProperty("deviceid"))) { this.deviceid = credentials.deviceid; }
@@ -69,44 +69,10 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("pushover",PushoverNode);
-
-    var querystring = require('querystring');
-
-    RED.httpAdmin.get('/pushover/:id',function(req,res) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        if (credentials) {
-            res.send(JSON.stringify({deviceid:credentials.deviceid,hasPassword:(credentials.pushkey&&credentials.pushkey!=="")}));
-        } else {
-            res.send(JSON.stringify({}));
-        }
-    });
-
-    RED.httpAdmin.delete('/pushover/:id',function(req,res) {
-        RED.nodes.deleteCredentials(req.params.id);
-        res.send(200);
-    });
-
-    RED.httpAdmin.post('/pushover/:id',function(req,res) {
-        var body = "";
-        req.on('data', function(chunk) {
-            body+=chunk;
-        });
-        req.on('end', function(){
-            var newCreds = querystring.parse(body);
-            var credentials = RED.nodes.getCredentials(req.params.id)||{};
-            if (newCreds.deviceid === null || newCreds.deviceid === "") {
-                delete credentials.deviceid;
-            } else {
-                credentials.deviceid = newCreds.deviceid;
-            }
-            if (newCreds.pushkey === "") {
-                delete credentials.pushkey;
-            } else {
-                credentials.pushkey = newCreds.pushkey||credentials.pushkey;
-            }
-            RED.nodes.addCredentials(req.params.id,credentials);
-            res.send(200);
-        });
+    RED.nodes.registerType("pushover",PushoverNode,{
+        credentials: {
+            deviceid: {type:"text"},
+            pushkey: {type: "password"}
+        }       
     });
 }

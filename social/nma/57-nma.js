@@ -21,7 +21,7 @@ module.exports = function(RED) {
     function NMANode(n) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
-        var credentials = RED.nodes.getCredentials(n.id);
+        var credentials = this.credentials;
         if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
         else { this.error("No NMA API key set"); }
         var node = this;
@@ -50,39 +50,9 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("nma",NMANode);
-
-    var querystring = require('querystring');
-
-    RED.httpAdmin.get('/nma/:id',function(req,res) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        if (credentials) {
-            res.send(JSON.stringify({hasPassword:(credentials.pushkey&&credentials.pushkey!=="")}));
-        } else {
-            res.send(JSON.stringify({}));
+    RED.nodes.registerType("nma",NMANode, {
+        credentials: {
+            pushkey: {type: "password"}
         }
-    });
-
-    RED.httpAdmin.delete('/nma/:id',function(req,res) {
-        RED.nodes.deleteCredentials(req.params.id);
-        res.send(200);
-    });
-
-    RED.httpAdmin.post('/nma/:id',function(req,res) {
-        var body = "";
-        req.on('data', function(chunk) {
-            body+=chunk;
-        });
-        req.on('end', function(){
-            var newCreds = querystring.parse(body);
-            var credentials = RED.nodes.getCredentials(req.params.id)||{};
-            if (newCreds.pushkey === "") {
-                delete credentials.pushkey;
-            } else {
-                credentials.pushkey = newCreds.pushkey||credentials.pushkey;
-            }
-            RED.nodes.addCredentials(req.params.id,credentials);
-            res.send(200);
-        });
     });
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2014 IBM Corp.
+ * Copyright 2013,2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,56 +26,19 @@ function XMPPServerNode(n) {
     this.server = n.server;
     this.port = n.port;
     this.nickname = n.nickname;
-    var credentials = RED.nodes.getCredentials(n.id);
+    var credentials = this.credentials;
     if (credentials) {
         this.username = credentials.user;
         this.password = credentials.password;
     }
 }
-RED.nodes.registerType("xmpp-server",XMPPServerNode);
-
-var querystring = require('querystring');
-
-RED.httpAdmin.get('/xmpp-server/:id',function(req,res) {
-    var credentials = RED.nodes.getCredentials(req.params.id);
-    if (credentials) {
-        res.send(JSON.stringify({user:credentials.user,hasPassword:(credentials.password&&credentials.password!=="")}));
-    } else if (xmppkey && xmppkey.jid && xmppkey.password) {
-        RED.nodes.addCredentials(req.params.id,{user:xmppkey.jid, password:xmppkey.password, global:true});
-        credentials = RED.nodes.getCredentials(req.params.id);
-        res.send(JSON.stringify({user:credentials.user,global:credentials.global,hasPassword:(credentials.password&&credentials.password!=="")}));
-    } else {
-        res.send(JSON.stringify({}));
+RED.nodes.registerType("xmpp-server",XMPPServerNode,{
+    credentials: {
+        user: {type:"text"},
+        password: {type: "password"}
     }
 });
 
-RED.httpAdmin.delete('/xmpp-server/:id',function(req,res) {
-    RED.nodes.deleteCredentials(req.params.id);
-    res.send(200);
-});
-
-RED.httpAdmin.post('/xmpp-server/:id',function(req,res) {
-    var body = "";
-    req.on('data', function(chunk) {
-        body+=chunk;
-    });
-    req.on('end', function(){
-        var newCreds = querystring.parse(body);
-        var credentials = RED.nodes.getCredentials(req.params.id)||{};
-        if (newCreds.user == null || newCreds.user === "") {
-            delete credentials.user;
-        } else {
-            credentials.user = newCreds.user;
-        }
-        if (newCreds.password === "") {
-            delete credentials.password;
-        } else {
-            credentials.password = newCreds.password||credentials.password;
-        }
-        RED.nodes.addCredentials(req.params.id,credentials);
-        res.send(200);
-    });
-});
 
 
 function XmppInNode(n) {

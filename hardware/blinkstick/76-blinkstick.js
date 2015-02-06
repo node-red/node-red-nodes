@@ -248,11 +248,9 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("blinkstick",BlinkStick);
 
-    RED.httpAdmin.get("/blinksticklist",function(req,res) {
+    RED.httpAdmin.get("/blinksticklist", RED.auth.needsPermission("blinkstick.read"), function(req,res) {
         blinkstick.findAllSerials(function(serials) {
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.write(JSON.stringify(serials));
-            res.end();
+            res.json(serials);
         });
     });
 };

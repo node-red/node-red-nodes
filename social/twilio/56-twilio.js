@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Andrew D Lindsay @AndrewDLindsay
+ * Copyright 2014, 2015 Andrew D Lindsay @AndrewDLindsay
  * http://blog.thiseldo.co.uk
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,41 +25,8 @@ module.exports = function(RED) {
     catch(err) {
     }
 
-    var querystring = require('querystring');
-
-    RED.httpAdmin.get('/twilio-api/global',function(req,res) {
-        res.send(JSON.stringify({hasToken:!(twiliokey && twiliokey.account && twiliokey.authtoken)}));
-    });
-    RED.httpAdmin.get('/twilio-api/:id',function(req,res) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        if (credentials) {
-            res.send(JSON.stringify({hasToken:(credentials.token&&credentials.token!=="")}));
-        } else {
-            res.send(JSON.stringify({}));
-        }
-    });
-
-    RED.httpAdmin.delete('/twilio-api/:id',function(req,res) {
-        RED.nodes.deleteCredentials(req.params.id);
-        res.send(200);
-    });
-
-    RED.httpAdmin.post('/twilio-api/:id',function(req,res) {
-        var body = "";
-        req.on('data', function(chunk) {
-            body+=chunk;
-        });
-        req.on('end', function(){
-            var newCreds = querystring.parse(body);
-            var credentials = RED.nodes.getCredentials(req.params.id)||{};
-            if (newCreds.token == "") {
-                delete credentials.token;
-            } else {
-                credentials.token = newCreds.token;
-            }
-            RED.nodes.addCredentials(req.params.id,credentials);
-            res.send(200);
-        });
+    RED.httpAdmin.get('/twilio-api/global', RED.auth.needsPermission("twilio.read"), function(req,res) {
+        res.json({hasToken:!(twiliokey && twiliokey.account && twiliokey.authtoken)});
     });
 
     function TwilioAPINode(n) {
@@ -67,12 +34,16 @@ module.exports = function(RED) {
         this.sid = n.sid;
         this.from = n.from;
         this.name = n.name;
-        var credentials = RED.nodes.getCredentials(n.id);
+        var credentials = this.credentials;
         if (credentials) {
             this.token = credentials.token;
         }
     }
-    RED.nodes.registerType("twilio-api",TwilioAPINode);
+    RED.nodes.registerType("twilio-api",TwilioAPINode,{
+        credentials: {
+            token: "password"
+        }
+    });
 
 
     function TwilioOutNode(n) {

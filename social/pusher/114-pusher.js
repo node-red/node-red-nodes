@@ -3,7 +3,7 @@
 * Subscription module for the Pusher service (www.pusher.com)
 * Requires 'pusher' and 'pusher-client' modules.
 *
-* Copyright 2014 Charalampos Doukas, @BuildingIoT
+* Copyright 2014, 2015 Charalampos Doukas, @BuildingIoT
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 
         var node = this;
-        var credentials = RED.nodes.getCredentials(n.id);
+        var credentials = this.credentials;
 
         if ((credentials) && (credentials.hasOwnProperty("pusherappkey_sub"))) { this.appkey = credentials.pusherappkey_sub; }
         else { this.error("No Pusher app key set for input node"); }
@@ -61,7 +61,7 @@ module.exports = function(RED) {
 
         var node = this;
 
-        var credentials = RED.nodes.getCredentials(n.id);
+        var credentials = this.credentials;
 
         if ((credentials) && (credentials.hasOwnProperty("pusherappid"))) { this.appid = credentials.pusherappid; }
         else { this.error("No Pusher api token set"); }
@@ -99,59 +99,16 @@ module.exports = function(RED) {
         node.log("Error: "+err);
     };
 
-    RED.nodes.registerType("pusher in",PusherNode);
-    RED.nodes.registerType("pusher out",PusherNodeSend);
-
-    var querystring = require('querystring');
-
-    RED.httpAdmin.get('/pusher/:id',function(req,res) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        if (credentials) {
-            res.send(JSON.stringify({pusherappid:credentials.pusherappid,pusherappsecret:credentials.pusherappsecret, pusherappkey:credentials.pusherappkey, pusherappkey_sub:credentials.pusherappkey_sub}));
-        } else {
-            res.send(JSON.stringify({}));
+    RED.nodes.registerType("pusher in",PusherNode,{
+        credentials: {
+            pusherappkey_sub: "text"
+        }       
+    });
+    RED.nodes.registerType("pusher out",PusherNodeSend,{
+        credentials: {
+            pusherappid: {type:"text"},
+            pusherappkey: {type:"text"},
+            pusherappsecret: {type:"password"}
         }
-    });
-
-    RED.httpAdmin.delete('/pusher/:id',function(req,res) {
-        RED.nodes.deleteCredentials(req.params.id);
-        res.send(200);
-    });
-
-    RED.httpAdmin.post('/pusher/:id',function(req,res) {
-        var body = "";
-        req.on('data', function(chunk) {
-            body+=chunk;
-        });
-        req.on('end', function(){
-            var newCreds = querystring.parse(body);
-            var credentials = RED.nodes.getCredentials(req.params.id)||{};
-
-            if (newCreds.pusherappid === null || newCreds.pusherappid === "") {
-                delete credentials.pusherappid;
-            } else {
-                credentials.pusherappid = newCreds.pusherappid;
-            }
-            if (newCreds.pusherappkey === "") {
-                delete credentials.pusherappkey;
-            } else {
-                credentials.pusherappkey = newCreds.pusherappkey||credentials.pusherappkey;
-            }
-
-            if (newCreds.pusherappsecret === "") {
-                delete credentials.pusherappsecret;
-            } else {
-                credentials.pusherappsecret = newCreds.pusherappsecret||credentials.pusherappsecret;
-            }
-
-            if (newCreds.pusherappkey_sub === "") {
-                delete credentials.pusherappkey_sub;
-            } else {
-                credentials.pusherappkey_sub = newCreds.pusherappkey_sub||credentials.pusherappkey_sub;
-            }
-
-            RED.nodes.addCredentials(req.params.id,credentials);
-            res.send(200);
-        });
     });
 }

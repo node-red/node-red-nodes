@@ -44,6 +44,9 @@
             title: {value:""},
             name: {value:""}
         },
+        credentials: {
+            pushkey: {type: "password"}
+        },
         color:"#a7c9a0",
         inputs:1,
         outputs:0,
@@ -54,35 +57,6 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            $.getJSON('nma/'+this.id,function(data) {
-                if (data.hasPassword) {
-                    $('#node-config-input-pushkey').val('__PWRD__');
-                } else {
-                    $('#node-config-input-pushkey').val('');
-                }
-            });
-        },
-        oneditsave: function() {
-            var credentials = {};
-            var newPass = $('#node-config-input-pushkey').val();
-            if (newPass != '__PWRD__') {
-                credentials.pushkey = newPass;
-                $.ajax({
-                    url: 'nma/'+this.id,
-                    type: 'POST',
-                    data: credentials,
-                    success: function(result){}
-                });
-            }
-        },
-        ondelete: function() {
-            $.ajax({
-                url: 'nma/'+this.id,
-                type: 'DELETE',
-                success: function(result) {}
-            });
         }
     });
 </script>

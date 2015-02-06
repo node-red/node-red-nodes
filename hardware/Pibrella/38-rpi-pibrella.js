@@ -231,7 +231,7 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("rpi-pibrella out",PibrellaOut);
 
-    RED.httpAdmin.get('/rpi-pibpins/:id',function(req,res) {
-        res.send( JSON.stringify(pinsInUse) );
+    RED.httpAdmin.get('/rpi-pibpins/:id',RED.auth.needsPermission('rpi-pibrella.read'),function(req,res) {
+        res.json(pinsInUse);
     });
 }
