@@ -192,19 +192,54 @@ module.exports = function(RED) {
 
         this.on("input", function(msg) {
             if (typeof(msg.payload) === 'object' ) {
-                var data = validatePayloadObject(msg.payload);
-
-                if (typeof(data) === 'object') {
-                    node.task = data.task ? data.task : node.task;
-                    node.delay = data.delay ? data.delay : node.delay;
-                    node.repeats = data.repeats ? data.repeats : node.repeats;
-                    node.duration = data.duration ? data.duration : node.duration;
-                    node.steps = data.steps ? data.steps : node.steps;
-                    node.repeat = data.repeat ? data.repeat : node.repeat;
-                    node.color = data.color ? data.color : node.color;
-                } else {
-                    node.error(data);
-                    return;
+                // if it's an array then hopefully it's r,g,b,r,g,b or name,name,name
+                if (Array.isArray(msg.payload)) {
+                    if (Object.size(node.led) !== 0) {
+                        node.led.setMode(2); // put it into ws2812B LED mode
+                        var data = [];
+                        for (var i = 0; i < msg.payload.length; i++) {
+                            if (typeof msg.payload[i] === "string") { // if string then assume must be colour names
+                                var params = node.led.interpretParameters(msg.payload[i]); // lookup colour code from name
+                                if (params) {
+                                    data.push(params.green);
+                                    data.push(params.red);
+                                    data.push(params.blue);
+                                }
+                                else { node.warn("invalid colour: "+msg.payload[i]); }
+                            }
+                            else { // otherwise lets use numbers 0-255
+                                data.push(msg.payload[i+1]);
+                                data.push(msg.payload[i]);
+                                data.push(msg.payload[i+2]);
+                                i += 2;
+                            }
+                        }
+                        if ((data.length % 3) === 0) { // by now length must be a multiple of 3
+                            node.led.setColors(0, data, function(err) {
+                                if (err) { node.log(err); }
+                            });
+                        }
+                        else {
+                            node.warn("Colour array length not / 3");
+                        }
+                        return;
+                    } // else if no blinkstick let it get caught below
+                }
+                // not an array - must be the "normal" object....
+                else {
+                    var data = validatePayloadObject(msg.payload);
+                    if (typeof(data) === 'object') {
+                        node.task = data.task ? data.task : node.task;
+                        node.delay = data.delay ? data.delay : node.delay;
+                        node.repeats = data.repeats ? data.repeats : node.repeats;
+                        node.duration = data.duration ? data.duration : node.duration;
+                        node.steps = data.steps ? data.steps : node.steps;
+                        node.repeat = data.repeat ? data.repeat : node.repeat;
+                        node.color = data.color ? data.color : node.color;
+                    } else {
+                        node.error(data);
+                        return;
+                    }
                 }
 
             } else if (p1.test(msg.payload)) {

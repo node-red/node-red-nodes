@@ -71,7 +71,9 @@
         <li><b>"random"</b> will generate a random color</li>
         <li><i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">Standard HTML color</a></i> name</li>
         <li><b>object</b> can override any of the parameters</li>
+        <li><b>array</b> of colours for a neopixel rgb strip - either name,name,... or r,g,b,r,g,b,... where r,g,b are 0 to 255.</li>
     </ul>
+    <p>If using a neopixel strip it <i>must</i> be wired to the red or R channel of the blinkstick.</p>
     <p>An object payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
 <pre>
 { 'color': 'blue' }
