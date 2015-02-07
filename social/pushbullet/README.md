@@ -13,9 +13,23 @@ Run the following command in the root directory of your Node-RED install
 
 Usage
 -----
+### Pushbullet output node
+Uses PushBullet to push <code>msg.payload</code> to a device that has the PushBullet app installed.
+* Optionally uses <code>msg.topic</code> to set the title, if not already set in the properties.
+* Optionally uses <code>msg.pushtype</code> to set the type of the push, if not already set in the properties.
+* Optionally uses <code>msg.deviceid</code> to set the device ID, if not already set in the properties.
 
-Uses PushBullet to push the <b>msg.payload</b> to a device that has the PushBullet app installed.
+You can also push to any channels that you own either configured or via <code>msg.channel</code>.
 
-Optionally uses <b>msg.topic</b> to set the title, if not already set in the properties.
+The node can also *dismiss* and *delete* any push and *update* items in a pushed list. In this case <code>msg.data.iden</code> must be set to a valid push id, if <code>msg</code> originates from the Pushbullet input node this value is already set.
 
-You need to configure both your <i>API key</i> and the target <i>device ID</i>. The device ID may be passed in as <b>msg.deviceid</b>. You can set these per node in the edit dialog.
+### Pushbullet input node
+Receives Pushbullets from all devices. Messages contain the following data:
+* <code>msg.pushtype</code>: type of message
+* <code>msg.topic</code>: topic information from the push
+* <code>msg.payload</code>: main content of the push
+* <code>msg.data</code>: original object from the pushbullet API containing e.g. sender, receiver and message ids.
+
+Pushes of type <i>link</i> and <i>file</i> will also have <code>msg.message</code> containing the message associated with the push.
+
+For further details of see <a href="https://docs.pushbullet.com/stream/">Pushbullet Stream API</a> and <a href="https://docs.pushbullet.com/v2/pushes/">Pushbullet Push API</a>.
