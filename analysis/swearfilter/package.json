@@ -3,7 +3,7 @@
     "version"       : "0.0.1",
     "description"   : "A Node-RED node that attempts to filter out messages containing swearwords.",
     "dependencies"  : {
-        "badwords"   : "0.0.1"
+        "badwords"   : "0.0.3"
     },
     "repository" : {
         "type":"git",
