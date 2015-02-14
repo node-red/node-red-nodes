@@ -33,8 +33,8 @@ module.exports = function(RED) {
             }
             else {
                 var n = parseFloat(msg.payload);
-                if (previous == null) { previous = n - node.gap; }
                 if (!isNaN(n)) {
+                    if (previous == null) { previous = n - node.gap; }
                     if (Math.abs(n - previous) >= node.gap) {
                         previous = n;
                         node.send(msg);
