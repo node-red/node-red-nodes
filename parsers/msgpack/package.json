@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-msgpack",
-    "version"       : "0.0.3",
+    "version"       : "0.0.4",
     "description"   : "A Node-RED node to pack and unpack objects to msgpack format",
     "dependencies"  : {
         "msgpack-js"   : "0.3.0"
@@ -11,8 +11,8 @@
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "msgpack" ],
-    "node-red"      : {
-        "nodes"     : {
+    "node-red" : {
+        "nodes" : {
             "msgpack": "70-msgpack.js"
         }
     },

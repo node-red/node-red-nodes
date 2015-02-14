@@ -16,8 +16,6 @@ Usage
 
 Uses the <a href="https://www.npmjs.org/package/msgpack">msgpack npm</a> to pack and unpack msg.payload objects to <a href="http://msgpack.org/">msgpack</a> format buffers.
 
-If the input is an object it converts it to a msgpack buffer.
+If the input is NOT a buffer it converts it into a msgpack buffer.
 
-If the input is a msgpack buffer it converts it back to an object.
-
-Current only supports msg.payloads of type object.
+If the input is a msgpack buffer it converts it back to the original type.
