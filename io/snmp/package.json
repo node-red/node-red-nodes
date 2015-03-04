@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-snmp",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that looks for SNMP oids.",
+    "dependencies"  : {
+        "net-snmp"  : "1.1.13"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/snmp"
+    },
+    "license": "Apache v2",
+    "keywords": [ "node-red", "snmp", "oid" ],
+    "node-red"      : {
+        "nodes"     : {
+            "snmp": "snmp.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

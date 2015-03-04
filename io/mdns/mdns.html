@@ -1,0 +1,65 @@
+<!--
+  Copyright 2015 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="discovery">
+    <div class="form-row">
+        <label for="node-input-service"><i class="icon-gear"></i> Service</label>
+        <input type="text" id="node-input-service" placeholder="_http._tcp">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">The service <i>must</i> start with an underscore _ and end ._tcp or ._udp</div>
+</script>
+
+<script type="text/x-red" data-help-name="discovery">
+    <p>Provides a Bonjour / Avahi / Zeroconf discovery node.</p>
+    <p><b>msg.payload</b> contains the service object on both arrival and leaving.</p>
+    <p><b>msg.state</b> contains boolean true or false depending if the service has arrived (true) or gone away (false).</p>
+    <p>Within the msg.payload object the most interesting things are:
+    <ul><li>msg.payload.name</li>
+    <li>msg.payload.interface</li>
+    <li>msg.payload.port</li>
+    <li>msg.payload.addresses</li>
+    <li>msg.payload.txtRecord</li></ul></p>
+    <p>For a full list of official service types see <i><a href="http://www.dns-sd.org/ServiceTypes.html" target="_new">this list</a></i>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('discovery',{
+        category: 'network-input',
+        color:"palegoldenrod",
+        defaults: {
+            name: {value:""},
+            topic: {value:""},
+            service: {value:"",required:true,validate:RED.validators.regex(/^_.*\._(tc|ud)p$/)}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "bonjour.png",
+        label: function() {
+            return this.name||this.service||"discovery";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
