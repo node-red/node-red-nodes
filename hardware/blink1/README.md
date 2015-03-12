@@ -3,6 +3,13 @@ node-red-node-blink1
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://thingm.com/products/blink-1/" target="_new">Thingm Blink(1)</a> LED.
 
+Pre-requisites
+--------------
+
+As the blink1 is a USB HID device you may need some extra hardware libraries as
+documented <a href="https://www.npmjs.com/package/node-blink1" target="_new">here</a>
+and <a href="https://github.com/todbot/blink1/blob/master/linux/51-blink1.rules" target="_new">here</a>.
+
 Install
 -------
 

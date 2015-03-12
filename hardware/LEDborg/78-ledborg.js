@@ -74,7 +74,7 @@ module.exports = function(RED) {
             else {
                 // you can add fancy colours by name here if you want...
                 // these are the @cheerlight ones.
-                var colors = {"red":"200","green":"020","blue":"002","cyan":"022","white":"222","pink":"201",
+                var colors = {"red":"200","green":"020","blue":"002","cyan":"022","white":"222","pink":"201","oldlace":"221",
                     "warmwhite":"221","purple":"101","magenta":"202","yellow":"220","amber":"220","orange":"210","black":"000"}
                 if (msg.payload.toLowerCase() in colors) {
                     rgb = colors[msg.payload.toLowerCase()];
