@@ -54,7 +54,7 @@ module.exports = function(RED) {
                             // these are the @cheerlight ones.
                             var colors = {"red":"#FF0000","green":"#00FF00","blue":"#0000FF","cyan":"#00FFFF",
                                 "white":"#FFFFFF","warmwhite":"#FDF5E6","oldlace":"#FDF5E6","purple":"#800080","magenta":"#FF00FF",
-                                "yellow":"#FFFF00","amber":"#FFD200","orange":"#FFA500","black":"#000000","pink","#FF69B4"}
+                                "yellow":"#FFFF00","amber":"#FFD200","orange":"#FFA500","black":"#000000","pink":"#FF69B4"}
                             if (msg.payload.toLowerCase() in colors) {
                                 var c = colors[msg.payload.toLowerCase()];
                                 r = parseInt(c.slice(1,3),16);

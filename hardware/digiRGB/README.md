@@ -6,7 +6,8 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a h
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in the home directory of your Node-RED install.
+This is usually `~/.node-red`
 
     npm install node-red-node-digirgb
 

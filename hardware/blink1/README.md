@@ -13,7 +13,8 @@ and <a href="https://github.com/todbot/blink1/blob/master/linux/51-blink1.rules"
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in the user directory of your Node-RED install.
+This is usually `~/.node-red`
 
     npm install node-red-node-blink1
 

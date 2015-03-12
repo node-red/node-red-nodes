@@ -24,7 +24,8 @@
 
 <script type="text/x-red" data-help-name="digiRGB">
     <p>Simple output node to drive digispark RGB</p>
-    <p>Requires <b>msg.payload</b> to be of the form 'r,g,b'</p>
+    <p>Requires <b>msg.payload</b> to be of the form 'r,g,b' decimals 0-255, or a hex string "#rrggbb". For example:</p>
+    <ul><li>Red : "255,0,0"</li><li>Green : "#00FF00"</li></ul>
 </script>
 
 <script type="text/javascript">

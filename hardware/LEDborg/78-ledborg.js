@@ -24,17 +24,17 @@ module.exports = function(RED) {
     var gpioCommand = __dirname+'/nrgpio';
 
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //util.log("Info : Ignoring Raspberry Pibrella specific node.");
-        throw "Info : Ignoring Raspberry Pibrella specific node.";
+        //util.log("Info : Ignoring Raspberry LEDborg specific node.");
+        throw "Info : Ignoring Raspberry LEDborg specific node.";
     }
 
     if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
-        util.log("[rpi-pibrella] Info : Can't find RPi.GPIO python library.");
+        util.log("[rpi-ledborg] Info : Can't find RPi.GPIO python library.");
         throw "Warning : Can't find RPi.GPIO python library.";
     }
 
     if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
-        util.log("[rpi-pibrella] Error : "+gpioCommand+" needs to be executable.");
+        util.log("[rpi-ledborg] Error : "+gpioCommand+" needs to be executable.");
         throw "Error : nrgpio must to be executable.";
     }
 
