@@ -58,6 +58,7 @@ module.exports = function (RED) {
     function AnalogueInputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
+        this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
 
         // Store local copies of the node configuration (as defined in the .html)
         this.topic = n.topic;
