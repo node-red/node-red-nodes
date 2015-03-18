@@ -32,9 +32,9 @@ module.exports = function(RED) {
                  node.log("opened "+node.dbname+" ok");
             });
             node.db.on('error', function(err) {
-                node.warn(err);
+                node.error(err);
                 node.log("failed to open "+node.dbname);
-                node.tick = setTimeout(doConnect, reconnect);
+                node.tick = setTimeout(function() { node.doConnect(); }, reconnect);
             });
         }
 
@@ -59,7 +59,7 @@ module.exports = function(RED) {
                     //console.log("query:",msg.topic);
                     var bind = Array.isArray(msg.payload) ? msg.payload : [];
                     node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
-                        if (err) { node.warn(err); }
+                        if (err) { node.error(err,msg); }
                         else {
                             msg.payload = row;
                             node.send(msg);
@@ -68,7 +68,7 @@ module.exports = function(RED) {
                 }
                 else {
                     if (typeof msg.topic !== 'string') {
-                        node.error("msg.topic : the query is not defined as a string");
+                        node.error("msg.topic : the query is not defined as a string",msg);
                     }
                 }
             });
