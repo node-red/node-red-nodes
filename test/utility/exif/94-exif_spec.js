@@ -17,10 +17,8 @@
 var should = require("should");
 var sinon = require('sinon');
 var fs = require("fs");
-
+var helper = require('../../../test/helper.js');
 var exifNode = require("../../../utility/exif/94-exif.js");
-
-var helper = require('../../../../node-red/test/nodes/helper.js');
 
 describe('exif node', function() {
     "use strict";
@@ -35,17 +33,16 @@ describe('exif node', function() {
     });
 
     it('extracts location data from Exif data of JPEG', function(done) {
-
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
 
         // the jpg file is a single black dot but it was originally a photo taken at IBM Hursley
-        var data = fs.readFileSync("./exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
+        var data = fs.readFileSync("test/utility/exif/exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
 
         var eD;
 
         new ExifImage({ image : data }, function (error, exifData) {
-            if(error) {
+            if (error) {
                 done(error);
             } else {
                 eD = exifData;

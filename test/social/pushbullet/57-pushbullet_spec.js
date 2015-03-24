@@ -20,22 +20,26 @@ var sinon = require('sinon');
 var should = require("should");
 var proxyquire = require("proxyquire");
 var EventEmitter = require('events').EventEmitter
+var util = require('util');
 var data = require("./data");
 var path = require("path");
+var helper = require('../../../test/helper.js');
 
 // Mute "Starting/Stopping flows to stdout"
-var util = require('util');
-var flows = proxyquire('../../../.node-red/red/nodes/flows.js', {
-    util: {
-        log: function(msg) { 
-            if(!/ing flows/.test(msg)) { 
-                util.log(msg);
-            }
-        }
-    }
-});
 
-var helper = require('../../../.node-red/test/nodes/helper.js');
+//var flows = proxyquire('../../../.node-red/red/nodes/flows.js', {
+//var flows = proxyquire('../../../../../red/nodes/flows.js', {
+    //util: {
+        //log: function(msg) {
+            //if(!/ing flows/.test(msg)) {
+                //util.log(msg);
+            //}
+        //}
+    //}
+//});
+
+//var helper = require('../../../.node-red/test/nodes/helper.js');
+//var helper = require('../../../../../test/nodes/helper.js');
 
 var currentPB = null;
 var pushbulletStub = function() {
@@ -91,7 +95,7 @@ var pushbulletNode = proxyquire("../../../social/pushbullet/57-pushbullet.js", {
 });
 
 describe('pushbullet node', function() {
-    
+
     beforeEach(function(done) {
         currentPB = new pushbulletStub();
         helper.startServer(done);
@@ -221,7 +225,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "note", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "note");
                 helper.getNode("n3").send({
@@ -236,7 +240,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "note", title: "title", chan: "mychannel"},
                 {id:"n3", type:"helper", wires: [["n2"]]}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "note");
                 helper.getNode("n3").send({
@@ -251,7 +255,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "note", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "note");
                 helper.getNode("n3").send({
@@ -267,7 +271,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "link", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "push");
                 helper.getNode("n3").send({
@@ -285,7 +289,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "", title: ""},
                 {id:"n3", type:"helper", wires: [["n2"]]}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "_msg_"}}, function() {
                 var func = sinon.spy(currentPB, "push");
                 helper.getNode("n3").send({
@@ -306,7 +310,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "note", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "note");
                 helper.getNode("n3").send({
@@ -322,7 +326,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "link", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "push");
                 helper.getNode("n3").send({
@@ -339,7 +343,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "list", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "list");
                 helper.getNode("n3").send({
@@ -357,7 +361,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "list", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "list");
                 helper.getNode("n3").send({
@@ -375,7 +379,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "address", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "address");
                 helper.getNode("n3").send({
@@ -391,7 +395,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "file", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "file");
                 var fn = path.join(__dirname, "data.js")
@@ -408,10 +412,10 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "file", title: "title"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "file");
-                var errfn = sinon.spy(helper.getNode("n2"), "error");                
+                var errfn = sinon.spy(helper.getNode("n2"), "error");
                 helper.getNode("n3").send({
                     payload: "hello",
                 });
@@ -426,7 +430,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "push");
                 helper.getNode("n3").send({
@@ -443,7 +447,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2: {deviceid: "id"}}, function() {
                 var func = sinon.spy(currentPB, "updatePush");
                 helper.getNode("n3").send({
@@ -464,7 +468,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "delete"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 var func = sinon.spy(currentPB, "deletePush");
                 helper.getNode("n3").send({
@@ -481,7 +485,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "dismissal"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 var func = sinon.spy(currentPB, "updatePush");
                 helper.getNode("n3").send({
@@ -498,7 +502,7 @@ describe('pushbullet node', function() {
                 {id:"n2", type:"pushbullet", config: "n1", pushtype: "updatelist"},
                 {id:"n3", type:"helper", wires: [["n2"]]}
                 ];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 var func = sinon.spy(currentPB, "updatePush");
                 helper.getNode("n3").send({
@@ -517,7 +521,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 helper.getNode("n3").on("input", function(msg) {
                     done();
@@ -530,7 +534,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 var func = sinon.spy(helper.getNode("n2"), 'status');
                 currentPB.streamEmitter.emit("connect");
@@ -545,7 +549,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 helper.getNode("n3").on("input", function(msg) {
                     msg.should.have.property("pushtype", "clip");
@@ -561,7 +565,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 helper.getNode("n3").on("input", function(msg) {
                     msg.should.have.property("pushtype", "mirror");
@@ -577,7 +581,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 helper.getNode("n3").on("input", function(msg) {
                     msg.should.have.property("pushtype", "dismissal");
@@ -593,7 +597,7 @@ describe('pushbullet node', function() {
             var flow = [{id:"n1", type:"pushbullet-config"},
                 {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                 {id:"n3", type:"helper"}];
-           
+
             helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                 var err = sinon.spy(helper.getNode("n1"), "error");
                 currentPB.streamEmitter.emit("message", {type: "push", push: {type: "push", push: {type: "unknown", data: "test"}}});
@@ -607,7 +611,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "note");
@@ -626,7 +630,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "link");
@@ -645,7 +649,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "address");
@@ -664,7 +668,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "file");
@@ -683,7 +687,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "list");
@@ -702,7 +706,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "delete");
@@ -720,7 +724,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}}, function() {
                     helper.getNode("n3").on("input", function(msg) {
                         msg.should.have.property("pushtype", "dismissal");
@@ -740,7 +744,7 @@ describe('pushbullet node', function() {
                 var flow = [{id:"n1", type:"pushbullet-config"},
                     {id:"n2", type:"pushbullet in", config: "n1", wires: [["n3"]]},
                     {id:"n3", type:"helper"}];
-               
+
                 helper.load(pushbulletNode, flow, {n1:{apikey:"invalid"}, n2:{filters:['a', 'b']}}, function() {
                     var counter = sinon.spy();
                     helper.getNode("n3").on("input", function(msg) {
@@ -748,7 +752,7 @@ describe('pushbullet node', function() {
                     });
 
                     var func = sinon.stub(currentPB, "history");
-                    
+
                     currentPB.streamEmitter.emit("message", {type: "tickle", subtype: "push"});
                     var msg0 = getPushReply('link'); msg0.pushes[0].source_device_iden = 'a';
                     func.onCall(0).yields(false, msg0);
@@ -762,7 +766,7 @@ describe('pushbullet node', function() {
                     func.onCall(2).yields(false, msg2);
 
                     currentPB.streamEmitter.emit("message", {type: "tickle", subtype: "push"});
-                    var msg3 = getPushReply('link'); 
+                    var msg3 = getPushReply('link');
                     delete msg3.pushes[0].source_device_iden;
                     delete msg3.pushes[0].target_device_iden;
                     func.onCall(3).yields(false, msg3);

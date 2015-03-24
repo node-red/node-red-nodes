@@ -1,5 +1,5 @@
 /**
- * Copyright 2013, 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  **/
 
 module.exports = function(grunt) {
-    "use strict";
 
     // Project configuration.
     grunt.initConfig({
@@ -27,7 +26,7 @@ module.exports = function(grunt) {
                 ui: 'bdd',
                 reporter: 'spec'
             },
-            all: { src: ['./*_spec.js'] },
+            all: { src: ['test/*/*/*_spec.js'] },
         },
         jshint: {
             options: {
@@ -43,14 +42,24 @@ module.exports = function(grunt) {
                 "sub": true       // don't warn that foo['bar'] should be written as foo.bar
             },
             all: {
-                src: ['../../../utility/exif/*.js']
+                src: ['*/*.js'],
+                filter: function(filepath) { // on some developer machines the test coverage HTML report utilities cause further failures
+                    if(filepath.indexOf("coverage/prettify.js") === -1) {
+                        return true;
+                    } else {
+                        console.log("Filtered out " + filepath + " from the jshint checks");
+                        return false;
+                    }
+                }
             },
+        },
+        inlinelint: {
+            html: ['*/*.html']
         }
     });
 
     grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-lint-inline');
 
-    grunt.registerTask('default', ['jshint:all', 'simplemocha:all']);
+    grunt.registerTask('default', ['jshint:all', 'simplemocha:all'] );
 };
