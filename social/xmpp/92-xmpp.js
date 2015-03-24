@@ -40,7 +40,6 @@ RED.nodes.registerType("xmpp-server",XMPPServerNode,{
 });
 
 
-
 function XmppInNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
