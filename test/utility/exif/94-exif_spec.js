@@ -17,8 +17,9 @@
 var should = require("should");
 var sinon = require('sinon');
 var fs = require("fs");
+console.log("CWD",process.cwd());
 var helper = require('../../../test/helper.js');
-var exifNode = require("../../../utility/exif/94-exif.js");
+var exifNode = require('../../../utility/exif/94-exif.js');
 
 describe('exif node', function() {
     "use strict";
