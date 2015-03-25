@@ -97,7 +97,7 @@ module.exports = function(RED) {
                     node.led = device;
 
                     if (Object.size(node.led) === 0) {
-                        node.status({fill:"red",shape:"ring",text:"disconnected"});
+                        node.status({fill:"red",shape:"ring",text:"not found"});
                         node.error("BlinkStick with serial number " + node.serial + " not found");
                     } else {
                         node.status({fill:"green",shape:"dot",text:"connected"});
@@ -108,7 +108,7 @@ module.exports = function(RED) {
                 node.led = blinkstick.findFirst();
 
                 if (Object.size(node.led) === 0) {
-                    node.status({fill:"red",shape:"ring",text:"disconnected"});
+                    node.status({fill:"red",shape:"ring",text:"not found"});
                     node.error("No BlinkStick found");
                 } else {
                     node.status({fill:"green",shape:"dot",text:"connected"});
@@ -172,7 +172,7 @@ module.exports = function(RED) {
                 else {
                     node.warn("BlinkStick missing ? " + err);
                 }
-                console.log(err);
+                node.log(err);
                 //Reset animation
                 animationComplete = true;
                 //Clear color
@@ -191,81 +191,86 @@ module.exports = function(RED) {
         findBlinkStick();
 
         this.on("input", function(msg) {
-            if (typeof(msg.payload) === 'object' ) {
-                // if it's an array then hopefully it's r,g,b,r,g,b or name,name,name
-                if (Array.isArray(msg.payload)) {
-                    if (Object.size(node.led) !== 0) {
-                        node.led.setMode(2); // put it into ws2812B LED mode
-                        var data = [];
-                        for (var i = 0; i < msg.payload.length; i++) {
-                            if (typeof msg.payload[i] === "string") { // if string then assume must be colour names
-                                var params = node.led.interpretParameters(msg.payload[i]); // lookup colour code from name
-                                if (params) {
-                                    data.push(params.green);
-                                    data.push(params.red);
-                                    data.push(params.blue);
+            if (typeof(node.led) !== "undefined") {
+                if (typeof(msg.payload) === 'object' ) {
+                    // if it's an array then hopefully it's r,g,b,r,g,b or name,name,name
+                    if (Array.isArray(msg.payload)) {
+                        if (Object.size(node.led) !== 0) {
+                            node.led.setMode(2); // put it into ws2812B LED mode
+                            var data = [];
+                            for (var i = 0; i < msg.payload.length; i++) {
+                                if (typeof msg.payload[i] === "string") { // if string then assume must be colour names
+                                    var params = node.led.interpretParameters(msg.payload[i]); // lookup colour code from name
+                                    if (params) {
+                                        data.push(params.green);
+                                        data.push(params.red);
+                                        data.push(params.blue);
+                                    }
+                                    else { node.warn("invalid colour: "+msg.payload[i]); }
                                 }
-                                else { node.warn("invalid colour: "+msg.payload[i]); }
+                                else { // otherwise lets use numbers 0-255
+                                    data.push(msg.payload[i+1]);
+                                    data.push(msg.payload[i]);
+                                    data.push(msg.payload[i+2]);
+                                    i += 2;
+                                }
                             }
-                            else { // otherwise lets use numbers 0-255
-                                data.push(msg.payload[i+1]);
-                                data.push(msg.payload[i]);
-                                data.push(msg.payload[i+2]);
-                                i += 2;
+                            if ((data.length % 3) === 0) { // by now length must be a multiple of 3
+                                node.led.setColors(0, data, function(err) {
+                                    if (err) { node.log(err); }
+                                });
                             }
-                        }
-                        if ((data.length % 3) === 0) { // by now length must be a multiple of 3
-                            node.led.setColors(0, data, function(err) {
-                                if (err) { node.log(err); }
-                            });
-                        }
-                        else {
-                            node.warn("Colour array length not / 3");
-                        }
-                        return;
-                    } // else if no blinkstick let it get caught below
-                }
-                // not an array - must be the "normal" object....
-                else {
-                    var data = validatePayloadObject(msg.payload);
-                    if (typeof(data) === 'object') {
-                        node.task = data.task ? data.task : node.task;
-                        node.delay = data.delay ? data.delay : node.delay;
-                        node.repeats = data.repeats ? data.repeats : node.repeats;
-                        node.duration = data.duration ? data.duration : node.duration;
-                        node.steps = data.steps ? data.steps : node.steps;
-                        node.repeat = data.repeat ? data.repeat : node.repeat;
-                        node.color = data.color ? data.color : node.color;
-                    } else {
-                        node.error(data);
-                        return;
+                            else {
+                                node.warn("Colour array length not / 3");
+                            }
+                            return;
+                        } // else if no blinkstick let it get caught below
                     }
+                    // not an array - must be the "normal" object....
+                    else {
+                        var data = validatePayloadObject(msg.payload);
+                        if (typeof(data) === 'object') {
+                            node.task = data.task ? data.task : node.task;
+                            node.delay = data.delay ? data.delay : node.delay;
+                            node.repeats = data.repeats ? data.repeats : node.repeats;
+                            node.duration = data.duration ? data.duration : node.duration;
+                            node.steps = data.steps ? data.steps : node.steps;
+                            node.repeat = data.repeat ? data.repeat : node.repeat;
+                            node.color = data.color ? data.color : node.color;
+                        } else {
+                            node.error(data);
+                            return;
+                        }
+                    }
+                } else if (p1.test(msg.payload)) {
+                    //Color value is represented as "red,green,blue" string of bytes
+                    var rgb = msg.payload.split(",");
+
+                    //Convert color value back to HEX string for easier implementation
+                    node.color = "#" + decimalToHex(parseInt(rgb[0])&255) +
+                        decimalToHex(parseInt(rgb[1])&255) + decimalToHex(parseInt(rgb[2])&255);
+                } else {
+                    //Sanitize color value
+                    node.color = msg.payload.toLowerCase().replace(/\s+/g,'');
                 }
 
-            } else if (p1.test(msg.payload)) {
-                //Color value is represented as "red,green,blue" string of bytes
-                var rgb = msg.payload.split(",");
-
-                //Convert color value back to HEX string for easier implementation
-                node.color = "#" + decimalToHex(parseInt(rgb[0])&255) +
-                    decimalToHex(parseInt(rgb[1])&255) + decimalToHex(parseInt(rgb[2])&255);
-            } else {
-                //Sanitize color value
-                node.color = msg.payload.toLowerCase().replace(/\s+/g,'');
-            }
-
-            if (Object.size(node.led) !== 0) {
-                //Start color animation, otherwise the color is queued until current animation completes
-                if (animationComplete) {
-                    applyColor();
-                }
-            } else {
-                //Attempt to find BlinkStick and start animation if it's found
-                findBlinkStick(function() {
+                if (Object.size(node.led) !== 0) {
+                    //Start color animation, otherwise the color is queued until current animation completes
                     if (animationComplete) {
                         applyColor();
                     }
-                });
+                } else {
+                    //Attempt to find BlinkStick and start animation if it's found
+                    findBlinkStick(function() {
+                        if (animationComplete) {
+                            applyColor();
+                        }
+                    });
+                }
+            }
+            else {
+                node.status({fill:"red",shape:"ring",text:"not found"});
+                node.error("BlinkStick not found",msg);
             }
         });
 
