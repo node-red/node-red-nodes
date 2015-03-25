@@ -24,7 +24,10 @@
         "should": "4.6.5",
         "sinon": "1.12.2",
         "supertest": "0.15.0",
-        "proxyquire": "1.4.0"
+        "proxyquire": "1.4.0",
+        "pushbullet": "1.4.*",
+        "when": "^3.6.4",
+        "exif": "0.4.0"
     },
     "engines": {
         "node": ">=0.8 <0.11"
