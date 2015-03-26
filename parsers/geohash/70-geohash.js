@@ -36,13 +36,13 @@ module.exports = function(RED) {
                     node.send(msg);
                 }
                 else {
-                    var lat = msg.location.lat;
-                    var lon = msg.location.lon;
-                    var len = parseInt(msg.location.precision || msg.location.payload || 9);
-                    if (len < 1) { len = 1; }
-                    if (len > 9) { len = 9; }
-                    if (lat && lon) {
-                        msg.location.geohash = geohash.encode(lat, lon, len);
+                    var lt = msg.location.lat;
+                    var ln = msg.location.lon;
+                    var le = parseInt(msg.location.precision || msg.location.payload || 9);
+                    if (le < 1) { le = 1; }
+                    if (le > 9) { le = 9; }
+                    if (lt && ln) {
+                        msg.location.geohash = geohash.encode(lt, ln, le);
                         node.send(msg);
                     }
                 }
@@ -51,9 +51,9 @@ module.exports = function(RED) {
                 // try to decode it...
                 var regexp = new RegExp('^[a-z0-9]{1,9}$'); // can only contain a-z or 0-9 and length 1-9
                 if (regexp.test(msg.payload)) {
-                    var pos = geohash.decode(msg.payload);
-                    msg.payload = { lat:round(pos.latitude,5), lon:round(pos.longitude,5) };
-                    msg.payload.error = { lat:round(pos.error.latitude,5), lon:round(pos.error.longitude,5) };
+                    var po = geohash.decode(msg.payload);
+                    msg.payload = { lat:round(po.latitude,5), lon:round(po.longitude,5) };
+                    msg.payload.error = { lat:round(po.error.latitude,5), lon:round(po.error.longitude,5) };
                     node.send(msg);
                 }
                 else if (msg.payload.indexOf(",") !== -1) {

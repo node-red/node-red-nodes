@@ -144,9 +144,9 @@ module.exports = function(RED) {
             }
         };
 
-
         this.validateAndWrite = function(message) {
             for (var key in message.payload) {
+                if (message.payload.hasOwnProperty(key)) {
                     // Ensure our valid keys contain valid values
                     switch(key) {
                         case "runmode" :
@@ -159,40 +159,40 @@ module.exports = function(RED) {
                             }
                             break;
 
-                        // case "holiday" :
-                        //  if (DEBUG) {
-                        //      hminnode.log("Hit the holiday case");
-                        //  }
-                        //  if (!('enabled' in message.payload[key]) && !('time' in message.payload[key])) {
-                        //      hminnode.log("Warning: Unsupported 'holiday' value passed!");
-                        //      return;
-                        //  }
-                        //  var time = message.payload[key].time;
-                        //  // Ensure hminnode time is a date
-                        //  if (typeof(time) == "string") {
-                        //      hminnode.log("Typeof time was " +typeof(message.payload[key].time));
-                        //      // message.payload[key].time = new Date(message.payload[key].time);
-                        //      message.payload[key].time = new Date(2014, 02, 15, 12, 0, 0);
-                        //      hminnode.log("Typeof time is now " +typeof(message.payload[key].time));
-                        //  }
-                        //  // Also add in away mode (for hot water) if we're on hols
-                        //  if (message.payload[key].time) {
-                        //      message.payload.away_mode = 1;
-                        //  }
-                        //  else {
-                        //      message.payload.away_mode = 0;
-                        //  }
-                        //  break;
+                        //case "holiday" :
+                            //if (DEBUG) {
+                              //hminnode.log("Hit the holiday case");
+                            //}
+                            //if (!('enabled' in message.payload[key]) && !('time' in message.payload[key])) {
+                                //hminnode.log("Warning: Unsupported 'holiday' value passed!");
+                                //eturn;
+                            //}
+                            //var time = message.payload[key].time;
+                            //// Ensure hminnode time is a date
+                            //if (typeof(time) == "string") {
+                                //hminnode.log("Typeof time was " +typeof(message.payload[key].time));
+                                //// message.payload[key].time = new Date(message.payload[key].time);
+                                //message.payload[key].time = new Date(2014, 02, 15, 12, 0, 0);
+                                //hminnode.log("Typeof time is now " +typeof(message.payload[key].time));
+                            //}
+                            //// Also add in away mode (for hot water) if we're on hols
+                            //if (message.payload[key].time) {
+                                //message.payload.away_mode = 1;
+                            //}
+                            //else {
+                                //message.payload.away_mode = 0;
+                            //}
+                            //break;
 
-                        // case "hotwater" :
-                        //  if (DEBUG) {
-                        //      hminnode.log("Hit the hotwater case");
-                        //  }
-                        //  if (message.payload[key] !== "on" && message.payload[key] !== "boost" && message.payload[key] !== "off") {
-                        //      hminnode.log("Warning: Unsupported 'hotwater' value passed!");
-                        //      return;
-                        //  }
-                        //  break;
+                        //case "hotwater" :
+                            //if (DEBUG) {
+                                //hminnode.log("Hit the hotwater case");
+                            //}
+                            //if (message.payload[key] !== "on" && message.payload[key] !== "boost" && message.payload[key] !== "off") {
+                                //hminnode.log("Warning: Unsupported 'hotwater' value passed!");
+                                //return;
+                            //}
+                            //break;
 
                         case "heating" :
                             // Ensure heating stays last! It's got a multi write scenario
@@ -206,10 +206,14 @@ module.exports = function(RED) {
                             // Set sane temp and time ranges and sanitise to float/int
                             var target = parseFloat(message.payload[key].target);
                             var hold = parseInt(message.payload[key].hold);
-                            (target > 30.0) ? message.payload[key].target = 30.0 : message.payload[key].target = target;
-                            (hold > 1440) ? message.payload[key].hold = 1440 : message.payload[key].hold = hold;
-                            (target <= 10.0) ? message.payload[key].target = 10.0 : message.payload[key].target = target;
-                            (hold <= 0) ? message.payload[key].hold = 0 : message.payload[key].hold = hold;
+                            if (target > 30.0) { message.payload[key].target = 30.0; }
+                            else { message.payload[key].target = target; }
+                            if (hold > 1440) { message.payload[key].hold = 1440; }
+                            else { message.payload[key].hold = hold; }
+                            if (target <= 10.0) { message.payload[key].target = 10.0; }
+                            else { message.payload[key].target = target; }
+                            if (hold <= 0) { message.payload[key].hold = 0; }
+                            else { message.payload[key].hold = hold; }
 
                             // Ensure hminnode runmode == heating first
                             if (hminnode.currentStatus.run_mode === "frost_protection") {
@@ -226,13 +230,14 @@ module.exports = function(RED) {
                         default :
                             break;
                     }
+                    // Valid set of key messages, construct DCB and write
+                    var dcb = message.payload;
+                    if (DEBUG) {
+                        hminnode.log("Injecting " + JSON.stringify(dcb));
+                    }
+                    hminnode.write(dcb);
                 }
-                // Valid set of key messages, construct DCB and write
-                var dcb = message.payload;
-                if (DEBUG) {
-                    hminnode.log("Injecting " + JSON.stringify(dcb));
-                }
-                hminnode.write(dcb);
+            }
         };
 
         this.on("input", function(message) {

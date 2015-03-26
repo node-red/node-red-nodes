@@ -105,7 +105,7 @@ module.exports = function(RED) {
             apikey: {type: "password"}
         }
     });
-    
+
     PushbulletConfig.prototype.onConfig = function(type, cb) {
         this.emitter.on(type, cb);
     }
@@ -120,7 +120,7 @@ module.exports = function(RED) {
                 }
                 else if(res.type === 'push') {
                     self.pushMsg(res.push);
-                }   
+                }
             });
             stream.on('connect', function() {
                 self.emitter.emit('stream_connected');
@@ -143,7 +143,7 @@ module.exports = function(RED) {
             this.last = when.promise(function(resolve) {
                 when(lastprom).then(function(last) {
                     self.pusher.history({modified_after: last}, function(err, res) {
-                        if(err) {                            
+                        if(err) {
                             resolve(last);
                             return onError(err);
                         }
@@ -155,8 +155,8 @@ module.exports = function(RED) {
                         } catch(ex) {
                             resolve(last);
                         }
-                    });                
-                });              
+                    });
+                });
             });
         }
     };
@@ -246,18 +246,18 @@ module.exports = function(RED) {
 
             var cred = RED.nodes.getCredentials(n.id);
             // get old apikey
-            if(cred && cred.hasOwnProperty("pushkey")) { 
-                apikey = cred.pushkey; 
+            if(cred && cred.hasOwnProperty("pushkey")) {
+                apikey = cred.pushkey;
             }
             else if(pushkeys) {
                 apikey = pushkeys.pushbullet;
             }
             // get old device
-            if (cred && cred.hasOwnProperty("deviceid")) { 
-                deviceid = cred.deviceid; 
+            if (cred && cred.hasOwnProperty("deviceid")) {
+                deviceid = cred.deviceid;
             }
-            else if (pushkeys) { 
-                deviceid = pushkeys.deviceid; 
+            else if (pushkeys) {
+                deviceid = pushkeys.deviceid;
             }
 
             if(apikey) {
@@ -268,7 +268,7 @@ module.exports = function(RED) {
                     name: n.name,
                     _migrate: true,
                     _apikey: apikey,
-                });                
+                });
             }
 
             if(!(apikey || deviceid)) {
@@ -285,7 +285,7 @@ module.exports = function(RED) {
                 id: newid
             };
         }
-        return false;        
+        return false;
     }
 
     function PushbulletOut(n) {
@@ -308,7 +308,7 @@ module.exports = function(RED) {
         else {
             this.status({});
             configNode = RED.nodes.getNode(n.config);
-            try {            
+            try {
                 this.deviceid = this.credentials.deviceid;
             }
             catch(err){}
@@ -331,17 +331,17 @@ module.exports = function(RED) {
                 msg.payload = JSON.stringify(msg.payload);
             }
             else if(msg.payload) {
-                msg.payload = msg.payload.toString(); 
-            } 
+                msg.payload = msg.payload.toString();
+            }
 
             if(['delete', 'dismissal', 'updatelist', '_rawupdate_'].indexOf(pushtype) === -1) {
                 if (channel) {
                     deviceid = { channel_tag : channel };
-                } 
+                }
                 else if(deviceid === "") {
                     try {
                         when(configNode.me).then(function(me) {
-                            deviceid = me.email;      
+                            deviceid = me.email;
                             self.pushMsg(pushtype, deviceid, title, msg);
                         });
                         return;
@@ -351,8 +351,8 @@ module.exports = function(RED) {
                     }
                 }
                 else if (!isNaN(deviceid)) {
-                    deviceid = Number(deviceid); 
-                }                
+                    deviceid = Number(deviceid);
+                }
             }
             self.pushMsg(pushtype, deviceid, title, msg);
         });
@@ -367,18 +367,18 @@ module.exports = function(RED) {
     PushbulletOut.prototype.pushMsg = function(pushtype, deviceid, title, msg) {
         var self = this;
         if (this.pusher) {
-            var handleErr = function(msg){ 
+            var handleErr = function(msg){
                 return function(err) {
                     if(err) {
                         self.error(msg);
-                        onError(err, self); 
+                        onError(err, self);
                     }
                 }
             }
 
             if(deviceid) {
                 if(pushtype === 'note') {
-                    this.pusher.note(deviceid, title, msg.payload, handleErr('Unable to push note'));                        
+                    this.pusher.note(deviceid, title, msg.payload, handleErr('Unable to push note'));
                 }
                 else if(pushtype === 'address') {
                     this.pusher.address(deviceid, title, msg.payload, handleErr('Unable to push address'));
@@ -391,7 +391,7 @@ module.exports = function(RED) {
                         type: 'link',
                         title: title,
                         body: msg.message,
-                        url: msg.payload                            
+                        url: msg.payload
                     }, handleErr('Unable to push link'));
                 }
                 else if(pushtype === 'file') {
@@ -407,7 +407,7 @@ module.exports = function(RED) {
                     this.pusher.push(deviceid, msg.raw, handleErr('Unable to push raw data'));
                 }
             }
-            
+
             if(msg.data && msg.data.iden) {
                 if(pushtype === 'delete') {
                     this.pusher.deletePush(msg.data.iden, handleErr('Unable to delete push'));
@@ -461,6 +461,7 @@ module.exports = function(RED) {
     RED.httpAdmin.get('/pushbullet/:id/devices', function(req, res) {
         var config = RED.nodes.getNode(req.params.id);
         var cred = RED.nodes.getCredentials(req.params.id);
+        var pb;
 
         if(config && config.pusher) {
             config.pusher.devices(function(err, chans) {
@@ -469,27 +470,27 @@ module.exports = function(RED) {
                     return onError(err, config);
                 }
                 res.send(JSON.stringify(chans.devices));
-            });            
+            });
         }
         else if(cred && cred.apikey) {
-            var pb = new PushBullet(cred.apikey);
+            pb = new PushBullet(cred.apikey);
             pb.devices(function(err, chans) {
                 if(err) {
                     res.send("[]");
                     return onError(err, config);
                 }
                 res.send(JSON.stringify(chans.devices));
-            });   
+            });
         }
         else if(req.query.apikey) {
-            var pb = new PushBullet(req.query.apikey);
+            pb = new PushBullet(req.query.apikey);
             pb.devices(function(err, chans) {
                 if(err) {
                     res.send("[]");
                     return onError(err, config);
                 }
                 res.send(JSON.stringify(chans.devices));
-            });   
+            });
         }
         else {
             res.send("[]");
@@ -522,11 +523,11 @@ module.exports = function(RED) {
             filters: {value: []}
         }
     });
-    
+
     PushbulletIn.prototype.emitPush = function(msg) {
         try {
             if(this.credentials.filters.length > 0) {
-                if( (this.credentials.filters.indexOf(msg.data.source_device_iden) > -1) || 
+                if( (this.credentials.filters.indexOf(msg.data.source_device_iden) > -1) ||
                     (this.credentials.filters.indexOf(msg.data.target_device_iden) > -1) ||
                     (!msg.data.target_device_iden && !msg.data.source_device_iden)) { /* All */
                     this.send(msg);

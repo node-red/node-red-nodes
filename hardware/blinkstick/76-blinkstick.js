@@ -101,7 +101,7 @@ module.exports = function(RED) {
                         node.error("BlinkStick with serial number " + node.serial + " not found");
                     } else {
                         node.status({fill:"green",shape:"dot",text:"connected"});
-                        if (callback) callback();
+                        if (callback) { callback(); }
                     }
                 });
             } else {
@@ -112,7 +112,7 @@ module.exports = function(RED) {
                     node.error("No BlinkStick found");
                 } else {
                     node.status({fill:"green",shape:"dot",text:"connected"});
-                    if (callback) callback();
+                    if (callback) { callback(); }
                 }
             }
         };
@@ -197,26 +197,26 @@ module.exports = function(RED) {
                     if (Array.isArray(msg.payload)) {
                         if (Object.size(node.led) !== 0) {
                             node.led.setMode(2); // put it into ws2812B LED mode
-                            var data = [];
+                            var dat = [];
                             for (var i = 0; i < msg.payload.length; i++) {
                                 if (typeof msg.payload[i] === "string") { // if string then assume must be colour names
                                     var params = node.led.interpretParameters(msg.payload[i]); // lookup colour code from name
                                     if (params) {
-                                        data.push(params.green);
-                                        data.push(params.red);
-                                        data.push(params.blue);
+                                        dat.push(params.green);
+                                        dat.push(params.red);
+                                        dat.push(params.blue);
                                     }
                                     else { node.warn("invalid colour: "+msg.payload[i]); }
                                 }
                                 else { // otherwise lets use numbers 0-255
-                                    data.push(msg.payload[i+1]);
-                                    data.push(msg.payload[i]);
-                                    data.push(msg.payload[i+2]);
+                                    dat.push(msg.payload[i+1]);
+                                    dat.push(msg.payload[i]);
+                                    dat.push(msg.payload[i+2]);
                                     i += 2;
                                 }
                             }
-                            if ((data.length % 3) === 0) { // by now length must be a multiple of 3
-                                node.led.setColors(0, data, function(err) {
+                            if ((dat.length % 3) === 0) { // by now length must be a multiple of 3
+                                node.led.setColors(0, dat, function(err) {
                                     if (err) { node.log(err); }
                                 });
                             }

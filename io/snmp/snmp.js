@@ -15,6 +15,7 @@
  **/
 
 module.exports = function(RED) {
+    "use strict";
     var snmp = require ("net-snmp");
 
     function SnmpNode(n) {
@@ -67,9 +68,9 @@ module.exports = function(RED) {
         var maxRepetitions = 20;
 
         function sortInt (a, b) {
-            if (a > b) return 1;
-            else if (b > a) return -1;
-            else return 0;
+            if (a > b) { return 1; }
+            else if (b > a) { return -1; }
+            else { return 0; }
         }
 
         function responseCb (error, table) {
@@ -77,11 +78,19 @@ module.exports = function(RED) {
                 console.error (error.toString ());
             } else {
                 var indexes = [];
-                for (index in table) { indexes.push (parseInt (index)); }
+                for (var index in table) {
+                    if (table.hasOwnProperty(index)) {
+                        indexes.push (parseInt (index));
+                    }
+                }
                 indexes.sort (sortInt);
                 for (var i = 0; i < indexes.length; i++) {
                     var columns = [];
-                    for (column in table[indexes[i]]) { columns.push(parseInt (column)); }
+                    for (var column in table[indexes[i]]) {
+                        if (table[indexes[i]].hasOwnProperty(column)) {
+                            columns.push(parseInt (column));
+                        }
+                    }
                     columns.sort(sortInt);
                     console.log ("row index = " + indexes[i]);
                     for (var j = 0; j < columns.length; j++) {
