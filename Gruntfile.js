@@ -14,9 +14,8 @@
  * limitations under the License.
  **/
 
+// Project configuration for Node-RED-nodes
 module.exports = function(grunt) {
-
-    // Project configuration.
     grunt.initConfig({
         simplemocha: {
             options: {
@@ -47,7 +46,7 @@ module.exports = function(grunt) {
                 src: ['*/*.js','*/*/*.js'],
                 filter: function(filepath) { // on some developer machines the test coverage HTML report utilities cause further failures
                     if ((filepath.indexOf("coverage/") !== -1) || (filepath.indexOf("node_modules") !== -1)) {
-                        console.log("Filtered out " + filepath + " from the jshint checks");
+                        console.log( "\033[30m  filtered out \033[32m:\033[37m " + filepath + "\033[0m");
                         return false;
                     } else {
                         return true;
