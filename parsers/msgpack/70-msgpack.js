@@ -41,7 +41,7 @@ module.exports = function(RED) {
                     node.send(msg);
                     node.status({text:le +" o->b "+ msg.payload.length});
                 }
-            } else { node.warn("No payload found to process");
+            } else { node.warn("No payload found to process"); }
         });
     }
     RED.nodes.registerType("msgpack",MsgPackNode);

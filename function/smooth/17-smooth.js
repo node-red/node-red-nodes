@@ -29,7 +29,7 @@ module.exports = function(RED) {
         var old = null;
 
         this.on('input', function (msg) {
-            if msg.hasOwnProperty("payload")) {
+            if (msg.hasOwnProperty("payload")) {
                 var n = Number(msg.payload);
                 if (!isNaN(n)) {
                     if ((node.action === "low") || (node.action === "high")) {
