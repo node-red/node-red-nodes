@@ -25,25 +25,27 @@ module.exports = function(RED) {
 
         var previous = null;
         this.on("input",function(msg) {
-            if (this.func === "rbe") {
-                if (msg.payload != previous) {
-                    previous = msg.payload;
-                    node.send(msg);
-                }
-            }
-            else {
-                var n = parseFloat(msg.payload);
-                if (!isNaN(n)) {
-                    if (previous == null) { previous = n - node.gap; }
-                    if (Math.abs(n - previous) >= node.gap) {
-                        previous = n;
+            if (msg.hasOwnProperty("payload")) {
+                if (this.func === "rbe") {
+                    if (msg.payload != previous) {
+                        previous = msg.payload;
                         node.send(msg);
                     }
                 }
                 else {
-                    node.warn("no number found in payload");
+                    var n = parseFloat(msg.payload);
+                    if (!isNaN(n)) {
+                        if (previous == null) { previous = n - node.gap; }
+                        if (Math.abs(n - previous) >= node.gap) {
+                            previous = n;
+                            node.send(msg);
+                        }
+                    }
+                    else {
+                        node.warn("no number found in payload");
+                    }
                 }
-            }
+            } // ignore msg with no payload property.
         });
     }
     RED.nodes.registerType("rbe",RbeNode);
