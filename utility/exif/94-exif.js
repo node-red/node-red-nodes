@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,18 @@ module.exports = function(RED) {
         return result;
     }
 
-    /***
-     * Extracts GPS location information from Exif data. If enough information is
-     * provided, convert the Exif data into a pair of single floating point number
-     * latitude/longitude data pairs. Populates msg.location with these.
-     * Assumes that the msg object will always have exifData available as msg.exif.
-     * Assume that the GPS data saved into Exif provides a valid value
-     */
-    function addMsgLocationDataFromExifGPSData(msg) {
-        if(msg.exif.gps) {
+    function ExifNode(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+
+        /***
+         * Extracts GPS location information from Exif data. If enough information is
+         * provided, convert the Exif data into a pair of single floating point number
+         * latitude/longitude data pairs. Populates msg.location with these.
+         * Assumes that the msg object will always have exifData available as msg.exif.
+         * Assume that the GPS data saved into Exif provides a valid value
+         */
+        function addMsgLocationDataFromExifGPSData(msg) {
             var gpsData = msg.exif.gps; // declaring variable purely to make checks more readable
             if(gpsData.GPSAltitude) {
                 if(!msg.location) {
@@ -44,26 +47,22 @@ module.exports = function(RED) {
                 // The data provided in Exif is in degrees, minutes, seconds, this is to be converted into a single floating point degree
                 if(gpsData.GPSLatitude.length === 3) { // OK to convert latitude
                     if(gpsData.GPSLongitude.length === 3) { // OK to convert longitude
-                        var latitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLatitude[0], gpsData.GPSLatitude[1], gpsData.GPSLatitude[2]);
-                        latitude = Math.round(latitude * 100000)/100000;
 
-                        // (N)orth means positive latitude
-                        // (S)outh means negative latitude
-                        // (E)ast means positive longitude
-                        // (W)est means negative longitude
-                        if(gpsData.GPSLatitudeRef.toString() === 'S' || gpsData.GPSLatitudeRef.toString() === 's') {
+                        var latitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLatitude[0], gpsData.GPSLatitude[1], gpsData.GPSLatitude[2]);
+                        latitude = Math.round(latitude * 100000)/100000;    // 5dp is approx 1m resolution...
+                        // (N)orth means positive latitude, (S)outh means negative latitude
+                        if (gpsData.GPSLatitudeRef.toString() === 'S' || gpsData.GPSLatitudeRef.toString() === 's') {
                             latitude = latitude * -1;
                         }
 
                         var longitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLongitude[0], gpsData.GPSLongitude[1], gpsData.GPSLongitude[2]);
-                        longitude = Math.round(longitude * 100000)/100000;
-
-                        if(gpsData.GPSLongitudeRef.toString() === 'W' || gpsData.GPSLongitudeRef.toString() === 'w') {
+                        longitude = Math.round(longitude * 100000)/100000;  // 5dp is approx 1m resolution...
+                        // (E)ast means positive longitude, (W)est means negative longitude
+                        if (gpsData.GPSLongitudeRef.toString() === 'W' || gpsData.GPSLongitudeRef.toString() === 'w') {
                             longitude = longitude * -1;
                         }
-                        if(!msg.location) {
-                            msg.location = {};
-                        }
+                        // Create location property if not exists
+                        if (!msg.location) { msg.location = {}; }
                         msg.location.lat = latitude;
                         msg.location.lon = longitude;
                         return;
@@ -76,30 +75,22 @@ module.exports = function(RED) {
             } else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
-        } else {
-            node.log("No location info found in this image.");
         }
-    }
 
-    function ExifNode(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
         this.on("input", function(msg) {
             try {
                 if (msg.payload) {
                     if (Buffer.isBuffer(msg.payload)) {
                         new ExifImage({ image : msg.payload }, function (error, exifData) {
                             if (error) {
-                                //node.error('Failed to extract Exif data from image.');
-                                //node.log('Failed to extract Exif data from image. '+ error);
-                                node.log(error);
+                                node.log(error.toString());
                             } else {
                                 //msg.payload remains the same buffer
-                                if(exifData) {
+                                if ((exifData) && (exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
                                     msg.exif = exifData;
                                     addMsgLocationDataFromExifGPSData(msg);
                                 } else {
-                                    node.warn("The incoming buffer did not contain Exif data, nothing to do. ");
+                                    node.warn("The incoming image did not contain Exif GPS data, nothing to do. ");
                                 }
                             }
                             node.send(msg);

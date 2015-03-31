@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 
-// Project configuration for Node-RED-nodes
+// Configuration for Node-RED-nodes project
 module.exports = function(grunt) {
     grunt.initConfig({
         simplemocha: {
