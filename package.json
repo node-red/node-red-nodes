@@ -28,7 +28,8 @@
         "proxyquire": "1.4.0",
         "pushbullet": "1.4.*",
         "when": "^3.6.4",
-        "exif": "0.4.0"
+        "exif": "0.4.0",
+        "ngeohash": "0.6.*"
     },
     "engines": {
         "node": ">=0.8 <0.11"
