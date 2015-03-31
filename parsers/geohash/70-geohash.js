@@ -38,12 +38,14 @@ module.exports = function(RED) {
                 else {
                     var lt = msg.location.lat;
                     var ln = msg.location.lon;
-                    var le = parseInt(msg.location.precision || msg.location.payload || 9);
+                    var le = parseInt(msg.location.precision || 9);
                     if (le < 1) { le = 1; }
                     if (le > 9) { le = 9; }
                     if (lt && ln) {
                         msg.location.geohash = geohash.encode(lt, ln, le);
                         node.send(msg);
+                    } else {
+                        node.warn("lat or lon missing from msg.location");
                     }
                 }
             }
@@ -64,10 +66,14 @@ module.exports = function(RED) {
                         if (la < -90) { la = -90; }
                         if (la > 90) { la = 90; }
                         var lo = Number(bits[1]);
-                        if (lo < -180) { lo = -180; }
-                        if (lo > 180) { la = 180; }
-                        msg.payload = geohash.encode(la, lo);
-                        node.send(msg);
+                        if (lo < -180) { lo = ((lo-180)%360)+180; }
+                        if (lo > 180) { lo = ((lo+180)%360)-180; }
+                        if (!isNaN(la) && !isNaN(lo)) {
+                            msg.payload = geohash.encode(la, lo);
+                            node.send(msg);
+                        } else {
+                            node.warn("Incorrect string format - should be lat,lon");
+                        }
                     }
                     else { node.warn("Unexpected string format - should be lat,lon"); }
                 }
@@ -82,6 +88,8 @@ module.exports = function(RED) {
                 if (lat && lon) {
                     msg.payload.geohash = geohash.encode(lat, lon, len);
                     node.send(msg);
+                } else {
+                    node.warn("lat or lon missing from msg.payload");
                 }
             }
             else {
