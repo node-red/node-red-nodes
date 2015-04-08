@@ -23,4 +23,6 @@ these sensors will be sent as a JSON object payload with the sensor name appende
 * Gyroscope - { topic: [topic_prefix]/ , payload: { x:0.0, y:0.0, z:0.0 } }
 * Buttons - { topic: [topic_prefix]/ , payload: { left: "down", right: "up"} }
 
+The sensorTag library used by this node only supports using 1 SensorTag at once.
+
 **NOTE:** Node-RED needs to be run as root inorder or access the Linux Bluetooth 4.0 system calls
