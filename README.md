@@ -4,14 +4,16 @@ A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
 ## Installation
 
-Most of these nodes are available as npm packages. See the list below for the npm package names, or [search npm](https://www.npmjs.org/search?q=node-red-node).
+Most of these nodes are available as npm packages. See the list below for the npm p
+ackage names, or [search npm](https://www.npmjs.org/search?q=node-red-node-).
 
 To install
 
     cd node-red
     npm install node-red-node-{*filename*}
 
-This repository acts as an overall store for these nodes - and is no longer intended as a way to install them - unless you really do want some bloat.
+This repository acts as an overall store for these nodes - and is no longer
+intended as a way to install them - unless you really do want some bloat.
 
 To manually install using this repo:
 
@@ -23,9 +25,12 @@ To manually install using this repo:
 
 ## Contributing
 
-Now that we support npm installaton of nodes we recommend people post their own via [npm](https://www.npmjs.org/). Please read the [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
+Now that we support npm installaton of nodes we recommend people post their own
+via [npm](https://www.npmjs.org/). Please read
+the [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
 
-If you are an IBMer, please contact us directly as the contribution process is slightly different.
+If you are an IBMer, please contact us directly as the contribution process
+is slightly different.
 
 
 ## Copyright and license
@@ -40,7 +45,7 @@ NPM name - File-link - Description
 
 **node-red-node-wordpos** - *[72-wordpos](analysis/wordpos)* - Analyses the payload and classifies the part-of-speech of each word. The resulting message has msg.pos added with the results. A word may appear in multiple categories (eg, 'great' is both a noun and an adjective).
 
-**node-red-node-wordpos** - *[74-swearfilter](analysis/swearfilter)* - Analyses the payload and tries to filter out any messages containing bad swear words. This only operates on payloads of type string. Everything else is blocked.
+**node-red-node-badwords** - *[74-swearfilter](analysis/swearfilter)* - Analyses the payload and tries to filter out any messages containing bad swear words. This only operates on payloads of type string. Everything else is blocked.
 
 ### Function
 
@@ -66,9 +71,9 @@ NPM name - File-link - Description
 
 **node-red-node-wemo** - *[60-wemo](hardware/wemo)* - Basic node to drive a [WeMo](http://www.belkin.com/us/Products/home-automation/c/wemo-home-automation/) socket and switch. Does not use discovery.
 
-**N/A** - *[42-makey](hardware/makey)* - A Node-RED node to read from a [MakeyMakey](http://www.makeymakey.com/) input device.
+**node-red-node-makeymakey** - *[42-makey](hardware/makey)* - A Node-RED node to read from a [MakeyMakey](http://www.makeymakey.com/) input device.
 
-**N/A** - *[79-sensorTag](hardware/sensorTag)* - Reads data from the Ti Bluetooh Low Energy (BLE) SensorTag device.
+**node-red-node-sensortag** - *[79-sensorTag](hardware/sensorTag)* - Reads data from the Ti Bluetooh Low Energy (BLE) SensorTag device.
 
 **N/A** - *[100-heatmiser-in](hardware/heatmiser)* - Writes settings for temperature and frost protection to Heatmiser thermostats.
 
@@ -90,9 +95,6 @@ NPM name - File-link - Description
 
 **N/A** - *[88-emoncms](io/emoncms)* - Adds node to post to an [Emoncms](http://emoncms.org/) server.
 
-**N/A** - *[26-rawserial](io/rawserial)* - Only really needed for Windows boxes without serialport npm module installed.
-Uses a simple read of the serial port as a file to input data. You **must** set the baud rate etc externally *before* starting Node-RED. This node does not implement pooling of connections so only one instance of each port may be used - so in **or** out but **not** both.
-
 ### Social
 
 **node-red-node-twilio** - *[56-twilio](social/twilio)* - Uses [Twilio](https://www.twilio.com/) service to send/receive text messages.
@@ -111,8 +113,6 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-xmpp** - *[92-xmpp](social/xmpp)* - Connects to an XMPP server to send and receive messages.
 
-**N/A** - *[69-mpd](social/music)* - MPD music control nodes. Output node expects payload to be a valid mpc command. Currently only simple commands that expect no reply are supported. Input node creates a payload object with Artist, Album, Title, Genre and Date.
-
 **N/A** - *[79-snapchat](social/snapchat)* - Downloads [SnapChat](https://www.snapchat.com/) images from the account specified.
 
 **N/A** - *[114-pusher](social/pusher)* - Publish-Subscribe to a [Pusher](http://pusher.com/) channel/event.
@@ -125,13 +125,17 @@ Uses a simple read of the serial port as a file to input data. You **must** set 
 
 **node-red-node-sqlite** - *[sqlite](storage/sqlite)* - Supports read and write to a local sqlite database.
 
-**node-red-node-ddb** - *[69-ddbout](https://github.com/wnagele/node-red-node-ddb)* - Support output to Amazon DynamoDB. This version deprecated - now moved to it's own npm. **Note:** you cannot have both version installed - if you do install from npm then please manually delete the version from your node-red-nodes/storage/ddb directory.
-
-**N/A** - *[110-postgres](storage/postgres)* - PostgreSql I/O node.
-
 ### Time
 
-**node-red-node-suncalc** - *[79-suncalc](time)* - Uses the suncalc module to generate an output at sunrise and sunset based on a specified location. Several choices of definition of sunrise and sunset are available,
+**node-red-node-suncalc** - *[79-suncalc](time/suncalc)* - Uses the suncalc module to generate an output at sunrise and sunset based on a specified location. Several choices of definition of sunrise and sunset are available,
+
+### Utility
+
+**node-red-node-exif** - *[94-exif](utility/exif)* - Extracts GPS and other EXIF information from a passed in jpeg image,
+
+**node-red-node-daemon** - *[daemon](utility/daemon)* - starts up (calls) a long running system program and pipes STDIN, STDOUT and STDERR to and from that process. Good for monitoring long running command line applications,
+
+
 
 ### Misc
 

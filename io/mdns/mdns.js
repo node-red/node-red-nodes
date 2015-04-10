@@ -43,7 +43,7 @@ module.exports = function(RED) {
         browser.start();
 
         node.on("close", function () {
-            browser.stop();
+            if (browser) { browser.stop(); }
         });
     }
 
