@@ -10,6 +10,10 @@ As the blink1 is a USB HID device you may need some extra hardware libraries as
 documented <a href="https://www.npmjs.com/package/node-blink1" target="_new">here</a>
 and <a href="https://github.com/todbot/blink1/blob/master/linux/51-blink1.rules" target="_new">here</a>.
 
+Specifically Ubuntu/Debian/Raspbian user may need to
+
+    sudo apt-get install libusb-1.0-0.dev.
+
 Install
 -------
 

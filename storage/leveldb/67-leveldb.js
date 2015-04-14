@@ -41,7 +41,8 @@ module.exports = function(RED) {
         if (this.levelConfig) {
             var node = this;
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
+                var key = msg.topic.toString();
+                if (key && (key.length > 0)) {
                     node.levelConfig.db.get(msg.topic, function(err, value) {
                         if (err) {
                             //node.warn(err);
@@ -53,7 +54,7 @@ module.exports = function(RED) {
                     });
                 }
                 else {
-                    if (typeof msg.topic !== 'string') { node.error("msg.topic (the key is not defined"); }
+                    node.error("Cannot make key string from msg.topic");
                 }
             });
         }
@@ -73,7 +74,8 @@ module.exports = function(RED) {
         if (this.levelConfig) {
             var node = this;
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
+                var key = msg.topic.toString();
+                if (key && (key.length > 0)) {
                     if (node.operation === "delete") {
                         node.levelConfig.db.del(msg.topic);
                     }
@@ -84,7 +86,7 @@ module.exports = function(RED) {
                     }
                 }
                 else {
-                    if (typeof msg.topic !== 'string') { node.error("msg.topic (the key is not defined"); }
+                    node.error("Cannot make key string from msg.topic");
                 }
             });
         }

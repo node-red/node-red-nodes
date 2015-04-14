@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-leveldb",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to read and write to a LevelDB database",
     "dependencies"  : {
         "level"   : "0.18.0"
