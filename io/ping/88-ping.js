@@ -38,9 +38,9 @@ module.exports = function(RED) {
             ex.stdout.on('data', function (data) {
                 line += data.toString();
             });
-            ex.stderr.on('data', function (data) {
+            //ex.stderr.on('data', function (data) {
                 //console.log('[ping] stderr: ' + data);
-            });
+            //});
             ex.on('close', function (code) {
                 var m = regex.exec(line)||"";
                 if (m !== '') {

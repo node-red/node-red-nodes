@@ -138,7 +138,7 @@
                 }
             }
 
-            try { 
+            try {
                 getName(this.credentials.deviceid);
             }
             catch(err) {
@@ -164,8 +164,8 @@
             function updateDeviceList() {
                 if(!ddConfig.val()) {
                     ddDevice.children().remove();
-                    ddDevice.append('<option value="">All</option>')
-                    ddDevice.append('<option value="_msg_">- set from msg.deviceid -</option>')
+                    ddDevice.append('<option value="">All</option>');
+                    ddDevice.append('<option value="_msg_">- set from msg.deviceid -</option>');
                     var currentDevice;
                     if(node.credentials) {
                         currentDevice = node.credentials.deviceid;
@@ -176,15 +176,15 @@
                     }
                 }
                 else {
-                    var config = RED.nodes.node(ddConfig.val()), 
+                    var config = RED.nodes.node(ddConfig.val()),
                         url = 'pushbullet/'+ddConfig.val()+'/devices';
                     if(config && config.credentials && config.credentials.apikey) {
                         url += '?apikey='+config.credentials.apikey;
                     }
                     $.getJSON(url, function(data) {
                         ddDevice.children().remove();
-                        ddDevice.append('<option value="">All</option>')
-                        ddDevice.append('<option value="_msg_">- set from msg.deviceid -</option>')
+                        ddDevice.append('<option value="">All</option>');
+                        ddDevice.append('<option value="_msg_">- set from msg.deviceid -</option>');
                         var currentDevice, addCurrent = true;
                         if(node.credentials) {
                             currentDevice = node.credentials.deviceid;
@@ -203,7 +203,7 @@
                             }
                             ddDevice.val(currentDevice);
                         }
-                    });                    
+                    });
                 }
             }
 
@@ -292,7 +292,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="pushbullet in">   
+<script type="text/x-red" data-help-name="pushbullet in">
     <p>Receives Pushbullets from all devices. Messages contain the following data:</p>
     <p><code>msg.pushtype</code>: type of message</p>
     <p><code>msg.topic</code>: topic information from the push</p>
@@ -326,7 +326,7 @@
             var node = this, ddConfig = $('#node-input-config'), ddDevice = $('#node-input-filters');
 
             function updateDeviceList() {
-                var config = RED.nodes.node(ddConfig.val()), 
+                var config = RED.nodes.node(ddConfig.val()),
                     url = 'pushbullet/'+ddConfig.val()+'/devices';
                 if(config && config.credentials && config.credentials.apikey) {
                     url += '?apikey='+config.credentials.apikey;
@@ -343,7 +343,7 @@
                     for(var i=0; i<data.length; i++) {
                         var dev = data[i];
                         ddDevice.append('<option value="'+dev.iden+'">'+dev.nickname+' ('+dev.kind+')</option>');
-                        
+
                         idx = addDevices.indexOf(dev.iden);
                         if (idx > -1) {
                             addDevices.splice(idx, 1);
@@ -354,7 +354,7 @@
                         ddDevice.append('<option value="'+addDevices[j]+'">'+addDevices[j]+'</option>');
                     }
                     ddDevice.val(currentDevices);
-                });                
+                });
             }
 
             ddConfig.change(function() {

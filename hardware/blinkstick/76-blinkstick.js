@@ -129,7 +129,7 @@ module.exports = function(RED) {
 
                 if (typeof(err.name) === 'undefined' || err.name !== 'ReferenceError') {
                     //USB error occurred when BlinkStick was animating
-                    node.led.close(function (err) {
+                    node.led.close(function () {
                         node.led = undefined;
                         findBlinkStick();
                     });

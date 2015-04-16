@@ -18,9 +18,6 @@ module.exports = function(RED) {
 "use strict";
 var XMPP = require('simple-xmpp');
 
-try { var xmppkey = RED.settings.xmpp || require(process.env.NODE_RED_HOME+"/../xmppkeys.js"); }
-catch(err) { }
-
 function XMPPServerNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
@@ -73,7 +70,7 @@ function XmppInNode(n) {
     });
 
     xmpp.on('groupchat', function(conference, from, message, stamp) {
-        var msg = { topic:from, payload:message, room:conference };
+        var msg = { topic:from, payload:message, room:conference, ts:stamp };
         if (from != node.nick) { node.send([msg,null]); }
     });
 
@@ -93,7 +90,7 @@ function XmppInNode(n) {
         console.error("error",err);
     });
 
-    xmpp.on('close', function(err) {
+    xmpp.on('close', function() {
         node.log('connection closed');
         node.status({fill:"red",shape:"ring",text:"not connected"});
     });
@@ -157,7 +154,7 @@ function XmppOutNode(n) {
         console.error("error",err);
     });
 
-    xmpp.on('close', function(err) {
+    xmpp.on('close', function() {
         node.log('connection closed');
         node.status({fill:"red",shape:"ring",text:"not connected"});
     });

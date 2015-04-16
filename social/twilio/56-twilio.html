@@ -153,8 +153,8 @@
                     $("#node-input-credentials-row").hide();
                 }
 
-                if (this.twilioType == null) {
-                    if (this.url == "") {
+                if (this.twilioType === null) {
+                    if (this.url === "") {
                         this.twilioType = "call";
                     } else {
                         this.twilioType = "sms";

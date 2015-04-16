@@ -145,7 +145,7 @@
             password: {type: "password"}
         },
         label: function() {
-            if (this.service == "") {
+            if (this.service === "") {
                 this.service = "localhost";
             }
             return (this.clientid ? this.clientid + "@" : "") + this.service;

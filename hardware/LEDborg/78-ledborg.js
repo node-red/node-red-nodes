@@ -17,7 +17,7 @@
 module.exports = function(RED) {
     "use strict";
     var util = require("util");
-    var exec = require('child_process').exec;
+    //var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
     var fs =  require('fs');
 
@@ -105,7 +105,7 @@ module.exports = function(RED) {
             if (RED.settings.verbose) { node.log("err: "+data+" :"); }
         });
 
-        node.child.on('close', function (code) {
+        node.child.on('close', function () {
             node.child = null;
             node.running = false;
             node.status({fill:"red",shape:"circle",text:""});

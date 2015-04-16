@@ -153,7 +153,7 @@ voltage ten times in rapid succession for each input message and output the mean
                 // Handle resizing the Input Scaling div when the dialog is resized - this isn't quite right!
                 function switchDialogResize(ev, ui) {
                     $("#node-input-breakpoint-container-div").css("height", (ui.size.height - 299) + "px");
-                };
+                }
 
                 $("#dialog").on("dialogresize", switchDialogResize);
                 $("#dialog").one("dialogopen", function (ev) {

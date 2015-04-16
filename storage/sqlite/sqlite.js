@@ -27,13 +27,12 @@ module.exports = function(RED) {
 
         node.doConnect = function() {
             node.db = new sqlite3.Database(node.dbname);
-            node.db.on('open',function(err) {
-                 if (node.tick) { clearTimeout(node.tick); }
-                 node.log("opened "+node.dbname+" ok");
+            node.db.on('open', function() {
+                if (node.tick) { clearTimeout(node.tick); }
+                node.log("opened "+node.dbname+" ok");
             });
             node.db.on('error', function(err) {
-                node.error(err);
-                node.log("failed to open "+node.dbname);
+                node.error("failed to open "+node.dbname, err);
                 node.tick = setTimeout(function() { node.doConnect(); }, reconnect);
             });
         }
