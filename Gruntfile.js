@@ -39,6 +39,7 @@ module.exports = function(grunt) {
                 //"strict": true,   // commented out for now as it causes 100s of warnings, but want to get there eventually
                 "loopfunc": true,   // allow functions to be defined in loops
                 "sub": true,        // don't warn that foo['bar'] should be written as foo.bar
+                //"unused": true,   // Check for unused functions
                 //"forin":false,    // turn off check for "for (x in y...)"
                 "reporter": require('jshint-stylish')
             },
@@ -55,12 +56,13 @@ module.exports = function(grunt) {
             },
         },
         inlinelint: {
-            html: ['*/*.html']
+            html: ['*/*/*.html']
         }
     });
 
     grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-lint-inline');
 
-    grunt.registerTask('default', ['jshint:all', 'simplemocha:all'] );
+    grunt.registerTask('default', ['jshint:all', 'inlinelint', 'simplemocha:all'] );
 };
