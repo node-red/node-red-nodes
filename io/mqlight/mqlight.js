@@ -129,7 +129,7 @@ module.exports = function(RED) {
                         }
                         sendClient.send(node.topic, msg.payload, function(err) {
                             if (err) {
-                                node.error(err);
+                                node.error(err,msg);
                             }
                         });
                     });
