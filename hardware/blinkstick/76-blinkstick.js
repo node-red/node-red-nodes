@@ -252,6 +252,7 @@ module.exports = function(RED) {
                 } else {
                     //Sanitize color value
                     node.color = msg.payload.toLowerCase().replace(/\s+/g,'');
+                    if (node.color === "amber") { node.color = "#FFBF00"; }
                 }
 
                 if (Object.size(node.led) !== 0) {
