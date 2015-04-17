@@ -16,6 +16,12 @@ Usage
 
 Connects to a Stomp capable server to send and receive messages.
 
-The **destination** field is optional. If set it overrides the **msg.topic** property of the message.
+The **destination** field is optional. If set it overrides the **msg.topic**
+property of the message.
+
+As noted [here](https://github.com/easternbloc/node-stomp-client#queue-names),
+while not a requirement of the Stomp protocol,
+if talking to an **ActiveMQ** server the *destination* should begin with
+**"/queue/"** or with **"/topic/"**.
 
 This node only uses the simple security version of the stomp-client.

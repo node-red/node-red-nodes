@@ -57,7 +57,14 @@ module.exports = function(RED) {
                 node.status({fill:"green",shape:"dot",text:"connected"});
                 node.log('subscribed to: '+node.topic);
                 node.client.subscribe(node.topic, function(body, headers) {
-                    msg.payload = JSON.parse(body);
+                    try {
+                        msg.payload = JSON.parse(body);
+                    }
+                    catch(e) {
+                        msg.payload = body;
+                    }
+                    msg.headers = headers;
+                    msg.topic = node.topic;
                     node.send(msg);
                 });
             }, function(error) {

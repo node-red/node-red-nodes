@@ -31,6 +31,14 @@
 
 <script type="text/x-red" data-help-name="stomp in">
     <p>Connects to a server using the Stomp protocol to receive messages.</p>
+    <p>If the message received is JSON <b>msg.payload</b> will be parsed into an
+    object. If not it will be the raw data.</p>
+    <p><b>msg.headers</b> contains any header information that was also delivered.</p>
+    <p><b>msg.topic</b> is set to the predefined subscription topic.</p>
+    <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting to an ActiveMQ server, the destination should
+    begin with <i>"/queue/"</i> or with <i>"/topic/"</i>. See
+    <a href="https://stomp.github.io/stomp-specification-1.0.html#frame-SEND" target="new">Stomp 1.0 spec</a>
+    for more details.</p>
 </script>
 
 <script type="text/javascript">
@@ -72,7 +80,12 @@
 
 <script type="text/x-red" data-help-name="stomp out">
     <p>Connects to an Stomp capable server to send messages.</p>
-    <p>The <b>Destination</b> field is optional. If set it overrides the <b>msg.topic</b> property of the message.</p>
+    <p>The <b>Destination</b> field is optional. If set it overrides the <b>msg.topic</b>
+    property of the message.</p>
+    <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting to an ActiveMQ server, the destination should
+    begin with <i>"/queue/"</i> or with <i>"/topic/"</i>. See
+    <a href="https://stomp.github.io/stomp-specification-1.0.html#frame-SEND" target="new">Stomp 1.0 spec</a>
+    for more details.</p>
 </script>
 
 <script type="text/javascript">
