@@ -59,7 +59,7 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-            var recvClient = node.serviceConfig.client;
+                var recvClient = node.serviceConfig.client;
                 recvClient.on("started", function() {
                     recvClient.on("message", function(data, delivery) {
                         var msg = {
@@ -74,6 +74,11 @@ module.exports = function(RED) {
                             msg.share = delivery.destination.share;
                         }
                         node.send(msg);
+                    });
+                    recvClient.on("error", function(err) {
+                        if (err) {
+                            node.error(err.toString());
+                        }
                     });
                     var subscribeCallback = function(err) {
                         if (err) {
@@ -129,6 +134,12 @@ module.exports = function(RED) {
                         });
                     });
                 });
+                sendClient.on("error", function(err) {
+                    if (err) {
+                        node.error(err.toString());
+                    }
+                });
+
                 sendClient.start();
 
                 node.on("close", function (done) {
