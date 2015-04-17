@@ -90,12 +90,11 @@ module.exports = function(RED) {
         node.on("close", function(done) {
             closing = true;
             if (node.client) {
-                node.client.on("disconnect", function() {
-                    done();
-                });
+                node.client.on("disconnect", function() { done(); });
                 //node.client.unsubscribe(node.topic);
                 node.client.disconnect();
-            } else { done(); }
+            }
+            else { done(); }
         });
     }
     RED.nodes.registerType("stomp in",StompInNode);
@@ -143,7 +142,11 @@ module.exports = function(RED) {
 
         node.on("close", function(done) {
             closing = true;
-            if (client) { client.disconnect(); }
+            if (node.client) {
+                node.client.on("disconnect", function() { done(); });
+                node.client.disconnect();
+            }
+            else { done(); }
         });
     }
     RED.nodes.registerType("stomp out",StompOutNode);
