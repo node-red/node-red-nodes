@@ -38,15 +38,30 @@ module.exports = function(RED) {
 
     function PushbulletConfig(n) {
         RED.nodes.createNode(this, n);
+        this.n = n;
         this.name = n.name;
         this._inputNodes = [];
         this.emitter = new EventEmitter();
+        this.initialised = false;
+    }
+    
+    RED.nodes.registerType("pushbullet-config", PushbulletConfig, {
+        credentials: {
+            apikey: {type: "password"}
+        }
+    });
+
+    PushbulletConfig.prototype.initialise = function() {
+        if (this.initialised) {
+            return;
+        }
+        this.initialised = true;
         var self = this;
 
         // sort migration from old node
         var apikey;
-        if(n._migrate) {
-            apikey = n._apikey;
+        if(this.n._migrate) {
+            apikey = this.n._apikey;
             this.credentials = {apikey:apikey};
         }
         else if(this.credentials) {
@@ -61,24 +76,26 @@ module.exports = function(RED) {
                     pusher.me(function(err, me) {
                         if(err) {
                             reject(err);
-                            return onError(err, self);
+                        } else {
+                            resolve(me);
                         }
-                        resolve(me);
                     });
+                }).otherwise(function(err) {
+                    onError(err, self);
                 });
                 // get latest timestamp
                 this.last = when.promise(function(resolve) {
                     pusher.history({limit:1}, function(err, res) {
                         if(err) {
                             resolve(0);
-                            return onError(err, self);
-                        }
-                        try {
-                            resolve(res.pushes[0].modified);
-                        }
-                        catch(ex){
-                            self.warn('Unable to get history.');
-                            resolve(0);
+                        } else {
+                            try {
+                                resolve(res.pushes[0].modified);
+                            }
+                            catch(ex){
+                                self.warn('Unable to get history.');
+                                resolve(0);
+                            }
                         }
                     });
                 });
@@ -93,18 +110,9 @@ module.exports = function(RED) {
         }
 
         this.on("close", function() {
-            if(self.stream) {
-                self.stream.close();
-            }
             self._inputNodes.length = 0;
         });
     }
-
-    RED.nodes.registerType("pushbullet-config", PushbulletConfig, {
-        credentials: {
-            apikey: {type: "password"}
-        }
-    });
 
     PushbulletConfig.prototype.onConfig = function(type, cb) {
         this.emitter.on(type, cb);
@@ -133,6 +141,15 @@ module.exports = function(RED) {
             });
             stream.connect();
             this.stream = stream;
+            this.on("close",function() {
+                try {
+                   this.stream.close();
+                } catch(err) {
+                    // Ignore error if not connected
+                }
+            });
+            
+            
         }
     };
 
@@ -315,6 +332,7 @@ module.exports = function(RED) {
         }
 
         if(configNode) {
+            configNode.initialise();
             this.pusher = configNode.pusher;
             configNode.onConfig('error', function(err) {
                 self.error(err);
@@ -341,8 +359,12 @@ module.exports = function(RED) {
                 else if(deviceid === "") {
                     try {
                         when(configNode.me).then(function(me) {
-                            deviceid = me.email;
-                            self.pushMsg(pushtype, deviceid, title, msg);
+                            if (me) {
+                                deviceid = me.email;
+                                self.pushMsg(pushtype, deviceid, title, msg);
+                            } else {
+                                self.error("Unable to push",msg);
+                            }
                         });
                         return;
                     }
@@ -502,6 +524,7 @@ module.exports = function(RED) {
         var self = this;
         var config = RED.nodes.getNode(n.config);
         if(config) {
+            config.initialise();
             config.registerInputNode(this);
             config.onConfig('error', function(err) {
                 self.error(err);
