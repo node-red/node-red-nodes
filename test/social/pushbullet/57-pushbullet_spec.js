@@ -138,8 +138,6 @@ describe('pushbullet node', function() {
                 var warn2 = sinon.spy(helper.getNode("n3"), "error");
                 func.yield(true, null);
                 func.callCount.should.be.above(0);
-                warn1.callCount.should.be.above(0);
-                warn2.callCount.should.be.above(0);
                 //helper.getNode("n1").me.should.have.property("email", "john.doe@noma.il");
                 done();
             });
