@@ -41,7 +41,6 @@ module.exports = function(RED) {
         this.n = n;
         this.name = n.name;
         this._inputNodes = [];
-        this.emitter = new EventEmitter();
         this.initialised = false;
     }
     
@@ -55,6 +54,8 @@ module.exports = function(RED) {
         if (this.initialised) {
             return;
         }
+        this.emitter = new EventEmitter();
+
         this.initialised = true;
         var self = this;
 
