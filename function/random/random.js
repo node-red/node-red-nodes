@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ module.exports = function(RED) {
         this.inte = n.inte || false;
         var node = this;
         this.on("input", function(msg) {
-            if (node.inte === true) {
+            if (node.inte == "true" || node.inte === true) {
                 msg.payload = Math.round(Number(Math.random()) * (node.high - node.low + 1) + node.low - 0.5);
             } else {
                 msg.payload = Number(Math.random()) * (node.high - node.low) + node.low;
