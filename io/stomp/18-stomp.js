@@ -90,9 +90,7 @@ module.exports = function(RED) {
         node.on("close", function(done) {
             closing = true;
             if (node.client) {
-                node.client.on("disconnect", function() { done(); });
-                //node.client.unsubscribe(node.topic);
-                node.client.disconnect();
+                node.client.disconnect(function() { done(); });
             }
             else { done(); }
         });
@@ -143,8 +141,7 @@ module.exports = function(RED) {
         node.on("close", function(done) {
             closing = true;
             if (node.client) {
-                node.client.on("disconnect", function() { done(); });
-                node.client.disconnect();
+                node.client.disconnect(function() { done(); });
             }
             else { done(); }
         });
