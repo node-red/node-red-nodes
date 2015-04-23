@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-pidcontrol",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node that that provides a simple PID controller.",
+    "dependencies"  : {
+    "node-pid-controller": "0.0.3"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/function/PID"
+    },
+    "license": "Apache",
+    "keywords": [ "node-red", "PID", "control" ],
+    "node-red"      : {
+        "nodes"     : {
+            "PID control": "pidcontrol.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
