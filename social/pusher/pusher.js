@@ -42,7 +42,7 @@ module.exports = function(RED) {
         var my_channel = socket.subscribe(''+this.channel);
         socket.bind(''+this.eventname,
             function(data) {
-                var msg = {};
+                var msg = {topic:this.eventname};
                 if (data.hasOwnProperty("payload")) { msg.payload = data.payload; }
                 else { msg.payload = data; }
                 node.send(msg);
@@ -80,7 +80,7 @@ module.exports = function(RED) {
             secret: this.appsecret
         });
 
-        this.on("input", function(msg){
+        this.on("input", function(msg) {
             pusher.trigger(this.channel, this.eventname, {
                 "payload": msg.payload
             });
@@ -102,7 +102,7 @@ module.exports = function(RED) {
     RED.nodes.registerType("pusher in",PusherNode,{
         credentials: {
             pusherappkey_sub: "text"
-        }       
+        }
     });
     RED.nodes.registerType("pusher out",PusherNodeSend,{
         credentials: {
