@@ -4,13 +4,13 @@ A collection of nodes for [Node-RED](http://nodered.org). See below for a list.
 
 ## Installation
 
-Most of these nodes are available as npm packages. See the list below for the npm p
-ackage names, or [search npm](https://www.npmjs.org/search?q=node-red-node-).
+Most of these nodes are available as npm packages. See the list below for the
+npm package names, or [search npm](https://www.npmjs.org/search?q=node-red-node-).
 
-To install
+To install - change to your Node-RED user directory.
 
-    cd node-red
-    npm install node-red-node-{*filename*}
+        cd ~/.node-red
+        npm install node-red-node-{filename}
 
 This repository acts as an overall store for these nodes - and is no longer
 intended as a way to install them - unless you really do want some bloat.
@@ -19,15 +19,15 @@ To manually install using this repo:
 
 1. cd into the `nodes` directory of Node-RED
 2. Either:
-  - download the zip of the repository and extract it
-  - run `git clone https://github.com/node-red/node-red-nodes.git`
-3. npm install in any of the node subfolders to install individual node's dependencies
+    - download the zip of the repository and extract it
+    - run `git clone https://github.com/node-red/node-red-nodes.git`
+3. run `npm install` in any of the node subfolders to install individual node's dependencies
 
 ## Contributing
 
 Now that we support npm installaton of nodes we recommend people post their own
-via [npm](https://www.npmjs.org/). Please read
-the [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
+nodes via [npm](https://www.npmjs.org/). Please read the
+[packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
 
 If you are an IBMer, please contact us directly as the contribution process
 is slightly different.
@@ -37,14 +37,13 @@ our mistakes. If you need to raise a pull request please read our
 [contribution guidelines](https://github.com/node-red/node-red/blob/master/CONTRIBUTING.md)
 before doing so.
 
-
 ## Copyright and license
 
-Copyright 2013,2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
+Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 # Extra Node Information
 
-NPM name - File-link - Description
+**NPM name** - *File-link* - Description
 
 ### Analysis
 
@@ -90,11 +89,7 @@ NPM name - File-link - Description
 
 **N/A** - *[101-scanBLE](hardware/scanBLE)* - Scans for a particular Bluetooth Low Energy (BLE) device.
 
-**N/A** - *[103-hue_discover](hardware/hue)* - Looks for a Philips Hue Bridge in the local network.
-
-**N/A** - *[104-hue_manage](hardware/hue)* - Implements some basic functionality for managing a Philips Hue wireless Lamp system.
-
-### IO
+### I/O
 
 **node-red-node-stomp** - *[18-stomp](io/stomp)* - A Node-RED node to publish and subscribe to and from a [STOMP server](https://stomp.github.io/implementations.html#STOMP_Servers).
 
@@ -155,8 +150,6 @@ NPM name - File-link - Description
 **node-red-node-exif** - *[94-exif](utility/exif)* - Extracts GPS and other EXIF information from a passed in jpeg image,
 
 **node-red-node-daemon** - *[daemon](utility/daemon)* - starts up (calls) a long running system program and pipes STDIN, STDOUT and STDERR to and from that process. Good for monitoring long running command line applications,
-
-
 
 ### Misc
 
