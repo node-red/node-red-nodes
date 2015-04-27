@@ -32,10 +32,15 @@ the [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.htm
 If you are an IBMer, please contact us directly as the contribution process
 is slightly different.
 
+For simple typos and single line fixes please just raise an issue pointing out
+our mistakes. If you need to raise a pull request please read our
+[contribution guidelines](https://github.com/node-red/node-red/blob/master/CONTRIBUTING.md)
+before doing so.
+
 
 ## Copyright and license
 
-Copyright 2013,2014 IBM Corp. under [the Apache 2.0 license](LICENSE).
+Copyright 2013,2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 # Extra Node Information
 
@@ -50,6 +55,12 @@ NPM name - File-link - Description
 ### Function
 
 **node-red-node-smooth** - *[17-smooth](analysis/smooth)*  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
+
+**node-red-node-rbe** - *[rbe](analysis/rbe)*  - A simple node to provide report by exception and deadband / bandgap capability for simple inputs.
+
+**node-red-node-pidcontrol** - *[pidcontrol](analysis/pidcontrol)*  - A PID control node for numeric inputs - provides simple contoll loop feedback capability.
+
+**node-red-node-random** - *[random](analysis/random)*  - A simple random number generator - can generate integers for x to y - or floats between x and y.
 
 ### Hardware
 
@@ -75,9 +86,7 @@ NPM name - File-link - Description
 
 **node-red-node-sensortag** - *[79-sensorTag](hardware/sensorTag)* - Reads data from the Ti Bluetooh Low Energy (BLE) SensorTag device.
 
-**N/A** - *[100-heatmiser-in](hardware/heatmiser)* - Writes settings for temperature and frost protection to Heatmiser thermostats.
-
-**N/A** - *[101-heatmiser-out](hardware/heatmiser)* - Reads settings from Heatmiser thermostats at a polling interval.
+**node-red-node-heatmiser** - *[100-heatmiser-in](hardware/heatmiser)* - Read and writes settings for temperature and frost protection to Heatmiser thermostats.
 
 **N/A** - *[101-scanBLE](hardware/scanBLE)* - Scans for a particular Bluetooth Low Energy (BLE) device.
 
@@ -93,7 +102,21 @@ NPM name - File-link - Description
 
 **node-red-node-ping** - *[88-ping](io/ping)* - Pings a machine and returns the trip time in mS. Returns false if no response received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
 
-**N/A** - *[88-emoncms](io/emoncms)* - Adds node to post to an [Emoncms](http://emoncms.org/) server.
+**node-red-node-mdns** - *[mdns](io/mdns)* - discovers other Avahi/Bonjour services on the network.
+
+**node-red-node-mqlight** - *[mqlight](io/mqlight)* - Adds nodes to send and receive using MQlight.
+
+**node-red-node-snmp** - *[snmp](io/snmp)* - Adds simple snmp receivers for single OIDs or OID tables.
+
+**node-red-node-emoncms** - *[88-emoncms](io/emoncms)* - Adds node to post to an [Emoncms](http://emoncms.org/) server.
+
+### Parsers
+
+**node-red-node-msgpack** - *[70-msgpack.js](parsers/msgpack)* - Converts a payload to/from msgpack binary packed format.
+
+**node-red-node-base64** - *[70-base64.js](parsers/base64)* - Converts a payload to/from base64 encoded format.
+
+**node-red-node-geohash** - *[70-geohash.js](parsers/geohash)* - Converts a lat, lon payload to/from geohash format.
 
 ### Social
 
@@ -113,9 +136,7 @@ NPM name - File-link - Description
 
 **node-red-node-xmpp** - *[92-xmpp](social/xmpp)* - Connects to an XMPP server to send and receive messages.
 
-**N/A** - *[79-snapchat](social/snapchat)* - Downloads [SnapChat](https://www.snapchat.com/) images from the account specified.
-
-**N/A** - *[114-pusher](social/pusher)* - Publish-Subscribe to a [Pusher](http://pusher.com/) channel/event.
+**node-red-node-pusher** - *[114-pusher](social/pusher)* - Publish-Subscribe to a [Pusher](http://pusher.com/) channel/event.
 
 ### Storage
 
