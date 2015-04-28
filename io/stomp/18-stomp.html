@@ -82,8 +82,11 @@
     <p>Connects to an Stomp capable server to send messages.</p>
     <p>The <b>Destination</b> field is optional. If set it overrides the <b>msg.topic</b>
     property of the message.</p>
-    <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting to an ActiveMQ server, the destination should
-    begin with <i>"/queue/"</i> or with <i>"/topic/"</i>. See
+    <p><b>msg.headers</b></code>, if set, should be an object containing field/value
+        pairs to be added as request headers.</p>
+    <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting
+    to an ActiveMQ server, the destination should
+    begin with <i>"/queue/"</i> or with <i>"/topic/"</i>. See the
     <a href="https://stomp.github.io/stomp-specification-1.0.html#frame-SEND" target="new">Stomp 1.0 spec</a>
     for more details.</p>
 </script>

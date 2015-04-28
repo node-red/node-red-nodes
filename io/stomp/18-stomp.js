@@ -135,7 +135,7 @@ module.exports = function(RED) {
         });
 
         node.on("input", function(msg) {
-            node.client.publish(node.topic || msg.topic, msg.payload);
+            node.client.publish(node.topic || msg.topic, msg.payload, msg.headers);
         });
 
         node.on("close", function(done) {
