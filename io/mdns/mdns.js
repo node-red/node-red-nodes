@@ -62,7 +62,7 @@ module.exports = function(RED) {
         this.txt = n.txt;
         if (this.txt && (this.txt !== '')) {
             try { this.txt = JSON.parse('{'+this.txt+'}'); }
-            catch (e) { delete this.txt; };
+            catch (e) { delete this.txt; }
         }
         var node = this;
 
@@ -77,7 +77,7 @@ module.exports = function(RED) {
                 if (node.name || msg.name) {
                     options.name = (node.name || msg.name).replace(/\%h/g, os.hostname());
                 }
-                if (node.txt || msg.txtRecord) { options.txtRecord = node.txt || msg.txtRecord };
+                if (node.txt || msg.txtRecord) { options.txtRecord = node.txt || msg.txtRecord }
                 node.ad = mdns.createAdvertisement(service, port, options);
                 node.ad.start();
             }
