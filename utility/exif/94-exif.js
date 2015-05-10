@@ -37,16 +37,15 @@ module.exports = function(RED) {
          */
         function addMsgLocationDataFromExifGPSData(msg) {
             var gpsData = msg.exif.gps; // declaring variable purely to make checks more readable
-            if(gpsData.GPSAltitude) {
-                if(!msg.location) {
-                    msg.location = {};
-                }
+            if (gpsData.GPSAltitude) {
+                /* istanbul ignore else */
+                if (!msg.location) { msg.location = {}; }
                 msg.location.alt = gpsData.GPSAltitude;
             }
-            if(gpsData.GPSLatitudeRef && gpsData.GPSLatitude && gpsData.GPSLongitudeRef && gpsData.GPSLongitude) { // location can be determined, OK
+            if (gpsData.GPSLatitudeRef && gpsData.GPSLatitude && gpsData.GPSLongitudeRef && gpsData.GPSLongitude) { // location can be determined, OK
                 // The data provided in Exif is in degrees, minutes, seconds, this is to be converted into a single floating point degree
-                if(gpsData.GPSLatitude.length === 3) { // OK to convert latitude
-                    if(gpsData.GPSLongitude.length === 3) { // OK to convert longitude
+                if (gpsData.GPSLatitude.length === 3) { // OK to convert latitude
+                    if (gpsData.GPSLongitude.length === 3) { // OK to convert longitude
 
                         var latitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLatitude[0], gpsData.GPSLatitude[1], gpsData.GPSLatitude[2]);
                         latitude = Math.round(latitude * 100000)/100000;    // 5dp is approx 1m resolution...
