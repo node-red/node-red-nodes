@@ -15,10 +15,10 @@
  **/
 
 module.exports = function(RED) {
-"use strict";
-var XMPP = require('simple-xmpp');
+    "use strict";
+    var XMPP = require('simple-xmpp');
 
-function XMPPServerNode(n) {
+    function XMPPServerNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
     this.port = n.port;
@@ -29,7 +29,7 @@ function XMPPServerNode(n) {
         this.password = credentials.password;
     }
 }
-RED.nodes.registerType("xmpp-server",XMPPServerNode,{
+    RED.nodes.registerType("xmpp-server",XMPPServerNode,{
     credentials: {
         user: {type:"text"},
         password: {type: "password"}
@@ -37,7 +37,7 @@ RED.nodes.registerType("xmpp-server",XMPPServerNode,{
 });
 
 
-function XmppInNode(n) {
+    function XmppInNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
 
@@ -75,9 +75,9 @@ function XmppInNode(n) {
     });
 
     //xmpp.on('chatstate', function(from, state) {
-        //console.log('%s is currently %s', from, state);
-        //var msg = { topic:from, payload:state };
-        //node.send([null,msg]);
+    //console.log('%s is currently %s', from, state);
+    //var msg = { topic:from, payload:state };
+    //node.send([null,msg]);
     //});
 
     xmpp.on('buddy', function(jid, state, statusText) {
@@ -102,10 +102,10 @@ function XmppInNode(n) {
     // Now actually make the connection
     try {
         xmpp.connect({
-            jid         : node.userid,
-            password    : node.password,
-            host        : node.host,
-            port        : node.port,
+            jid : node.userid,
+            password : node.password,
+            host : node.host,
+            port : node.port,
             skipPresence : true,
             reconnect : false
         });
@@ -121,9 +121,9 @@ function XmppInNode(n) {
         done();
     });
 }
-RED.nodes.registerType("xmpp in",XmppInNode);
+    RED.nodes.registerType("xmpp in",XmppInNode);
 
-function XmppOutNode(n) {
+    function XmppOutNode(n) {
     RED.nodes.createNode(this,n);
     this.server = n.server;
 
@@ -166,10 +166,10 @@ function XmppOutNode(n) {
     // Now actually make the connection
     try {
         xmpp.connect({
-            jid         : node.userid,
-            password    : node.password,
-            host        : node.host,
-            port        : node.port,
+            jid : node.userid,
+            password : node.password,
+            host : node.host,
+            port : node.port,
             skipPresence : true,
             reconnect : false
         });
@@ -207,6 +207,6 @@ function XmppOutNode(n) {
         xmpp = null;
     });
 }
-RED.nodes.registerType("xmpp out",XmppOutNode);
+    RED.nodes.registerType("xmpp out",XmppOutNode);
 
 }

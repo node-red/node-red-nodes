@@ -39,7 +39,7 @@ module.exports = function(RED) {
                 line += data.toString();
             });
             //ex.stderr.on('data', function (data) {
-                //console.log('[ping] stderr: ' + data);
+            //console.log('[ping] stderr: ' + data);
             //});
             ex.on('close', function (code) {
                 var m = regex.exec(line)||"";

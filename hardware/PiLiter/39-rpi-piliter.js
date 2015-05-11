@@ -18,7 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var spawn = require('child_process').spawn;
-    var fs =  require('fs');
+    var fs = require('fs');
 
     var gpioCommand = __dirname+'/nrgpio';
 

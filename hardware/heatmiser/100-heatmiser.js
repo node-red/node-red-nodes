@@ -148,8 +148,8 @@ module.exports = function(RED) {
             for (var key in message.payload) {
                 if (message.payload.hasOwnProperty(key)) {
                     // Ensure our valid keys contain valid values
-                    switch(key) {
-                        case "runmode" :
+                    switch (key) {
+                        case "runmode" : {
                             if (DEBUG) {
                                 hminnode.log("Hit the runmode case");
                             }
@@ -158,8 +158,9 @@ module.exports = function(RED) {
                                 return;
                             }
                             break;
+                        }
 
-                        //case "holiday" :
+                        //case "holiday" : {
                             //if (DEBUG) {
                               //hminnode.log("Hit the holiday case");
                             //}
@@ -183,8 +184,9 @@ module.exports = function(RED) {
                                 //message.payload.away_mode = 0;
                             //}
                             //break;
+                        // }
 
-                        //case "hotwater" :
+                        //case "hotwater" : {
                             //if (DEBUG) {
                                 //hminnode.log("Hit the hotwater case");
                             //}
@@ -193,8 +195,9 @@ module.exports = function(RED) {
                                 //return;
                             //}
                             //break;
+                        // }
 
-                        case "heating" :
+                        case "heating" : {
                             // Ensure heating stays last! It's got a multi write scenario
                             if (DEBUG) {
                                 hminnode.log("Hit the heating case");
@@ -226,9 +229,11 @@ module.exports = function(RED) {
                                 return;
                             }
                             break;
+                        }
 
-                        default :
+                        default : {
                             break;
+                        }
                     }
                     // Valid set of key messages, construct DCB and write
                     var dcb = message.payload;

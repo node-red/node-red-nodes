@@ -32,7 +32,7 @@ module.exports = function(RED) {
             }
             else { msg.payload = msg.payload.toString(); }
             if (node.pushkey) {
-               nma({
+                nma({
                     "apikey": node.pushkey,
                     "application": "Node-RED",
                     "event": titl,

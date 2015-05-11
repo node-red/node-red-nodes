@@ -18,7 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var exec = require('child_process').exec;
-    var fs =  require('fs');
+    var fs = require('fs');
 
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
         throw "Info : Ignoring Raspberry Pi specific node.";
@@ -30,31 +30,31 @@ module.exports = function(RED) {
 
     // Map names of pins to Gordon's gpio PiFace pin numbers
     var pintable = {
-    // Physical : WiringPi
-            "Button S1":"200",
-            "Button S2":"201",
-            "Button S3":"202",
-            "Button S4":"203",
-            "Input 5":"204",
-            "Input 6":"205",
-            "Input 7":"206",
-            "Input 8":"207",
-            "Output0":"208",
-            "Output1":"209",
-            "Output2":"210",
-            "Output3":"211",
-            "Output4":"212",
-            "Output5":"213",
-            "Output6":"214",
-            "Output7":"215",
-            "LED 0 / Relay 0":"200",
-            "LED 1 / Relay 1":"201",
-            "LED 2":"202",
-            "LED 3":"203",
-            "LED 4":"204",
-            "LED 5":"205",
-            "LED 6":"206",
-            "LED 7":"207"
+        // Physical : WiringPi
+        "Button S1":"200",
+        "Button S2":"201",
+        "Button S3":"202",
+        "Button S4":"203",
+        "Input 5":"204",
+        "Input 6":"205",
+        "Input 7":"206",
+        "Input 8":"207",
+        "Output0":"208",
+        "Output1":"209",
+        "Output2":"210",
+        "Output3":"211",
+        "Output4":"212",
+        "Output5":"213",
+        "Output6":"214",
+        "Output7":"215",
+        "LED 0 / Relay 0":"200",
+        "LED 1 / Relay 1":"201",
+        "LED 2":"202",
+        "LED 3":"203",
+        "LED 4":"204",
+        "LED 5":"205",
+        "LED 6":"206",
+        "LED 7":"207"
     }
 
     function PiFACEInNode(n) {

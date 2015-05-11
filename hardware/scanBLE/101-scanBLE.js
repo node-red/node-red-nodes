@@ -55,7 +55,7 @@ function BleScan(n) {
         msg.payload = "not found";
 
         //check for the device name and the UUID (first one from the UUID list)
-        if(peripheral.advertisement.localName==node.ble_name && peripheral.advertisement.serviceUuids[0]==node.ble_uuid) {
+        if (peripheral.advertisement.localName==node.ble_name && peripheral.advertisement.serviceUuids[0]==node.ble_uuid) {
             msg.payload=peripheral.advertisement.localName;
             noble.stopScanning();
         }

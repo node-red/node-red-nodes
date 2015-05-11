@@ -73,7 +73,7 @@ module.exports = function(RED) {
             try {
                 // decide if we are to Send SMS
                 var tonum = node.number || msg.topic;
-                if( this.twilioType == "call" ) {
+                if ( this.twilioType == "call" ) {
                     // Make a call
                     var twimlurl = node.url || msg.payload;
                     node.twilioClient.makeCall( {to: tonum, from: node.fromNumber, url: twimlurl}, function(err, response) {

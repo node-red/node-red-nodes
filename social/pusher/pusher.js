@@ -23,7 +23,7 @@ module.exports = function(RED) {
     var PusherClient = require('pusher-client');
 
     //node for subscribing to an event/channel
-     function PusherNode(n) {
+    function PusherNode(n) {
         // Create a RED node
         RED.nodes.createNode(this,n);
 
@@ -88,9 +88,9 @@ module.exports = function(RED) {
 
         this.on("close", function() {
         });
-     }
+    }
 
-     //debugging on the output:
+    //debugging on the output:
     var displayResult = function(result) {
         node.log(result);
     };

@@ -54,7 +54,7 @@ module.exports = function (RED) {
         }
     }
 
-// Node constructor for bbb-analogue-in
+    // Node constructor for bbb-analogue-in
     function AnalogueInputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -110,7 +110,7 @@ module.exports = function (RED) {
         }
     }
 
-// Node constructor for bbb-discrete-in
+    // Node constructor for bbb-discrete-in
     function DiscreteInputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -141,7 +141,7 @@ module.exports = function (RED) {
         this.intervalId = null;         // Remember the timer ID so we can delete it when we are closed
         this.currentState = 0;          // The pin input state "1" or "0"
         this.lastActiveTime = NaN;      // The date (in ms since epoch) when the pin last went high
-                                        // switch to process.hrtime()
+        // switch to process.hrtime()
         this.totalActiveTime = 0;       // The total time in ms that the pin has been high (since reset)
         this.starting = true;
         this.debouncing = false;        // True after a change of state while waiting for the 7ms debounce time to elapse
@@ -285,7 +285,7 @@ module.exports = function (RED) {
         }
     }
 
-// Node constructor for bbb-pulse-in
+    // Node constructor for bbb-pulse-in
     function PulseInputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -383,7 +383,7 @@ module.exports = function (RED) {
         }
     }
 
-// Node constructor for bbb-discrete-out
+    // Node constructor for bbb-discrete-out
     function DiscreteOutputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -443,7 +443,7 @@ module.exports = function (RED) {
         }
     }
 
-// Node constructor for bbb-pulse-out
+    // Node constructor for bbb-pulse-out
     function PulseOutputNode(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -519,14 +519,14 @@ module.exports = function (RED) {
         }
     }
 
-// Register the nodes by name. This must be called before overriding any of the Node functions.
+    // Register the nodes by name. This must be called before overriding any of the Node functions.
     RED.nodes.registerType("bbb-analogue-in", AnalogueInputNode);
     RED.nodes.registerType("bbb-discrete-in", DiscreteInputNode);
     RED.nodes.registerType("bbb-pulse-in", PulseInputNode);
     RED.nodes.registerType("bbb-discrete-out", DiscreteOutputNode);
     RED.nodes.registerType("bbb-pulse-out", PulseOutputNode);
 
-// On close, detach the interrupt (if we attached one) and clear any active timers
+    // On close, detach the interrupt (if we attached one) and clear any active timers
     DiscreteInputNode.prototype.close = function () {
         if (this.interruptAttached) {
             bonescript.detachInterrupt(this._pin);
@@ -539,7 +539,7 @@ module.exports = function (RED) {
         }
     };
 
-// On close, detach the interrupt (if we attached one) and clear the interval (if we set one)
+    // On close, detach the interrupt (if we attached one) and clear the interval (if we set one)
     PulseInputNode.prototype.close = function () {
         if (this.interruptAttached) {
             bonescript.detachInterrupt(this._pin);
@@ -549,7 +549,7 @@ module.exports = function (RED) {
         }
     };
 
-// On close, clear an active pulse timer
+    // On close, clear an active pulse timer
     PulseOutputNode.prototype.close = function () {
         if (this.pulseTimer !== null) {
             clearTimeout(this.pulseTimer);

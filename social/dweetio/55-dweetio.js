@@ -22,22 +22,22 @@ module.exports = function(RED) {
     function DweetioOutNode(n) {
         RED.nodes.createNode(this,n);
         this.thing = n.thing;
-        if (dweetio  == null) { dweetio = new DweetClient(); }
+        if (dweetio == null) { dweetio = new DweetClient(); }
         var node = this;
 
         this.on("input",function(msg) {
             //if (typeof(msg.payload) === 'object') {
-                var thing = node.thing || msg.thing;
-                try {
-                    dweetio.dweet_for(thing, {payload:msg.payload}, function(err, dweet) {
+            var thing = node.thing || msg.thing;
+            try {
+                dweetio.dweet_for(thing, {payload:msg.payload}, function(err, dweet) {
                         //console.log(dweet.thing); // "my-thing"
                         //console.log(dweet.content); // The content of the dweet
                         //console.log(dweet.created); // The create date of the dweet
                     });
-                }
-                catch (err) {
-                    node.log(err);
-                }
+            }
+            catch (err) {
+                node.log(err);
+            }
             //} else { node.warn("Dweetio only sends payload objects."); }
         });
 
@@ -47,7 +47,7 @@ module.exports = function(RED) {
     function DweetioInNode(n) {
         RED.nodes.createNode(this,n);
         this.thing = n.thing;
-        if (dweetio  == null) { dweetio = new DweetClient(); }
+        if (dweetio == null) { dweetio = new DweetClient(); }
         var node = this;
 
         dweetio.listen_for(node.thing, function(dweet){
@@ -55,7 +55,7 @@ module.exports = function(RED) {
             if (dweet.content.hasOwnProperty("payload")) {
                 dweet.payload=dweet.content.payload;
             } else {
-            dweet.payload = dweet.content;
+                dweet.payload = dweet.content;
             }
             delete dweet.content;
             node.send(dweet);

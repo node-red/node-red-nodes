@@ -24,9 +24,9 @@ module.exports = function(RED) {
     var EventEmitter = require('events').EventEmitter;
 
     function onError(err, node) {
-        if(err && node) {
-            if(node.emitter) {
-                if(!node.emitter.emit('error', err)) {
+        if (err && node) {
+            if (node.emitter) {
+                if (!node.emitter.emit('error', err)) {
                     node.error(err);
                 }
             }
@@ -61,11 +61,11 @@ module.exports = function(RED) {
 
         // sort migration from old node
         var apikey;
-        if(this.n._migrate) {
+        if (this.n._migrate) {
             apikey = this.n._apikey;
             this.credentials = {apikey:apikey};
         }
-        else if(this.credentials) {
+        else if (this.credentials) {
             apikey = this.credentials.apikey;
         }
 
@@ -75,7 +75,7 @@ module.exports = function(RED) {
                 // get 'me' info
                 this.me = when.promise(function(resolve, reject) {
                     pusher.me(function(err, me) {
-                        if(err) {
+                        if (err) {
                             reject(err);
                         } else {
                             resolve(me);
@@ -87,7 +87,7 @@ module.exports = function(RED) {
                 // get latest timestamp
                 this.last = when.promise(function(resolve) {
                     pusher.history({limit:1}, function(err, res) {
-                        if(err) {
+                        if (err) {
                             resolve(0);
                         } else {
                             try {
@@ -121,13 +121,13 @@ module.exports = function(RED) {
 
     PushbulletConfig.prototype.setupStream = function() {
         var self = this;
-        if(this.pusher) {
+        if (this.pusher) {
             var stream = this.pusher.stream();
             stream.on('message', function(res) {
-                if(res.type === 'tickle') {
+                if (res.type === 'tickle') {
                     self.handleTickle(res);
                 }
-                else if(res.type === 'push') {
+                else if (res.type === 'push') {
                     self.pushMsg(res.push);
                 }
             });
@@ -144,7 +144,7 @@ module.exports = function(RED) {
             this.stream = stream;
             this.on("close",function() {
                 try {
-                   this.stream.close();
+                    this.stream.close();
                 } catch(err) {
                     // Ignore error if not connected
                 }
@@ -156,16 +156,16 @@ module.exports = function(RED) {
 
     PushbulletConfig.prototype.handleTickle = function(ticklemsg) {
         var self = this;
-        if(this.pusher && ticklemsg.subtype === "push") {
+        if (this.pusher && ticklemsg.subtype === "push") {
             var lastprom = this.last;
             this.last = when.promise(function(resolve) {
                 when(lastprom).then(function(last) {
                     self.pusher.history({modified_after: last}, function(err, res) {
-                        if(err) {
+                        if (err) {
                             resolve(last);
                             return onError(err);
                         }
-                        for(var i=0;i<res.pushes.length; i++) {
+                        for (var i=0;i<res.pushes.length; i++) {
                             self.pushMsg(res.pushes[i]);
                         }
                         try {
@@ -180,7 +180,7 @@ module.exports = function(RED) {
     };
 
     PushbulletConfig.prototype.pushMsg = function(incoming) {
-        if(this._inputNodes.length === 0) {
+        if (this._inputNodes.length === 0) {
             return;
         }
 
@@ -189,48 +189,48 @@ module.exports = function(RED) {
             data: incoming
         }
 
-        if(incoming.dismissed === true) {
+        if (incoming.dismissed === true) {
             msg.pushtype = 'dismissal';
             msg.topic = 'Push dismissed';
             msg.payload = incoming.iden;
         }
-        else if(incoming.active === false && incoming.type === undefined) {
+        else if (incoming.active === false && incoming.type === undefined) {
             msg.pushtype = 'delete';
             msg.topic = 'Push deleted';
             msg.payload = incoming.iden;
         }
-        else if(incoming.type === 'clip') {
+        else if (incoming.type === 'clip') {
             msg.topic = 'Clipboard content';
             msg.payload = incoming.body;
         }
-        else if(incoming.type === 'note') {
+        else if (incoming.type === 'note') {
             msg.topic = incoming.title;
             msg.payload = incoming.body;
         }
-        else if(incoming.type === 'link') {
+        else if (incoming.type === 'link') {
             msg.topic = incoming.title;
             msg.payload = incoming.url;
             msg.message = incoming.body;
         }
-        else if(incoming.type === 'address') {
+        else if (incoming.type === 'address') {
             msg.topic = incoming.name;
             msg.payload = incoming.address;
         }
-        else if(incoming.type === 'list') {
+        else if (incoming.type === 'list') {
             msg.topic = incoming.title;
             msg.payload = incoming.items;
         }
-        else if(incoming.type === 'file') {
+        else if (incoming.type === 'file') {
             msg.topic = incoming.file_name;
             msg.payload = incoming.file_url;
             msg.message = incoming.body;
         }
         // Android specific, untested
-        else if(incoming.type === 'mirror') {
+        else if (incoming.type === 'mirror') {
             msg.topic = incoming.title;
             msg.payload = incoming.body;
         }
-        else if(incoming.type === 'dismissal') {
+        else if (incoming.type === 'dismissal') {
             msg.topic = "dismissal";
             msg.topic = "Push dismissed";
             msg.payload = incoming.iden;
@@ -246,14 +246,14 @@ module.exports = function(RED) {
     };
 
     PushbulletConfig.prototype.registerInputNode = function(/*Node*/handler) {
-        if(!this.stream) {
+        if (!this.stream) {
             this.setupStream();
         }
         this._inputNodes.push(handler);
     };
 
     function migrateOldSettings(n) {
-        if(n.config === undefined) {
+        if (n.config === undefined) {
             var newid, config, apikey, deviceid, pushkeys;
 
             try {
@@ -264,10 +264,10 @@ module.exports = function(RED) {
 
             var cred = RED.nodes.getCredentials(n.id);
             // get old apikey
-            if(cred && cred.hasOwnProperty("pushkey")) {
+            if (cred && cred.hasOwnProperty("pushkey")) {
                 apikey = cred.pushkey;
             }
-            else if(pushkeys) {
+            else if (pushkeys) {
                 apikey = pushkeys.pushbullet;
             }
             // get old device
@@ -278,7 +278,7 @@ module.exports = function(RED) {
                 deviceid = pushkeys.deviceid;
             }
 
-            if(apikey) {
+            if (apikey) {
                 newid = (1+Math.random()*4294967295).toString(16);
                 config = new PushbulletConfig({
                     id: newid,
@@ -289,7 +289,7 @@ module.exports = function(RED) {
                 });
             }
 
-            if(!(apikey || deviceid)) {
+            if (!(apikey || deviceid)) {
                 return false;
             }
 
@@ -317,7 +317,7 @@ module.exports = function(RED) {
         this.pusher = null;
 
         var configNode;
-        if(this.migrated) {
+        if (this.migrated) {
             this.warn('Settings migrated from previous version of Pushbullet Node, please edit node to update settings.');
             this.status({fill: 'yellow', shape: 'ring', text: 'Node migrated'});
             this.deviceid = this.migrated.deviceid;
@@ -332,7 +332,7 @@ module.exports = function(RED) {
             catch(err){}
         }
 
-        if(configNode) {
+        if (configNode) {
             configNode.initialise();
             this.pusher = configNode.pusher;
             configNode.onConfig('error', function(err) {
@@ -341,23 +341,23 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg) {
-            var title =  self.title || msg.topic || "Node-RED";
-            var deviceid =  (self.deviceid === '_msg_')? (msg.deviceid || ""): (self.deviceid || "");
-            var pushtype =  self.pushtype || msg.pushtype || "note";
+            var title = self.title || msg.topic || "Node-RED";
+            var deviceid = (self.deviceid === '_msg_')? (msg.deviceid || ""): (self.deviceid || "");
+            var pushtype = self.pushtype || msg.pushtype || "note";
             var channel = self.chan || msg.channel;
 
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
-            else if(msg.payload) {
+            else if (msg.payload) {
                 msg.payload = msg.payload.toString();
             }
 
-            if(['delete', 'dismissal', 'updatelist', '_rawupdate_'].indexOf(pushtype) === -1) {
+            if (['delete', 'dismissal', 'updatelist', '_rawupdate_'].indexOf(pushtype) === -1) {
                 if (channel) {
                     deviceid = { channel_tag : channel };
                 }
-                else if(deviceid === "") {
+                else if (deviceid === "") {
                     try {
                         when(configNode.me).then(function(me) {
                             if (me) {
@@ -392,24 +392,24 @@ module.exports = function(RED) {
         if (this.pusher) {
             var handleErr = function(msg){
                 return function(err) {
-                    if(err) {
+                    if (err) {
                         self.error(msg);
                         onError(err, self);
                     }
                 }
             }
 
-            if(deviceid) {
-                if(pushtype === 'note') {
+            if (deviceid) {
+                if (pushtype === 'note') {
                     this.pusher.note(deviceid, title, msg.payload, handleErr('Unable to push note'));
                 }
-                else if(pushtype === 'address') {
+                else if (pushtype === 'address') {
                     this.pusher.address(deviceid, title, msg.payload, handleErr('Unable to push address'));
                 }
-                else if(pushtype === 'list') {
+                else if (pushtype === 'list') {
                     this.pusher.list(deviceid, title, JSON.parse(msg.payload), handleErr('Unable to push list'));
                 }
-                else if(pushtype === 'link') {
+                else if (pushtype === 'link') {
                     this.pusher.push(deviceid, {
                         type: 'link',
                         title: title,
@@ -417,31 +417,31 @@ module.exports = function(RED) {
                         url: msg.payload
                     }, handleErr('Unable to push link'));
                 }
-                else if(pushtype === 'file') {
+                else if (pushtype === 'file') {
                     // Workaround for Pushbullet dep not handling error on file open
-                    if(fs.existsSync(msg.payload)) {
+                    if (fs.existsSync(msg.payload)) {
                         this.pusher.file(deviceid, msg.payload, title, handleErr('Unable to push file'));
                     }
                     else {
                         this.error('File does not exist!');
                     }
                 }
-                else if(pushtype === '_raw_') {
+                else if (pushtype === '_raw_') {
                     this.pusher.push(deviceid, msg.raw, handleErr('Unable to push raw data'));
                 }
             }
 
-            if(msg.data && msg.data.iden) {
-                if(pushtype === 'delete') {
+            if (msg.data && msg.data.iden) {
+                if (pushtype === 'delete') {
                     this.pusher.deletePush(msg.data.iden, handleErr('Unable to delete push'));
                 }
-                else if(pushtype === 'dismissal') {
+                else if (pushtype === 'dismissal') {
                     this.pusher.updatePush(msg.data.iden, {dismissed: true}, handleErr('Unable to dismiss push'));
                 }
-                else if(pushtype === 'updatelist') {
+                else if (pushtype === 'updatelist') {
                     try {
                         var data = JSON.parse(msg.payload);
-                        if(msg.data.type && msg.data.type !== 'list') {
+                        if (msg.data.type && msg.data.type !== 'list') {
                             this.warn('Trying to update list items in non list push');
                         }
                         this.pusher.updatePush(msg.data.iden, {items: data}, handleErr('Unable to update list'));
@@ -450,7 +450,7 @@ module.exports = function(RED) {
                         this.warn("Invalid list");
                     }
                 }
-                else if(pushtype === '_rawupdate_') {
+                else if (pushtype === '_rawupdate_') {
                     this.pusher.updatePush(msg.data.iden, msg.raw, handleErr('Unable to update raw data'));
                 }
             }
@@ -462,13 +462,13 @@ module.exports = function(RED) {
 
     RED.httpAdmin.get('/pushbullet/:id/migrate', function(req, res) {
         var node = RED.nodes.getNode(req.params.id);
-        if(node && node.migrated) {
-            if(req.query.save) {
+        if (node && node.migrated) {
+            if (req.query.save) {
                 var promise;
-                if(node.migrated.apikey) {
+                if (node.migrated.apikey) {
                     promise = RED.nodes.addCredentials(node.migrated.id, {apikey: node.migrated.apikey});
                 }
-                if(node.migrated.deviceid) {
+                if (node.migrated.deviceid) {
                     when(promise).then(function() {
                         RED.nodes.addCredentials(req.params.id, {deviceid: node.migrated.deviceid});
                     });
@@ -486,29 +486,29 @@ module.exports = function(RED) {
         var cred = RED.nodes.getCredentials(req.params.id);
         var pb;
 
-        if(config && config.pusher) {
+        if (config && config.pusher) {
             config.pusher.devices(function(err, chans) {
-                if(err) {
+                if (err) {
                     res.send("[]");
                     return onError(err, config);
                 }
                 res.send(JSON.stringify(chans.devices));
             });
         }
-        else if(cred && cred.apikey) {
+        else if (cred && cred.apikey) {
             pb = new PushBullet(cred.apikey);
             pb.devices(function(err, chans) {
-                if(err) {
+                if (err) {
                     res.send("[]");
                     return onError(err, config);
                 }
                 res.send(JSON.stringify(chans.devices));
             });
         }
-        else if(req.query.apikey) {
+        else if (req.query.apikey) {
             pb = new PushBullet(req.query.apikey);
             pb.devices(function(err, chans) {
-                if(err) {
+                if (err) {
                     res.send("[]");
                     return onError(err, config);
                 }
@@ -524,7 +524,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         var self = this;
         var config = RED.nodes.getNode(n.config);
-        if(config) {
+        if (config) {
             config.initialise();
             config.registerInputNode(this);
             config.onConfig('error', function(err) {
@@ -550,8 +550,8 @@ module.exports = function(RED) {
 
     PushbulletIn.prototype.emitPush = function(msg) {
         try {
-            if(this.credentials.filters.length > 0) {
-                if( (this.credentials.filters.indexOf(msg.data.source_device_iden) > -1) ||
+            if (this.credentials.filters.length > 0) {
+                if ( (this.credentials.filters.indexOf(msg.data.source_device_iden) > -1) ||
                     (this.credentials.filters.indexOf(msg.data.target_device_iden) > -1) ||
                     (!msg.data.target_device_iden && !msg.data.source_device_iden)) { /* All */
                     this.send(msg);
