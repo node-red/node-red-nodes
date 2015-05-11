@@ -37,7 +37,7 @@ function BleScan(n) {
     this.ble_name = n.ble_name;
     this.ble_uuid = n.ble_uuid;
 
-    this.on("input", function(msg){
+    this.on("input", function(msg) {
         noble.startScanning();
     });
 

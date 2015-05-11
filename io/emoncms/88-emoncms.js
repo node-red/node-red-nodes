@@ -43,17 +43,17 @@ module.exports = function(RED) {
         else { http = require("http"); }
         this.on("input", function(msg) {
             this.url = this.baseurl + '/input/post.json?';
-            if (msg.payload.indexOf(':') > -1){
+            if (msg.payload.indexOf(':') > -1) {
                 this.url += 'json={' + msg.payload + '}';
             } else {
                 this.url += 'csv='+msg.payload;
             }
             this.url += '&apikey='+this.apikey;
             var nodegroup = this.nodegroup || msg.nodegroup;
-            if (nodegroup !== ""){
+            if (nodegroup !== "") {
                 this.url += '&node=' + nodegroup;
             }
-            if (typeof msg.time !== 'undefined'){
+            if (typeof msg.time !== 'undefined') {
                 this.url += '&time=' + msg.time;
             }
             node.log("[emoncms] "+this.url);

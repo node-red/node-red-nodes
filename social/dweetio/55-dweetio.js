@@ -50,7 +50,7 @@ module.exports = function(RED) {
         if (dweetio == null) { dweetio = new DweetClient(); }
         var node = this;
 
-        dweetio.listen_for(node.thing, function(dweet){
+        dweetio.listen_for(node.thing, function(dweet) {
             // This will be called anytime there is a new dweet for my-thing
             if (dweet.content.hasOwnProperty("payload")) {
                 dweet.payload=dweet.content.payload;

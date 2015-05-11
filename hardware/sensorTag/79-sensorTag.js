@@ -41,27 +41,27 @@ function sensorTagNode(n) {
 
     if ( typeof node.stag == "undefined") {
         //console.log("starting");
-        SensorTag.discover(function(sensorTag){
+        SensorTag.discover(function(sensorTag) {
         node.stag = sensorTag;
-        sensorTag.connect(function(){
+        sensorTag.connect(function() {
             //console.log("connected");
-            sensorTag.discoverServicesAndCharacteristics(function(){
-                sensorTag.enableIrTemperature(function(){});
+            sensorTag.discoverServicesAndCharacteristics(function() {
+                sensorTag.enableIrTemperature(function() {});
                 sensorTag.on('irTemperatureChange',
-                function(objectTemperature, ambientTemperature){
+                function(objectTemperature, ambientTemperature) {
                     var msg = {'topic': node.topic + '/temperature'};
                     msg.payload = {'object': objectTemperature.toFixed(1),
                     'ambient':ambientTemperature.toFixed(1)
                     };
                     node.send(msg);
                 });
-                sensorTag.enableBarometricPressure(function(){});
-                sensorTag.on('barometricPressureChange', function(pressure){
+                sensorTag.enableBarometricPressure(function() {});
+                sensorTag.on('barometricPressureChange', function(pressure) {
                     var msg = {'topic': node.topic + '/pressure'};
                     msg.payload = {'pres': pressure.toFixed(1)};
                     node.send(msg);
                 });
-                sensorTag.enableHumidity(function(){});
+                sensorTag.enableHumidity(function() {});
                 sensorTag.on('humidityChange', function(temp, humidity) {
                     var msg = {'topic': node.topic + '/humidity'};
                     msg.payload = {'temp': temp.toFixed(1),
@@ -69,25 +69,25 @@ function sensorTagNode(n) {
                     };
                     node.send(msg);
                 });
-                sensorTag.enableAccelerometer(function(){});
-                sensorTag.on('accelerometerChange', function(x,y,z){
+                sensorTag.enableAccelerometer(function() {});
+                sensorTag.on('accelerometerChange', function(x,y,z) {
                     var msg = {'topic': node.topic + '/accelerometer'};
                     msg.payload = {'x': x, 'y': y, 'z': z};
                     node.send(msg);
                 });
                 sensorTag.enableMagnetometer(function() {});
-                sensorTag.on('magnetometerChange', function(x,y,z){
+                sensorTag.on('magnetometerChange', function(x,y,z) {
                     var msg = {'topic': node.topic + '/magnetometer'};
                     msg.payload = {'x': x, 'y': y, 'z': z};
                     node.send(msg);
                 });
-                sensorTag.enableGyroscope(function(){});
-                sensorTag.on('gyroscopeChange', function(x,y,z){
+                sensorTag.enableGyroscope(function() {});
+                sensorTag.on('gyroscopeChange', function(x,y,z) {
                     var msg = {'topic': node.topic + '/gyroscope'};
                     msg.payload = {'x': x, 'y': y, 'z': z};
                     node.send(msg);
                 });
-                sensorTag.on('simpleKeyChange', function(left, right){
+                sensorTag.on('simpleKeyChange', function(left, right) {
                     var msg = {'topic': node.topic + '/keys'};
                     msg.payload = {'left': left, 'right': right};
                     node.send(msg);
@@ -104,21 +104,21 @@ function sensorTagNode(n) {
 
 function enable(node) {
     if (node.temperature) {
-        node.stag.notifyIrTemperature(function(){});
+        node.stag.notifyIrTemperature(function() {});
     } else {
-        node.stag.unnotifyIrTemperature(function(){});
+        node.stag.unnotifyIrTemperature(function() {});
     }
     if (node.pressure) {
-        node.stag.notifyBarometricPressure(function(){});
+        node.stag.notifyBarometricPressure(function() {});
     } else {
-        node.stag.unnotifyBarometricPressure(function(){});
+        node.stag.unnotifyBarometricPressure(function() {});
     }
     if (node.humidity) {
         node.stag.notifyHumidity(function() {});
     } else {
         node.stag.unnotifyHumidity(function() {});
     }
-    if (node.accelerometer){
+    if (node.accelerometer) {
         node.stag.notifyAccelerometer(function() {});
     } else {
         node.stag.unnotifyAccelerometer(function() {});

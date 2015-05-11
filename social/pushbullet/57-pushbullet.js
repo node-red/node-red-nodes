@@ -93,7 +93,7 @@ module.exports = function(RED) {
                             try {
                                 resolve(res.pushes[0].modified);
                             }
-                            catch(ex){
+                            catch(ex) {
                                 self.warn('Unable to get history.');
                                 resolve(0);
                             }
@@ -329,7 +329,7 @@ module.exports = function(RED) {
             try {
                 this.deviceid = this.credentials.deviceid;
             }
-            catch(err){}
+            catch(err) {}
         }
 
         if (configNode) {
@@ -390,7 +390,7 @@ module.exports = function(RED) {
     PushbulletOut.prototype.pushMsg = function(pushtype, deviceid, title, msg) {
         var self = this;
         if (this.pusher) {
-            var handleErr = function(msg){
+            var handleErr = function(msg) {
                 return function(err) {
                     if (err) {
                         self.error(msg);
