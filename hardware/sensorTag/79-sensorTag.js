@@ -30,6 +30,7 @@ function sensorTagNode(n) {
     this.accelerometer = n.accelerometer;
     this.magnetometer = n.magnetometer;
     this.gyroscope = n.gyroscope;
+    this.lux = n.lux; // supported in sensortag 2
     this.keys = n.keys;
 
     if (this.uuid === "") {
@@ -87,6 +88,12 @@ function sensorTagNode(n) {
                    msg.payload = {'x': x, 'y': y, 'z': z};
                    node.send(msg);
                 });
+                sensorTag.enableLux(function(){});
+                sensorTag.on('LuxChange', function(lux){ // should be luxChange
+                    var msg = {'topic': node.topic + '/lux'};
+                    msg.payload = {'lux': lux};
+                    node.send(msg);
+                });
                 sensorTag.on('simpleKeyChange', function(left, right){
                    var msg = {'topic': node.topic + '/keys'};
                    msg.payload = {'left': left, 'right': right};
@@ -132,6 +139,11 @@ function enable(node) {
        node.stag.notifyGyroscope(function() {});
     } else {
        node.stag.unnotifyGyroscope(function() {});
+    }
+    if (node.lux) {
+        node.stag.notifyLux(function() {});
+    } else {
+        node.stag.unnotifyLux(function() {});
     }
     if (node.keys) {
        node.stag.notifySimpleKey(function() {});
