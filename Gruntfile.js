@@ -59,8 +59,15 @@ module.exports = function(grunt) {
         inlinelint: {
             html: ['*/*/*.html'],
             options: {
-                jshintrc:".jshintrc",
-                "reporter": require('jshint-stylish')
+                jshintrc: ".jshintrc",
+                reporter: require('jshint-stylish')
+            }
+        },
+        jscs: {
+            src: "*/*/*.js",
+            options: {
+                config: ".jscsrc",
+                reporter: "inline"
             }
         }
     });
@@ -68,6 +75,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-lint-inline');
+    grunt.loadNpmTasks('grunt-jscs');
 
-    grunt.registerTask('default', ['jshint:all', 'inlinelint', 'simplemocha:all'] );
+    grunt.registerTask('default', ['jshint:all', 'inlinelint', 'simplemocha:all']);
+    grunt.registerTask('style', ['jscs']);
 };

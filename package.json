@@ -21,6 +21,7 @@
         "grunt-simple-mocha": "0.4.0",
         "grunt-contrib-jshint": "0.11.0",
         "grunt-lint-inline": "0.4.3",
+        "grunt-jscs": "0.8.*",
         "jshint-stylish": "1.0.1",
         "mocha": "2.1.0",
         "should": "4.6.5",
