@@ -61,7 +61,7 @@ module.exports = function(RED) {
                 }
                 else { node.error("Cannot make key string from msg.topic"); }
             }
-            else { node.warn("Database not ready"); }
+            else { node.error("Database not ready",msg); }
         });
     }
     RED.nodes.registerType("leveldb in",LevelDBNodeIn);
@@ -89,7 +89,7 @@ module.exports = function(RED) {
                 }
                 else { node.error("Cannot make key string from msg.topic"); }
             }
-            else { node.warn("Database not ready"); }
+            else { node.error("Database not ready",msg); }
         });
     }
     RED.nodes.registerType("leveldb out",LevelDBNodeOut);
