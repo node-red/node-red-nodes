@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-pusher",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node to send and receive messages using Pusher.com",
     "dependencies"  : {
-        "pusher": "1.0.4",
+        "pusher": "1.0.5",
         "pusher-client": "0.2.3"
     },
     "repository" : {
