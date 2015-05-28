@@ -3,7 +3,7 @@
     "version"      : "0.0.1",
     "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage"     : "http://nodered.org",
-    "license"      : "Apache",
+    "license"      : "Apache-2.0",
     "repository"   : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes.git"
