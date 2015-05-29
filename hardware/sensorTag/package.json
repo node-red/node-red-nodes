@@ -1,12 +1,12 @@
 {
     "name": "node-red-node-sensortag",
     "description": "A Node-RED node to read data from a TI SensorTag",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "keywords" : ["node-red","sensortag"],
     "dependencies": {
         "sensortag" : "0.1.9"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensorTag"

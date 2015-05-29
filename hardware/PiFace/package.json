@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-piface",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "Node-RED nodes to read from and write to a PiFace Digital Raspberry Pi add-on board",
     "dependencies"  : {
     },
@@ -8,7 +8,7 @@
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/PiFace"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "piface" ],
     "node-red"      : {
         "nodes"     : {

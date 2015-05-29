@@ -1,15 +1,15 @@
 {
     "name"          : "node-red-node-stomp",
-    "version"       : "0.0.6",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to publish and subscribe to/from a Stomp server",
     "dependencies"  : {
-        "stomp-client"   : "0.6.2"
+        "stomp-client"   : "0.6.*"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/io/stomp"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "stomp", "stomp-client" ],
     "node-red"      : {
         "nodes"     : {

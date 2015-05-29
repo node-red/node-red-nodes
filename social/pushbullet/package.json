@@ -1,16 +1,16 @@
 {
     "name"          : "node-red-node-pushbullet",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "description"   : "A Node-RED node to send alerts via Pushbullet",
     "dependencies"  : {
         "pushbullet": "1.4.*",
-        "when": "^3.6.4"
+        "when": "^3.7.3"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/social/pushbullet"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "pushbullet" ],
     "node-red"      : {
         "nodes"     : {

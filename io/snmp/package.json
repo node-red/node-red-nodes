@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
         "net-snmp"  : "1.1.13"
@@ -9,7 +9,7 @@
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/io/snmp"
     },
-    "license": "Apache v2",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "snmp", "oid" ],
     "node-red"      : {
         "nodes"     : {

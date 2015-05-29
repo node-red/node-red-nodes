@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pidcontrol",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A Node-RED node that that provides a simple PID controller.",
     "dependencies"  : {
     "node-pid-controller": "0.0.3"
@@ -9,7 +9,7 @@
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/function/PID"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "PID", "control" ],
     "node-red"      : {
         "nodes"     : {

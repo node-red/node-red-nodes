@@ -1,15 +1,15 @@
 {
     "name"          : "node-red-node-mysql",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "description"   : "A Node-RED node to read and write to a MySQL database",
     "dependencies"  : {
-        "mysql"   : "2.5.*"
+        "mysql"   : "2.7.*"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/storage/mysql"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "mysql" ],
     "node-red"      : {
         "nodes"     : {

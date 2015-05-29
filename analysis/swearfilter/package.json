@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-badwords",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "A Node-RED node that attempts to filter out messages containing swearwords.",
     "dependencies"  : {
         "badwords"   : "0.0.3"
@@ -9,7 +9,7 @@
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/swearfilter"
     },
-    "license": "Apache",
+    "license": "Apache-2.0",
     "keywords": [ "node-red", "badwords", "swearfilter" ],
     "node-red"      : {
         "nodes"     : {
