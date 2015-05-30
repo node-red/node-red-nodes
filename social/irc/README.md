@@ -17,9 +17,11 @@ this is ~/.node-red .
     npm install node-red-node-irc
 
 During install there may be multiple messages about libiconv charset support.
-These report as failure to compile errors - but are warnings and the node will
-still install (assuming nothing else failed) and you'll be able to use it, just
-not the character set features.
+These may look like failures... as they report as failure to compile errors -
+but are warnings and the node will continue to install and, assuming nothing else
+failed, you'll be able to use it, just without the character set features. You
+may of course manually install the extra dependancies as per the warnings, but
+they may not be available on all platforms.
 
 
 Usage
