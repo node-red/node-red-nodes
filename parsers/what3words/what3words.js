@@ -18,7 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var What3Words = require('geo.what3words');
 
-    function what3wordsNode(n) {
+    var what3wordsNode = function(n) {
         RED.nodes.createNode(this, n);
         this.lang = n.lang || "en";
         var credentials = RED.nodes.getCredentials(n.id);
