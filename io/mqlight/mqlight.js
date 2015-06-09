@@ -62,18 +62,20 @@ module.exports = function(RED) {
                 var recvClient = node.serviceConfig.client;
                 recvClient.on("started", function() {
                     recvClient.on("message", function(data, delivery) {
-                        var msg = {
-                            topic: delivery.message.topic,
-                            payload: data,
-                            _session: {
-                                type: "mqlight",
-                                id: recvClient.id
+                        if (node.topic === delivery.destination.topicPattern) {
+                            var msg = {
+                                topic: delivery.message.topic,
+                                payload: data,
+                                _session: {
+                                    type: "mqlight",
+                                    id: recvClient.id
+                                }
+                            };
+                            if (delivery.destination.share) {
+                                msg.share = delivery.destination.share;
                             }
-                        };
-                        if (delivery.destination.share) {
-                            msg.share = delivery.destination.share;
+                            node.send(msg);
                         }
-                        node.send(msg);
                     });
                     recvClient.on("error", function(err) {
                         if (err) {
