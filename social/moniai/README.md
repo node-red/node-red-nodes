@@ -1,7 +1,7 @@
 node-red-moniai
 ====================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node that is triggered by a pattern on <a href="https://moni.ai" target="_new">Moni.ai</a>.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node that is triggered by a pattern on <a href="https://moni.ai" target="_new">Moni.ai</a>. Moni.ai is a virtual assistant for the Internet of Things.
 
 Install
 -------

@@ -1,6 +1,6 @@
 {
     "name"         : "moni.ai",
-    "version"      : "1.0.1",
+    "version"      : "1.0.2",
     "description"  : "Listen to trigger patterns on Moni.ai, your virtual assistant",
     "dependencies": {
     },
