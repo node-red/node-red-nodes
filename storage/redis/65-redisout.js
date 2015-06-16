@@ -20,7 +20,7 @@ module.exports = function(RED) {
 
     var hashFieldRE = /^([^=]+)=(.*)$/;
 
-    var redisConnectionPool = (function() {
+    var redisConnectionPool = function() {
         var connections = {};
         var obj = {
             get: function(host,port) {
@@ -29,9 +29,6 @@ module.exports = function(RED) {
                     connections[id] = redis.createClient(port,host);
                     connections[id].on("error",function(err) {
                         RED.log.error(err);
-                    });
-                    connections[id].on("connect",function() {
-                        if (RED.settings.verbose) { RED.log.info("connected to "+host+":"+port); }
                     });
                     connections[id]._id = id;
                     connections[id]._nodeCount = 0;
@@ -51,7 +48,7 @@ module.exports = function(RED) {
             }
         };
         return obj;
-    }());
+    }();
 
 
     function RedisOutNode(n) {
@@ -64,17 +61,17 @@ module.exports = function(RED) {
         this.client = redisConnectionPool.get(this.hostname,this.port);
 
         if (this.client.connected) {
-            this.status({fill:"green",shape:"dot",text:"connected"});
+            this.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
         } else {
-            this.status({fill:"red",shape:"ring",text:"disconnected"},true);
+            this.status({fill:"red",shape:"ring",text:RED._("common.status.disconnected")},true);
         }
 
         var node = this;
         this.client.on("end", function() {
-            node.status({fill:"red",shape:"ring",text:"disconnected"});
+            node.status({fill:"red",shape:"ring",text:RED._("common.status.disconnected")});
         });
         this.client.on("connect", function() {
-            node.status({fill:"green",shape:"dot",text:"connected"});
+            node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
         });
 
         this.on("input", function(msg) {
@@ -90,7 +87,7 @@ module.exports = function(RED) {
                         if (r) {
                             this.client.hset(k,r[1],r[2]);
                         } else {
-                            this.warn("Invalid payload for redis hash");
+                            this.warn(RED._("redisout.errors.invalidpayload"));
                         }
                     }
                 } else if (this.structtype == "set") {
@@ -99,7 +96,7 @@ module.exports = function(RED) {
                     this.client.rpush(k,msg.payload);
                 }
             } else {
-                this.warn("No key or topic set");
+                this.warn(RED._("redisout.errors.nokey"));
             }
         });
         this.on("close", function() {

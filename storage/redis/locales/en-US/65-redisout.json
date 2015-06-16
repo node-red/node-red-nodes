@@ -1,0 +1,21 @@
+{
+    "redisout": {
+        "label": {
+            "host": "Host",
+            "port": "Port",
+            "key": "Key",
+            "type": "Type"
+        },
+        "type": {
+            "string": "String",
+            "hash": "Hash",
+            "set": "Set",
+            "list": "List"
+        },
+        "tip": "If key is blank, the topic will be used as the key.<br>If type is hash, payload should be an object or field=value string.",
+        "errors": {
+            "invalidpayload": "Invalid payload for redis hash",
+            "nokey": "No key or topic set"
+        }
+    }
+}

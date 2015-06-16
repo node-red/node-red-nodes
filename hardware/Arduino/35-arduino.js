@@ -23,28 +23,30 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.device = n.device || null;
         this.repeat = n.repeat||25;
-        //node.log("opening connection "+this.device);
         var node = this;
         node.board = new ArduinoFirmata();
+        // TODO: nls
         ArduinoFirmata.list(function (err, ports) {
             if (!node.device) {
-                node.log("connecting to first board found.");
+                node.log(RED._("arduino.status.connectfirst"));
                 node.board.connect();
             }
             else {
                 if (ports.indexOf(node.device) === -1) {
-                    node.warn(node.device + " not found. Trying to find board.");
+                    node.warn(RED._("arduino.errors.devnotfound",{dev:node.device}));
                     node.board.connect();
                 }
                 else {
-                    node.log("connecting to "+node.device);
+                    node.log(RED._("arduino.status.connect",{device:node.device}));
                     node.board.connect(node.device);
                 }
             }
 
             node.board.on('boardReady', function() {
-                node.log("connected to "+node.board.serialport_name);
-                if (RED.settings.verbose) { node.log("version "+node.board.boardVersion); }
+                node.log(RED._("arduino.status.connected",{device:node.board.serialport_name}));
+                if (RED.settings.verbose) {
+                    node.log(RED._("arduino.status.version",{version:node.board.boardVersion}));
+                }
             });
         });
 
@@ -53,7 +55,7 @@ module.exports = function(RED) {
                 try {
                     node.board.close(function() {
                         done();
-                        if (RED.settings.verbose) { node.log("port closed"); }
+                        if (RED.settings.verbose) { node.log(RED._("arduino.status.portclosed")); }
                     });
                 } catch(e) { done(); }
             } else { done(); }
@@ -73,9 +75,9 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             this.board = this.serverConfig.board;
             var node = this;
-            node.status({fill:"red",shape:"ring",text:"connecting"});
+            node.status({fill:"red",shape:"ring",text:RED._("common.status.connecting")});
             node.board.on('connect', function() {
-                node.status({fill:"green",shape:"dot",text:"connected"});
+                node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
                 //console.log("i",node.state,node.pin);
                 if (node.state == "ANALOG") {
                     node.board.on('analogChange', function(e) {
@@ -103,7 +105,7 @@ module.exports = function(RED) {
             });
         }
         else {
-            this.warn("port not configured");
+            this.warn(RED._("arduino.errors.portnotconf"));
         }
     }
     RED.nodes.registerType("arduino in",DuinoNodeIn);
@@ -120,10 +122,10 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             this.board = this.serverConfig.board;
             var node = this;
-            node.status({fill:"red",shape:"ring",text:"connecting"});
+            node.status({fill:"red",shape:"ring",text:RED._("common.status.connecting")});
 
             node.board.on('connect', function() {
-                node.status({fill:"green",shape:"dot",text:"connected"});
+                node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
                 //console.log("o",node.state,node.pin);
                 node.board.pinMode(node.pin, node.state);
                 node.on("input", function(msg) {
@@ -154,7 +156,7 @@ module.exports = function(RED) {
             });
         }
         else {
-            this.warn("port not configured");
+            this.warn(RED._("arduino.errors.portnotconf"));
         }
     }
     RED.nodes.registerType("arduino out",DuinoNodeOut);

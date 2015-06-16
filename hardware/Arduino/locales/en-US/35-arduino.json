@@ -1,0 +1,38 @@
+{
+    "arduino": {
+        "label": {
+            "pin": "Pin",
+            "type": "Type",
+            "port": "Port"
+        },
+        "placeholder": {
+            "port": "e.g. /dev/ttyUSB0  COM1"
+        },
+        "status": {
+            "connectfirst": "connecting to first board found",
+            "connect": "connecting to __device__",
+            "connected": "connected to __device__",
+            "version": "version: __version__",
+            "portclosed": "port closed"
+        },
+        "state": {
+            "in": {
+                "digital": "Digital pin",
+                "analogue": "Analogue pin"
+            },
+            "out": {
+                "digital": "Digital (0/1)",
+                "analogue": "Analogue (0-255)",
+                "servo": "Servo (0-180)"
+            }
+        },
+        "tip": {
+            "io": "<b>Note:</b> You cannot use the same pin for both output and input.",
+            "conf": "<b>Tip:</b> Use search to try to auto-detect serial port."
+        },
+        "errors": {
+            "portnotconf": "port not configured",
+            "devnotfound": "device __dev__ not found. Trying to find board."
+        }
+    }
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2015 IBM Corp.
+ * Copyright 2013,2014 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ module.exports = function(RED) {
                             if (msg.collection) {
                                 coll = db.collection(msg.collection);
                             } else {
-                                node.error("No collection defined",msg);
+                                node.error(RED._("mongodb.errors.nocollection"),msg);
                                 return;
                             }
                         }
@@ -86,9 +86,6 @@ module.exports = function(RED) {
                             if (node.payonly) {
                                 if (typeof msg.payload !== "object") {
                                     msg.payload = {"payload": msg.payload};
-                                }
-                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
-                                    msg.payload._id = msg._id;
                                 }
                                 coll.save(msg.payload,function(err, item) {
                                     if (err) {
@@ -106,9 +103,6 @@ module.exports = function(RED) {
                             if (node.payonly) {
                                 if (typeof msg.payload !== "object") {
                                     msg.payload = {"payload": msg.payload};
-                                }
-                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
-                                    msg.payload._id = msg._id;
                                 }
                                 coll.insert(msg.payload, function(err, item) {
                                     if (err) {
@@ -149,7 +143,7 @@ module.exports = function(RED) {
                 }
             });
         } else {
-            this.error("missing mongodb configuration");
+            this.error(RED._("mongodb.errors.missingconfig"));
         }
 
         this.on("close", function() {
@@ -169,6 +163,7 @@ module.exports = function(RED) {
 
         if (this.mongoConfig) {
             var node = this;
+            var selector;
             MongoClient.connect(this.mongoConfig.url, function(err,db) {
                 if (err) {
                     node.error(err);
@@ -183,11 +178,10 @@ module.exports = function(RED) {
                             if (msg.collection) {
                                 coll = db.collection(msg.collection);
                             } else {
-                                node.error("No collection defined");
+                                node.error(RED._("mongodb.errors.nocollection"));
                                 return;
                             }
                         }
-                        var selector;
                         if (node.operation === "find") {
                             msg.projection = msg.projection || {};
                             selector = ensureValidSelectorObject(msg.payload);
@@ -237,7 +231,7 @@ module.exports = function(RED) {
                 }
             });
         } else {
-            this.error("missing mongodb configuration");
+            this.error(RED._("mongodb.errors.missingconfig"));
         }
 
         this.on("close", function() {
