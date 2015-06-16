@@ -1,15 +1,14 @@
 node-red-node-email
 ===================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receove simple emails.
+<a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node.
+**Note** : This is the same node as is/was in the core of Node-RED.
 
 Pre-requisite
 -------------
 
-You will need valid email credintials for your email server.
+You will need valid email credentials for your email server.
 
 Install
 -------
