@@ -73,7 +73,7 @@ module.exports = function(RED) {
                 if (smtpTransport) {
                     node.status({fill:"blue",shape:"dot",text:RED._("email.status.sending")});
                     if (msg.to && node.name && (msg.to !== node.name)) {
-                        node.warn(RED._("common.errors.nooverride"));
+                        node.warn(RED._("node-red:common.errors.nooverride"));
                     }
                     var sendopts = { from: node.userid };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
@@ -237,20 +237,20 @@ module.exports = function(RED) {
                                     node.log(RED._("email.status.newemail",{topic:pay.topic}));
                                 }
                                 else { node.log(RED._("email.status.duplicate",{topic:pay.topic})); }
-                                //node.status({fill:"green",shape:"dot",text:RED._("common.status.ok")});
+                                //node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
                                 node.status({});
                             });
                         }
                         else {
                             node.log(RED._("email.status.inboxzero"));
-                            //node.status({fill:"green",shape:"dot",text:RED._("common.status.ok")});
+                            //node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
                             node.status({});
                         }
                     }
                     imap.end();
                 });
             });
-            node.status({fill:"grey",shape:"dot",text:RED._("common.status.connecting")});
+            node.status({fill:"grey",shape:"dot",text:RED._("node-red:common.status.connecting")});
             imap.connect();
         });
 

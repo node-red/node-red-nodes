@@ -43,7 +43,7 @@ module.exports = function(RED) {
                         clearTimeout(connection.retry_timer);
                         connection.end();
                     }
-                    delete connections[connection._id];
+                    delete connections[connection._id];                                    
                 }
             }
         };
@@ -61,17 +61,17 @@ module.exports = function(RED) {
         this.client = redisConnectionPool.get(this.hostname,this.port);
 
         if (this.client.connected) {
-            this.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
+            this.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
         } else {
-            this.status({fill:"red",shape:"ring",text:RED._("common.status.disconnected")},true);
+            this.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.disconnected")},true);
         }
 
         var node = this;
         this.client.on("end", function() {
-            node.status({fill:"red",shape:"ring",text:RED._("common.status.disconnected")});
+            node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.disconnected")});
         });
         this.client.on("connect", function() {
-            node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
+            node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
         });
 
         this.on("input", function(msg) {

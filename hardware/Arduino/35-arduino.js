@@ -75,9 +75,9 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             this.board = this.serverConfig.board;
             var node = this;
-            node.status({fill:"red",shape:"ring",text:RED._("common.status.connecting")});
+            node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.connecting")});
             node.board.on('connect', function() {
-                node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
+                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
                 //console.log("i",node.state,node.pin);
                 if (node.state == "ANALOG") {
                     node.board.on('analogChange', function(e) {
@@ -122,10 +122,10 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             this.board = this.serverConfig.board;
             var node = this;
-            node.status({fill:"red",shape:"ring",text:RED._("common.status.connecting")});
+            node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.connecting")});
 
             node.board.on('connect', function() {
-                node.status({fill:"green",shape:"dot",text:RED._("common.status.connected")});
+                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
                 //console.log("o",node.state,node.pin);
                 node.board.pinMode(node.pin, node.state);
                 node.on("input", function(msg) {
