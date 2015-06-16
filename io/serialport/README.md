@@ -3,8 +3,8 @@ node-red-node-serialport
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to an hardware Serial port.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node.
+**Note** : This is the same node as was in the core of Node-RED.
+As of v0.10.8 it will be installed from here instead.
 
 Install
 -------

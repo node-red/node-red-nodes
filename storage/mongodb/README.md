@@ -3,8 +3,8 @@ node-red-node-mongodb
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to save data in a MongoDB database.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node.
+**Note** : This is the same node as was in the core of Node-RED.
+As of v0.10.8 you will need to install it from here if still required.
 
 Pre-requisite
 -------------

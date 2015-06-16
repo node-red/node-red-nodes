@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-feedparser",
-    "version"       : "0.0.3",
+    "version"       : "0.0.4",
     "description"   : "A Node-RED node to get RSS Atom feeds.",
     "dependencies"  : {
         "feedparser"   : "0.19.2",

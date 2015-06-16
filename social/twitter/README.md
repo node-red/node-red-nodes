@@ -7,10 +7,8 @@ The Twitter API will **NOT** deliver 100% of all tweets. This does **NOT** give 
 
 Tweets of who you follow will include their retweets and favourites.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node. However it will be deprecated from
-the core in due course, at which point you will need to install it from here if
-still required.
+**Note** : This is the same node as was in the core of Node-RED.
+As of v0.10.8 it will be installed from here instead.
 
 Install
 -------
