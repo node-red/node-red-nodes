@@ -27,7 +27,7 @@
         "split": {
             "character": "on the character",
             "timeout": "after a timeout of",
-            "length": "into fixed lengths of"
+            "lengths": "into fixed lengths of"
         },
         "output": {
             "ascii": "ascii strings",
