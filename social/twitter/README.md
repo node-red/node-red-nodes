@@ -5,7 +5,7 @@ node-red-node-twitter
 
 The Twitter API will **NOT** deliver 100% of all tweets. This does **NOT** give access to the Twitter Firehose.
 
-Tweets of who you follow will include their retweets and favourites.</div>
+Tweets of who you follow will include their retweets and favourites.
 
 **Note** : This is the same node as is/was in the core of Node-RED. If you already
 have it installed you do NOT need this node. However it will be deprecated from
@@ -55,5 +55,4 @@ To send a Direct Message (DM) - use a payload like.
 
         D {username} {message}
 
-If **msg.media** exists and is a Buffer object, this node will treat it
-   as an image and attach it to the tweet.</p>
+If **msg.media** exists and is a Buffer object, this node will treat it as an image and attach it to the tweet.
