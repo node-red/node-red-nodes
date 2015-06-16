@@ -20,7 +20,7 @@ module.exports = function(RED) {
 
     var hashFieldRE = /^([^=]+)=(.*)$/;
 
-    var redisConnectionPool = function() {
+    var redisConnectionPool = (function() {
         var connections = {};
         var obj = {
             get: function(host,port) {
@@ -43,12 +43,12 @@ module.exports = function(RED) {
                         clearTimeout(connection.retry_timer);
                         connection.end();
                     }
-                    delete connections[connection._id];                                    
+                    delete connections[connection._id];
                 }
             }
         };
         return obj;
-    }();
+    }());
 
 
     function RedisOutNode(n) {

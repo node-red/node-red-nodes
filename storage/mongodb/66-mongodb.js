@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2014 IBM Corp.
+ * Copyright 2013,2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,9 @@ module.exports = function(RED) {
                                 if (typeof msg.payload !== "object") {
                                     msg.payload = {"payload": msg.payload};
                                 }
+                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
+                                    msg.payload._id = msg._id;
+                                }
                                 coll.save(msg.payload,function(err, item) {
                                     if (err) {
                                         node.error(err,msg);
@@ -103,6 +106,9 @@ module.exports = function(RED) {
                             if (node.payonly) {
                                 if (typeof msg.payload !== "object") {
                                     msg.payload = {"payload": msg.payload};
+                                }
+                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
+                                    msg.payload._id = msg._id;
                                 }
                                 coll.insert(msg.payload, function(err, item) {
                                     if (err) {
@@ -163,7 +169,6 @@ module.exports = function(RED) {
 
         if (this.mongoConfig) {
             var node = this;
-            var selector;
             MongoClient.connect(this.mongoConfig.url, function(err,db) {
                 if (err) {
                     node.error(err);
@@ -182,6 +187,7 @@ module.exports = function(RED) {
                                 return;
                             }
                         }
+                        var selector;
                         if (node.operation === "find") {
                             msg.projection = msg.projection || {};
                             selector = ensureValidSelectorObject(msg.payload);

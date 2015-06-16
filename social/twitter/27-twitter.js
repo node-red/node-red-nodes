@@ -16,7 +16,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var ntwitter = require('twitter-ng');
+    var Ntwitter = require('twitter-ng');
     var OAuth= require('oauth').OAuth;
     var request = require('request');
 
@@ -37,17 +37,17 @@ module.exports = function(RED) {
      * Populate msg.location based on data found in msg.tweet.
      */
     function addLocationToTweet(msg) {
-        if(msg.tweet) {
-            if(msg.tweet.geo) { // if geo is set, always set location from geo
-                if(msg.tweet.geo.coordinates && msg.tweet.geo.coordinates.length === 2) {
+        if (msg.tweet) {
+            if (msg.tweet.geo) { // if geo is set, always set location from geo
+                if (msg.tweet.geo.coordinates && msg.tweet.geo.coordinates.length === 2) {
                     if (!msg.location) { msg.location = {}; }
                     // coordinates[0] is lat, coordinates[1] is lon
                     msg.location.lat = msg.tweet.geo.coordinates[0];
                     msg.location.lon = msg.tweet.geo.coordinates[1];
                     msg.location.icon = "twitter";
                 }
-            } else if(msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
-                if(msg.tweet.coordinates.coordinates && msg.tweet.coordinates.coordinates.length === 2) {
+            } else if (msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
+                if (msg.tweet.coordinates.coordinates && msg.tweet.coordinates.coordinates.length === 2) {
                     if (!msg.location) { msg.location = {}; }
                     // WARNING! coordinates[1] is lat, coordinates[0] is lon!!!
                     msg.location.lat = msg.tweet.coordinates.coordinates[1];
@@ -70,7 +70,7 @@ module.exports = function(RED) {
         var credentials = RED.nodes.getCredentials(this.twitter);
 
         if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
-            var twit = new ntwitter({
+            var twit = new Ntwitter({
                 consumer_key: "OKjYEd1ef2bfFolV25G5nQ",
                 consumer_secret: "meRsltCktVMUI8gmggpXett7WBLd1k0qidYazoML6g",
                 access_token_key: credentials.access_token,
@@ -92,10 +92,10 @@ module.exports = function(RED) {
                 for (var i=0;i<users.length;i++) {
                     var user = users[i].replace(" ","");
                     twit.getUserTimeline({
-                            screen_name:user,
-                            trim_user:0,
-                            count:1
-                    },function() {
+                        screen_name:user,
+                        trim_user:0,
+                        count:1
+                    },(function() {
                         var u = user+"";
                         return function(err,cb) {
                             if (err) {
@@ -109,9 +109,9 @@ module.exports = function(RED) {
                             }
                             node.poll_ids.push(setInterval(function() {
                                 twit.getUserTimeline({
-                                        screen_name:u,
-                                        trim_user:0,
-                                        since_id:node.since_ids[u]
+                                    screen_name:u,
+                                    trim_user:0,
+                                    since_id:node.since_ids[u]
                                 },function(err,cb) {
                                     if (cb) {
                                         for (var t=cb.length-1;t>=0;t-=1) {
@@ -124,7 +124,7 @@ module.exports = function(RED) {
                                                 addLocationToTweet(msg);
                                             }
                                             node.send(msg);
-                                            if (t == 0) {
+                                            if (t === 0) {
                                                 node.since_ids[u] = tweet.id_str;
                                             }
                                         }
@@ -135,14 +135,14 @@ module.exports = function(RED) {
                                 });
                             },60000));
                         }
-                    }());
+                    }()));
                 }
             } else if (this.user === "dm") {
                 node.poll_ids = [];
                 twit.getDirectMessages({
-                        screen_name:node.twitterConfig.screen_name,
-                        trim_user:0,
-                        count:1
+                    screen_name:node.twitterConfig.screen_name,
+                    trim_user:0,
+                    count:1
                 },function(err,cb) {
                     if (err) {
                         node.error(err);
@@ -154,11 +154,11 @@ module.exports = function(RED) {
                         node.since_id = '0';
                     }
                     node.poll_ids.push(setInterval(function() {
-                            twit.getDirectMessages({
-                                    screen_name:node.twitterConfig.screen_name,
-                                    trim_user:0,
-                                    since_id:node.since_id
-                            },function(err,cb) {
+                        twit.getDirectMessages({
+                            screen_name:node.twitterConfig.screen_name,
+                            trim_user:0,
+                            since_id:node.since_id
+                        },function(err,cb) {
                                 if (cb) {
                                     for (var t=cb.length-1;t>=0;t-=1) {
                                         var tweet = cb[t];
@@ -170,7 +170,7 @@ module.exports = function(RED) {
                                             addLocationToTweet(msg);
                                         }
                                         node.send(msg);
-                                        if (t == 0) {
+                                        if (t === 0) {
                                             node.since_id = tweet.id_str;
                                         }
                                     }
@@ -271,7 +271,7 @@ module.exports = function(RED) {
         var node = this;
 
         if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
-            var twit = new ntwitter({
+            var twit = new Ntwitter({
                 consumer_key: "OKjYEd1ef2bfFolV25G5nQ",
                 consumer_secret: "meRsltCktVMUI8gmggpXett7WBLd1k0qidYazoML6g",
                 access_token_key: credentials.access_token,
@@ -338,14 +338,14 @@ module.exports = function(RED) {
         "HMAC-SHA1"
     );
 
-    RED.httpAdmin.get('/twitter-credentials/:id/auth', function(req, res){
+    RED.httpAdmin.get('/twitter-credentials/:id/auth', function(req, res) {
         var credentials = {};
         oa.getOAuthRequestToken({
-                oauth_callback: req.query.callback
-        },function(error, oauth_token, oauth_token_secret, results){
+            oauth_callback: req.query.callback
+        },function(error, oauth_token, oauth_token_secret, results) {
             if (error) {
-                var error = {statusCode: 401, data: "dummy error"};
-                var resp = RED._("twitter.errors.oautherror",{statusCode: error.statusCode, errorData: error.data});
+                var err = {statusCode: 401, data: "dummy error"};
+                var resp = RED._("twitter.errors.oautherror",{statusCode: err.statusCode, errorData: err.data});
                 res.send(resp)
             } else {
                 credentials.oauth_token = oauth_token;
@@ -356,7 +356,7 @@ module.exports = function(RED) {
         });
     });
 
-    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next){
+    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
         var credentials = RED.nodes.getCredentials(req.params.id);
         credentials.oauth_verifier = req.query.oauth_verifier;
 
@@ -364,8 +364,8 @@ module.exports = function(RED) {
             credentials.oauth_token,
             credentials.token_secret,
             credentials.oauth_verifier,
-            function(error, oauth_access_token, oauth_access_token_secret, results){
-                if (error){
+            function(error, oauth_access_token, oauth_access_token_secret, results) {
+                if (error) {
                     RED.log.error(error);
                     res.send(RED._("twitter.errors.oauthbroke"));
                 } else {

@@ -46,7 +46,7 @@ module.exports = function(RED) {
 
                 feedparser.on('readable', function () {
                     var stream = this, article;
-                    while (article = stream.read()) {
+                    while (article = stream.read()) {  // jshint ignore:line
                         if (!(article.guid in node.seen) || ( node.seen[article.guid] !== 0 && node.seen[article.guid] != article.date.getTime())) {
                             node.seen[article.guid] = article.date?article.date.getTime():0;
                             var msg = {

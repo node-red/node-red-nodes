@@ -73,7 +73,7 @@ describe('email Node', function() {
 
     });
 
-    describe('email in', function() {
+    describe.skip('email in', function() {
 
         it('should load with defaults', function(done) {
             var flow = [ { id:"n1", type:"e-mail in", wires:[["n2"]] },
