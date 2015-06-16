@@ -1,7 +1,7 @@
-node-red-node-feedparse
-=======================
+node-red-node-feedparser
+========================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to talk to an IRC server.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to read RSS and Atom feeds.
 
 **Note** : This is the same node as is/was in the core of Node-RED. If you already
 have it installed you do NOT need this node. However it will be deprecated from

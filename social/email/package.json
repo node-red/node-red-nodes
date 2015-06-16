@@ -11,7 +11,7 @@
         "url":"https://github.com/node-red/node-red-nodes/tree/master/social/email"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "email", "e-mail", "imap", ],
+    "keywords": [ "node-red", "email", "gmail", "imap" ],
     "node-red"      : {
         "nodes"     : {
             "email": "61-email.js"
