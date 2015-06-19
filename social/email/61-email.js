@@ -127,8 +127,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.name = n.name;
         this.repeat = n.repeat * 1000 || 300000;
-        this.inserver = n.server || globalkeys.server || "imap.gmail.com";
-        this.inport = n.port || globalkeys.port || "993";
+        this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
+        this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
         var flag = false;
 
