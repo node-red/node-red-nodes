@@ -202,9 +202,9 @@ module.exports = function(RED) {
                                     stream.on('end', function() {
                                         if (info.which !== 'TEXT') {
                                             var head = Imap.parseHeader(buffer);
-                                            pay.from = head.from[0];
-                                            pay.topic = head.subject[0];
-                                            pay.date = head.date[0];
+                                            if (head.hasOwnProperty("from")) { pay.from = head.from[0]; }
+                                            if (head.hasOwnProperty("topic")) { pay.topic = head.subject[0]; }
+                                            if (head.hasOwnProperty("date")) { pay.date = head.date[0]; }
                                             pay.header = head;
                                         } else {
                                             var parts = buffer.split("Content-Type");
