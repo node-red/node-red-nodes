@@ -203,7 +203,7 @@ module.exports = function(RED) {
                                         if (info.which !== 'TEXT') {
                                             var head = Imap.parseHeader(buffer);
                                             if (head.hasOwnProperty("from")) { pay.from = head.from[0]; }
-                                            if (head.hasOwnProperty("topic")) { pay.topic = head.subject[0]; }
+                                            if (head.hasOwnProperty("subject")) { pay.topic = head.subject[0]; }
                                             if (head.hasOwnProperty("date")) { pay.date = head.date[0]; }
                                             pay.header = head;
                                         } else {
