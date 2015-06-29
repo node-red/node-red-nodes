@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,14 +92,14 @@ describe('email Node', function() {
                         return evt[0].type == "e-mail";
                     });
                     //console.log(logEvents);
-                    logEvents.should.have.length(3);
-                    logEvents[2][0].should.have.a.property('msg');
-                    logEvents[2][0].msg.toString().should.startWith("Error: connect ECONNREFUSED");
+                    //logEvents.should.have.length(3);
+                    logEvents[0][0].should.have.a.property('msg');
+                    logEvents[0][0].msg.toString().should.startWith("Error: connect ECONNREFUSED");
                     done();
                 }
                 catch(e) { done(e); }
                 //finally { smtpTransport.sendMail.restore(); }
-            },150);
+            }, 1000);
         })
 
     });
