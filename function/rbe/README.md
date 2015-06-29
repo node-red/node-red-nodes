@@ -18,6 +18,9 @@ Usage
 A simple node to provide report by exception (RBE) and deadband function
 - only passes on data if it has changed.
 
+This works on a per **msg.topic** basis. This means that a single rbe node can
+handle multiple topics at the same time.
+
 ###RBE mode
 
 Outputs the **msg** if the **msg.payload** is different to the previous one.

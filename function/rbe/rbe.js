@@ -23,21 +23,22 @@ module.exports = function(RED) {
         this.gap = n.gap || 0;
         var node = this;
 
-        var previous = null;
+        node.previous = {};
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("payload")) {
+                var t = msg.topic || "_no_topic";
                 if (this.func === "rbe") {
-                    if (msg.payload != previous) {
-                        previous = msg.payload;
+                    if (msg.payload != node.previous[t]) {
+                        node.previous[t] = msg.payload;
                         node.send(msg);
                     }
                 }
                 else {
                     var n = parseFloat(msg.payload);
                     if (!isNaN(n)) {
-                        if (previous == null) { previous = n - node.gap; }
-                        if (Math.abs(n - previous) >= node.gap) {
-                            previous = n;
+                        if (!node.previous.hasOwnProperty(t)) { node.previous[t] = n - node.gap; }
+                        if (Math.abs(n - node.previous[t]) >= node.gap) {
+                            node.previous[t] = n;
                             node.send(msg);
                         }
                     }

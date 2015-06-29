@@ -38,6 +38,8 @@
     different to the previous one. Works on numbers and strings.</p>
     <p>In <b>deadband</b> mode the incoming payload should contain a parseable <i>number</i> and is
     output only if greater than + or - the <i>band gap</i> away from the previous output.</p>
+    <p><b>Note:</b> This works on a per <b>msg.topic</b> basis. This means that a single rbe node can
+handle multiple topics at the same time.</p>
 </script>
 
 <script type="text/javascript">
