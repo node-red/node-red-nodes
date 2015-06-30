@@ -1,16 +1,16 @@
 language: node_js
 node_js:
-- "0.10"
+  - "0.10"
 #before_install:
-#- npm install -g npm@~1.4.28
+#  - npm install -g npm@~1.4.28
 before_script:
-- npm install -g istanbul
-- npm install coveralls
-- npm install node-red
-#- npm install git+https://github.com/node-red/node-red.git
-- echo `pwd`
-- export NODE_RED_HOME=`pwd`/node_modules/node-red
-- echo $NODE_RED_HOME
-- (cd $NODE_RED_HOME ; npm install nock@~0.48.0 )
+  - npm install -g istanbul
+  - npm install coveralls
+  - npm install node-red
+#  - npm install git+https://github.com/node-red/node-red.git
+  - echo `pwd`
+  - export NODE_RED_HOME=`pwd`/node_modules/node-red
+  - echo $NODE_RED_HOME
+  - (cd $NODE_RED_HOME ; npm install nock@~0.48.0 )
 script:
-- istanbul cover ./node_modules/.bin/grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
+  - istanbul cover ./node_modules/.bin/grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
