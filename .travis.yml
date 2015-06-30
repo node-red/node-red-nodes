@@ -9,8 +9,9 @@ before_script:
   - npm install node-red
 #  - npm install git+https://github.com/node-red/node-red.git
   - echo `pwd`
+  - echo $PATH
+  - echo $TRAVIS_BUILD_DIR
   - export NODE_RED_HOME=`pwd`/node_modules/node-red
-  - echo $NODE_RED_HOME
   - (cd $NODE_RED_HOME ; npm install nock@~0.48.0 )
 script:
   - istanbul cover ./node_modules/.bin/grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
