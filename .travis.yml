@@ -8,9 +8,10 @@ before_script:
   - npm install coveralls
   - npm install node-red
 #  - npm install git+https://github.com/node-red/node-red.git
-  - echo `pwd`
-  - echo $PATH
-  - echo $TRAVIS_BUILD_DIR
+  - echo `pwd` > a.log
+  - echo $PATH >> a.log
+  - echo $TRAVIS_BUILD_DIR >> a.log
+  - cat a.log
   - export NODE_RED_HOME=`pwd`/node_modules/node-red
   - (cd $NODE_RED_HOME ; npm install nock@~0.48.0 )
 script:
