@@ -1,7 +1,7 @@
 {
     "name": "node-red-node-sensortag",
     "description": "A Node-RED node to read data from a TI SensorTag",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "keywords" : ["node-red","sensortag"],
     "dependencies": {
         "sensortag": "~1.0.1"

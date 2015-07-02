@@ -89,7 +89,7 @@ module.exports = function(RED) {
                             msg.payload = {'left': left, 'right': right};
                             node.send(msg);
                         });
-                        sensorTag.enableLuxometer(function() {});
+
                         sensorTag.on('luxometerChange', function(lux) {
                             var msg = {'topic': node.topic + '/luxometer'};
                             msg.payload = {'lux': parseInt(lux)};
@@ -142,10 +142,14 @@ module.exports = function(RED) {
         } else {
             node.stag.unnotifyGyroscope(function() {});
         }
-        if (node.luxometer) {
-            node.stag.notifyLuxometer(function() {});
-        } else {
-            node.stag.unnotifyLuxometer(function() {});
+        if (node.stag.type === "cc2560") {
+            if (node.luxometer) {
+                node.stag.enableLuxometer(function() {});
+                node.stag.notifyLuxometer(function() {});
+            } else {
+                node.stag.unnotifyLuxometer(function() {});
+                node.stag.disableLuxometer(function() {});
+            }
         }
         if (node.keys) {
             node.stag.notifySimpleKey(function() {});

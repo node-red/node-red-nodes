@@ -48,15 +48,15 @@
 </script>
 
 <script type="text/x-red" data-help-name="sensorTag">
-   <p>Input node for the Ti SensorTag</p>
-   <p>For this node to work correctly Node-Red needs to be run as <i>root</i>
-      , this due to how Bluetooth 4.0 support is currently implemented in
-      Linux</p>
-   <p>The UUID field is the mac address of the sensor tag, this is optional
-      can be used to bind to a specific SensorTag if you have more than one
-      active in range at the same time. (note you can only have one SensorTag
-      per node-red instance at the moment)</p>
-   <p>The topic setting is a prefix that will be pre-pended to name of the
+   <p>Node to read from the Ti SensorTag</p>
+   <p>For this node to work correctly on Linux, Node-Red needs to be run as
+     <i>root</i>, this due to how Bluetooth 4.0 support is currently implemented
+      in Linux.</p>
+   <p>The UUID field is the bluetooth mac address of the sensor tag, this is optional
+      and can be used to bind to a specific SensorTag if you have more than one
+      active in range at the same time. <b>Note</b>: you can only have one SensorTag
+      per node-red instance at the moment.</p>
+   <p>The topic setting is a prefix that will be pre-pended to the name of the
       sensor that creates the reading. e.g. <i>sensorTag/temperature</i>. If
       blank it will be set to the UUID of the sensor tag.</p>
     <p><strong>NOTE:</strong> Only 1 sensorTag can be read from at a time,
