@@ -21,6 +21,13 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.func = n.func || "rbe";
         this.gap = n.gap || 0;
+        this.pc = false;
+        if (this.gap.substr(-1) === "%") {
+            this.pc = true;
+            this.gap = parseFloat(this.gap);
+        }
+        console.log(this.gap, this.pc);
+        this.g = this.gap;
         var node = this;
 
         node.previous = {};
@@ -36,6 +43,7 @@ module.exports = function(RED) {
                 else {
                     var n = parseFloat(msg.payload);
                     if (!isNaN(n)) {
+                        if (node.pc) { node.gap = (node.previous[t] * node.g / 100) || 0; }
                         if (!node.previous.hasOwnProperty(t)) { node.previous[t] = n - node.gap; }
                         if (Math.abs(n - node.previous[t]) >= node.gap) {
                             node.previous[t] = n;

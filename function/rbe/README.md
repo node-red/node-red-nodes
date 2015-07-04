@@ -32,4 +32,14 @@ same value. Saves bandwidth, etc...
 In deadband mode the incoming payload should contain a parseable *number* and is
 output only if greater than + or - the *band gap* away from the previous output.
 
-Will accept numbers, or parseable strings like  "18.4 C"  or "$500"
+The deadband value can be specified as a fixed number, or a percentage. E.g. 10
+or 5% . If % mode is used then the output will only get sent if the input payload
+value is equal or more than the specified % away from the previously sent value.
+
+For example - if last sent value was 100, and deadband is set to 10% - a value
+of 110 will pass - then the next value has to be 121 in order to pass (= 110 + 10% = 121).
+
+This is mainly useful if you want to operate across multiple topics at the same
+time that may have widely differing input ranges.
+
+Will only accept numbers, or parseable strings like  "18.4 C"  or "$500"
