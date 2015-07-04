@@ -18,7 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var SensorTag = require('sensortag');
 
-    function sensorTagNode(n) {
+    var s = function sensorTagNode(n) {
         RED.nodes.createNode(this,n);
         this.name = n.name;
         this.topic = n.topic;
@@ -157,5 +157,6 @@ module.exports = function(RED) {
             node.stag.unnotifySimpleKey(function() {});
         }
     }
+
     RED.nodes.registerType("sensorTag",sensorTagNode);
 }
