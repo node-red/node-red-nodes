@@ -26,7 +26,6 @@ module.exports = function(RED) {
             this.pc = true;
             this.gap = parseFloat(this.gap);
         }
-        console.log(this.gap, this.pc);
         this.g = this.gap;
         var node = this;
 
