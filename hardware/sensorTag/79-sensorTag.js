@@ -16,9 +16,9 @@
 
 module.exports = function(RED) {
     "use strict";
-    var SensorTag = require('sensortag');
+    var SensorTag = require("sensortag");
 
-    var s = function sensorTagNode(n) {
+    function SensorTagNode(n) {
         RED.nodes.createNode(this,n);
         this.name = n.name;
         this.topic = n.topic;
@@ -111,7 +111,7 @@ module.exports = function(RED) {
         });
     }
 
-    function enable(node) {
+    var enable = function(node) {
         if (node.temperature) {
             node.stag.notifyIrTemperature(function() {});
         } else {
@@ -158,5 +158,5 @@ module.exports = function(RED) {
         }
     }
 
-    RED.nodes.registerType("sensorTag",sensorTagNode);
+    RED.nodes.registerType("sensorTag",SensorTagNode);
 }
