@@ -279,7 +279,7 @@ module.exports = function(RED) {
             });
             node.on("input", function(msg) {
                 if (msg.hasOwnProperty("payload")) {
-                    node.status({fill:"blue",shape:"dot",text:RED._("twitter.status.tweeting")});
+                    node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
                     if (msg.payload.length > 140) {
                         msg.payload = msg.payload.slice(0,139);
@@ -296,13 +296,13 @@ module.exports = function(RED) {
                         var r = request.post(signedUrl,function(err,httpResponse,body) {
                             if (err) {
                                 node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:RED._("twitter.status.failed")});
+                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                             } else {
                                 var response = JSON.parse(body);
                                 if (response.errors) {
                                     var errorList = response.errors.map(function(er) { return er.code+": "+er.message }).join(", ");
                                     node.error(RED._("twitter.errors.sendfail",{error:errorList}),msg);
-                                    node.status({fill:"red",shape:"ring",text:RED._("twitter.status.failed")});
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 } else {
                                     node.status({});
                                 }
@@ -315,7 +315,7 @@ module.exports = function(RED) {
                     } else {
                         twit.updateStatus(msg.payload, function (err, data) {
                             if (err) {
-                                node.status({fill:"red",shape:"ring",text:RED._("twitter.status.failed")});
+                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 node.error(err,msg);
                             }
                             node.status({});

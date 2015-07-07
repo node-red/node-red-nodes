@@ -71,7 +71,7 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             if (msg.hasOwnProperty("payload")) {
                 if (smtpTransport) {
-                    node.status({fill:"blue",shape:"dot",text:RED._("email.status.sending")});
+                    node.status({fill:"blue",shape:"dot",text:"email.status.sending"});
                     if (msg.to && node.name && (msg.to !== node.name)) {
                         node.warn(RED._("node-red:common.errors.nooverride"));
                     }
@@ -103,7 +103,7 @@ module.exports = function(RED) {
                     smtpTransport.sendMail(sendopts, function(error, info) {
                         if (error) {
                             node.error(error,msg);
-                            node.status({fill:"red",shape:"ring",text:RED._("email.status.sendfail")});
+                            node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
                         } else {
                             node.log(RED._("email.status.messagesent",{response:info.response}));
                             node.status({});
@@ -179,11 +179,11 @@ module.exports = function(RED) {
 
         this.on("input", function(msg) {
             imap.once('ready', function() {
-                node.status({fill:"blue",shape:"dot",text:RED._("email.status.fetching")});
+                node.status({fill:"blue",shape:"dot",text:"email.status.fetching"});
                 var pay = {};
                 imap.openBox(node.box, false, function(err, box) {
                     if (err) {
-                        node.status({fill:"red",shape:"ring",text:RED._("email.status.foldererror")});
+                        node.status({fill:"red",shape:"ring",text:"email.status.foldererror"});
                         node.error(RED._("email.errors.fetchfail",{folder:node.box}),err);
                     }
                     else {
@@ -227,7 +227,7 @@ module.exports = function(RED) {
                             });
                             f.on('error', function(err) {
                                 node.warn(RED._("email.errors.messageerror",{error:err}));
-                                node.status({fill:"red",shape:"ring",text:RED._("email.status.messageerror")});
+                                node.status({fill:"red",shape:"ring",text:"email.status.messageerror"});
                             });
                             f.on('end', function() {
                                 delete(pay._msgid);
@@ -237,26 +237,26 @@ module.exports = function(RED) {
                                     node.log(RED._("email.status.newemail",{topic:pay.topic}));
                                 }
                                 else { node.log(RED._("email.status.duplicate",{topic:pay.topic})); }
-                                //node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
+                                //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                                 node.status({});
                             });
                         }
                         else {
                             node.log(RED._("email.status.inboxzero"));
-                            //node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
+                            //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                             node.status({});
                         }
                     }
                     imap.end();
                 });
             });
-            node.status({fill:"grey",shape:"dot",text:RED._("node-red:common.status.connecting")});
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
         });
 
         imap.on('error', function(err) {
             node.log(err);
-            node.status({fill:"red",shape:"ring",text:RED._("email.status.connecterror")});
+            node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
         });
 
         this.on("close", function() {

@@ -48,7 +48,7 @@ module.exports = function(RED) {
         var node = this;
         if (node.serverConfig.ircclient === null) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
-            node.status({fill:"grey",shape:"dot",text:RED._("node-red:common.status.connecting")});
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
@@ -58,7 +58,7 @@ module.exports = function(RED) {
             node.serverConfig.ircclient.addListener('netError', function(message) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.net")+": "+JSON.stringify(message)); }
-                node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.neterror")});
+                node.status({fill:"red",shape:"ring",text:"node-red:common.status.neterror"});
             });
             node.serverConfig.ircclient.addListener('connect', function() {
                 node.serverConfig.lastseen = Date.now();
@@ -67,21 +67,21 @@ module.exports = function(RED) {
             node.serverConfig.ircclient.addListener('registered', function(message) {
                 node.serverConfig.lastseen = Date.now();
                 node.log(node.serverConfig.ircclient.nick+" "+RED._("irc.errors.online")+": "+message.server);
-                node.status({fill:"yellow",shape:"dot",text:RED._("node-red:common.status.connected")});
+                node.status({fill:"yellow",shape:"dot",text:"node-red:common.status.connected"});
                 node.serverConfig.ircclient.join( node.channel, function(data) {
                     node.log(data+" "+RED._("irc.errors.joined")+": "+node.channel);
-                    node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.joined")});
+                    node.status({fill:"green",shape:"dot",text:"node-red:common.status.joined"});
                 });
             });
             node.serverConfig.ircclient.addListener('ping', function(server) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.ping")+" "+JSON.stringify(server)); }
-                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
             });
             node.serverConfig.ircclient.addListener('quit', function(nick, reason, channels, message) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.quit")+": "+nick+" "+reason+" "+channels+" "+JSON.stringify(message)); }
-                node.status({fill:"grey",shape:"ring",text:RED._("node-red:common.status.quit")});
+                node.status({fill:"grey",shape:"ring",text:"node-red:common.status.quit"});
                 //node.serverConfig.ircclient.disconnect( function() {
                 //    node.serverConfig.ircclient.connect();
                 //});
@@ -102,7 +102,7 @@ module.exports = function(RED) {
                 if ((Date.now()-node.serverConfig.lastseen) > 300000) {     // If more than 5 mins
                     //node.serverConfig.ircclient.disconnect();
                     //node.serverConfig.ircclient.connect();
-                    node.status({fill:"grey",shape:"ring",text:RED._("node-red:common.status.noconnection")});
+                    node.status({fill:"grey",shape:"ring",text:"node-red:common.status.noconnection"});
                     if (RED.settings.verbose) { node.log(RED._("irc.errors.connectionlost")); }
                 }
                 //node.serverConfig.ircclient.send.apply(node.serverConfig.ircclient,["TIME"]); // request time to check link
@@ -114,10 +114,10 @@ module.exports = function(RED) {
 
         node.ircclient.addListener('registered', function(message) {
             //node.log(node.ircclient.nick+" "+RED._("irc.errors.online"));
-            node.status({fill:"yellow",shape:"dot",text:RED._("node-red:common.status.connected")});
+            node.status({fill:"yellow",shape:"dot",text:"node-red:common.status.connected"});
             node.ircclient.join( node.channel, function(data) {
                 // node.log(data+" "+RED._("irc.errors.joined")+" "+node.channel);
-                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.joined")});
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.joined"});
             });
         });
         node.ircclient.addListener('message', function (from, to, message) {
@@ -183,7 +183,7 @@ module.exports = function(RED) {
         var node = this;
         if (node.serverConfig.ircclient === null) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
-            node.status({fill:"grey",shape:"dot",text:RED._("node-red:common.status.connecting")});
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
@@ -193,7 +193,7 @@ module.exports = function(RED) {
             node.serverConfig.ircclient.addListener('netError', function(message) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.net")+": "+JSON.stringify(message)); }
-                node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.neterror")});
+                node.status({fill:"red",shape:"ring",text:"node-red:common.status.neterror"});
             });
             node.serverConfig.ircclient.addListener('connect', function() {
                 node.serverConfig.lastseen = Date.now();
@@ -202,21 +202,21 @@ module.exports = function(RED) {
             node.serverConfig.ircclient.addListener('registered', function(message) {
                 node.serverConfig.lastseen = Date.now();
                 node.log(node.serverConfig.ircclient.nick+" "+RED._("irc.errors.online")+": "+message.server);
-                node.status({fill:"yellow",shape:"dot",text:RED._("node-red:common.status.connected")});
+                node.status({fill:"yellow",shape:"dot",text:"node-red:common.status.connected"});
                 node.serverConfig.ircclient.join( node.channel, function(data) {
                     node.log(data+" "+RED._("irc.errors.joined")+": "+node.channel);
-                    node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.joined")});
+                    node.status({fill:"green",shape:"dot",text:"node-red:common.status.joined"});
                 });
             });
             node.serverConfig.ircclient.addListener('ping', function(server) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.ping")+" "+JSON.stringify(server)); }
-                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.ok")});
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
             });
             node.serverConfig.ircclient.addListener('quit', function(nick, reason, channels, message) {
                 node.serverConfig.lastseen = Date.now();
                 if (RED.settings.verbose) { node.log(RED._("irc.errors.quit")+": "+nick+" "+reason+" "+channels+" "+JSON.stringify(message)); }
-                node.status({fill:"grey",shape:"ring",text:RED._("node-red:common.status.quit")});
+                node.status({fill:"grey",shape:"ring",text:"node-red:common.status.quit"});
                 //node.serverConfig.ircclient.disconnect( function() {
                 //    node.serverConfig.ircclient.connect();
                 //});
@@ -237,7 +237,7 @@ module.exports = function(RED) {
                 if ((Date.now()-node.serverConfig.lastseen) > 300000) {     // If more than 5 mins
                     //node.serverConfig.ircclient.disconnect();
                     //node.serverConfig.ircclient.connect();
-                    node.status({fill:"grey",shape:"ring",text:RED._("node-red:common.status.noconnection")});
+                    node.status({fill:"grey",shape:"ring",text:"node-red:common.status.noconnection"});
                     if (RED.settings.verbose) { node.log(RED._("irc.errors.connectionlost")); }
                 }
                 //node.serverConfig.ircclient.send.apply(node.serverConfig.ircclient,["TIME"]); // request time to check link

@@ -76,10 +76,10 @@ module.exports = function(RED) {
                 }
             });
             node.port.on('ready', function() {
-                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
             });
             node.port.on('closed', function() {
-                node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.not-connected")});
+                node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
         } else {
             this.error(RED._("serial.errors.missing-conf"));
@@ -108,7 +108,7 @@ module.exports = function(RED) {
             if (node.serialConfig.out != "count") { buf = new Buffer(bufMaxSize); }
             else { buf = new Buffer(Number(node.serialConfig.newline)); }
             var i = 0;
-            node.status({fill:"grey",shape:"dot",text:RED._("node-red:common.status.not-connected")});
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             node.port = serialPool.get(this.serialConfig.serialport,
                 this.serialConfig.serialbaud,
                 this.serialConfig.databits,
@@ -179,10 +179,10 @@ module.exports = function(RED) {
                 }
             });
             this.port.on('ready', function() {
-                node.status({fill:"green",shape:"dot",text:RED._("node-red:common.status.connected")});
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
             });
             this.port.on('closed', function() {
-                node.status({fill:"red",shape:"ring",text:RED._("node-red:common.status.not-connected")});
+                node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
         } else {
             this.error(RED._("serial.errors.missing-conf"));
