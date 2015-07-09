@@ -25,12 +25,18 @@ module.exports = function(RED) {
         if (dweetio == null) { dweetio = new DweetClient(); }
         var node = this;
 
+        var isObject = function(a) {
+            return (!!a) && (a.constructor === Object);
+        };
+
         this.on("input",function(msg) {
-            //if (typeof(msg.payload) === 'object') {
+            if (!isObject(msg.payload)) {
+                msg.payload = {payload:msg.payload};
+            }
             var thing = node.thing || msg.thing;
             try {
-                dweetio.dweet_for(thing, {payload:msg.payload}, function(err, dweet) {
-                        //console.log(dweet.thing); // "my-thing"
+                dweetio.dweet_for(thing, msg.payload, function(err, dweet) {
+                        //console.log(dweet.thing);   // "my-thing"
                         //console.log(dweet.content); // The content of the dweet
                         //console.log(dweet.created); // The create date of the dweet
                     });
@@ -38,7 +44,6 @@ module.exports = function(RED) {
             catch (err) {
                 node.log(err);
             }
-            //} else { node.warn("Dweetio only sends payload objects."); }
         });
 
     }
