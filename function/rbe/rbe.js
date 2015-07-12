@@ -20,7 +20,7 @@ module.exports = function(RED) {
     function RbeNode(n) {
         RED.nodes.createNode(this,n);
         this.func = n.func || "rbe";
-        this.gap = n.gap || 0;
+        this.gap = n.gap || "0";
         this.pc = false;
         if (this.gap.substr(-1) === "%") {
             this.pc = true;
