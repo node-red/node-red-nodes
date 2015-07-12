@@ -42,7 +42,7 @@ module.exports = function(grunt) {
                 //"sub": true,        // don't warn that foo['bar'] should be written as foo.bar
                 ////"unused": true,   // Check for unused functions
                 ////"forin":false,    // turn off check for "for (x in y...)"
-                "reporter": require('jshint-stylish')
+                //"reporter": require('jshint-stylish')
             },
             all: {
                 src: ['*/*.js','*/*/*.js'],
@@ -59,8 +59,8 @@ module.exports = function(grunt) {
         inlinelint: {
             html: ['*/*/*.html'],
             options: {
-                jshintrc: ".jshintrc",
-                reporter: require('jshint-stylish')
+                jshintrc: ".jshintrc"
+                //,reporter: require('jshint-stylish')
             }
         },
         jscs: {
