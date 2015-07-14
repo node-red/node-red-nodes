@@ -11,7 +11,8 @@ mode.
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED install directory, usually
+`~/.node-red`
 
     npm install node-red-node-rbe
 
@@ -27,7 +28,7 @@ handle multiple topics at the same time.
 
 ###RBE mode
 
-Outputs the **msg** if the **msg.payload** is different to the previous one.
+The node doesn't send any output until the **msg.payload** is different to the previous one.
 Works on numbers and strings. Useful for filtering out repeated messages of the
 same value. Saves bandwidth, etc...
 

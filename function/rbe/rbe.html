@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 IBM Corp.
+  Copyright 2014, 2015 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -34,13 +34,14 @@
 
 <script type="text/x-red" data-help-name="rbe">
     <p>Report by Exception node - only passes on data if it has changed.</p>
-    <p>In <b>RBE</b> mode this node only outputs the msg if the <b>msg.payload</b> is
-    different to the previous one. Works on numbers and strings.</p>
-    <p>In <b>deadband</b> mode the incoming payload should contain a parseable <i>number</i> and is
+    <p>The node can either block until the <b>msg.payload</b> is
+    different to the previous one - <b>rbe</b> mode. Works on numbers and strings.</p>
+    <p>Or it can block until the value changes by a specified amount - <b>deadband</b> mode.</p>
+    <p>In deadband mode the incoming payload should contain a parseable <i>number</i> and is
     output only if greater than + or - the <i>band gap</i> away from the previous output.</p>
     <p>Deadband also supports % - only sends if the input differs by more than x% of the original value.</p>
     <p><b>Note:</b> This works on a per <b>msg.topic</b> basis. This means that a single rbe node can
-handle multiple topics at the same time.</p>
+    handle multiple topics at the same time.</p>
 </script>
 
 <script type="text/javascript">
