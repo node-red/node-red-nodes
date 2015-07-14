@@ -1,0 +1,19 @@
+{
+    "rbe": {
+        "label": {
+            "func": "Mode",
+            "bandgap": "Band gap",
+            "name": "Name"
+        },
+        "eg":{
+            "bandgap": "e.g. 10 or 5%"
+        },
+        "opts": {
+            "rbe": "RBE - report if value changed",
+            "deadband": "Deadband - report if changed more than",
+        },
+        "warn": {
+            "nonumber": "no number found in payload"
+        }
+    }
+}

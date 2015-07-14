@@ -37,13 +37,13 @@ describe('rbe node', function() {
             var n1 = helper.getNode("n1");
             n1.should.have.property("name", "rbe1");
             n1.should.have.property("func", "rbe");
-            n1.should.have.property("gap", 0);
+            n1.should.have.property("gap", "0");
             done();
         });
     });
 
     it('should only send output if payload changes', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:0, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -70,7 +70,7 @@ describe('rbe node', function() {
     });
 
     it('should only send output if more than x away from original value', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:10, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -100,8 +100,37 @@ describe('rbe node', function() {
         });
     });
 
+    it('should only send output if more than x% away from original value', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10%", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 100);
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", 120);
+                }
+                else {
+                    msg.should.have.a.property("payload", 132);
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:100});
+            n1.emit("input", {payload:95});
+            n1.emit("input", {payload:105});
+            n1.emit("input", {payload:120});
+            n1.emit("input", {payload:130});
+            n1.emit("input", {payload:132});
+        });
+    });
+
     it('should warn if no number found in gap mode', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:10, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -121,7 +150,7 @@ describe('rbe node', function() {
                 msg.should.have.property('level', helper.log().WARN);
                 msg.should.have.property('id', 'n1');
                 msg.should.have.property('type', 'rbe');
-                msg.should.have.property('msg', 'no number found in payload');
+                msg.should.have.property('msg', 'rbe.warn.nonumber');
                 done();
             },50);
             n1.emit("input", {payload:"banana"});

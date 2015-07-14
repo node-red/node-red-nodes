@@ -16,19 +16,19 @@
 
 <script type="text/x-red" data-template-name="rbe">
     <div class="form-row">
-        <label for="node-input-func"><i class="fa fa-wrench"></i> Mode</label>
+        <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="rbe.label.func"></span></label>
         <select type="text" id="node-input-func" style="width:74%;">
-            <option value="rbe">RBE - report if value changed</option>
-            <option value="deadband">Deadband - report if changed more than</option>
+            <option value="rbe" data-i18n="rbe.opts.rbe"></option>
+            <option value="deadband" data-i18n="rbe.opts.deadband></option>
         </select>
     </div>
     <div class="form-row" id="node-bandgap">
-        <label for="node-input-gap"><i class="fa fa-random"></i> Band gap</label>
-        <input type="text" id="node-input-gap" placeholder="e.g. 10" style="width:71%;">
+        <label for="node-input-gap"><i class="fa fa-random"></i> <span data-i18n="rbe.label.bandgap"></span></label>
+        <input type="text" id="node-input-gap" data-i18n="[placeholder]rbe.eg.bandgap" style="width:71%;">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"/> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name" style="width:71%;">
+        <label for="node-input-name"><i class="fa fa-tag"/> <span data-i18n="rbe.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]rbe.label.name" style="width:71%;">
     </div>
 </script>
 
@@ -38,16 +38,19 @@
     different to the previous one. Works on numbers and strings.</p>
     <p>In <b>deadband</b> mode the incoming payload should contain a parseable <i>number</i> and is
     output only if greater than + or - the <i>band gap</i> away from the previous output.</p>
+    <p>Deadband also supports % - only sends if the input differs by more than x% of the original value.</p>
+    <p><b>Note:</b> This works on a per <b>msg.topic</b> basis. This means that a single rbe node can
+handle multiple topics at the same time.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('rbe',{
+    RED.nodes.registerType("rbe", {
         color:"#E2D96E",
         category: 'function',
         defaults: {
             name: {value:""},
             func: {value:"rbe"},
-            gap: {value:"",validate:RED.validators.regex(/^(\d*|)$/)}
+            gap: {value:"",validate:RED.validators.regex(/^(\d*|)(%|)$/)}
         },
         inputs:1,
         outputs:1,
