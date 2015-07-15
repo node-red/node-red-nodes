@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2014 IBM Corp.
+ * Copyright 2013, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ module.exports = function(RED) {
                 this.userid = globalkeys.user;
                 flag = true;
             } else {
-                this.error("No e-mail userid set");
+                this.error(RED._("email.errors.nouserid"));
             }
         }
         if (this.credentials && this.credentials.hasOwnProperty("password")) {
@@ -50,7 +50,7 @@ module.exports = function(RED) {
                 this.password = globalkeys.pass;
                 flag = true;
             } else {
-                this.error("No e-mail password set");
+                this.error(RED._("email.errors.nopassword"));
             }
         }
         if (flag) {
@@ -71,9 +71,9 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             if (msg.hasOwnProperty("payload")) {
                 if (smtpTransport) {
-                    node.status({fill:"blue",shape:"dot",text:"sending"});
+                    node.status({fill:"blue",shape:"dot",text:"email.status.sending"});
                     if (msg.to && node.name && (msg.to !== node.name)) {
-                        node.warn("Warning: msg properties can no longer override set node properties. See bit.ly/nr-override-msg-props");
+                        node.warn(RED._("node-red:common.errors.nooverride"));
                     }
                     var sendopts = { from: node.userid };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
@@ -92,7 +92,7 @@ module.exports = function(RED) {
                             sendopts.attachments[0].contentType = msg.headers["content-type"];
                         }
                         // Create some body text..
-                        sendopts.text = "Your file from Node-RED is attached : "+(msg.filename.replace(/^.*[\\\/]/, '') || "file.bin")+ (msg.hasOwnProperty("description") ? "\n\n"+msg.description : "");
+                        sendopts.text = RED._("email.default-message",{filename:(msg.filename.replace(/^.*[\\\/]/, '') || "file.bin"),description:(msg.hasOwnProperty("description") ? "\n\n"+msg.description : "")});
                     }
                     else {
                         var payload = RED.util.ensureString(msg.payload);
@@ -103,16 +103,16 @@ module.exports = function(RED) {
                     smtpTransport.sendMail(sendopts, function(error, info) {
                         if (error) {
                             node.error(error,msg);
-                            node.status({fill:"red",shape:"ring",text:"send failed"});
+                            node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
                         } else {
-                            node.log("Message sent: " + info.response);
+                            node.log(RED._("email.status.messagesent",{response:info.response}));
                             node.status({});
                         }
                     });
                 }
-                else { node.warn("No Email credentials found. See info panel."); }
+                else { node.warn(RED._("email.errors.nocredentials")); }
             }
-            else { node.warn("No payload to send"); }
+            else { node.warn(RED._("email.errors.nopayload")); }
         });
     }
     RED.nodes.registerType("e-mail",EmailNode,{
@@ -139,7 +139,7 @@ module.exports = function(RED) {
                 this.userid = globalkeys.user;
                 flag = true;
             } else {
-                this.error("No e-mail userid set");
+                this.error(RED._("email.errors.nouserid"));
             }
         }
         if (this.credentials && this.credentials.hasOwnProperty("password")) {
@@ -149,7 +149,7 @@ module.exports = function(RED) {
                 this.password = globalkeys.pass;
                 flag = true;
             } else {
-                this.error("No e-mail password set");
+                this.error(RED._("email.errors.nopassword"));
             }
         }
         if (flag) {
@@ -172,7 +172,6 @@ module.exports = function(RED) {
         });
 
         if (!isNaN(this.repeat) && this.repeat > 0) {
-            node.log("repeat = "+this.repeat);
             this.interval_id = setInterval( function() {
                 node.emit("input",{});
             }, this.repeat );
@@ -180,19 +179,19 @@ module.exports = function(RED) {
 
         this.on("input", function(msg) {
             imap.once('ready', function() {
-                node.status({fill:"blue",shape:"dot",text:"fetching"});
+                node.status({fill:"blue",shape:"dot",text:"email.status.fetching"});
                 var pay = {};
                 imap.openBox(node.box, false, function(err, box) {
                     if (err) {
-                        node.status({fill:"red",shape:"ring",text:"fetch folder error"});
-                        node.error("Failed to fetch folder "+node.box,err);
+                        node.status({fill:"red",shape:"ring",text:"email.status.foldererror"});
+                        node.error(RED._("email.errors.fetchfail",{folder:node.box}),err);
                     }
                     else {
                         if (box.messages.total > 0) {
                             //var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER.FIELDS (FROM SUBJECT DATE TO CC BCC)','TEXT'] });
                             var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER','TEXT'] });
                             f.on('message', function(msg, seqno) {
-                                node.log('message: #'+ seqno);
+                                node.log(RED._("email.status.message",{number:seqno}));
                                 var prefix = '(#' + seqno + ') ';
                                 msg.on('body', function(stream, info) {
                                     var buffer = '';
@@ -210,62 +209,54 @@ module.exports = function(RED) {
                                             var parts = buffer.split("Content-Type");
                                             for (var p = 0; p < parts.length; p++) {
                                                 if (parts[p].indexOf("text/plain") >= 0) {
-                                                    console.log("TEXT");
                                                     pay.payload = parts[p].split("\n").slice(1,-2).join("\n").trim();
                                                 }
                                                 else if (parts[p].indexOf("text/html") >= 0) {
-                                                    console.log("HTML");
                                                     pay.html = parts[p].split("\n").slice(1,-2).join("\n").trim();
                                                 } else {
-                                                    console.log("OTHER");
                                                     pay.payload = parts[0];
                                                 }
-                                                console.log("***",pay.payload,"***");
                                             }
                                             //pay.body = buffer;
                                         }
                                     });
                                 });
                                 msg.on('end', function() {
-                                    //node.log('Finished: '+prefix);
+                                    //node.log('finished: '+prefix);
                                 });
                             });
                             f.on('error', function(err) {
-                                node.warn('fetch message error: ' + err);
-                                node.status({fill:"red",shape:"ring",text:"fetch message error"});
+                                node.warn(RED._("email.errors.messageerror",{error:err}));
+                                node.status({fill:"red",shape:"ring",text:"email.status.messageerror"});
                             });
                             f.on('end', function() {
                                 delete(pay._msgid);
                                 if (JSON.stringify(pay) !== oldmail) {
                                     oldmail = JSON.stringify(pay);
                                     node.send(pay);
-                                    node.log('received new email: '+pay.topic);
+                                    node.log(RED._("email.status.newemail",{topic:pay.topic}));
                                 }
-                                else { node.log('duplicate not sent: '+pay.topic); }
-                                //node.status({fill:"green",shape:"dot",text:"ok"});
+                                else { node.log(RED._("email.status.duplicate",{topic:pay.topic})); }
+                                //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                                 node.status({});
                             });
                         }
                         else {
-                            node.log("you have achieved inbox zero");
-                            //node.status({fill:"green",shape:"dot",text:"ok"});
+                            node.log(RED._("email.status.inboxzero"));
+                            //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                             node.status({});
                         }
                     }
                     imap.end();
                 });
             });
-            node.status({fill:"grey",shape:"dot",text:"connecting"});
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
         });
 
         imap.on('error', function(err) {
             node.log(err);
-            node.status({fill:"red",shape:"ring",text:"connect error"});
-        });
-
-        this.on("error", function(err) {
-            node.log("error: ",err);
+            node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
         });
 
         this.on("close", function() {

@@ -4,10 +4,15 @@ node-red-node-rbe
 A <a href="http://nodered.org" target="_new">Node-RED</a> node that provides
 provides report-by-exception (RBE) and deadband capability.
 
+The node blocks unless the incoming value changes - RBE mode, or
+changes by more than a certain amount (absolute value or percentage) - deadband
+mode.
+
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED install directory, usually
+`~/.node-red`
 
     npm install node-red-node-rbe
 
@@ -23,7 +28,7 @@ handle multiple topics at the same time.
 
 ###RBE mode
 
-Outputs the **msg** if the **msg.payload** is different to the previous one.
+The node doesn't send any output until the **msg.payload** is different to the previous one.
 Works on numbers and strings. Useful for filtering out repeated messages of the
 same value. Saves bandwidth, etc...
 

@@ -1,0 +1,43 @@
+{
+    "email": {
+        "label": {
+            "to": "To",
+            "server": "Server",
+            "port": "Port",
+            "userid": "Userid",
+            "password": "Password",
+            "repeat": "Refresh",
+            "seconds": "seconds",
+            "folder": "Folder"
+        },
+        
+        "default-message": "Your file from Node-RED is attached: __filename__ __description__",
+        
+        
+        "tip": {
+            "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
+            "recent": "Tip: Only retrieves the single most recent email."
+        },
+        "status": {
+            "messagesent": "Message sent: __response__",
+            "fetching": "fetching",
+            "foldererror": "fetch folder error",
+            "messageerror": "fetch message error",
+            "message": "message #__number__",
+            "newemail": "received new email: __topic__",
+            "duplicate": "duplicate not sent: __topic__",
+            "inboxzero": "you have achieved Inbox Zero",
+            "sending": "sending",
+            "sendfail": "send failed",
+            "connecterror": "connect error"
+        },
+        "errors": {
+            "nouserid": "No e-mail userid set",
+            "nopassword": "No e-mail password set",
+            "nocredentials": "No Email credentials found. See info panel.",
+            "nopayload": "No payload to send",            
+            "fetchfail": "Failed to fetch folder: __folder__",
+            "messageerror": "Fetch message error: __error__"
+        }
+    }
+}

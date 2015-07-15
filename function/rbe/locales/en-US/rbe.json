@@ -1,0 +1,18 @@
+{
+    "rbe": {
+        "label": {
+            "func": "Mode",
+            "name": "Name"
+        },
+        "placeholder":{
+            "bandgap": "e.g. 10 or 5%"
+        },
+        "opts": {
+            "rbe": "block unless value changes",
+            "deadband": "block unless changes by more than"
+        },
+        "warn": {
+            "nonumber": "no number found in payload"
+        }
+    }
+}

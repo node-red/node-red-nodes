@@ -1,0 +1,39 @@
+{
+    "irc": {
+        "label": {
+            "ircserver": "IRC Server",
+            "channel": "Channel",
+            "action": "Action",
+            "port": "Port",
+            "ssl": "Use Secure SSL connection?",
+            "self": "Allow self-signed certificates?",
+            "nickname": "Nickname"
+        },
+        "payload": "Send payload to channel(s)",
+        "topic": "Use msg.topic to set nickname or channel(s)",
+        "msg": "Send complete msg object to channel(s)",
+        "tip": {
+            "in": "The channel to join must start with a #<br/>You may join multiple channels by comma separating a list - #chan1,#chan2,etc.",
+            "out": "The channel to join must start with a #<br/>Sending the complete object will stringify the whole msg object before sending."
+        },
+        "errors": {
+            "connect": "CONNECT",
+            "err": "ERR",
+            "net": "NET",
+            "connected": "CONNECTED",
+            "online": "ONLINE",
+            "joined": "JOINED",
+            "ping": "PING from",
+            "quit": "QUIT",
+            "restart": "restart",
+            "connectionlost": "CONNECTION LOST?",
+            "hasjoined": "has joined",
+            "sentinvite": "sent invite to",
+            "hasleft": "has left",
+            "hasquit": "has quit",
+            "kickedfrom": "was kicked from",
+            "rawcommand": "RAW command",
+            "topicnotset": "msg.topic not set"
+        }
+    }
+}

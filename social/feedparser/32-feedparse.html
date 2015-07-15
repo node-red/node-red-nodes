@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2013, 2015 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 <script type="text/x-red" data-template-name="feedparse">
     <div class="form-row">
-        <label for="node-input-url"><i class="fa fa-globe"></i> Feed url</label>
+        <label for="node-input-url"><i class="fa fa-globe"></i> <span data-i18n="feedparse.label.feedurl"></span></label>
         <input type="text" id="node-input-url">
     </div>
     <div class="form-row">
-        <label for="node-input-interval"><i class="fa fa-repeat"></i> Repeat <span style="font-size: 0.9em;">(M)</span></label>
-        <input type="text" id="node-input-interval" placeholder="minutes">
+        <label for="node-input-interval"><i class="fa fa-repeat"></i> <span data-i18n="feedparse.label.refresh"></span></label>
+        <input type="text" id="node-input-interval" style="width: 50px"> <span data-i18n="feedparse.label.minutes"></span>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <!-- <div class="form-tips"></div> -->
 </script>
 
 <script type="text/x-red" data-help-name="feedparse">

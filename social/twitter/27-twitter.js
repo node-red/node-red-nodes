@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 IBM Corp.
+ * Copyright 2013, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,9 +191,7 @@ module.exports = function(RED) {
                     if (bits.length == 4) {
                         if ((Number(bits[0]) < Number(bits[2])) && (Number(bits[1]) < Number(bits[3]))) {
                             st = { locations: node.tags };
-                        }
-                        else {
-                            node.log("possible bad geo area format. Should be lower-left lon, lat, upper-right lon, lat");
+                            node.log(RED._("twitter.status.using-geo",{location:node.tags.toString()}));
                         }
                     }
 
@@ -218,19 +216,19 @@ module.exports = function(RED) {
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
-                                    node.warn("tweet rate limit hit");
+                                    node.warn(RED._("twitter.errors.ratelimit"));
                                 });
                                 stream.on('error', function(tweet,rc) {
                                     if (rc == 420) {
-                                        node.warn("Twitter rate limit hit");
+                                        node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
-                                        node.warn("Stream error:"+tweet.toString()+" ("+rc+")");
+                                        node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
                                     setTimeout(setupStream,10000);
                                 });
                                 stream.on('destroy', function (response) {
                                     if (this.active) {
-                                        node.warn("twitter ended unexpectedly");
+                                        node.warn(RED._("twitter.errors.unexpectedend"));
                                         setTimeout(setupStream,10000);
                                     }
                                 });
@@ -243,10 +241,10 @@ module.exports = function(RED) {
                     node.error(err);
                 }
             } else {
-                this.error("Invalid tag property");
+                this.error(RED._("twitter.errors.invalidtag"));
             }
         } else {
-            this.error("missing twitter credentials");
+            this.error(RED._("twitter.errors.missingcredentials"));
         }
 
         this.on('close', function() {
@@ -281,11 +279,11 @@ module.exports = function(RED) {
             });
             node.on("input", function(msg) {
                 if (msg.hasOwnProperty("payload")) {
-                    node.status({fill:"blue",shape:"dot",text:"tweeting"});
+                    node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
                     if (msg.payload.length > 140) {
                         msg.payload = msg.payload.slice(0,139);
-                        node.warn("Tweet greater than 140 : truncated");
+                        node.warn(RED._("twitter.errors.truncated"));
                     }
 
                     if (msg.media && Buffer.isBuffer(msg.media)) {
@@ -298,13 +296,13 @@ module.exports = function(RED) {
                         var r = request.post(signedUrl,function(err,httpResponse,body) {
                             if (err) {
                                 node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"failed"});
+                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                             } else {
                                 var response = JSON.parse(body);
                                 if (response.errors) {
                                     var errorList = response.errors.map(function(er) { return er.code+": "+er.message }).join(", ");
-                                    node.error("Send tweet failed: "+errorList,msg);
-                                    node.status({fill:"red",shape:"ring",text:"failed"});
+                                    node.error(RED._("twitter.errors.sendfail",{error:errorList}),msg);
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 } else {
                                     node.status({});
                                 }
@@ -317,14 +315,14 @@ module.exports = function(RED) {
                     } else {
                         twit.updateStatus(msg.payload, function (err, data) {
                             if (err) {
-                                node.status({fill:"red",shape:"ring",text:"failed"});
+                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 node.error(err,msg);
                             }
                             node.status({});
                         });
                     }
                 }
-                else { node.warn("No payload to tweet"); }
+                else { node.warn(RED._("twitter.errors.nopayload")); }
             });
         }
     }
@@ -346,10 +344,8 @@ module.exports = function(RED) {
             oauth_callback: req.query.callback
         },function(error, oauth_token, oauth_token_secret, results) {
             if (error) {
-                var resp = '<h2>Oh no!</h2>'+
-                '<p>Something went wrong with the authentication process. The following error was returned:<p>'+
-                '<p><b>'+error.statusCode+'</b>: '+error.data+'</p>'+
-                '<p>One known cause of this type of failure is if the clock is wrong on system running Node-RED.';
+                var err = {statusCode: 401, data: "dummy error"};
+                var resp = RED._("twitter.errors.oautherror",{statusCode: err.statusCode, errorData: err.data});
                 res.send(resp)
             } else {
                 credentials.oauth_token = oauth_token;
@@ -371,14 +367,14 @@ module.exports = function(RED) {
             function(error, oauth_access_token, oauth_access_token_secret, results) {
                 if (error) {
                     RED.log.error(error);
-                    res.send("something in twitter oauth broke.");
+                    res.send(RED._("twitter.errors.oauthbroke"));
                 } else {
                     credentials = {};
                     credentials.access_token = oauth_access_token;
                     credentials.access_token_secret = oauth_access_token_secret;
                     credentials.screen_name = "@"+results.screen_name;
                     RED.nodes.addCredentials(req.params.id,credentials);
-                    res.send("<html><head></head><body>Authorised - you can close this window and return to Node-RED</body></html>");
+                    res.send(RED._("twitter.errors.authorized"));
                 }
             }
         );

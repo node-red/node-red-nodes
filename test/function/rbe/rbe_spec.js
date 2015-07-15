@@ -150,7 +150,7 @@ describe('rbe node', function() {
                 msg.should.have.property('level', helper.log().WARN);
                 msg.should.have.property('id', 'n1');
                 msg.should.have.property('type', 'rbe');
-                msg.should.have.property('msg', 'no number found in payload');
+                msg.should.have.property('msg', 'rbe.warn.nonumber');
                 done();
             },50);
             n1.emit("input", {payload:"banana"});

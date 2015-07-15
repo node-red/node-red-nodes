@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014, 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 module.exports = function(RED) {
     "use strict";
-
     function RbeNode(n) {
         RED.nodes.createNode(this,n);
         this.func = n.func || "rbe";
@@ -50,7 +49,7 @@ module.exports = function(RED) {
                         }
                     }
                     else {
-                        node.warn("no number found in payload");
+                        node.warn(RED._("rbe.warn.nonumber"));
                     }
                 }
             } // ignore msg with no payload property.

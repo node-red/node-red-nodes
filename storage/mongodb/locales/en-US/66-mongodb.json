@@ -1,0 +1,31 @@
+{
+    "mongodb": {
+        "label": {
+            "host": "Host",
+            "port": "Port",
+            "database": "Database",
+            "username": "Username",
+            "password": "Password",
+            "server": "Server",
+            "collection": "Collection",
+            "operation": "Operation",
+            "onlystore": "Only store msg.payload object",
+            "createnew": "Create a new document if no match found",
+            "updateall": "Update all matching documents"
+        },
+        "operation": {
+            "save": "save",
+            "insert": "insert",
+            "update": "update",
+            "remove": "remove",
+            "find": "find",
+            "count": "count",
+            "aggregate": "aggregate"
+        },
+        "tip": "<b> Tip:</b> If no collection is set, ensure <b>msg.collection</b> will contain the collection name",
+        "errors": {
+            "nocollection": "No collection defined",
+            "missingconfig": "missing mongodb configuration"
+        }
+    }
+}
