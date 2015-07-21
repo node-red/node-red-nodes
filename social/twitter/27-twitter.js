@@ -182,6 +182,48 @@ module.exports = function(RED) {
                     },120000));
                 });
 
+            } else if (this.user === "event") {
+                try {
+                    var thing = 'user';
+                    var setupStream = function() {
+                        if (node.active) {
+                            twit.stream(thing, st, function(stream) {
+                                //twit.stream('user', { track: [node.tags] }, function(stream) {
+                                node.stream = stream;
+                                stream.on('data', function(tweet) {
+                                    if (tweet.event !== undefined) {
+                                        console.log("stream event"+tweet.event);
+                                        console.log(tweet);
+                                        var la = tweet.target.lang || tweet.source.lang;
+                                        var msg = { event:tweet.event, payload:tweet  };
+                                        node.send(msg);
+                                    }
+                                });
+                                stream.on('limit', function(tweet) {
+                                    node.warn("tweet rate limit hit");
+                                });
+                                stream.on('error', function(tweet,rc) {
+                                    if (rc == 420) {
+                                        node.warn("Twitter rate limit hit");
+                                    } else {
+                                        node.warn("Stream error:"+tweet.toString()+" ("+rc+")");
+                                    }
+                                    setTimeout(setupStream,10000);
+                                });
+                                stream.on('destroy', function (response) {
+                                    if (this.active) {
+                                        node.warn("twitter ended unexpectedly");
+                                        setTimeout(setupStream,10000);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                    setupStream();
+                }
+                catch (err) {
+                    node.error(err);
+                } 
             } else if (this.tags !== "") {
                 try {
                     var thing = 'statuses/filter';
