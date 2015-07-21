@@ -142,7 +142,7 @@ module.exports = function(RED) {
         } else {
             node.stag.unnotifyGyroscope(function() {});
         }
-        if (node.stag.type === "cc2560") {
+        if (node.stag.type === "cc2650") {
             if (node.luxometer) {
                 node.stag.enableLuxometer(function() {});
                 node.stag.notifyLuxometer(function() {});
