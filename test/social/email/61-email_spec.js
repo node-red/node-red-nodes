@@ -94,7 +94,7 @@ describe('email Node', function() {
                     //console.log(logEvents);
                     //logEvents.should.have.length(3);
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("Error: connect ECONNREFUSED");
+                    logEvents[0][0].msg.toString().should.startWith("email.errors.nouserid");
                     done();
                 }
                 catch(e) { done(e); }
