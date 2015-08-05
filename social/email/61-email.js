@@ -18,6 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var nodemailer = require("nodemailer");
     var Imap = require('imap');
+    var mimelib = require('mimelib');
 
     //console.log(nodemailer.Transport.transports.SMTP.wellKnownHosts);
 
@@ -168,9 +169,10 @@ module.exports = function(RED) {
             tls: true,
             tlsOptions: { rejectUnauthorized: false },
             connTimeout: node.repeat,
-            authTimeout: node.repeat
+            authTimeout: node.repeat//,
+            //debug: function(msg) { console.log(msg); }
         });
-
+		
         if (!isNaN(this.repeat) && this.repeat > 0) {
             this.interval_id = setInterval( function() {
                 node.emit("input",{});
@@ -188,66 +190,73 @@ module.exports = function(RED) {
                     }
                     else {
                         if (box.messages.total > 0) {
-                            //var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER.FIELDS (FROM SUBJECT DATE TO CC BCC)','TEXT'] });
-                            var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER','TEXT'] });
-                            f.on('message', function(msg, seqno) {
-                                node.log(RED._("email.status.message",{number:seqno}));
-                                var prefix = '(#' + seqno + ') ';
-                                msg.on('body', function(stream, info) {
-                                    var buffer = '';
-                                    stream.on('data', function(chunk) {
-                                        buffer += chunk.toString('utf8');
-                                    });
-                                    stream.on('end', function() {
-                                        if (info.which !== 'TEXT') {
-                                            var head = Imap.parseHeader(buffer);
-                                            if (head.hasOwnProperty("from")) { pay.from = head.from[0]; }
-                                            if (head.hasOwnProperty("subject")) { pay.topic = head.subject[0]; }
-                                            if (head.hasOwnProperty("date")) { pay.date = head.date[0]; }
-                                            pay.header = head;
-                                        } else {
-                                            var parts = buffer.split("Content-Type");
-                                            for (var p = 0; p < parts.length; p++) {
-                                                if (parts[p].indexOf("text/plain") >= 0) {
-                                                    pay.payload = parts[p].split("\n").slice(1,-2).join("\n").trim();
-                                                }
-                                                else if (parts[p].indexOf("text/html") >= 0) {
-                                                    pay.html = parts[p].split("\n").slice(1,-2).join("\n").trim();
-                                                } else {
-                                                    pay.payload = parts[0];
-                                                }
-                                            }
-                                            //pay.body = buffer;
-                                        }
-                                    });
-                                });
-                                msg.on('end', function() {
-                                    //node.log('finished: '+prefix);
-                                });
-                            });
-                            f.on('error', function(err) {
-                                node.warn(RED._("email.errors.messageerror",{error:err}));
-                                node.status({fill:"red",shape:"ring",text:"email.status.messageerror"});
-                            });
-                            f.on('end', function() {
-                                delete(pay._msgid);
-                                if (JSON.stringify(pay) !== oldmail) {
-                                    oldmail = JSON.stringify(pay);
-                                    node.send(pay);
-                                    node.log(RED._("email.status.newemail",{topic:pay.topic}));
-                                }
-                                else { node.log(RED._("email.status.duplicate",{topic:pay.topic})); }
-                                //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
-                                node.status({});
-                            });
+                            imap.seq.search([ 'UNSEEN' ], function(err, results) {
+								if (err) throw err;
+								//console.log(results);
+								if (results.length > 0) {
+									var f = imap.fetch(results, { markSeen: true, bodies: ['HEADER','TEXT'] });
+									f.on('message', function(msg, seqno) {
+										node.log(RED._("email.status.message",{number:seqno}));
+										var prefix = '(#' + seqno + ') ';
+										msg.on('body', function(stream, info) {
+											var buffer = '';
+											stream.on('data', function(chunk) {
+												buffer += chunk.toString('utf8');
+											});
+											stream.on('end', function() {
+												if (info.which !== 'TEXT') {
+													var head = Imap.parseHeader(buffer);
+													if (head.hasOwnProperty("from")) { pay.from = head.from[0]; }
+													if (head.hasOwnProperty("subject")) { pay.topic = head.subject[0]; }
+													if (head.hasOwnProperty("date")) { pay.date = head.date[0]; }
+													pay.header = head;
+												} else {
+													var parts = buffer.split("Content-Type");
+													for (var p = 0; p < parts.length; p++) {
+														if (parts[p].indexOf("text/plain") >= 0) {
+															pay.payload = mimelib.decodeQuotedPrintable(parts[p].split("\n").slice(1,-2).join("\n").trim());
+														}
+														else if (parts[p].indexOf("text/html") >= 0) {
+															pay.html = mimelib.decodeQuotedPrintable(parts[p].split("\n").slice(1,-2).join("\n").trim());
+														} 
+														else {
+															pay.payload = mimelib.decodeQuotedPrintable(parts[0]);
+														}
+													}
+												}
+											});
+										});
+										msg.on('end', function() {
+											node.send(pay);
+											node.log(RED._("email.status.newemail",{topic: prefix+": "+pay.topic}));
+										});
+									});
+
+									f.once('error', function(err) {
+										node.warn(RED._("email.errors.messageerror",{error:err}));
+										node.status({fill:"red",shape:"ring",text:"email.status.messageerror"});
+									});
+								
+									f.once('end', function() {
+										node.log("All emails read and sent");
+										node.status({});
+										imap.end();
+									});
+								}
+								else {
+                            		node.log(RED._("email.status.inboxzero"));
+                            		imap.end();
+                            		node.status({});
+                        		}
+							});
                         }
                         else {
                             node.log(RED._("email.status.inboxzero"));
-                            //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
+                            imap.end();
                             node.status({});
                         }
                     }
-                    imap.end();
+                    
                 });
             });
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
@@ -272,7 +281,7 @@ module.exports = function(RED) {
         credentials: {
             userid: {type:"text"},
             password: {type: "password"},
-            global: { type:"boolean"}
+            global: {type:"boolean"}
         }
     });
 };
