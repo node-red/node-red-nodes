@@ -58,7 +58,7 @@ module.exports = function(RED) {
         dweetio.listen_for(node.thing, function(dweet) {
             // This will be called anytime there is a new dweet for my-thing
             if (dweet.content.hasOwnProperty("payload")) {
-                dweet.payload=dweet.content.payload;
+                dweet.payload = dweet.content.payload;
             } else {
                 dweet.payload = dweet.content;
             }
