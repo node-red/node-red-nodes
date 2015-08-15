@@ -45,7 +45,7 @@ module.exports = function(RED) {
             var pri = this.priority || msg.priority || 0;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
-            if (pri < -1) {pri = -1;}
+            if (pri < -2) {pri = -2;}
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
@@ -73,6 +73,6 @@ module.exports = function(RED) {
         credentials: {
             deviceid: {type:"text"},
             pushkey: {type: "password"}
-        }       
+        }
     });
 }
