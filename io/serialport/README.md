@@ -12,7 +12,7 @@ Install
 Run the following command in the root directory of your Node-RED install, usually
 this is ~/.node-red .
 
-        npm install node-red-node-serialport
+        sudo npm install -g --unsafe-perm node-red-node-serialport
 
 During install there may be multiple messages about optional compilation.
 These may look like failures... as they report as failure to compile errors -
