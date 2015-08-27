@@ -84,9 +84,9 @@ module.exports = function(RED) {
                             msg.payload = {'x': +x.toFixed(2), 'y': +y.toFixed(2), 'z': +z.toFixed(2)};
                             node.send(msg);
                         });
-                        sensorTag.on('simpleKeyChange', function(left, right) {
+                        sensorTag.on('simpleKeyChange', function(left, right, mag) {
                             var msg = {'topic': node.topic + '/keys'};
-                            msg.payload = {'left': left, 'right': right};
+                            msg.payload = {'left': left, 'right': right, 'magnet': mag};
                             node.send(msg);
                         });
 
