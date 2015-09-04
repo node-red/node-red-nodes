@@ -3,8 +3,8 @@ node-red-node-serialport
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to an hardware Serial port.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node.
+**Note** : This is the same node as was in the core of Node-RED.
+As of v0.10.8 it will be installed from here instead.
 
 Install
 -------
@@ -12,7 +12,7 @@ Install
 Run the following command in the root directory of your Node-RED install, usually
 this is ~/.node-red .
 
-        npm install node-red-node-serialport
+        sudo npm install -g --unsafe-perm node-red-node-serialport
 
 During install there may be multiple messages about optional compilation.
 These may look like failures... as they report as failure to compile errors -

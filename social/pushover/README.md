@@ -16,7 +16,8 @@ Usage
 
 Uses Pushover to push the <b>msg.payload</b> to a device that has the Pushover app installed.
 
-Optionally uses **msg.topic** to set the title, and **msg.priority** to set the priority, if not already set in the properties.
+Optionally uses **msg.topic** to set the title, **msg.device** to set the device
+and **msg.priority** to set the priority, if not already set in the properties.
 
 The User-key and API-token are stored in a separate credentials file.
 

@@ -3,7 +3,8 @@ node-red-node-email
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
 
-**Note** : This is the same node as is/was in the core of Node-RED.
+**Note** : This is the same node as was in the core of Node-RED.
+As of v0.10.8 it will be installed from here instead.
 
 Pre-requisite
 -------------

@@ -17,17 +17,15 @@
     ],
     "devDependencies": {
         "grunt": "0.4.5",
-        "grunt-cli": "0.1.13",
         "grunt-simple-mocha": "0.4.0",
-        "grunt-contrib-jshint": "0.11.0",
-        "grunt-lint-inline": "0.4.3",
-        "grunt-jscs": "0.8.*",
-        "jshint-stylish": "1.0.1",
-        "mocha": "2.1.0",
-        "should": "4.6.5",
-        "sinon": "1.12.2",
-        "supertest": "0.15.0",
-        "proxyquire": "1.4.0",
+        "grunt-contrib-jshint": "0.11.2",
+        "grunt-lint-inline": "0.4.4",
+        "grunt-jscs": "1.8.*",
+        "mocha": "2.2.5",
+        "should": "7.0.1",
+        "sinon": "1.15.4",
+        "supertest": "1.0.1",
+        "proxyquire": "1.6.0",
         "pushbullet": "1.4.*",
         "when": "^3.6.4",
         "exif": "0.4.0",
@@ -36,6 +34,6 @@
         "imap" : "0.8.14"
     },
     "engines": {
-        "node": ">=0.8 <0.11"
+        "node": ">=0.8"
     }
 }

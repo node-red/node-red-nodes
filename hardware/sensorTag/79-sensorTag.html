@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013 IBM Corp.
+  Copyright 2014.2015 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,92 +14,62 @@
   limitations under the License.
 -->
 
-
-<!-- First, the content of the edit dialog is defined.                       -->
-
 <script type="text/x-red" data-template-name="sensorTag">
-   <!-- data-template-name identifies the node type this is for              -->
-
-   <!-- Each of the following divs creates a field in the edit dialog.       -->
-   <!-- Generally, there should be an input for each property of the node.   -->
-   <!-- The for and id attributes identify the corresponding property        --> 
-   <!-- (with the 'node-input-' prefix).                                     -->
-   <!-- The available icon classes are defined in Twitter Bootstrap          -->
-
-    <!-- By convention, most nodes have a 'name' property. The following div -->
-    <!-- provides the necessary field.                                       -->
+    <div class="form-row">
+        <label for="node-input-uuid"><i class="fa fa-ellipsis-h"></i> UUID</label>
+        <input type="text" id="node-input-uuid" placeholder="optional device bluetooth id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-external-link"></i> Outputs</label>
+        <input type="checkbox" id="node-input-humidity" style="display: inline-block; width: auto; vertical-align: top;"> Temperature and Humidity<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-temperature" style="display: inline-block; width: auto; vertical-align: top;"> IR Temperature<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-pressure" style="display: inline-block; width: auto; vertical-align: top;"> Pressure<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-magnetometer" style="display: inline-block; width: auto; vertical-align: top;"> Magnetometer<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-accelerometer" style="display: inline-block; width: auto; vertical-align: top;"> Accelerometer<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-gyroscope" style="display: inline-block; width: auto; vertical-align: top;"> Gyroscope<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-luxometer" style="display: inline-block; width: auto; vertical-align: top;"> Luminosity (CC2650 only)<br/>
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-keys" style="display: inline-block; width: auto; vertical-align: top;"> Button press<br/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="optional topic prefix - defaults to device id">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-row">
-        <label for="node-input-topic"><i class="fa fa-tag"></i> Topic</label>
-        <input type="text" id="node-input-topic" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-uuid"><i class="fa fa-tag"></i> UUID</label>
-        <input type="text" id="node-input-uuid" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Temperature</label>
-        <input type="checkbox" id="node-input-temperature" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Humidity</label>
-        <input type="checkbox" id="node-input-humidity" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Pressure</label>
-        <input type="checkbox" id="node-input-pressure" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Magnetometer</label>
-        <input type="checkbox" id="node-input-magnetometer" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Accelerometer</label>
-        <input type="checkbox" id="node-input-accelerometer" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Gyroscope</label>
-        <input type="checkbox" id="node-input-gyroscope" >
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Keys</label>
-        <input type="checkbox" id="node-input-keys" >
-    </div>
 </script>
 
-
-<!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="sensorTag">
-   <!-- data-help-name identifies the node type this help is for             -->
-   <!-- This content appears in the Info sidebar when a node is selected     -->
-   <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-   <!-- node in the palette.                                                 -->
-   <p>Input node for the Ti SensorTag</p>
-   <p>For this node to work correctly Node-Red needs to be run as <i>root</i>
-      , this due to how Bluetooth 4.0 support is currently implemented in 
-      Linux</p>
-   <p>The UUID field is the mac address of the sensor tag, this is optional
-      can be used to bind to a specific SensorTag if you have more than one
-      active in range at the same time. (note you can only have one SensorTag 
-      per node-red instance at the moment)</p>
-   <p>The topic setting is a prefix that will be pre-pended to name of the 
-      sensor that creates the reading. e.g. <i>sensorTag/temperature</i></p>
-    <p><strong>NOTE:</strong> Only 1 sensorTag can be read from at a time, 
+   <p>Node to read from the Ti SensorTag</p>
+   <p>For this node to work correctly on Linux, Node-Red needs to be run as
+     <i>root</i>, this due to how Bluetooth 4.0 support is currently implemented
+      in Linux.</p>
+   <p>The UUID field is the bluetooth mac address of the sensor tag, this is optional
+      and can be used to bind to a specific SensorTag if you have more than one
+      active in range at the same time. <b>Note</b>: you can only have one SensorTag
+      per node-red instance at the moment.</p>
+   <p>The topic setting is a prefix that will be pre-pended to the name of the
+      sensor that creates the reading. e.g. <i>sensorTag/temperature</i>. If
+      blank it will be set to the UUID of the sensor tag.</p>
+    <p><strong>NOTE:</strong> Only 1 sensorTag can be read from at a time,
       if you add more than one to the canvas then only the first to connect
       will work.</p>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('sensorTag',{
-        category: 'advanced-function',      // the palette category
+        category: 'advanced-function',
         color:"GoldenRod",
-        defaults: {             // defines the editable properties of the node
-            name: {value:"sensorTag"},   //  along with default values.
+        defaults: {
+            name: {value:"sensorTag"},
             topic: {value:"sensorTag"},
             uuid: {value:undefined},
             temperature: {value:true},
@@ -108,21 +78,22 @@
             magnetometer: {value:true},
             accelerometer: {value:true},
             gyroscope: {value:true},
-            keys: {value:true}
+            keys: {value:true},
+            luxometer: {value:false}
         },
-        inputs:0,                // set the number of inputs - only 0 or 1
-        outputs:1,               // set the number of outputs - 0 to n
-        icon: "bluetooth.png",    // set the icon (held in public/icons)
-        label: function() {      // sets the default label contents
+        inputs:0,
+        outputs:1,
+        icon: "bluetooth.png",
+        label: function() {
             return this.name||this.topic||"sensorTag";
         },
-        labelStyle: function() { // sets the class to apply to the label
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
         },
         oneditsave: function() {
            var mac = $("#node-input-uuid").val();
            mac = mac.toLowerCase();
-           //nasty hack as I can't get global replace to work
+           // nasty hack as I can't get global replace to work
            mac = mac.replace(/:/gi,'');
            mac = mac.replace(/:/gi,'');
            mac = mac.replace(/:/gi,'');

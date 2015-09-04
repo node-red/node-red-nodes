@@ -22,6 +22,7 @@ module.exports = function(RED) {
     function PushoverNode(n) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
+        this.device = n.device;
         this.priority = n.priority;
         var credentials = this.credentials;
         if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
@@ -43,9 +44,10 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             var titl = this.title || msg.topic || "Node-RED";
             var pri = this.priority || msg.priority || 0;
+            var dev = this.device || msg.device;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
-            if (pri < -1) {pri = -1;}
+            if (pri < -2) {pri = -2;}
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
@@ -58,7 +60,8 @@ module.exports = function(RED) {
                     retry: 30,
                     expire: 600
                 };
-                //console.log("Sending",pushmsg);
+                if (dev) { pushmsg.device = dev; }
+                //node.log("Sending "+JSON.stringify(pushmsg));
                 pusher.send( pushmsg, function(err, response) {
                     if (err) { node.error("Pushover Error: "+err); }
                     //console.log(response);
@@ -73,6 +76,6 @@ module.exports = function(RED) {
         credentials: {
             deviceid: {type:"text"},
             pushkey: {type: "password"}
-        }       
+        }
     });
 }

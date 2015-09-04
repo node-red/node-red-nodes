@@ -20,6 +20,10 @@
         <input type="text" id="node-input-title" placeholder="Node-RED">
     </div>
     <div class="form-row">
+        <label for="node-input-device"><i class="fa fa-mobile"></i> Device</label>
+        <input type="text" id="node-input-device" placeholder="leave blank for all">
+    </div>
+    <div class="form-row">
         <label for="node-input-priority"><i class="fa fa-star"></i> Priority</label>
         <input type="text" id="node-input-priority" placeholder="0" style="width:50px;">
     </div>
@@ -36,13 +40,15 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="node-tip">Tip: Leave title blank to set using <b>msg.topic</b> and <b>msg.priority</b>.<br/>
-    Only supports priorities 2, 1, 0, and -1.</div>
+    <div class="form-tips" id="node-tip">Tip: Leave title blank to set using <b>msg.topic</b>.<br/>
+    Leave device blank to send to all devices, or to set using <b>msg.device</b>.<br/>
+    Leave priority blank to set using <b>msg.priority</b>. Supports priorities 2, 1, 0, -1, and -2.</div>
 </script>
 
 <script type="text/x-red" data-help-name="pushover">
     <p>Uses Pushover to push the <b>msg.payload</b> to a device that has the Pushover app installed.</p>
-    <p>Optionally uses <b>msg.topic</b> to set the title, and <b>msg.priority</b> to set the priority, if not already set in the properties.</p>
+    <p>Optionally uses <b>msg.topic</b> to set the title, <b>msg.device</b> to set the device, and <b>msg.priority</b>
+    to set the priority, if not already set in the properties.</p>
     <p>The User-key and API-token are stored in a separate credentials file.</p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
@@ -51,8 +57,9 @@
     RED.nodes.registerType('pushover',{
         category: 'output',
         defaults: {
-            title: {value:""},
             name: {value:""},
+            device: {value:""},
+            title: {value:""},
             priority: {value:0}
         },
         credentials: {
@@ -72,7 +79,7 @@
         },
         oneditprepare: function() {
             $("#node-input-priority").spinner({
-                min:-1,
+                min:-2,
                 max:2
             });
         }
