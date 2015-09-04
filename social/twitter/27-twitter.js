@@ -313,7 +313,8 @@ module.exports = function(RED) {
                         form.append("media[]",msg.media,{filename:"image"});
 
                     } else {
-                        twit.updateStatus(msg.payload, function (err, data) {
+                        if (typeof msg.params === 'undefined') { msg.params = {}; }
++                       twit.updateStatus(msg.payload, msg.params, function (err, data) {
                             if (err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 node.error(err,msg);
