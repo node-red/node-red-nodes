@@ -20,17 +20,34 @@ module.exports = function(RED) {
 
     function WemoOut(n) {
         RED.nodes.createNode(this,n);
-        this.ipaddr = n.ipaddr;
-        this.wemoSwitch = new Wemo(n.ipaddr);
+        this.devices = [];
+        if (n.ipaddr) {
+                this.ipaddr = n.ipaddr;
+                this.devices[this.ipaddr] = new Wemo(n.ipaddr);
+        }
         var node = this;
 
         this.on("input", function(msg) {
-            var state = 0;
-            if ( msg.payload == 1 || msg.payload === true || msg.payload == "on" ) { state = 1; }
-            node.wemoSwitch.setBinaryState(state, function(err, result) {
-                if (err) { node.warn(err); }
-                //else { node.log(result); }
-            });
+            if (msg != null) {
+                var device;
+                if (msg.ipaddr) {
+                    if (!this.devices[msg.ipaddr]) {
+                        this.devices[msg.ipaddr]=new Wemo(msg.ipaddr);
+                    }
+                    device=this.devices[msg.ipaddr];
+                }
+                else if (this.ipaddr) {
+                    device=this.devices[this.ipaddr];
+                }
+                if (device) {
+                    var state = 0;
+                    if ( msg.payload == 1 || msg.payload === true || msg.payload == "on" ) { state = 1; }
+                    device.setBinaryState(state, function(err, result) {
+                        if (err) { node.warn(err); }
+                        //else { node.log(result); }
+                    });
+                }
+            }
         });
     }
     RED.nodes.registerType("wemo out",WemoOut);
