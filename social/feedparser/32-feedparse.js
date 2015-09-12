@@ -31,14 +31,14 @@ module.exports = function(RED) {
                 var req = request(node.url, {timeout: 10000, pool: false});
                 //req.setMaxListeners(50);
                 //req.setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
-                req.setHeader('accept', 'text/html,application/xhtml+xml');
+                //req.setHeader('accept', 'text/html,application/xhtml+xml');
 
                 var feedparser = new FeedParser();
 
                 req.on('error', function(err) { node.error(err); });
 
                 req.on('response', function(res) {
-                    if (res.statusCode != 200) { node.warn(RED._("feedparse.errors.badstatuscode")); }
+                    if (res.statusCode != 200) { node.warn(RED._("feedparse.errors.badstatuscode")+" "+res.statusCode); }
                     else { res.pipe(feedparser); }
                 });
 
