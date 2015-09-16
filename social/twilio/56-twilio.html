@@ -111,7 +111,7 @@
         });
 
         RED.nodes.registerType('twilio out',{
-            category: 'output',
+            category: 'mobile-output',
             defaults: {
                 twilio:{type:"twilio-api",validate:function(v) {
                     return hasGlobal || (v && v!="_ADD_");
