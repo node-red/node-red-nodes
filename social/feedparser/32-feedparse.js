@@ -18,6 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var FeedParser = require("feedparser");
     var request = require("request");
+    var url = require('url');
 
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
@@ -26,7 +27,10 @@ module.exports = function(RED) {
         var node = this;
         this.interval_id = null;
         this.seen = {};
-        if (this.url !== "") {
+        var parsedUrl = url.parse(this.url);
+        if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
+            this.error(RED._("feedparse.errors.invalidurl"));
+        } else {
             var getFeed = function() {
                 var req = request(node.url, {timeout: 10000, pool: false});
                 //req.setMaxListeners(50);
@@ -64,8 +68,6 @@ module.exports = function(RED) {
             };
             this.interval_id = setInterval(function() { getFeed(); }, node.interval);
             getFeed();
-        } else {
-            this.error(RED._("feedparse.errors.invalidurl"));
         }
 
         this.on("close", function() {
