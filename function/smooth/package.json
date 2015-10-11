@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-smooth",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "description"   : "A Node-RED node that provides several simple smoothing algorithms for incoming data values.",
     "dependencies"  : {
     },
@@ -9,7 +9,7 @@
         "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/smooth"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "smooth", "average" ],
+    "keywords": [ "node-red", "smooth", "average", "standard deviation" ],
     "node-red"      : {
         "nodes"     : {
             "smooth": "17-smooth.js"

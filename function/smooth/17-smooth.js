@@ -25,6 +25,7 @@ module.exports = function(RED) {
         var node = this;
         var a = [];
         var tot = 0;
+        var tot2 = 0;
         var pop = 0;
         var old = null;
 
@@ -50,6 +51,14 @@ module.exports = function(RED) {
                         if (node.action === "mean") {
                             tot = tot + n - pop;
                             msg.payload = tot / a.length;
+                        }
+                        if (node.action === "sd") {
+                            tot = tot + n - pop;
+                            tot2 = tot2 + (n*n) - (pop * pop);
+                            if (a.length > 1) {
+                               msg.payload = Math.sqrt((a.length * tot2 - tot * tot)/(a.length * (a.length - 1)));
+                            }
+                            else { msg.payload = 0; }
                         }
                     }
                     if (node.round) { msg.payload = Math.round(msg.payload); }
