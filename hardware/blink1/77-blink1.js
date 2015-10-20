@@ -74,10 +74,12 @@ module.exports = function(RED) {
                     }
                 } catch (e) { node.error("Blink1 : device not found"); blink1 = null; }
             });
-            this.on("close", function() {
-                if (blink1 && typeof blink1.close == "function") {
-                    //blink1.close(); //This ought to work but seems to cause more hangs on closing than not...
+            this.on("close", function(done) {
+                if (blink1 && typeof blink1.close === "function") {
+                    //This ought to work but seems to cause more hangs on closing than not...
+                    blink1.close(function() { done() });
                 }
+                else { done(); }
                 blink1 = null;
             });
         }
