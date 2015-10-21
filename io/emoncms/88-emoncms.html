@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="emoncms">
+<script type="text/x-red" data-template-name="emoncms out">
     <div class="form-row">
         <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
         <input type="text" id="node-input-emonServer">
@@ -29,7 +29,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="emoncms">
+<script type="text/x-red" data-help-name="emoncms out">
     <p>Posts data to Emoncms.</p>
     <p>The <b>msg.payload</b> can contain either a comma separated list of name
     value pairs ex. name:value,... or a comma separated list of values ex. 1,2,.. .
@@ -38,7 +38,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('emoncms',{
+    RED.nodes.registerType('emoncms out',{
         category: 'output',
         color:"rgb(91, 192, 222)",
         defaults: {
@@ -58,6 +58,64 @@
         }
     });
 </script>
+
+
+
+
+
+<script type="text/x-red" data-template-name="emoncms in">
+    <div class="form-row">
+        <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
+        <input type="text" id="node-input-emonServer">
+    </div>
+    <div class="form-row">
+        <label for="node-input-feedid"><i class="fa fa-tag"></i> Feed ID</label>
+        <input type="text" id="node-input-feedid" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Emoncms">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="emoncms in">
+    <p>Fetches data from emoncms.</p>
+    <p>The <b>msg.payload</b> contains last emoncms feed value
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('emoncms in',{
+        category: 'input',
+        color:"rgb(91, 192, 222)",
+        defaults: {
+            name: {value:"Emoncms"},
+            emonServer: {type:"emoncms-server", required:true},
+            feedid: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "emoncms.png",
+        align: "right",
+        label: function() {
+            return this.name||this.baseurl;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script type="text/x-red" data-template-name="emoncms-server">
     <div class="form-row">

@@ -79,5 +79,53 @@ module.exports = function(RED) {
             });
         });
     }
-    RED.nodes.registerType("emoncms",Emoncms);
+    RED.nodes.registerType("emoncms out",Emoncms);
+ 
+    function Emoncmsin(n) {
+        RED.nodes.createNode(this,n);
+        this.emonServer = n.emonServer;
+        var sc = RED.nodes.getNode(this.emonServer);
+
+        this.baseurl = sc.server;
+        this.apikey = sc.credentials.apikey;
+
+        this.feedid = n.feedid
+        var node = this;
+        var http;
+        if (this.baseurl.substring(0,5) === "https") { http = require("https"); }
+        else { http = require("http"); }
+        this.on("input", function(msg) {
+            this.url = this.baseurl + '/feed/value.json';
+            this.url += '&apikey='+this.apikey;
+            var feedid = this.feedid || msg.feedid;
+            if (feedid !== "") {
+                this.url += '&id=' + feedid;
+            }
+            if (typeof msg.time !== 'undefined') {
+                this.url += '&time=' + msg.time;
+            }
+            node.log("[emoncms] "+this.url);
+            http.get(this.url, function(res) {
+                node.log("Http response: " + res.statusCode);
+                msg.rc = res.statusCode;
+                msg.payload = "";
+                if ((msg.rc != 200) && (msg.rc != 404)) {
+                    node.send(msg);
+                }
+                res.setEncoding('utf8');
+                res.on('data', function(chunk) {
+                    msg.payload += chunk;
+                });
+                res.on('end', function() {
+                    node.send(msg);
+                });
+            }).on('error', function(e) {
+                // node.error(e);
+                msg.rc = 503;
+                msg.payload = e;
+                node.send(msg);
+            });
+        });
+    }
+    RED.nodes.registerType("emoncms in",Emoncmsin);
 }
