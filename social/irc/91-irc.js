@@ -27,6 +27,8 @@ module.exports = function(RED) {
         this.cert = n.cert || false;
         this.channel = n.channel;
         this.nickname = n.nickname;
+        this.username = n.username;
+        this.password = n.password;
         this.lastseen = 0;
         this.ircclient = null;
         this.on("close", function() {
@@ -49,7 +51,7 @@ module.exports = function(RED) {
         if (node.serverConfig.ircclient === null) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
-            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
+            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000,userName:node.serverConfig.username,password:node.serverConfig.password};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
             node.serverConfig.ircclient.addListener('error', function(message) {
@@ -184,7 +186,7 @@ module.exports = function(RED) {
         if (node.serverConfig.ircclient === null) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
-            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
+            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000,userName:node.serverConfig.username,password:node.serverConfig.password};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
             node.serverConfig.ircclient.addListener('error', function(message) {

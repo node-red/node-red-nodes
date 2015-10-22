@@ -200,6 +200,14 @@
         <label for="node-config-input-nickname"><i class="fa fa-user"></i> <span data-i18n="irc.label.nickname"></span></label>
         <input type="text" id="node-config-input-nickname">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-user"></i> <span data-i18n="irc.label.username"></span></label>
+        <input type="text" id="node-config-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> <span data-i18n="irc.label.password"></span></label>
+        <input type="text" id="node-config-input-password">
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -210,7 +218,13 @@
             port: {value:"6667"},
             ssl: {value:false},
             cert: {value:false},
-            nickname: {value:"",required:true}
+            nickname: {value:"",required:true},
+            username: {value:""},
+            password: {value:""}
+        },
+        credentials: {
+            username: {type:"text"},
+            password: {type:"password"}
         },
         label: function() {
             return this.server;
