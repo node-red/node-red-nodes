@@ -314,7 +314,7 @@ module.exports = function(RED) {
 
                     } else {
                         if (typeof msg.params === 'undefined') { msg.params = {}; }
-+                       twit.updateStatus(msg.payload, msg.params, function (err, data) {
+                        twit.updateStatus(msg.payload, msg.params, function (err, data) {
                             if (err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 node.error(err,msg);
