@@ -79,7 +79,7 @@ module.exports = function(RED) {
             });
         });
     }
-    RED.nodes.registerType("emoncms out",Emoncms);
+    RED.nodes.registerType("emoncms",Emoncms);
  
     function Emoncmsin(n) {
         RED.nodes.createNode(this,n);

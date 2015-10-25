@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 
-<script type="text/x-red" data-template-name="emoncms out">
+<script type="text/x-red" data-template-name="emoncms">
     <div class="form-row">
         <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
         <input type="text" id="node-input-emonServer">
@@ -29,7 +29,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="emoncms out">
+<script type="text/x-red" data-help-name="emoncms">
     <p>Posts data to Emoncms.</p>
     <p>The <b>msg.payload</b> can contain either a comma separated list of name
     value pairs ex. name:value,... or a comma separated list of values ex. 1,2,.. .
@@ -38,7 +38,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('emoncms out',{
+    RED.nodes.registerType('emoncms',{
         category: 'output',
         color:"rgb(91, 192, 222)",
         defaults: {
