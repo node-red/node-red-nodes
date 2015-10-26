@@ -58,7 +58,6 @@ module.exports = function(RED) {
             }
             node.log("[emoncms] "+this.url);
             http.get(this.url, function(res) {
-                node.log("Http response: " + res.statusCode);
                 msg.rc = res.statusCode;
                 msg.payload = "";
                 if ((msg.rc != 200) && (msg.rc != 404)) {
@@ -75,7 +74,6 @@ module.exports = function(RED) {
                 // node.error(e);
                 msg.rc = 503;
                 msg.payload = e;
-                node.send(msg);
             });
         });
     }
@@ -101,16 +99,15 @@ module.exports = function(RED) {
             if (feedid !== "") {
                 this.url += '&id=' + feedid;
             }
-            if (typeof msg.time !== 'undefined') {
-                this.url += '&time=' + msg.time;
+            if (typeof msg.payload !== 'undefined') {
+                this.url += '&time=' + msg.payload;
             }
             node.log("[emoncms] "+this.url);
             http.get(this.url, function(res) {
-                node.log("Http response: " + res.statusCode);
                 msg.rc = res.statusCode;
                 msg.payload = "";
                 if ((msg.rc != 200) && (msg.rc != 404)) {
-                    node.send(msg);
+                    node.send(JSON.parse(msg));
                 }
                 res.setEncoding('utf8');
                 res.on('data', function(chunk) {
@@ -123,7 +120,6 @@ module.exports = function(RED) {
                 // node.error(e);
                 msg.rc = 503;
                 msg.payload = e;
-                node.send(msg);
             });
         });
     }

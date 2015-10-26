@@ -32,4 +32,4 @@ Insertion time can be manipulated by setting **msg.time**.
 
 ### Emoncms In:
 
-Fetches last emoncms feed value in JSON format, use JSON processor node to convert to number.
+Fetches last emoncms feed value, returns numberical value.
