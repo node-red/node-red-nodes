@@ -56,7 +56,6 @@ module.exports = function(RED) {
             if (typeof msg.time !== 'undefined') {
                 this.url += '&time=' + msg.time;
             }
-            node.log("[emoncms] "+this.url);
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
                 msg.payload = "";
@@ -99,10 +98,6 @@ module.exports = function(RED) {
             if (feedid !== "") {
                 this.url += '&id=' + feedid;
             }
-            if (typeof msg.payload !== 'undefined') {
-                this.url += '&time=' + msg.payload;
-            }
-            node.log("[emoncms] "+this.url);
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
                 msg.payload = "";
