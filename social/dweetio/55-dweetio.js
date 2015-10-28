@@ -26,7 +26,7 @@ module.exports = function(RED) {
         var node = this;
 
         var isObject = function(a) {
-            return (!!a) && (a.constructor === Object);
+            return (!!a) && (a.constructor == Object);
         };
 
         this.on("input",function(msg) {
