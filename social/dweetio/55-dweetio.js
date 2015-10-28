@@ -26,7 +26,8 @@ module.exports = function(RED) {
         var node = this;
 
         var isObject = function(a) {
-            return (!!a) && (a.constructor == Object);
+            if ((typeof(a) === "object") && (!Buffer.isBuffer(a)) && (!Array.isArray(a))) { return true; }
+            else { return false; }
         };
 
         this.on("input",function(msg) {
