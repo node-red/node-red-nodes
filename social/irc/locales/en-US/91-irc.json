@@ -7,7 +7,9 @@
             "port": "Port",
             "ssl": "Use Secure SSL connection?",
             "self": "Allow self-signed certificates?",
-            "nickname": "Nickname"
+            "nickname": "Nickname",
+            "username": "Server username",
+            "password": "Server password"
         },
         "payload": "Send payload to channel(s)",
         "topic": "Use msg.topic to set nickname or channel(s)",

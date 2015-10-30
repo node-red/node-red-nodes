@@ -18,6 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var irc = require("irc");
 
+
     // The Server Definition - this opens (and closes) the connection
     function IRCServerNode(n) {
         RED.nodes.createNode(this,n);
@@ -27,8 +28,6 @@ module.exports = function(RED) {
         this.cert = n.cert || false;
         this.channel = n.channel;
         this.nickname = n.nickname;
-        this.username = n.username;
-        this.password = n.password;
         this.lastseen = 0;
         this.ircclient = null;
         this.on("close", function() {
@@ -37,8 +36,23 @@ module.exports = function(RED) {
                 this.ircclient.disconnect();
             }
         });
+
+        this.username = null;
+        this.password = null;
+        if (this.credentials && this.credentials.hasOwnProperty("username")) {
+            this.username = this.credentials.username;
+        }
+        if (this.credentials && this.credentials.hasOwnProperty("password")) {
+            this.password = this.credentials.password;
+        }
+
     }
-    RED.nodes.registerType("irc-server",IRCServerNode);
+    RED.nodes.registerType("irc-server",IRCServerNode, {
+          credentials: {
+               username: {type:"text"},
+               password: {type:"password"}
+           }
+    });
 
 
     // The Input Node
@@ -49,7 +63,7 @@ module.exports = function(RED) {
         this.channel = n.channel || this.serverConfig.channel;
         var node = this;
         if (node.serverConfig.ircclient === null) {
-            node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
+            node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server+" "+node.serverConfig.username+" "+node.serverConfig.ssl);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000,userName:node.serverConfig.username,password:node.serverConfig.password};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
@@ -186,7 +200,7 @@ module.exports = function(RED) {
         if (node.serverConfig.ircclient === null) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
-            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000,userName:node.serverConfig.username,password:node.serverConfig.password};
+            var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000,userName:node.username,password:node.password};
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
             node.serverConfig.ircclient.addListener('error', function(message) {

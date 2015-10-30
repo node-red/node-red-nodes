@@ -92,6 +92,10 @@
             ircserver: {type:"irc-server", required:true},
             channel: {value:"",required:true,validate:RED.validators.regex(/^#/)}
         },
+        credentials: {
+          username: {type:"text"},
+          password: {type:"password"}
+        },
         color:"Silver",
         inputs:0,
         outputs:2,
@@ -218,9 +222,7 @@
             port: {value:"6667"},
             ssl: {value:false},
             cert: {value:false},
-            nickname: {value:"",required:true},
-            username: {value:""},
-            password: {value:""}
+            nickname: {value:"",required:true}
         },
         credentials: {
             username: {type:"text"},

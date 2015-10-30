@@ -3,7 +3,7 @@
     "version"       : "0.0.3",
     "description"   : "A Node-RED node to talk to an IRC server",
     "dependencies"  : {
-        "irc"   : "0.3.11"
+        "irc"   : "~0.4.0"
     },
     "repository" : {
         "type":"git",
