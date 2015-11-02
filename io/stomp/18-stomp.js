@@ -49,7 +49,7 @@ module.exports = function(RED) {
             port: this.serverConfig.port * 1,
             user: this.serverConfig.username,
             pass: this.serverConfig.password,
-            protocolVersion: this.serverConfig.protocolVersion,
+            protocolVersion: this.serverConfig.protocolversion,
             reconnectOpts: {
                 retries: this.serverConfig.reconnectretries * 1,
                 delay: this.serverConfig.reconnectdelay * 1
@@ -119,7 +119,7 @@ module.exports = function(RED) {
             port: this.serverConfig.port * 1,
             user: this.serverConfig.username,
             pass: this.serverConfig.password,
-            protocolVersion: this.serverConfig.protocolVersion,
+            protocolVersion: this.serverConfig.protocolversion,
             reconnectOpts: {
                 retries: this.serverConfig.reconnectretries * 1,
                 delay: this.serverConfig.reconnectdelay * 1
