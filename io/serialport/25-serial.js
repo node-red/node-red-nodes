@@ -216,6 +216,7 @@ module.exports = function(RED) {
                             write: function(m,cb) { this.serial.write(m,cb); },
                         }
                         //newline = newline.replace("\\n","\n").replace("\\r","\r");
+                        var olderr = "";
                         var setupSerial = function() {
                             obj.serial = new serialp.SerialPort(port,{
                                 baudrate: baud,
@@ -223,7 +224,17 @@ module.exports = function(RED) {
                                 parity: parity,
                                 stopbits: stopbits,
                                 parser: serialp.parsers.raw
-                            },true, function(err, results) { if (err) { obj.serial.emit('error',err); } });
+                            },true, function(err, results) {
+                                if (err) {
+                                    if (err.toString() !== olderr) {
+                                        olderr = err.toString();
+                                        RED.log.error(RED._("serial.errors.error",{port:port,error:olderr}));
+                                    }
+                                }
+                                obj.tout = setTimeout(function() {
+                                    setupSerial();
+                                }, settings.serialReconnectTime);
+                            });
                             obj.serial.on('error', function(err) {
                                 RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
                                 obj._emitter.emit('closed');
@@ -241,6 +252,7 @@ module.exports = function(RED) {
                                 }
                             });
                             obj.serial.on('open',function() {
+                                olderr = "";
                                 RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
                                 if (obj.tout) { clearTimeout(obj.tout); }
                                 //obj.serial.flush();

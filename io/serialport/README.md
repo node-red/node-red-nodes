@@ -26,7 +26,7 @@ Usage
 
 Provides two nodes - one to receive messages, and one to send.
 
-###Input
+### Input
 
 Reads data from a local serial port.
 
@@ -44,7 +44,7 @@ It then outputs **msg.payload** as either a UTF8 ascii string or a binary Buffer
 If no split character is specified, or a timeout or buffer size of 0, then a stream
 of single characters is sent - again either as ascii chars or size 1 binary buffers.
 
-###Output
+### Output
 
 Provides a connection to an outbound serial port.
 
