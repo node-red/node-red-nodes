@@ -75,7 +75,7 @@ module.exports = function(RED) {
 
         node.client.on("error", function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"});
-            node.log(error);
+            node.warn(error);
         });
 
         node.status({fill:"grey",shape:"ring",text:"connecting"});
