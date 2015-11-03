@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Henrik Olsson henols@gmail.com
+ * Copyright 2013, 2015 Henrik Olsson henols@gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -59,25 +59,22 @@ module.exports = function(RED) {
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
                 msg.payload = "";
-                if ((msg.rc != 200) && (msg.rc != 404)) {
-                    node.send(msg);
-                }
                 res.setEncoding('utf8');
                 res.on('data', function(chunk) {
                     msg.payload += chunk;
                 });
                 res.on('end', function() {
-                    node.send(msg);
+                    if (msg.rc === 200) {
+                        node.send(msg);
+                    }
                 });
             }).on('error', function(e) {
-                // node.error(e);
-                msg.rc = 503;
-                msg.payload = e;
+                node.error(e,msg);
             });
         });
     }
     RED.nodes.registerType("emoncms",Emoncms);
- 
+
     function Emoncmsin(n) {
         RED.nodes.createNode(this,n);
         this.emonServer = n.emonServer;
@@ -101,20 +98,22 @@ module.exports = function(RED) {
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
                 msg.payload = "";
-                if ((msg.rc != 200) && (msg.rc != 404)) {
-                    node.send(JSON.parse(msg));
-                }
                 res.setEncoding('utf8');
                 res.on('data', function(chunk) {
                     msg.payload += chunk;
                 });
                 res.on('end', function() {
-                    node.send(msg);
+                    if (msg.rc === 200) {
+                        try {
+                            msg.payload = JSON.parse(msg.payload);
+                        } catch(err) {
+                            // Failed to parse, pass it on
+                        }
+                        node.send(msg);
+                    }
                 });
             }).on('error', function(e) {
-                // node.error(e);
-                msg.rc = 503;
-                msg.payload = e;
+                node.error(e,msg);
             });
         });
     }
