@@ -138,7 +138,7 @@ module.exports = function(RED) {
 
             var msg = {};
             if (node.mytopic) { msg.topic = node.mytopic; }
-            (proceed >= 2) ? (msg.payload = 1) : (msg.payload = 0);
+            msg.payload = (process>=2) ? 1 : 0;
             node.send(msg);
         });
 
