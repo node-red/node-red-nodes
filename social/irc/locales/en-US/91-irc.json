@@ -8,8 +8,11 @@
             "ssl": "Use Secure SSL connection?",
             "self": "Allow self-signed certificates?",
             "nickname": "Nickname",
-            "username": "Server username",
-            "password": "Server password"
+            "username": "Username",
+            "password": "Password"
+        },
+        "placeholder": {
+            "ifreq": "if required by server"
         },
         "payload": "Send payload to channel(s)",
         "topic": "Use msg.topic to set nickname or channel(s)",
