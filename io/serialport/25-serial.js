@@ -230,10 +230,10 @@ module.exports = function(RED) {
                                         olderr = err.toString();
                                         RED.log.error(RED._("serial.errors.error",{port:port,error:olderr}));
                                     }
+                                    obj.tout = setTimeout(function() {
+                                        setupSerial();
+                                    }, settings.serialReconnectTime);
                                 }
-                                obj.tout = setTimeout(function() {
-                                    setupSerial();
-                                }, settings.serialReconnectTime);
                             });
                             obj.serial.on('error', function(err) {
                                 RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
