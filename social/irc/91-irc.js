@@ -166,6 +166,11 @@ module.exports = function(RED) {
             node.send([null,msg]);
             //node.log(who+' '+RED._("irc.errors.hasleft")+' '+channel+': '+reason);
         });
+        node.ircclient.addListener('topic', function (channel, topic, nick, message) {
+            var msg = { "payload": { "type":"topic", "who":nick, "channel":channel, "topic":topic, "message":message } };
+            node.send([null,msg]);
+            //node.log(nick+' '+RED._("irc.errors.topicchanged")+' '+channel+': '+topic);
+        });
         node.ircclient.addListener('quit', function(nick, reason, channels, message) {
             var msg = { "payload": { "type":"quit", "who":nick, "channel":channels, "reason":reason } };
             node.send([null,msg]);
