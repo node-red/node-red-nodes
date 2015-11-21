@@ -19,7 +19,8 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">See info panel for the various input options.</div>
+    <div class="form-tips">Uses pins 11, 13 aand 15.<br/>
+    See info panel for the various input options and limitations.</div>
 </script>
 
 <script type="text/x-red" data-help-name="ledborg">
@@ -29,6 +30,8 @@
     <p>You can also use the @cheerlight colour names - red, amber, green, blue,
     cyan, magenta, yellow, orange, pink, purple, white, warmwhite, black</p>
     <p>You may also supply a comma separated rrr,ggg,bbb where each value can be between 0 and 255.</p>
+    <p>You can only use one LEDborg node per flow... but you may wire multiple things to it.</p>
+    <p><b>Note</b> : This node uses physical pins 11, 13, and 15. These cannot be used for anything else while this node is in use.</p>
 </script>
 
 <script type="text/javascript">

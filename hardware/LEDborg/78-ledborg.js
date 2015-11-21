@@ -20,6 +20,7 @@ module.exports = function(RED) {
     //var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
     var fs = require('fs');
+    var LedBorgInUse = false;
 
     var gpioCommand = __dirname+'/nrgpio';
 
@@ -42,6 +43,8 @@ module.exports = function(RED) {
 
     function LedBorgNode(n) {
         RED.nodes.createNode(this,n);
+        if (LedBorgInUse) { this.error("LEDborg node already in use - you may only have one."); }
+        else { LedBorgInUse = true; }
         this.pin = n.pin;
         this.set = n.set || false;
         this.level = n.level || 0;
@@ -120,6 +123,7 @@ module.exports = function(RED) {
         });
 
         node.on("close", function(done) {
+            LedBorgInUse = false;
             node.status({fill:"red",shape:"circle",text:""});
             if (node.child != null) {
                 node.done = done;
