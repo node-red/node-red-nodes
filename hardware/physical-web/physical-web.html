@@ -1,0 +1,143 @@
+<!--
+  Copyright 2015 IBM Corp.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<script type="text/x-red" data-template-name="PhysicalWeb in">
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="eddysone">
+    </div>
+    <br/>
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field. Should always be the last option      -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="PhysicalWeb in">
+  <p><a href="https://google.github.io/physical-web/">Physical Web</a></p>
+  <p><a href="https://github.com/sandeepmistry/bleno#running-on-linux">READ THIS ON LINUX</a>
+  <p>This node scans for Eddystones and publishes what it finds. It can output 2 types of message</p>
+  <ul>
+    <li><strong>URL</strong> - 
+        <ul>
+            <li>type - Eddystone type</li>
+            <li>txPower - Received power at 0m in dBm</li>
+            <li>url - The URL the beacon is broadcasting</li>
+            <li>tlm - TLM data, if the device is interleaving broadcasts</li>
+            <li>rssi - RSSI of the beacon</li>
+            <li>distance - Estimated distance to the beacon</li>
+        </ul>
+    </li>
+    <li><strong>UID</strong> - 
+        <ul>
+            <li>type - Eddystone type</li>
+            <li>txPower - Received power at 0m in dBm</li>
+            <li>namespace - 10-byte ID of namspace</li>
+            <li>instance - 6-byte ID insance</li>
+            <li>tlm - TLM data, if the device is interleaving broadcasts</li>
+            <li>rssi - RSSI of the beacon</li>
+            <li>distance - Estimated distance to the beacon</li>
+        </ul>
+    </li>
+</ul>
+<p>Where the tlm data will be in the following format</p>
+<ul>
+    <li>tlm -
+        <ul>
+            <li>version - TML version</li>
+            <li>vbatt - Battery Voltage</li>
+            <li>temp - Temperature</li>
+            <li>advCnt - Advertising PDU count</li>
+            <li>secCnt - Time since power on or reboot</li>
+        </ul>
+    </li>
+    <li>rssi - RSSI of diecovered beacon</li>
+    <li>distance - Approximate distance to beacon</li>
+</ul>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('PhysicalWeb in',{
+        category: 'Physical_Web',      // the palette category
+        defaults: {             // defines the editable properties of the node
+            name: {value:"Eddystone"},   //  along with default values.
+            topic: {value: "eddystone"}
+        },
+        color: "#2F7ACD",
+        inputs:0,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "physical-web.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"PhysicalWeb";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="PhysicalWeb out">
+    <div class="form-row">
+        <label for="node-input-period"><i class="fa fa-tasks"></i> Period</label>
+        <input type="text" id="node-input-period" placeholder="Period">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
+        <input type="text" id="node-input-url" placeholder="http://...">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-power"><i class="fa fa-battery-half"></i> Power</label>
+        <input type="text" id="node-input-power" placeholder="Power">
+    </div>
+    <br/>
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field. Should always be the last option      -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="PhysicalWeb out">
+  <p><a href="https://google.github.io/physical-web/">Physical Web</a></p>
+  <p><a href="https://github.com/sandeepmistry/bleno#running-on-linux">READ THIS ON LINUX</a>
+  <p>This node takes the value of <i>msg.payload</i> and publishes it as a Eddystone URL announcement</p>
+  <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (ms) between anouncements</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('PhysicalWeb out',{
+        category: 'Physical_Web',      // the palette category
+        defaults: {             // defines the editable properties of the node
+            name: {value:"Eddystone"},   //  along with default values.
+            url: {value: ""},
+            power: {value:"-21"},
+            period: {value: "10"}
+        },
+        color: "#2F7ACD",
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:0,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "physical-web.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"PhysicalWeb";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
