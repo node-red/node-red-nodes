@@ -32,7 +32,8 @@
 <script type="text/x-red" data-help-name="emoncms">
     <p>Posts data to Emoncms.</p>
     <p>The <b>msg.payload</b> can contain either a comma separated list of name
-    value pairs ex. name:value,... or a comma separated list of values ex. 1,2,.. .
+    value pairs e.g. <pre>name:value,...</pre> or a comma separated list of values e.g. <pre>1,2,...</pre>
+    or a simple javascript object e.g. <pre>msg.payload = {temp:12}</pre>
     <p>If Node is left blank <b>msg.nodegroup</b> will used.</p>
     <p>Insertion time can be manipulated by setting <b>msg.time</b>.</p>
 </script>

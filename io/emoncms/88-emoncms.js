@@ -43,10 +43,15 @@ module.exports = function(RED) {
         else { http = require("http"); }
         this.on("input", function(msg) {
             this.url = this.baseurl + '/input/post.json?';
-            if (msg.payload.indexOf(':') > -1) {
-                this.url += 'json={' + msg.payload + '}';
-            } else {
-                this.url += 'csv='+msg.payload;
+            if (typeof(msg.payload) !== "string") {
+                this.url += 'json=' + JSON.stringify(msg.payload);
+            }
+            else {
+                if (msg.payload.indexOf(':') > -1) {
+                    this.url += 'json={' + msg.payload + '}';
+                } else {
+                    this.url += 'csv='+msg.payload;
+                }
             }
             this.url += '&apikey='+this.apikey;
             var nodegroup = this.nodegroup || msg.nodegroup;
