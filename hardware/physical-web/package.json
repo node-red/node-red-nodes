@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-physical-web",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A set of nodes to interact with the Phyical Web",
   "main": "physical-web.js",
   "scripts": {
@@ -14,11 +14,13 @@
     "ble"
   ],
   "node-red": {
-    "physical-web": "physical-web.js"
+    "nodes"     : {
+      "physical-web": "physical-web.js"
+    }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red/node-red-nodes.git"
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/physical-web"
   },
   "author": {
     "name": "Ben Hardill",

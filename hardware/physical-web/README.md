@@ -25,14 +25,14 @@ A node to scan for local Eddystones and output information about discovered URLs
 
 Two types of messages will be emitted:
 
-- **URL** - 
+- **URL** -
     - *type* - Eddystone type
     - *txPower* - Received power at 0m in dBm
     - *url* - The URL the beacon is broadcasting
     - *tlm* - TLM data, if the device is interleaving broadcasts
     - *rssi* - RSSI of the beacon
     - *distance* - Estimated distance to the beacon
-- **UID** - 
+- **UID** -
     - *type* - Eddystone type
     - *txPower* - Received power at 0m in dBm
     - *namespace* - 10-byte ID of namspace
@@ -44,7 +44,7 @@ Two types of messages will be emitted:
 Where the tlm data will be in the following format
 
 - **tlm** -
-    - *version* - TML version
+    - *version* - TLM version
     - *vbatt* - Battery Voltage
     - *temp* - Temperature
     - *advCnt* - Advertising PDU count
