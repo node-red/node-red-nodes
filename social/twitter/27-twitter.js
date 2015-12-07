@@ -351,7 +351,7 @@ module.exports = function(RED) {
             } else {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
-                res.redirect('https://twitter.com/oauth/authorize?oauth_token='+oauth_token)
+                res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
                 RED.nodes.addCredentials(req.params.id,credentials);
             }
         });
