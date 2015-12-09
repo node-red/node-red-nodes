@@ -66,7 +66,7 @@ selected it should contain an object. If not it will be wrapped in an object wit
 
 *Update* will modify an existing object or objects. The query to select objects
 to update uses **msg.query** and the update to the element uses **msg.payload**.
-Update can add a object if it does not exist or update multiple objects.
+Update can add an object if it does not exist or update multiple objects.
 
 *Remove* will remove objects that match the query passed in on **msg.payload**.
 A blank query will delete *all of the objects* in the collection.
