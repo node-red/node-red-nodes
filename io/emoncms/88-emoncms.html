@@ -20,8 +20,8 @@
         <input type="text" id="node-input-emonServer">
     </div>
     <div class="form-row">
-        <label for="node-input-nodegroup"><i class="fa fa-tag"></i> Node</label>
-        <input type="text" id="node-input-nodegroup" placeholder="">
+        <label for="node-input-nodegroup"><i class="fa fa-object-group"></i> Nodegroup</label>
+        <input type="text" id="node-input-nodegroup" placeholder="number eg: 3">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -34,8 +34,9 @@
     <p>The <b>msg.payload</b> can contain either a comma separated list of name
     value pairs e.g. <pre>name:value,...</pre> or a comma separated list of values e.g. <pre>1,2,...</pre>
     or a simple javascript object e.g. <pre>msg.payload = {temp:12}</pre>
-    <p>If Node is left blank <b>msg.nodegroup</b> will used.</p>
-    <p>Insertion time can be manipulated by setting <b>msg.time</b>.</p>
+    <p>If <i>Nodegroup</i> is left blank <b>msg.nodegroup</b> will used.</p>
+    <p>Insertion time can be manipulated by setting <b>msg.time</b>.
+    This must be in epoch format - seconds since 1970.</p>
 </script>
 
 <script type="text/javascript">
@@ -45,7 +46,7 @@
         defaults: {
             name: {value:"Emoncms"},
             emonServer: {type:"emoncms-server", required:true},
-            nodegroup: {value:""}
+            nodegroup: {value:"", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }}
         },
         inputs:1,
         outputs:0,

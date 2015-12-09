@@ -16,7 +16,7 @@ Usage
 
 ### Emoncms post.
 
-The **msg.payload** can contain either a comma separated list of name
+The `msg.payload` can contain either a comma separated list of name
 value pairs, e.g.
 
         name:value,...
@@ -25,11 +25,16 @@ or a comma separated list of values, e.g.
 
         1,2,..
 
+or a simple javascript object e.g.
 
-If Node is left blank **msg.nodegroup** will used.
+        msg.payload = {temp:12, humidity:56};
 
-Insertion time can be manipulated by setting **msg.time**.
+If *Nodegroup* is left blank `msg.nodegroup` will used (if set).
+This should be a numeric value.
+
+Insertion time can be manipulated by setting `msg.time`. This **must** be in
+epoch format - i.e. seconds since 1970.
 
 ### Emoncms In:
 
-Fetches last emoncms feed value, returns numberical value.
+Fetches last emoncms feed value, returns a numerical value.

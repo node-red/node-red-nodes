@@ -59,7 +59,7 @@ module.exports = function(RED) {
                 this.url += '&node=' + nodegroup;
             }
             if (typeof msg.time !== 'undefined') {
-                this.url += '&time=' + msg.time;
+                if (!isNaN(parseInt(msg.time))) { this.url += '&time=' + msg.time; }
             }
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
