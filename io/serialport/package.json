@@ -1,12 +1,10 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "0.0.5",
+    "version"       : "0.1.0",
     "description"   : "Node-RED nodes to talk to an serial port",
     "dependencies"  : {
-        "serialport"   : "1.7.*"
+        "serialport"   : "2.0.*"
     },
-    "engineStrict" : true,
-    "engines" : { "node" : "<=0.12" },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/io/serialport"
