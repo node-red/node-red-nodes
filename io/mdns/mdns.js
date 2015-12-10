@@ -25,7 +25,11 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         this.topic = n.topic || "";
         this.service = n.service;
-        var browser = mdns.createBrowser(this.service);
+        var sequence = [
+            mdns.rst.DNSServiceResolve(),
+            mdns.rst.getaddrinfo({families: [4] })
+        ];
+        var browser = mdns.createBrowser(this.service,{resolverSequence: sequence});
         var node = this;
 
         browser.on('serviceUp', function(service) {
