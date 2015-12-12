@@ -20,7 +20,7 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
-    var gpioCommand = __dirname + '/nrlcd';
+    var gpioCommand = __dirname + '/nrlcd.py';
 
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
         //util.log("Info : Ignoring Raspberry Pi specific node.");

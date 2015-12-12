@@ -20,7 +20,7 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
-    var gpioCommand = __dirname+'/nrgpio';
+    var gpioCommand = __dirname+'/nrgpio.py';
 
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
         //util.log("Info : Ignoring Raspberry Pibrella specific node.");
@@ -34,7 +34,7 @@ module.exports = function(RED) {
 
     if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
         util.log("[rpi-pibrella] Error : "+gpioCommand+" needs to be executable.");
-        throw "Error : nrgpio must to be executable.";
+        throw "Error : " + gpioCommand + " must to be executable.";
     }
 
     var pinsInUse = {};
