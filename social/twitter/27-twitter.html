@@ -105,6 +105,7 @@
             <option value="true" data-i18n="twitter.search.follow"></option>
             <option value="user" data-i18n="twitter.search.user"></option>
             <option value="dm" data-i18n="twitter.search.direct"></option>
+            <option value="event" data-i18n="twitter.search.events"></option>
         </select>
     </div>
     <div class="form-row" id="node-input-tags-row">
@@ -123,11 +124,17 @@
     <ul><li>the public or a user's stream for tweets containing the configured search term</li>
         <li>all tweets by specific users</li>
         <li>direct messages received by the authenticated user</li>
+        <li>twitter events for the authenticated user</li>  
     </ul></p>
-    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.</p>
+    <p>Use space for <i>and</i> ,a comma for <i>or</i> ,when searching for multiple terms.</p>
+    <p>When returning tweets or DM's:</p>
     <p>Sets the <b>msg.topic</b> to <i>tweets/</i> and then appends the senders screen name.</p>
     <p>Sets <b>msg.location</b> to the tweeters location if known.</p>
-    <p>Sets <b>msg.tweet</b> to the full tweet object as documented by <a href="https://dev.twitter.com/docs/platform-objects/tweets">Twitter</a>.
+    <p>Sets <b>msg.tweet</b> to the full tweet object as documented by <a href="https://dev.twitter.com/docs/platform-objects/tweets">Twitter</a>.</p>
+    <p>When returning events:</p>
+    <p>Sets the <b>msg.event</b> to the twitter event, a full list is documented by <a href=https://dev.twitter.com/streaming/overview/messages-types#Events_event">Twitter</a>.</p>
+    <p>Sets <b>msg.payload</b> to the full tweet object as documented by <a href="https://dev.twitter.com/docs/platform-objects/tweets">Twitter</a>.</p>
+
     <p><b>Note:</b> when set to a specific user's tweets, or your direct messages, the node is subject to
       Twitter's API rate limiting. If you deploy the flows multiple times within a 15 minute window, you may
       exceed the limit and will see errors from the node. These errors will clear when the current 15 minute window
@@ -155,6 +162,9 @@
             if (this.user == "dm") {
                 var user = RED.nodes.node(this.twitter);
                 return (user?user.label()+" ":"")+this._("twitter.label.dmslabel");
+            } else if (this.user == "event") {
+                var user = RED.nodes.node(this.twitter);
+                return (user?user.label()+" ":"")+this._("twitter.label.eventslabel");
             } else if (this.user == "user") {
                 return this.tags+" "+this._("twitter.label.tweetslabel");
             }
@@ -174,7 +184,7 @@
                     $("#node-input-tags-row").show();
                     $("#node-input-tags-label").html(userlabel);
                     $("#node-input-tags").attr("placeholder",userph);
-                } else if (type == "dm") {
+                } else if (type == "dm" || type == "event") {
                     $("#node-input-tags-row").hide();
                 } else {
                     $("#node-input-tags-row").show();
