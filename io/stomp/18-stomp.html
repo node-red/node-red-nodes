@@ -128,6 +128,26 @@
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-password">
     </div>
+
+    <div class="form-row">
+    <label for="node-config-input-protocolversion"><i class="fa fa-tag"></i> Protocol Version</label>
+        <select type="text" id="node-config-input-protocolversion" style="display: inline-block; width: 250px; vertical-align: top;">
+            <option value="1.0">v1.0</option>
+            <option value="1.1">v1.1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-vhost"><i class="fa fa-server"></i> vhost</label>
+        <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reconnectretries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
+        <input type="number" id="node-config-input-reconnectretries" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reconnectdelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
+        <input type="number" id="node-config-input-reconnectdelay" />
+    </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
@@ -139,7 +159,11 @@
         category: 'config',
         defaults: {
             server: {required:true},
-            port: {value:61618,required:true,validate:RED.validators.number()},
+            port: {value:61613,required:true,validate:RED.validators.number()},
+            protocolversion: {value:"1.0",required:true},
+            vhost: {},
+            reconnectretries: {value:"0",required:true,validate:RED.validators.number()},
+            reconnectdelay: {value:"0.5",required:true,validate:RED.validators.number()},
             name: {}
         },
         credentials: {
