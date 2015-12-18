@@ -37,7 +37,7 @@ Sets the **msg.topic** to *tweets/* and then appends the senders screen name.
 
 Sets **msg.location** to the tweeters location if known.
 
-Sets **msg.tweet** to the full tweet object as documented by <a href="https://dev.twitter.com/docs/platform-objects/tweets">Twitter</a>.
+Sets **msg.tweet** to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
 
 **Note:** when set to a specific user's tweets, or your direct messages, the node is subject to
 Twitter's API rate limiting. If you deploy the flows multiple times within a 15 minute window, you may
