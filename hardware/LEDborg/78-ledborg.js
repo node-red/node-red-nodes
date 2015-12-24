@@ -57,6 +57,14 @@ module.exports = function(RED) {
         function inputlistener(msg) {
             var rgb = "000";
 
+            if (typeof msg.payload === "number") {
+                msg.payload = ("000"+msg.payload.toString()).substr(-3);
+            }
+
+            if (typeof msg.payload === "boolean") {
+                msg.payload = msg.payload ? "222" : "000";
+            }
+
             if (p1.test(msg.payload)) {
                 rgb = msg.payload;
                 rgb = Number(rgb[0])*50+","+Number(rgb[1])*50+","+Number(rgb[2])*50;
