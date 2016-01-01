@@ -97,9 +97,14 @@ module.exports = function(RED) {
             }
 
             if (RED.settings.verbose) { node.log("out: "+msg.payload); }
-            if (node.child !== null) { node.child.stdin.write(rgb+"\n"); }
-            else { node.warn("Command not running"); }
-            node.status({fill:"green",shape:"dot",text:msg.payload});
+            if (node.child !== null) {
+                node.child.stdin.write(rgb+"\n");
+                node.status({fill:"green",shape:"dot",text:msg.payload});
+            }
+            else {
+                node.warn("Command not running");
+                node.status({fill:"red",shape:"ring",text:"Command not running"});
+            }
         }
 
         node.child = spawn(gpioCommand, ["borg","11"]);
