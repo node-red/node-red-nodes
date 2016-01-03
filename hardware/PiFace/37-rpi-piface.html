@@ -63,6 +63,8 @@
     <p>The <b>msg.topic</b> is set to <i>piface/{the pin number}</i></p>
     <p>Requires the WiringPi gpio command in order to work.</p>
     <p><b>Note:</b> This node currently polls the pin every 250mS. This is not ideal as it loads the cpu.</p>
+    <p><b>Note:</b> Some versions of the PiFace relabelled the switch inputs to be 0 - 7 instead of 1 - 8. 
+    We cannot automatically detect this so the user will have to apply some common sense.</p>
 </script>
 
 <script type="text/javascript">

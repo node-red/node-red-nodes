@@ -5,6 +5,10 @@ node-red-node-piface
 <a href="http://www.piface.org.uk/products/piface_digital/" target="_new">PiFace Digital</a>
 add-on board for a Raspberry-Pi.
 
+**Note:** Some later versions of the PiFace relabelled the switch inputs to be `0 - 7`
+instead of `1 - 8` as on the original boards.
+We cannot automatically detect this so the user will have to apply some common sense.
+
 Install
 -------
 

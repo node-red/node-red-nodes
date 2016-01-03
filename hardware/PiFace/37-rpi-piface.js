@@ -99,6 +99,8 @@ module.exports = function(RED) {
     function PiFACEOutNode(n) {
         RED.nodes.createNode(this,n);
         this.pin = pintable[n.pin];
+        this.set = n.set;
+        this.level = n.level;
         var node = this;
         if (node.pin) {
             if (node.set) {
@@ -123,10 +125,9 @@ module.exports = function(RED) {
         }
     }
 
-
     exec("gpio load spi",function(err,stdout,stderr) {
         if (err) {
-            util.log('[37-rpi-piface.js] Error: "gpio load spi" command failed for some reason.');
+            util.log('[37-rpi-piface.js] Error: "gpio load spi" command failed. Check device tree is disabled.');
         }
         RED.nodes.registerType("rpi-piface in",PiFACEInNode);
         RED.nodes.registerType("rpi-piface out",PiFACEOutNode);
