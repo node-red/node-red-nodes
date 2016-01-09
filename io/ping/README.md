@@ -10,6 +10,14 @@ Run the following command in the root directory of your Node-RED install
 
     npm install node-red-node-ping
 
+**Gotcha**
+
+On some versions on Raspbian (Raspberry Pi) `ping` seems to be a root only command.
+The fix is to allow it as follows
+
+    sudo setcap cap_net_raw=ep /bin/ping
+    sudo setcap cap_net_raw=ep /bin/ping6
+
 
 Usage
 -----
