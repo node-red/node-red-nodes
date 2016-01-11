@@ -28,6 +28,34 @@
         <input type="text" id="node-input-priority" placeholder="0" style="width:50px;">
     </div>
     <div class="form-row">
+        <label for="node-input-sound"><i class="fa fa-bell"></i> Sound</label>
+        <select id="node-input-sound">
+            <option></option>
+            <option>pushover</option>
+            <option>bike</option>
+            <option>bugle</option>
+            <option>cashregister</option>
+            <option>classical</option>
+            <option>cosmic</option>
+            <option>falling</option>
+            <option>gamelan</option>
+            <option>incoming</option>
+            <option>intermission</option>
+            <option>magic</option>
+            <option>mechanical</option>
+            <option>pianobar</option>
+            <option>siren</option>
+            <option>spacealarm</option>
+            <option>tugboat</option>
+            <option>alien</option>
+            <option>climb</option>
+            <option>persistent</option>
+            <option>echo</option>
+            <option>updown</option>
+            <option>none</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
         <input type="text" id="node-input-deviceid">
     </div>
@@ -42,13 +70,14 @@
     </div>
     <div class="form-tips" id="node-tip">Tip: Leave title blank to set using <b>msg.topic</b>.<br/>
     Leave device blank to send to all devices, or to set using <b>msg.device</b>.<br/>
-    Leave priority blank to set using <b>msg.priority</b>. Supports priorities 2, 1, 0, -1, and -2.</div>
+    Leave priority blank to set using <b>msg.priority</b>. Supports priorities 2, 1, 0, -1, and -2.<br/>
+    Leave sound blank to use the default, or set using <b>msg.sound</b>.</div>
 </script>
 
 <script type="text/x-red" data-help-name="pushover">
     <p>Uses Pushover to push the <b>msg.payload</b> to a device that has the Pushover app installed.</p>
-    <p>Optionally uses <b>msg.topic</b> to set the title, <b>msg.device</b> to set the device, and <b>msg.priority</b>
-    to set the priority, if not already set in the properties.</p>
+    <p>Optionally uses <b>msg.topic</b> to set the title, <b>msg.device</b> to set the device, <b>msg.priority</b>
+    to set the priority, and <b>msg.sound</b> to set a named sound, if not already set in the properties.</p>
     <p>The User-key and API-token are stored in a separate credentials file.</p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
@@ -60,7 +89,8 @@
             name: {value:""},
             device: {value:""},
             title: {value:""},
-            priority: {value:0}
+            priority: {value:0},
+            sound: {value:""}
         },
         credentials: {
             deviceid: {type:"text"},
