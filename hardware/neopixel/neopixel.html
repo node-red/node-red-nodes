@@ -1,0 +1,88 @@
+<!--
+  Copyright 2016 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rpi-neopixels">
+<div class="form-row">
+    <label for="node-input-pixels"><i class="fa fa-sun-o"></i> LEDs</label>
+    <input type="text" id="node-input-pixels" placeholder="number" style="width:60px;"> in the string
+</div>
+<div class="form-row">
+    <label for="node-input-bgnd"><i class="fa fa-picture-o"></i> Background</label>
+    <input type="text" id="node-input-bgnd" placeholder="HTML colour name or rrr,ggg,bbb">
+</div>
+<div class="form-row">
+    <label for="node-input-fgnd"><i class="fa fa-picture-o"></i> Foreground</label>
+    <input type="text" id="node-input-fgnd" placeholder="HTML colour name or rrr,ggg,bbb">
+</div>
+<div class="form-row">
+    <label for="node-input-mode"><i class="fa fa-cogs"></i> Mode</label>
+    <select id="node-input-mode" style="width:73%">
+        <option value="pcent">Percent of length</option>
+        <option value="pixels">Number of pixels</option>
+    </select>
+</div>
+<div class="form-row">
+    <label for="node-input-wipe"><i class="fa fa-clock-o"></i> Wipe time</label>
+    <input type="text" id="node-input-wipe" placeholder="number" style="width:60px;"> mS
+</div>
+<br/>
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-neopixels">
+    <p>Raspberry Pi node to drive a string of neopixel or ws2812 LEDs.</p>
+    <p>Defaults to a bar chart style mode using configured foreground and background colours.
+    It can accept a number in <b>msg.payload</b> that can be either the number of pixels, or a percentage of the total length.</p>
+    <p>If you want to change the foregound colour, you can send a CSV of <i>html colour,length</i>.</p>
+    <p>To set the background just send an <i>html colour</i> name.
+    <a href="http://html-color-codes.info/color-names/" target="_top">Here
+    is a list</a> of html colour names.<p>
+    <p>The <i>nth</i> pixel is set by <b>msg.payload</b> with a CSV string <i>n,r,g,b</i>
+    <!-- <p>The whole strip is set by <b>msg.payload</b> with a CSV string <i>r,g,b</i> -->
+    <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <b>msg.payload</b>
+    with a CSV string <i>x,y,r,g,b</i>
+    <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
+    this may conflict with audio playback.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-neopixels',{
+        category: 'Raspberry Pi',
+        label: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pixels: { value:"", required:true, validate:RED.validators.number() },
+            bgnd: { value:"" },
+            fgnd: { value:"" },
+            wipe: { value:"40", required:true, validate:RED.validators.number() },
+            mode: { value:"pcent" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||this.pixels+" neopixels";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
