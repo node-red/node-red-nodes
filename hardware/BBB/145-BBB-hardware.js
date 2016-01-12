@@ -25,20 +25,20 @@ module.exports = function (RED) {
     var usrLEDs = ["USR0", "USR1", "USR2", "USR3"];
     // Load the hardware library and set up polymorphic functions to suit it. Prefer
     // octalbonescript (faster & less buggy) but drop back to bonescript if not available
-	bonescript = require("octalbonescript");
-	adjustName = function (pin) {
-		if (pin === "P8_7") {
-			pin = "P8_07";
-		} else if (pin === "P8_8") {
-			pin = "P8_08";
-		} else if (pin === "P8_9") {
-			pin = "P8_09";
-		}
-		return pin;
-	};
-	setPinMode = function (pin, direction, callback) {
-		bonescript.pinMode(pin, direction, callback);
-	}
+    bonescript = require("octalbonescript");
+    adjustName = function (pin) {
+        if (pin === "P8_7") {
+            pin = "P8_07";
+        } else if (pin === "P8_8") {
+            pin = "P8_08";
+        } else if (pin === "P8_9") {
+            pin = "P8_09";
+        }
+        return pin;
+    };
+    setPinMode = function (pin, direction, callback) {
+        bonescript.pinMode(pin, direction, callback);
+    }
 
     // Node constructor for bbb-analogue-in
     function AnalogueInputNode(n) {
@@ -65,7 +65,7 @@ module.exports = function (RED) {
         // measurements, then divides the total number, applies output scaling and
         // sends the result
         var analogReadCallback = function (err, x) {
-            sum = sum + x.value;
+            sum = sum + Number(x);
             count = count - 1;
             if (count > 0) {
                 bonescript.analogRead(node._pin, analogReadCallback);
@@ -404,9 +404,9 @@ module.exports = function (RED) {
                 }
             }
             bonescript.digitalWrite(node._pin, newState ? 1 : 0, function() {
-				node.send({topic: node.topic, payload: newState});
-				node.currentState = newState;
-			});
+                node.send({topic: node.topic, payload: newState});
+                node.currentState = newState;
+            });
         };
 
         // If we have a valid pin, set it as an output and set the default state
@@ -416,7 +416,7 @@ module.exports = function (RED) {
             process.nextTick(function () {
                 setPinMode(node._pin, bonescript.OUTPUT, function (response, pin) {
                     if (response) {
-						node.error("Unable to set " + pin + " as output: " + response.err);
+                        node.error("Unable to set " + pin + " as output: " + response.err);
                     } else {
                         node.on("input", inputCallback);
                         setTimeout(function () {
@@ -465,15 +465,15 @@ module.exports = function (RED) {
                     if (node.pulseTimer === null) {
                         node.pulseTimer = setTimeout(endPulseCallback, time);
                         bonescript.digitalWrite(node._pin, node.pulseState, function() {
-							node.send({topic: node.topic, payload: node.pulseState});
-						});
+                            node.send({topic: node.topic, payload: node.pulseState});
+                        });
                     }
                 } else {
                     if (node.pulseTimer !== null) {
                         clearTimeout(node.pulseTimer);
                     } else {
                         bonescript.digitalWrite(node._pin, node.pulseState, function() {
-							node.send({topic: node.topic, payload: node.pulseState});
+                            node.send({topic: node.topic, payload: node.pulseState});
                         });
                     }
                     node.pulseTimer = setTimeout(endPulseCallback, time);
@@ -485,7 +485,7 @@ module.exports = function (RED) {
         var endPulseCallback = function () {
             node.pulseTimer = null;
             bonescript.digitalWrite(node._pin, node.defaultState, function() {
-				node.send({topic: node.topic, payload: node.defaultState});
+                node.send({topic: node.topic, payload: node.defaultState});
             });
         };
 
