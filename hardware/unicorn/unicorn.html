@@ -37,7 +37,8 @@
     <p>A pixel is set by <b>msg.payload</b> with a CSV string <i>x,y,r,g,b</i> .
     If x or y are set to * then the complete row or column can be set.</p>
     <p>The background can be set to a colour by setting msg.payload to an r,g,b triple.</p>
-    <p>Any msg with a <b>msg.topic</b> identifies a 'sprite' pixel, which can then be moved independently.</p>
+    <p>Any msg with a <b>msg.topic</b> identifies a 'sprite' pixel, which can then
+    be moved independently. A 'sprite' can be a single pixel or a complete row.</p>
     <p>Setting msg.payload to 0 will delete the sprite from the list.</p>
     <p>Setting msg.payload to "CLS" will clear the display to off and delete any sprites.</p>
     <p>Setting msg.payload to "DEL" will delete any sprites, and leave the background.</p>
