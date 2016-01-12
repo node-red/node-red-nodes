@@ -32,6 +32,8 @@
     <select id="node-input-mode" style="width:73%">
         <option value="pcent">Percent of length</option>
         <option value="pixels">Number of pixels</option>
+        <option value="shiftu">Add pixel to start</option>
+        <option value="shiftd">Add pixel to end</option>
     </select>
 </div>
 <div class="form-row">
@@ -53,6 +55,7 @@
     <p>To set the background just send an <i>html colour</i> name.
     <a href="http://html-color-codes.info/color-names/" target="_top">Here
     is a list</a> of html colour names.<p>
+    <p>You can also select shift modes where a single colour pixel is added to either the start or the end of the strip.</p>
     <p>The <i>nth</i> pixel is set by <b>msg.payload</b> with a CSV string <i>n,r,g,b</i>
     <!-- <p>The whole strip is set by <b>msg.payload</b> with a CSV string <i>r,g,b</i> -->
     <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <b>msg.payload</b>

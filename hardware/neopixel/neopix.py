@@ -32,6 +32,13 @@ if sys.version_info >= (3,0):
 
 LED_COUNT = int(sys.argv[1])
 WAIT_MS = int(sys.argv[2])
+MODE = sys.argv[3]
+
+def getRGBfromI(RGBint):
+    blue =  RGBint & 255
+    green = (RGBint >> 8) & 255
+    red =   (RGBint >> 16) & 255
+    return red, green, blue
 
 # Define functions which animate LEDs in various ways.
 def setPixel(strip, i, color):
@@ -52,6 +59,24 @@ def colorWipe(strip, color, wait_ms=30):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
+
+def shiftUp(strip, color, wait_ms=30):
+    """Shift all pixels one way."""
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(LED_COUNT-i, strip.getPixelColor(LED_COUNT-i-1))
+        strip.show()
+        time.sleep(wait_ms/1000.0)
+    strip.setPixelColor(0,color)
+    strip.show()
+
+def shiftDown(strip, color, wait_ms=30):
+    """Shift all pixels the other way."""
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, strip.getPixelColor(i+1))
+        strip.show()
+        time.sleep(wait_ms/1000.0)
+    strip.setPixelColor(LED_COUNT-1,color)
+    strip.show()
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""
@@ -103,12 +128,18 @@ if __name__ == '__main__':
             data = raw_input()
             bits = data.split(',')
             if len(bits) == 3:
-                colorWipe(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
-            if len(bits) == 4:
+                if MODE == "shiftu":
+                    shiftUp(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+                elif MODE == "shiftd":
+                    shiftDown(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+                else:
+                    colorWipe(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+            if (MODE[0] == 'p' and len(bits) == 4):
                 setPixel(strip, int(bits[0]), Color(int(bits[1]), int(bits[2]), int(bits[3]) ))
-            if len(bits) == 5:
+            if (MODE[0] == 'p' and len(bits) == 5):
                 setPixels(strip, int(bits[0]), int(bits[1]), Color(int(bits[2]), int(bits[3]), int(bits[4]) ), WAIT_MS)
         except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
             sys.exit(0)
         except Exception as ex:
             print "bad data: "+data
+            print ex

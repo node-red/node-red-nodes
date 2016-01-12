@@ -94,7 +94,7 @@ module.exports = function(RED) {
             }
         }
 
-        node.child = spawn(piCommand, [node.pixels, node.wipe]);
+        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
         node.on("input", inputlistener);
