@@ -65,7 +65,7 @@ module.exports = function (RED) {
         // measurements, then divides the total number, applies output scaling and
         // sends the result
         var analogReadCallback = function (err, x) {
-            sum = sum + x.value;
+            sum = sum + Number(x);
             count = count - 1;
             if (count > 0) {
                 bonescript.analogRead(node._pin, analogReadCallback);
