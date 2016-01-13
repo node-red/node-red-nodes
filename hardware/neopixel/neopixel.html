@@ -30,8 +30,10 @@
 <div class="form-row">
     <label for="node-input-mode"><i class="fa fa-cogs"></i> Mode</label>
     <select id="node-input-mode" style="width:73%">
-        <option value="pcent">Percent of length</option>
-        <option value="pixels">Number of pixels</option>
+        <option value="pcent">Bar - Percent of length</option>
+        <option value="pixels">Bar - Number of pixels</option>
+        <option value="pcentneedle">Needle - Percent of length</option>
+        <option value="pixelsneedle">Needle - Number of pixels</option>
         <option value="shiftu">Add pixel to start</option>
         <option value="shiftd">Add pixel to end</option>
     </select>
@@ -50,7 +52,9 @@
 <script type="text/x-red" data-help-name="rpi-neopixels">
     <p>Raspberry Pi node to drive a string of neopixel or ws2812 LEDs.</p>
     <p>Defaults to a bar chart style mode using configured foreground and background colours.
-    It can accept a number in <b>msg.payload</b> that can be either the number of pixels, or a percentage of the total length.</p>
+    It can also display a needle (single pixel) type gauge.</p>
+    <p>It can accept a number in <b>msg.payload</b> that can be either the
+    number of pixels, or a percentage of the total length.</p>
     <p>If you want to change the foregound colour, you can send a CSV of <i>html colour,length</i>.</p>
     <p>To set the background just send an <i>html colour</i> name.
     <a href="http://html-color-codes.info/color-names/" target="_top">Here

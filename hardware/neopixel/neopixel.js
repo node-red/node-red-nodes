@@ -49,6 +49,7 @@ module.exports = function(RED) {
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
         var node = this;
+        var needle = "255,255,255";
         var p1 = /^\#[A-Fa-f0-9]{6}$/
         var p2 = /^[0-9]+,[0-9]+,[0-9]+$/
         var p3 = /^[0-9]+,[0-9]+,[0-9]+,[0-9]+$/
@@ -62,11 +63,17 @@ module.exports = function(RED) {
                     if (parts.length === 2) { // it's a colour and length
                         if (isNaN(parseInt(parts[1]))) { parts = parts.reverse(); }
                         if (colors.getRGB(parts[0])) {
-                            node.fgnd = colors.getRGB(parts[0]);
                             var l = parts[1];
-                            if (node.mode === "pcent") { l = parseInt(l / 100 * node.pixels + 0.5); }
+                            if (node.mode.indexOf("pcent") >= 0) { l = parseInt(l / 100 * node.pixels + 0.5); }
                             l = l - 1;
-                            pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            if (node.mode.indexOf("need") >= 0) {
+                                needle = colors.getRGB(parts[0]);
+                                pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            } else {
+                                node.fgnd = colors.getRGB(parts[0]);
+                                pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            }
+                            console.log(pay);
                         }
                         else { node.warn("Invalid payload : "+pay); return; }
                     }
@@ -80,9 +87,13 @@ module.exports = function(RED) {
                         }
                         else { // it's a single number so just draw bar
                             var l = pay;
-                            if (node.mode === "pcent") { l = parseInt(l / 100 * node.pixels + 0.5); }
+                            if (node.mode.indexOf("pcent") >= 0) { l = parseInt(l / 100 * node.pixels + 0.5); }
                             l = l - 1;
-                            pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            if (node.mode.indexOf("need") >= 0) {
+                                pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            } else {
+                                pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                            }
                         }
                     }
                 }
@@ -136,7 +147,9 @@ module.exports = function(RED) {
             if (node.bgnd.split(',').length === 1) {
                 node.bgnd = colors.getRGB(node.bgnd);
             }
-            node.child.stdin.write(node.bgnd+"\n");
+            if (node.mode.indexOf("shift") === -1) {
+                node.child.stdin.write(node.bgnd+"\n");
+            }
         }
 
         if (node.fgnd) {

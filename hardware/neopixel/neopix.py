@@ -62,21 +62,29 @@ def colorWipe(strip, color, wait_ms=30):
 
 def shiftUp(strip, color, wait_ms=30):
     """Shift all pixels one way."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(LED_COUNT-i, strip.getPixelColor(LED_COUNT-i-1))
+    oldcolour = strip.getPixelColor(0)
+    strip.setPixelColor(0, color)
+    strip.show()
+    time.sleep(wait_ms/1000.0)
+    for i in range(1,LED_COUNT):
+        newcolour = oldcolour
+        oldcolour = strip.getPixelColor(i)
+        strip.setPixelColor(i, newcolour)
         strip.show()
         time.sleep(wait_ms/1000.0)
-    strip.setPixelColor(0,color)
-    strip.show()
 
 def shiftDown(strip, color, wait_ms=30):
     """Shift all pixels the other way."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, strip.getPixelColor(i+1))
+    oldcolour = strip.getPixelColor(LED_COUNT-1)
+    strip.setPixelColor(LED_COUNT-1, color)
+    strip.show()
+    time.sleep(wait_ms/1000.0)
+    for i in range(LED_COUNT-2,-1,-1):
+        newcolour = oldcolour
+        oldcolour = strip.getPixelColor(i)
+        strip.setPixelColor(i, newcolour)
         strip.show()
         time.sleep(wait_ms/1000.0)
-    strip.setPixelColor(LED_COUNT-1,color)
-    strip.show()
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""

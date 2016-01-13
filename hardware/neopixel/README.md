@@ -29,6 +29,7 @@ Usage
 -----
 
 Defaults to a bar chart style mode using configured foreground and background colours.
+It can also display a needle (single pixel) type gauge.
 
 It can accept a number in **msg.payload** that can be either the number of pixels,
 or a percentage of the total length.
