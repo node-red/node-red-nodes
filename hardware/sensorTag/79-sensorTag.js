@@ -35,13 +35,22 @@ module.exports = function(RED) {
         var node = this;
 
         if ( typeof node.stag === "undefined") {
+            node.status({fill:"blue", shape:"dot", text:"discovering..."});
+
             SensorTag.discover(function(sensorTag) {
+                node.status({fill:"blue", shape:"dot", text:"connecting"});
                 node.stag = sensorTag;
-                //console.log(sensorTag);
-                node.log("connected " + sensorTag._peripheral.uuid);
+                node.log("found sensor tag: " + sensorTag._peripheral.uuid);
                 node.topic = node.topic || sensorTag._peripheral.uuid;
                 sensorTag.connect(function() {
-                    //console.log("connected");
+                    node.log("connected to sensor tag: " + sensorTag._peripheral.uuid);
+                    node.status({fill:"green", shape:"dot", text:"connected"});
+
+                    sensorTag.on('disconnect', function() {
+                        node.status({fill:"red", shape:"ring", text:"disconnected"});
+                        node.log("disconnected ",node.uuid);
+                    });
+
                     sensorTag.discoverServicesAndCharacteristics(function() {
                         sensorTag.enableIrTemperature(function() {});
                         sensorTag.on('irTemperatureChange',
@@ -106,7 +115,7 @@ module.exports = function(RED) {
 
         this.on("close", function() {
             if (node.stag) {
-                node.stag.disconnect(function() { node.log("disconnected ",node.uuid); });
+                node.stag.disconnect(function() {});
             }
         });
     }
