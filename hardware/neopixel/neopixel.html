@@ -66,6 +66,7 @@
     with a CSV string <i>x,y,r,g,b</i>
     <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
     this may conflict with audio playback.</p>
+    <p align="right"><a href="http://flows.nodered.org/node/node-red-node-pi-neopixel#usage">More info&nbsp;&nbsp;</a></p>
 </script>
 
 <script type="text/javascript">
@@ -93,7 +94,6 @@
         },
         oneditprepare: function() {
             var setstate = function () {
-                console.log($('#node-input-mode').val());
                 if ($('#node-input-mode').val().indexOf("shift") !== -1) {
                     $("#bgcol").hide();
                     $("#fgcol").hide();
