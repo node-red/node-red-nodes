@@ -42,13 +42,16 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             var titl = this.title||msg.topic||"Node-RED";
             var pri = msg.priority||this.priority;
+            var url = this.url||msg.url;
+            var options = { priority:pri };
+            if (url) { options.url = url };
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
             else { msg.payload = msg.payload.toString(); }
             if (node.pushkey) {
                 try {
-                    node.prowl.push(msg.payload, titl, { priority: pri }, function(err, remaining) {
+                    node.prowl.push(msg.payload, titl, options, function(err, remaining) {
                         if (err) { node.error(err); }
                         node.log( remaining + ' calls to Prowl api during current hour.' );
                     });

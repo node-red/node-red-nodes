@@ -18,6 +18,6 @@ Uses Prowl to push the **msg.payload** to an Apple device that has the prowl app
 
 Optionally uses **msg.topic** to set the title. You can also set **msg.priority** to confgure the urgency from -2 (low), through 0 (normal) to 2 (urgent).
 
-The API Key is stored in a separate credentials file.
+You may use **msg.url** to set a url to redirect the user to on receipt of the message if you don't set one in the edit dialogue.
 
 Uses Prowl. See <a href="https://www.prowlapp.com" target="_new">this link</a> for more details.
