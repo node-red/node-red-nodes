@@ -246,7 +246,7 @@ module.exports = function (RED) {
             bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
                 setPinMode(node._pin, bonescript.INPUT, function (response, pin) {
-                    if (response.value === true) {
+                    if (response.hasOwnProperty("value") && response.value === true) {
                         bonescript.digitalRead(node._pin, function (err, x) {
                             // Initialise the currentState and lastActiveTime variables based on the value read
                             node.currentState = Number(x.value);
