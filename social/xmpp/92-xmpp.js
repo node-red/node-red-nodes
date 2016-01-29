@@ -163,7 +163,15 @@ module.exports = function(RED) {
         });
 
         xmpp.on('error', function(err) {
-            node.error(err.stanza.name,err);
+            if (RED.settings.verbose) { node.log(err); }
+            if (err.hasOwnProperty("stanza")) {
+                if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
+                else { node.error(err.stanza.name,err); }
+            }
+            else {
+                if (err.errno === "ETIMEDOUT") { node.error("Timeout connecting to server",err); }
+                else { node.error(err.errno,err); }
+            }
             node.status({fill:"red",shape:"ring",text:"error"});
         });
 
@@ -225,5 +233,4 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("xmpp out",XmppOutNode);
-
 }
