@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-nodes",
-    "version"      : "0.0.1",
+    "version"      : "0.0.2",
     "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage"     : "http://nodered.org",
     "license"      : "Apache-2.0",
@@ -10,7 +10,8 @@
     },
     "contributors": [
         {"name": "Dave Conway-Jones"},
-        {"name": "Nick O'Leary"}
+        {"name": "Nick O'Leary"},
+        {"name": "Ben Hardill"}
     ],
     "keywords": [
         "Node-RED", "nodes", "iot", "ibm", "flow"
@@ -34,6 +35,6 @@
         "imap" : "0.8.14"
     },
     "engines": {
-        "node": ">=0.8"
+        "node": ">=0.10"
     }
 }
