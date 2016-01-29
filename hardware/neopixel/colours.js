@@ -169,15 +169,22 @@ var colours = {
 
 var p1 = /^\#[A-Fa-f0-9]{6}$/
 
-module.exports.getRGB = function(col) {
+module.exports.getRGB = function(col,rgb) {
     col = col.toString().toLowerCase();
     if (col in colours) {
         col = colours[col];
     }
     if (p1.test(col)) {
-        r = parseInt(col.slice(1,3),16);
-        g = parseInt(col.slice(3,5),16);
-        b = parseInt(col.slice(5),16);
+        if (rgb === "grb") {
+            g = parseInt(col.slice(1,3),16);
+            r = parseInt(col.slice(3,5),16);
+            b = parseInt(col.slice(5),16);
+        }
+        else {
+            r = parseInt(col.slice(1,3),16);
+            g = parseInt(col.slice(3,5),16);
+            b = parseInt(col.slice(5),16);
+        }
         return r+","+g+","+b;
     }
     else {

@@ -17,7 +17,7 @@
 module.exports = function(RED) {
     "use strict";
     var spawn = require('child_process').spawn;
-    var fs =  require('fs');
+    var fs = require('fs');
     var colors = require('./colours.js');
 
     var piCommand = __dirname+'/neopix';
@@ -46,6 +46,7 @@ module.exports = function(RED) {
         this.bgnd = n.bgnd || "0,0,0";
         this.fgnd = n.fgnd || "128,128,128";
         this.mode = n.mode || "pcent";
+        this.rgb = n.rgb || "rgb";
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
         var node = this;
@@ -62,25 +63,24 @@ module.exports = function(RED) {
                 if (parts.length <= 2) {
                     if (parts.length === 2) { // it's a colour and length
                         if (isNaN(parseInt(parts[1]))) { parts = parts.reverse(); }
-                        if (colors.getRGB(parts[0])) {
+                        if (colors.getRGB(parts[0],node.rgb)) {
                             var l = parts[1];
                             if (node.mode.indexOf("pcent") >= 0) { l = parseInt(l / 100 * node.pixels + 0.5); }
                             l = l - 1;
                             if (node.mode.indexOf("need") >= 0) {
-                                needle = colors.getRGB(parts[0]);
+                                needle = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
                             } else {
-                                node.fgnd = colors.getRGB(parts[0]);
+                                node.fgnd = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
-                            console.log(pay);
                         }
-                        else { node.warn("Invalid payload : "+pay); return; }
+                        else { node.warn("Invalid colour : "+pay); return; }
                     }
                     else {
                         if (isNaN(pay)) { // it's a single colour word so set background
-                            if (colors.getRGB(pay)) {
-                                node.bgnd = colors.getRGB(pay);
+                            if (colors.getRGB(pay,node.rgb)) {
+                                node.bgnd = colors.getRGB(pay,node.rgb);
                                 pay = node.bgnd;
                             }
                             else { node.warn("Invalid payload : "+pay); return; }
@@ -96,10 +96,17 @@ module.exports = function(RED) {
                             }
                         }
                     }
+                    node.child.stdin.write(pay+"\n");
+                    return;
                 }
-                if ((parts.length <= 2) || p2.test(pay) || p3.test(pay) || p4.test(pay) ) {
-                    if (parts.length === 3) { node.bgnd = pay; }
-                    node.child.stdin.write(pay+"\n"); // handle 3 parts, 4 part and 5 parts in the python
+                if ( p2.test(pay) || p3.test(pay) || p4.test(pay) ) {
+                    if ((parts.length > 2) && (node.rgb === "grb")) { // swap r and g values
+                        var tmp = parts[parts.length-3];
+                        parts[parts.length-3] = parts[parts.length-2];
+                        parts[parts.length-2] = tmp;
+                    }
+                    if (parts.length === 3) { node.bgnd = parts.join(","); }
+                    node.child.stdin.write(parts.join(",")+"\n"); // handle 3 parts, 4 part and 5 parts in the python
                 }
                 else { node.warn("Invalid payload : "+pay); }
             }
@@ -145,7 +152,7 @@ module.exports = function(RED) {
 
         if (node.bgnd) {
             if (node.bgnd.split(',').length === 1) {
-                node.bgnd = colors.getRGB(node.bgnd);
+                node.bgnd = colors.getRGB(node.bgnd,node.rgb);
             }
             if (node.mode.indexOf("shift") === -1) {
                 node.child.stdin.write(node.bgnd+"\n");
@@ -154,7 +161,7 @@ module.exports = function(RED) {
 
         if (node.fgnd) {
             if (node.fgnd.split(',').length === 1) {
-                node.fgnd = colors.getRGB(node.fgnd);
+                node.fgnd = colors.getRGB(node.fgnd,node.rgb);
             }
         }
     }

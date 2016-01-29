@@ -40,7 +40,11 @@
 </div>
 <div class="form-row">
     <label for="node-input-wipe"><i class="fa fa-clock-o"></i> Wipe time</label>
-    <input type="text" id="node-input-wipe" placeholder="number" style="width:60px;"> mS
+    <input type="text" id="node-input-wipe" placeholder="number" style="width:60px;"> mS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pixel order
+    <select id="node-input-rgb" style="width:80px">
+        <option value="rgb">RGB</option>
+        <option value="grb">GRB</option>
+    </select>
 </div>
 <br/>
 <div class="form-row">
@@ -80,7 +84,8 @@
             bgnd: { value:"" },
             fgnd: { value:"" },
             wipe: { value:"40", required:true, validate:RED.validators.number() },
-            mode: { value:"pcent" }
+            mode: { value:"pcent" },
+            rgb: { value:"rgb" }
         },
         inputs:1,
         outputs:0,
