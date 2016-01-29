@@ -55,7 +55,7 @@ module.exports = function(RED) {
 
         var xmpp = new XMPP.SimpleXMPP();
 
-        xmpp.on('online', function() {
+        xmpp.on('online', function(data) {
             node.log('connected to '+node.host+":"+node.port);
             node.status({fill:"green",shape:"dot",text:"connected"});
             //xmpp.setPresence('online', node.nick+' online');
@@ -87,12 +87,21 @@ module.exports = function(RED) {
         });
 
         xmpp.on('error', function(err) {
-            console.error("error",err);
+            if (RED.settings.verbose) { node.log(err); }
+            if (err.hasOwnProperty("stanza")) {
+                if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
+                else { node.error(err.stanza.name,err); }
+            }
+            else {
+                if (err.errno === "ETIMEDOUT") { node.error("Timeout connecting to server",err); }
+                else { node.error(err.errno,err); }
+            }
+            node.status({fill:"red",shape:"ring",text:"error"});
         });
 
         xmpp.on('close', function() {
             node.log('connection closed');
-            node.status({fill:"red",shape:"ring",text:"not connected"});
+            //node.status({fill:"grey",shape:"ring",text:"not connected"});
         });
 
         xmpp.on('subscribe', function(from) {
@@ -101,6 +110,7 @@ module.exports = function(RED) {
 
         // Now actually make the connection
         try {
+            node.status({fill:"grey",shape:"dot",text:"connecting"});
             xmpp.connect({
                 jid : node.userid,
                 password : node.password,
@@ -119,6 +129,7 @@ module.exports = function(RED) {
             xmpp.disconnect();
             if (xmpp.conn) { xmpp.conn.end(); }
             xmpp = null;
+            node.status({});
             done();
         });
     }
@@ -142,9 +153,9 @@ module.exports = function(RED) {
 
         var xmpp = new XMPP.SimpleXMPP();
 
-        xmpp.on('online', function() {
-            node.log('connected to '+node.host+":"+node.port);
+        xmpp.on('online', function(data) {
             node.status({fill:"green",shape:"dot",text:"connected"});
+            node.log('connected to '+node.host+":"+node.port);
             xmpp.setPresence('online', node.nick+' online');
             if (node.join) {
                 xmpp.join(node.to+'/'+node.nick);
@@ -152,12 +163,13 @@ module.exports = function(RED) {
         });
 
         xmpp.on('error', function(err) {
-            console.error("error",err);
+            node.error(err.stanza.name,err);
+            node.status({fill:"red",shape:"ring",text:"error"});
         });
 
         xmpp.on('close', function() {
             node.log('connection closed');
-            node.status({fill:"red",shape:"ring",text:"not connected"});
+            //node.status({fill:"grey",shape:"ring",text:"not connected"});
         });
 
         xmpp.on('subscribe', function(from) {
@@ -166,6 +178,7 @@ module.exports = function(RED) {
 
         // Now actually make the connection
         try {
+            node.status({fill:"grey",shape:"dot",text:"connecting"});
             xmpp.connect({
                 jid : node.userid,
                 password : node.password,
@@ -202,11 +215,13 @@ module.exports = function(RED) {
             }
         });
 
-        node.on("close", function() {
+        node.on("close", function(done) {
             xmpp.setPresence('offline');
             xmpp.disconnect();
             if (xmpp.conn) { xmpp.conn.end(); }
             xmpp = null;
+            node.status({});
+            done();
         });
     }
     RED.nodes.registerType("xmpp out",XmppOutNode);
