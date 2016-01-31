@@ -125,7 +125,7 @@ module.exports = function(RED) {
         }
 
         node.on("close", function(done) {
-            //xmpp.setPresence('offline');
+            xmpp.setPresence('offline');
             xmpp.disconnect();
             if (xmpp.conn) { xmpp.conn.end(); }
             xmpp = null;
