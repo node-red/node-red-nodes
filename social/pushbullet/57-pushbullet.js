@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2015 IBM Corp.
+ * Copyright 2013,2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ module.exports = function(RED) {
         this._inputNodes = [];
         this.initialised = false;
     }
-    
+
     RED.nodes.registerType("pushbullet-config", PushbulletConfig, {
         credentials: {
             apikey: {type: "password"}
@@ -123,6 +123,8 @@ module.exports = function(RED) {
         var self = this;
         if (this.pusher) {
             var stream = this.pusher.stream();
+            var closing = false;
+            var tout;
             stream.on('message', function(res) {
                 if (res.type === 'tickle') {
                     self.handleTickle(res);
@@ -136,21 +138,31 @@ module.exports = function(RED) {
             });
             stream.on('close', function() {
                 self.emitter.emit('stream_disconnected');
+                if (!closing) {
+                    tout = setTimeout(function() {
+                        stream.connect();
+                    },15000);
+                }
             });
             stream.on('error', function(err) {
                 self.emitter.emit('stream_error', err);
+                if (!closing) {
+                    tout = setTimeout(function() {
+                        stream.connect();
+                    },15000);
+                }
             });
             stream.connect();
             this.stream = stream;
             this.on("close",function() {
+                if (tout) { clearTimeout(tout); }
+                closing = true;
                 try {
                     this.stream.close();
                 } catch(err) {
                     // Ignore error if not connected
                 }
             });
-            
-            
         }
     };
 
@@ -531,13 +543,13 @@ module.exports = function(RED) {
                 self.error(err);
             });
             config.onConfig('stream_connected', function() {
-                self.status({fill: 'green', shape: 'ring', text: 'connected'});
+                self.status({fill:'green', shape:'dot', text:'connected'});
             });
             config.onConfig('stream_disconnected', function(err) {
-                self.status({fill: 'red', shape: 'ring', text: 'disconnected'});
+                self.status({fill:'grey', shape:'ring', text:'disconnected'});
             });
             config.onConfig('stream_error', function(err) {
-                self.status({fill: 'red', shape: 'ring', text: 'error, see log'});
+                self.status({fill:'red', shape:'ring', text:'error, see log'});
                 self.error(err);
             });
         }
