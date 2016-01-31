@@ -138,13 +138,13 @@ module.exports = function(RED) {
                         }
                     }
                     if (node.state === "PWM") {
-                        msg.payload = msg.payload * 1;
+                        msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 255)) {
                             node.board.analogWrite(node.pin, msg.payload);
                         }
                     }
                     if (node.state === "SERVO") {
-                        msg.payload = msg.payload * 1;
+                        msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 180)) {
                             node.board.servoWrite(node.pin, msg.payload);
                         }
