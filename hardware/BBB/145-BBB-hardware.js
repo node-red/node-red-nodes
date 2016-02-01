@@ -36,8 +36,8 @@ module.exports = function (RED) {
         }
         return pin;
     };
-    setPinMode = function (pin, direction, callback) {
-        bonescript.pinMode(pin, direction, callback);
+    setPinMode = function (pin, mode, callback) {
+        bonescript.pinMode(pin, mode, callback);
     }
 
     // Node constructor for bbb-analogue-in
@@ -246,7 +246,7 @@ module.exports = function (RED) {
             bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
                 setPinMode(node._pin, bonescript.INPUT, function (response, pin) {
-                    if (response.hasOwnProperty("value") && response.value === true) {
+                    if (!response) {
                         bonescript.digitalRead(node._pin, function (err, x) {
                             // Initialise the currentState and lastActiveTime variables based on the value read
                             node.currentState = Number(x.value);
@@ -255,14 +255,14 @@ module.exports = function (RED) {
                             }
                             // Attempt to attach a change-of-state interrupt handler to the pin. If we succeed,
                             // the input event and interval handlers will be installed by interruptCallback
-                            bonescript.attachInterrupt(node._pin, true, bonescript.CHANGE, interruptCallback);
+                            bonescript.attachInterrupt(node._pin, bonescript.CHANGE, interruptCallback);
                             // Send an initial message with the pin state on the first output
                             setTimeout(function () {
                                 node.emit("input", {});
                             }, 50);
                         });
                     } else {
-                        node.error("Unable to set " + pin + " as input: " + response.err);
+                        node.error("Unable to set " + pin + " as input: " + response);
                     }
                 });
             });
@@ -342,7 +342,7 @@ module.exports = function (RED) {
             bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
                 setPinMode(node._pin, bonescript.INPUT, function (response, pin) {
-                    if (response.value === true) {
+                    if (!response) {
                         bonescript.digitalRead(node._pin, function (err, x) {
                             // Initialise the currentState based on the value read
                             node.currentState = Number(x.value);
@@ -357,10 +357,10 @@ module.exports = function (RED) {
                             }
                             // Attempt to attach the required interrupt handler to the pin. If we succeed,
                             // the input event and interval handlers will be installed by interruptCallback
-                            bonescript.attachInterrupt(node._pin, true, interruptType, interruptCallback)
+                            bonescript.attachInterrupt(node._pin, interruptType, interruptCallback)
                         });
                     } else {
-                        node.error("Unable to set " + pin + " as input: " + response.err);
+                        node.error("Unable to set " + pin + " as input: " + response);
                     }
                 });
             });
