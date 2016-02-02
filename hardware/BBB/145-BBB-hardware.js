@@ -111,7 +111,7 @@ module.exports = function (RED) {
             this.activeState = 1;
         }
         this.updateInterval = n.updateInterval*1000;    // How often to send totalActiveTime messages
-        this.debounce = n.debounce;                     // Enable switch contact debouncing algorithm
+        this.debounce = n.debounce || null;             // Enable switch contact debouncing algorithm
         if (n.outputOn === "rising") {
             this.activeEdges = [false, true];
         } else if (n.outputOn === "falling") {
@@ -140,7 +140,7 @@ module.exports = function (RED) {
         // Note: if x has an 'attached' field and no 'value' field, the callback is reporting
         // the success or failure of attaching the interrupt - we must handle this
         var interruptCallback = function (err, x) {
-            if (x.value === undefined) {
+            if (x === undefined) {
                 if (x.attached === true) {
                     node.interruptAttached = true;
                     node.on("input", inputCallback);
@@ -148,13 +148,13 @@ module.exports = function (RED) {
                 } else {
                     node.error("Failed to attach interrupt");
                 }
-            } else if (node.currentState !== Number(x.value)) {
+            } else if (node.currentState !== Number(x)) {
                 if (node.debounce) {
                     if (node.debouncing === false) {
                         node.debouncing = true;
                         node.debounceTimer = setTimeout(function () {
                             bonescript.digitalRead(node._pin, debounceCallback);
-                        }, 7);
+                        }, Number(node.debounce));
                     }
                 } else {
                     sendStateMessage(x);
@@ -168,7 +168,7 @@ module.exports = function (RED) {
         var debounceCallback = function (err, x) {
             node.debounceTimer = null;
             node.debouncing = false;
-            if (x.value !== undefined && node.currentState !== Number(x.value)) {
+            if (x !== undefined && node.currentState !== Number(x)) {
                 sendStateMessage(x);
             }
         };
@@ -177,7 +177,7 @@ module.exports = function (RED) {
         // have determined we have a 'genuine' change of state. Update the currentState and
         // ActiveTime variables, and send a message on the first output with the new state
         var sendStateMessage = function (x) {
-            node.currentState = Number(x.value);
+            node.currentState = Number(x);
             var now = Date.now();
             if (node.currentState === node.activeState) {
                 node.lastActiveTime = now;
@@ -249,7 +249,7 @@ module.exports = function (RED) {
                     if (!response) {
                         bonescript.digitalRead(node._pin, function (err, x) {
                             // Initialise the currentState and lastActiveTime variables based on the value read
-                            node.currentState = Number(x.value);
+                            node.currentState = Number(x);
                             if (node.currentState === node.activeState) {
                                 node.lastActiveTime = Date.now();
                             }
@@ -296,7 +296,7 @@ module.exports = function (RED) {
         // Note: if x has an 'attached' field and no 'value' field, the callback is reporting
         // the success or failure of attaching the interrupt - we must handle this
         var interruptCallback = function (x) {
-            if (x.value === undefined) {
+            if (x === undefined) {
                 if (x.attached === true) {
                     node.interruptAttached = true;
                     node.on("input", inputCallback);
@@ -345,7 +345,7 @@ module.exports = function (RED) {
                     if (!response) {
                         bonescript.digitalRead(node._pin, function (err, x) {
                             // Initialise the currentState based on the value read
-                            node.currentState = Number(x.value);
+                            node.currentState = Number(x);
                             // Attempt to attach an interrupt handler to the pin. If we succeed,
                             // set the input event and interval handlers
                             var interruptType;
