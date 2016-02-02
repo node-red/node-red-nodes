@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright 2015,2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ describe('rbe node', function() {
         });
     });
 
-    it('should only send output if payload changes', function(done) {
+    it('should only send output if payload changes (rbe)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -54,8 +54,14 @@ describe('rbe node', function() {
                     msg.should.have.a.property("payload", "a");
                     c+=1;
                 }
-                else {
+                else if (c === 1) {
                     msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload");
+                    msg.payload.should.have.a.property("b",1);
+                    msg.payload.should.have.a.property("c",2);
                     done();
                 }
             });
@@ -65,12 +71,14 @@ describe('rbe node', function() {
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"b"});
-            n1.emit("input", {payload:"b"});
+            n1.emit("input", {payload:{b:1,c:2}});
+            n1.emit("input", {payload:{c:2,b:1}});
+            n1.emit("input", {payload:{c:2,b:1}});
         });
     });
 
-    it('should only send output if more than x away from original value', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
+    it('should only send output if more than x away from original value (deadband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -100,8 +108,8 @@ describe('rbe node', function() {
         });
     });
 
-    it('should only send output if more than x% away from original value', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10%", wires:[["n2"]] },
+    it('should only send output if more than x% away from original value (deadband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10%", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -129,8 +137,8 @@ describe('rbe node', function() {
         });
     });
 
-    it('should warn if no number found in gap mode', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
+    it('should warn if no number found in deadband mode', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -154,6 +162,38 @@ describe('rbe node', function() {
                 done();
             },50);
             n1.emit("input", {payload:"banana"});
+        });
+    });
+
+
+    it('should not send output if more than x away from original value (narrowband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload","6 deg");
+                }
+                else {
+                    msg.should.have.a.property("payload", "5 deg");
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:40});
+            n1.emit("input", {payload:"6 deg"});
+            n1.emit("input", {payload:18});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:50});
+            n1.emit("input", {payload:"5 deg"});
         });
     });
 
