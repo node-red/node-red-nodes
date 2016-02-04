@@ -24,6 +24,8 @@ module.exports = function(RED) {
         this.serial = n.serial;
         if (!this.serial) { delete this.serial; }
         this.fade = Number(n.fade) || 500;
+        if (this.fade < 0) { this.fade = 0; }
+        if (this.fade > 60000) { this.fade = 60000; }
         var node = this;
 
         try {

@@ -22,7 +22,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-fade"><i class="fa fa-signal"></i> Fade (mS)</label>
-        <input type="text" id="node-input-fade" placeholder="500">
+        <input type="text" id="node-input-fade" placeholder="between 0 and 60,000 mS (1 min)">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -32,7 +32,7 @@
 
 <script type="text/x-red" data-help-name="blink1">
     <p>ThingM Blink1 output node.</p>
-    <p>Expects a <b>msg.payload</b> with either a three part csv string of 
+    <p>Expects a <b>msg.payload</b> with either a three part csv string of
     <i>r,g,b</i> or a hex colour <i>#rrggbb</i></p>
     <p>You can also use the <a href="http://www.cheerlights.com/control-cheerlights" target="_new">@cheerlights</a>
     colour names - red, green, blue, cyan, magenta, yellow, orange, pink,
