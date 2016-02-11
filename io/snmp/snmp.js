@@ -104,7 +104,7 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             var oids = node.oids || msg.oid;
             if (oids) {
-                msg.oids = oids;
+                msg.oid = oids;
                 node.session.table(oids, maxRepetitions, responseCb);
             }
             else {
