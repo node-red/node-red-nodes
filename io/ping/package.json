@@ -1,8 +1,9 @@
 {
     "name"          : "node-red-node-ping",
-    "version"       : "0.0.7",
+    "version"       : "0.0.9",
     "description"   : "A Node-RED node to ping a remote server, for use as a keep-alive check.",
     "dependencies"  : {
+        "net-ping":"1.1.*"
     },
     "repository" : {
         "type":"git",

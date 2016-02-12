@@ -39,7 +39,7 @@
 
 <script type="text/x-red" data-help-name="rbe">
     <p>Report by Exception node - only passes on data if it has changed.</p>
-    <p>The node can either block until the <b>msg.payload</b> is
+    <p>The node can either block until the <code>msg.payload</code> is
     different to the previous one - <b>rbe</b> mode. This works on numbers, strings, and simple objects.</p>
     <p>Or it can block until the value changes by a specified amount - <b>deadband</b> mode.</p>
     <p>In deadband mode the incoming payload must contain a parseable <i>number</i> and is
@@ -48,7 +48,7 @@
     <p>It can also ignore outlier values - <b>narrowband</b> mode.</p>
     <p>In narrowband mode the incoming payload is blocked if it is more than + or - the band gap
     away from the previous value. Useful for ignoring outliers from a faulty sensor for example.</p>
-    <p><b>Note:</b> This works on a per <b>msg.topic</b> basis. This means that a single rbe node can
+    <p><b>Note:</b> This works on a per <code>msg.topic</code> basis. This means that a single rbe node can
     handle multiple topics at the same time.</p>
 </script>
 

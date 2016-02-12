@@ -30,7 +30,7 @@
     <p>Can either <ul><li>wait for a "split" character (default \n). Also accepts hex notation (0x0a).</li>
     <li>Wait for a timeout in milliseconds for the first character received</li>
     <li>Wait to fill a fixed sized buffer</li></ul></p>
-    <p>It then outputs <b>msg.payload</b> as either a UTF8 ascii string or a binary Buffer object.</p>
+    <p>It then outputs <code>msg.payload</code> as either a UTF8 ascii string or a binary Buffer object.</p>
     <p>If no split character is specified, or a timeout or buffer size of 0, then a stream of single characters is sent - again either as ascii chars or size 1 binary buffers.</p>
 </script>
 
@@ -68,8 +68,9 @@
 
 <script type="text/x-red" data-help-name="serial out">
     <p>Provides a connection to an outbound serial port.</p>
-    <p>Only the <b>msg.payload</b> is sent.</p>
+    <p>Only the <code>msg.payload</code> is sent.</p>
     <p>Optionally the new line character used to split the input can be appended to every message sent out to the serial port.</p>
+    <p>Binary payloads can be sent by using a Buffer object.</p>
 </script>
 
 <script type="text/javascript">
