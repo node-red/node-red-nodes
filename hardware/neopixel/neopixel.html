@@ -57,16 +57,16 @@
     <p>Raspberry Pi node to drive a string of neopixel or ws2812 LEDs.</p>
     <p>Defaults to a bar chart style mode using configured foreground and background colours.
     It can also display a needle (single pixel) type gauge.</p>
-    <p>It can accept a number in <b>msg.payload</b> that can be either the
+    <p>It can accept a number in <code>msg.payload</code> that can be either the
     number of pixels, or a percentage of the total length.</p>
     <p>If you want to change the foregound colour, you can send a CSV of <i>html colour,length</i>.</p>
     <p>To set the background just send an <i>html colour</i> name.
     <a href="http://html-color-codes.info/color-names/" target="_top">Here
     is a list</a> of html colour names.<p>
     <p>You can also select shift modes where a single colour pixel is added to either the start or the end of the strip.</p>
-    <p>The <i>nth</i> pixel is set by <b>msg.payload</b> with a CSV string <i>n,r,g,b</i>
-    <!-- <p>The whole strip is set by <b>msg.payload</b> with a CSV string <i>r,g,b</i> -->
-    <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <b>msg.payload</b>
+    <p>The <i>nth</i> pixel is set by <code>msg.payload</code> with a CSV string <i>n,r,g,b</i>
+    <!-- <p>The whole strip is set by <code>msg.payload</code> with a CSV string <i>r,g,b</i> -->
+    <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <code>msg.payload</code>
     with a CSV string <i>x,y,r,g,b</i>
     <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
     this may conflict with audio playback.</p>

@@ -39,8 +39,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="rpi-pibrella in">
-    <p>Raspberry Pi Pibrella input node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
-    <p>The <b>msg.topic</b> is set to <i>pibrella/{the pin id}</i>, A, B, C, D or R</p>
+    <p>Raspberry Pi Pibrella input node. Generates a <code>msg.payload</code> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>The <code>msg.topic</code> is set to <i>pibrella/{the pin id}</i>, A, B, C, D or R</p>
     <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
 </script>
 
@@ -110,9 +110,10 @@
 
 <script type="text/x-red" data-help-name="rpi-pibrella out">
     <p>Raspberry Pi Pibrella output node. The Pibrella board must be fitted.</p>
-    <p>Will set the selected output high (on) or low (off) depending on the value passed in. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
+    <p>Will set the selected output high (on) or low (off) depending on the value passed in. Expects a
+    <code>msg.payload</code> with either a 0 or 1 (or true or false).</p>
     <p>In PWM mode you can dim the onboard LEDs - expects a number from 0 - 100 (%).</p>
-    <p>The Buzzer takes a number in Hz (up to about 4000), or 0 for off, and 1 is a shortcut for 262.</div></p>
+    <p>The Buzzer takes a number in Hz (up to about 4000), or 0 for off, and 1 is a shortcut for a buzz at about 262Hz.</p>
     <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
 </script>
 

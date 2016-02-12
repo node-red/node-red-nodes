@@ -20,7 +20,7 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
-    var gpioCommand = __dirname+'/nrgpio.py';
+    var gpioCommand = __dirname+'/nrgpio';
 
     if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
         //util.log("Info : Ignoring Raspberry Pibrella specific node.");
@@ -90,7 +90,7 @@ module.exports = function(RED) {
         }
 
         if (node.pin !== undefined) {
-            node.child = spawn(gpioCommand, ["in",node.pin]);
+            node.child = spawn(gpioCommand, ["in",node.pin,"down",35]);
             node.running = true;
             node.status({fill:"green",shape:"dot",text:"OK"});
 
