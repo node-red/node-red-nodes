@@ -125,9 +125,9 @@
         <li>direct messages received by the authenticated user</li>
     </ul></p>
     <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.</p>
-    <p>Sets the <b>msg.topic</b> to <i>tweets/</i> and then appends the senders screen name.</p>
-    <p>Sets <b>msg.location</b> to the tweeters location if known.</p>
-    <p>Sets <b>msg.tweet</b> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
+    <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
+    <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
+    <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
     <p><b>Note:</b> when set to a specific user's tweets, or your direct messages, the node is subject to
       Twitter's API rate limiting. If you deploy the flows multiple times within a 15 minute window, you may
       exceed the limit and will see errors from the node. These errors will clear when the current 15 minute window
@@ -201,11 +201,11 @@
 </script>
 
 <script type="text/x-red" data-help-name="twitter out">
-    <p>Twitter out node. Tweets the <b>msg.payload</b>.</p>
+    <p>Twitter out node. Tweets the <code>msg.payload</code>.</p>
     <p>To send a Direct Message (DM) - use a payload like "D {username} {message}"</p>
-    <p>If <b>msg.media</b> exists and is a Buffer object, this node will treat it
+    <p>If <code>msg.media</code> exists and is a Buffer object, this node will treat it
        as an image and attach it to the tweet.</p>
-    <p>If <b>msg.params</b> exists and is an object of name:value pairs,
+    <p>If <code>msg.params</code> exists and is an object of name:value pairs,
     this node will treat it as parameters for the update request.</p>
 </script>
 
