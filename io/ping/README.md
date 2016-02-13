@@ -22,11 +22,11 @@ The fix is to allow it as follows
 Usage
 -----
 
-Pings a machine and returns the trip time in mS as **msg.payload**.
+Pings a machine and returns the trip time in mS as `msg.payload`.
 
 Returns boolean `false` if no response received, or if the host is unresolveable.
-**msg.wrror** will contain any error message if necessary.
+`msg.error` will contain any error message if necessary.
 
-**msg.topic** contains the ip address of the target host.
+`msg.topic` contains the ip address of the target host.
 
 Default ping is every 20 seconds but can be configured.
