@@ -36,15 +36,15 @@ module.exports = function(RED) {
             var endMillis = Date.UTC(times[node.end].getUTCFullYear(),times[node.end].getUTCMonth(),times[node.end].getUTCDate(),times[node.end].getUTCHours(),times[node.end].getUTCMinutes());
             var e1 = nowMillis - startMillis;
             var e2 = nowMillis - endMillis;
-            var moon = parseInt(SunCalc.getMoonIllumination(now).fraction*100+0.5)/100;
-            var msg = { payload:0, topic:"sun", moon:moon };
+            var moon = parseInt(SunCalc.getMoonIllumination(now).fraction * 100 + 0.5) / 100;
+            var msg = {payload:0, topic:"sun", moon:moon};
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
             if (oldval == null) { oldval = msg.payload; }
             if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"day"}); }
             else { node.status({fill:"blue",shape:"dot",text:"night"}); }
             if (msg.payload != oldval) {
                 oldval = msg.payload;
-                node.send( [msg,msg] );
+                node.send([msg,msg]);
             }
             else { node.send(msg); }
         }, 60000);
@@ -54,4 +54,4 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("sunrise",SunNode);
-}
+};

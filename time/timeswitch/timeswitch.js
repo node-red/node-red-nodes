@@ -72,43 +72,43 @@ module.exports = function(RED) {
             if ((starttime >= 5000) || (endtime == 5000) || (endtime == 6000)) {
                 var times = SunCalc.getTimes(now, node.lat, node.lon);
                 var startMillis = Date.UTC(times[node.start].getUTCFullYear(), times[node.start].getUTCMonth(), times[node.start].getUTCDate(), times[node.start].getUTCHours(), times[node.start].getUTCMinutes());
-                var endMillis   = Date.UTC(times[node.end].getUTCFullYear(), times[node.end].getUTCMonth(), times[node.end].getUTCDate(), times[node.end].getUTCHours(), times[node.end].getUTCMinutes());
+                var endMillis = Date.UTC(times[node.end].getUTCFullYear(), times[node.end].getUTCMonth(), times[node.end].getUTCDate(), times[node.end].getUTCHours(), times[node.end].getUTCMinutes());
                 startMillis += nowoff;
-                endMillis   += nowoff;
+                endMillis += nowoff;
                 var dawn = ((startMillis - midnightMillis) / 60000) + Number(node.dawnoff);
-                var dusk = ((endMillis   - midnightMillis) / 60000) + Number(node.duskoff);
+                var dusk = ((endMillis - midnightMillis) / 60000) + Number(node.duskoff);
                 if (starttime == 5000) { starttime = dawn; }
                 if (starttime == 6000) { starttime = dusk; }
-                if (endtime   == 5000) { endtime   = dawn; }
-                if (endtime   == 6000) { endtime   = dusk; }
+                if (endtime == 5000) { endtime = dawn; }
+                if (endtime == 6000) { endtime = dusk; }
                 if (RED.settings.verbose) { node.log("Dawn " + parseInt(dawn / 60) + ":" + dawn % 60 + " - Dusk " + parseInt(dusk / 60) + ":" + dusk % 60); }
             }
 
             var proceed = 0;
             switch (now.getDay()) {
-                case 0 : { if (node.sun) { proceed++ } break; }
-                case 1 : { if (node.mon) { proceed++ } break; }
-                case 2 : { if (node.tue) { proceed++ } break; }
-                case 3 : { if (node.wed) { proceed++ } break; }
-                case 4 : { if (node.thu) { proceed++ } break; }
-                case 5 : { if (node.fri) { proceed++ } break; }
-                case 6 : { if (node.sat) { proceed++ } break; }
+                case 0 : { if (node.sun) { proceed++; } break; }
+                case 1 : { if (node.mon) { proceed++; } break; }
+                case 2 : { if (node.tue) { proceed++; } break; }
+                case 3 : { if (node.wed) { proceed++; } break; }
+                case 4 : { if (node.thu) { proceed++; } break; }
+                case 5 : { if (node.fri) { proceed++; } break; }
+                case 6 : { if (node.sat) { proceed++; } break; }
             }
 
             if (proceed) {
                 switch (now.getMonth()) {
-                    case 0 : { if (node.jan) { proceed++ } break; }
-                    case 1 : { if (node.feb) { proceed++ } break; }
-                    case 2 : { if (node.mar) { proceed++ } break; }
-                    case 3 : { if (node.apr) { proceed++ } break; }
-                    case 4 : { if (node.may) { proceed++ } break; }
-                    case 5 : { if (node.jun) { proceed++ } break; }
-                    case 6 : { if (node.jul) { proceed++ } break; }
-                    case 7 : { if (node.aug) { proceed++ } break; }
-                    case 8 : { if (node.sep) { proceed++ } break; }
-                    case 9 : { if (node.oct) { proceed++ } break; }
-                    case 10: { if (node.nov) { proceed++ } break; }
-                    case 11: { if (node.dec) { proceed++ } break; }
+                    case 0 : { if (node.jan) { proceed++; } break; }
+                    case 1 : { if (node.feb) { proceed++; } break; }
+                    case 2 : { if (node.mar) { proceed++; } break; }
+                    case 3 : { if (node.apr) { proceed++; } break; }
+                    case 4 : { if (node.may) { proceed++; } break; }
+                    case 5 : { if (node.jun) { proceed++; } break; }
+                    case 6 : { if (node.jul) { proceed++; } break; }
+                    case 7 : { if (node.aug) { proceed++; } break; }
+                    case 8 : { if (node.sep) { proceed++; } break; }
+                    case 9 : { if (node.oct) { proceed++; } break; }
+                    case 10: { if (node.nov) { proceed++; } break; }
+                    case 11: { if (node.dec) { proceed++; } break; }
                 }
             }
 
@@ -134,11 +134,11 @@ module.exports = function(RED) {
                 node.status({fill:"yellow", shape:"dot", text:"on until " + parseInt(newendtime / 60) + ":" + ("0" + newendtime % 60).substr(-2)});
             }
             //else { node.status({fill:"blue",shape:"dot",text:"off"}); }
-            else {  node.status({fill:"blue", shape:"dot", text:"off until " + parseInt(starttime / 60) + ":" + ("0" + starttime % 60).substr(-2)}); }
+            else { node.status({fill:"blue", shape:"dot", text:"off until " + parseInt(starttime / 60) + ":" + ("0" + starttime % 60).substr(-2)}); }
 
             var msg = {};
             if (node.mytopic) { msg.topic = node.mytopic; }
-            msg.payload = (process>=2) ? 1 : 0;
+            msg.payload = (proceed >= 2) ? 1 : 0;
             node.send(msg);
         });
 
@@ -161,15 +161,15 @@ module.exports = function(RED) {
         if (node != null) {
             try {
                 node.emit("input", {payload:"reset"});
-                res.send(200);
+                res.sendStatus(200);
             } catch (err) {
-                res.send(500);
+                res.sendStatus(500);
                 node.error("Inject failed:" + err);
             }
         } else {
-            res.send(404);
+            res.sendStatus(404);
         }
     });
 
     RED.nodes.registerType("timeswitch", TimeswitchNode);
-}
+};
