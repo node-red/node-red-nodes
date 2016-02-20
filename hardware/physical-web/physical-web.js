@@ -15,73 +15,73 @@
  **/
 
 module.exports = function(RED) {
-	"use strict";
+    "use strict";
 
-	var eddystoneBeacon = require('eddystone-beacon');
-	var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
+    var eddystoneBeacon = require('eddystone-beacon');
+    var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
 
-	function Beacon(n){
-		RED.nodes.createNode(this,n);
-		var node = this;
-		node.power = n.power;
-		node.period = n.period;
-		node.url = n.url;
+    function Beacon(n){
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.power = n.power;
+        node.period = n.period;
+        node.url = n.url;
 
-		node.options = {
-			txPowerLevel: node.power,
-			tlmPeriod: node.period
-		}
+        node.options = {
+            txPowerLevel: node.power,
+            tlmPeriod: node.period
+        }
 
 
-		if (node.url) {
-			try {
-				eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-			} catch(e){
-				node.error('Error setting beacon URL', e);
-			}
-		}
+        if (node.url) {
+            try {
+                eddystoneBeacon.advertiseUrl(node.url, node.options);
+            } catch(e){
+                node.error('Error setting beacon URL', e);
+            }
+        }
 
-		node.on('input', function(msg){
-			try {
-				eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-			} catch(e){
-				node.error('error updating beacon URL', e);
-			}
-		});
+        node.on('input', function(msg){
+            try {
+                eddystoneBeacon.advertiseUrl(msg.payload, node.options);
+            } catch(e){
+                node.error('error updating beacon URL', e);
+            }
+        });
 
-		node.on('close', function(done){
-			try {
-				eddystoneBeacon.stop();
-				done();
-			} catch(e){
-				node.error('error shuttingdown beacon', e);
-			}
-		});
+        node.on('close', function(done){
+            try {
+                eddystoneBeacon.stop();
+                done();
+            } catch(e){
+                node.error('error shuttingdown beacon', e);
+            }
+        });
 
-	}
-	RED.nodes.registerType("PhysicalWeb out", Beacon);
+    }
+    RED.nodes.registerType("PhysicalWeb out", Beacon);
 
-	function Scanner(n){
-		RED.nodes.createNode(this,n);
-		var node = this;
-		node.topic = n.topic;
+    function Scanner(n){
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.topic = n.topic;
 
-		function onFound(beacon) {
-			node.send({
-				topic: node.topic,
-				payload: beacon
-			});
-		}
+        function onFound(beacon) {
+            node.send({
+                topic: node.topic,
+                payload: beacon
+            });
+        }
 
-		EddystoneBeaconScanner.on('found', onFound);
-		EddystoneBeaconScanner.on('updated', onFound);
+        EddystoneBeaconScanner.on('found', onFound);
+        EddystoneBeaconScanner.on('updated', onFound);
 
-		node.on('close',function(done){
-			EddystoneBeaconScanner.removeListener('found', onFound);
-			EddystoneBeaconScanner.removeListener('updated', onFound);
-			done();
-		});
-	}
-	RED.nodes.registerType("PhysicalWeb in", Scanner);
+        node.on('close',function(done){
+            EddystoneBeaconScanner.removeListener('found', onFound);
+            EddystoneBeaconScanner.removeListener('updated', onFound);
+            done();
+        });
+    }
+    RED.nodes.registerType("PhysicalWeb in", Scanner);
 
 };
