@@ -29,7 +29,8 @@ module.exports = function(RED) {
 
         node.options = {
             txPowerLevel: node.power,
-            tlmPeriod: node.period
+            tlmPeriod: node.period,
+            tlmCount: 2
         }
 
 

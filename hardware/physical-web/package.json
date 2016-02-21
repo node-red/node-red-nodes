@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-physical-web",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A set of nodes to interact with the Phyical Web",
   "main": "physical-web.js",
   "scripts": {
