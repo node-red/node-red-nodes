@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-blinkstick",
-    "version"       : "0.1.8",
+    "version"       : "0.1.10",
     "description"   : "A Node-RED node to control a Blinkstick",
     "dependencies"  : {
-        "blinkstick"   : "1.1.*"
+        "blinkstick"   : "1.1.3"
     },
     "repository" : {
         "type":"git",

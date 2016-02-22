@@ -34,22 +34,22 @@
 
         <div id="delay-details" class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="text" id="node-input-delay" placeholder="Delay" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-delay" placeholder="Delay" style="text-align:right; width:50px !important">
             milliseconds
         </div>
         <div id="repeats-details" class="form-row">
             <label for="node-input-repeats"><i class="fa fa-history"></i> Repeats</label>
-            <input type="text" id="node-input-repeats" placeholder="Times" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-repeats" placeholder="Times" style="text-align:right; width:50px !important">
         </div>
 
         <div id="duration-details" class="form-row">
             <label for="node-input-duration"><i class="fa fa-clock-o"></i> Duration</label>
-            <input type="text" id="node-input-duration" placeholder="Duration" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-duration" placeholder="Duration" style="text-align:right; width:50px !important">
             milliseconds
         </div>
         <div id="steps-details" class="form-row">
             <label for="node-input-steps"><i class="fa fa-history"></i> Steps</label>
-            <input type="text" id="node-input-steps" placeholder="Steps" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-steps" placeholder="Steps" style="text-align:right; width:50px !important">
         </div>
         <div id="repeat-details" class="form-row">
             <label>&nbsp;</label>
@@ -64,17 +64,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="blinkstick">
-    <p><i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <b>msg.payload</b> with one of:</p>
+    <p><i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <code>msg.payload</code> with one of:</p>
     <ul>
         <li>A hex string <b>"#rrggbb"</b> triple</li>
         <li><b>"red,green,blue"</b> three 0-255 values as a string</li>
         <li><b>"random"</b> will generate a random color</li>
         <li><i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">Standard HTML color</a></i> name</li>
-        <li><b>object</b> can override any of the parameters</li>
+        <li>An <b>object</b> can override any of the parameters</li>
         <li><b>array</b> of colours for a neopixel rgb strip - either name,name,... or r,g,b,r,g,b,... where r,g,b are 0 to 255.</li>
     </ul>
     <p>If using a neopixel strip it <i>must</i> be wired to the red or R channel of the blinkstick.</p>
-    <p>An object payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
+    <p>An <b>object</b> payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
 <pre>
 { 'color': 'blue' }
 { 'task': 'blink', 'color': 'red' }
