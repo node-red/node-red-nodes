@@ -14,13 +14,17 @@ For more information see <i><a href="http://www.blinkstick.com/help/tutorials" t
 
     sudo apt-get install -y libudev-dev
 
-Currently you **MUST** run Node-RED as root in order to get sufficient permissions to talk to this USB driver.
+You also currently need to create a file `/etc/udev/rules.d/80-blinkstick.rules` containing
+
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="20a0", ATTRS{idProduct}=="41e5", TAG+="uaccess"
+
+and either reload the udev rules or reboot.
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install.
-Usually the is `~/.node-red`
+Run the following command in the user directory of your Node-RED install.
+Usually this is `~/.node-red`
 
     npm install node-red-node-blinkstick
 
