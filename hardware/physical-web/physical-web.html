@@ -97,7 +97,8 @@
     <div class="form-row">
         <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
         <input type="text" id="node-input-url" placeholder="http://...">
-        <p>This URL needs to be shorter than 18 bytes in length</p>
+        <!--<button type="button" id="node-input-url-shorten" disabled=true>Shorten</button> -->
+        <p style="margin-left:100px;width: 70%">This URL needs to be shorter than 18 bytes in length to meet Eddystone spec</p>
     </div>
     <br/>
     <div class="form-row">
@@ -116,7 +117,7 @@
 <script type="text/x-red" data-help-name="PhysicalWeb out">
   <p><a href="https://google.github.io/physical-web/">Physical Web</a></p>
   <p><a href="https://github.com/sandeepmistry/bleno#running-on-linux">READ THIS ON LINUX</a>
-  <p>This node takes the value of <i>msg.payload</i> and publishes it as a Eddystone URL announcement</p>
+  <p>This node takes the value of <i>msg.payload</i> and publishes it as a Eddystone URL announcement. URLs need to be less than 18 bytes long so should be run through a shortner first.</p>
   <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (ms) between anouncements</p>
 </script>
 
@@ -125,7 +126,9 @@
         category: 'Physical_Web',      // the palette category
         defaults: {             // defines the editable properties of the node
             name: {value:"Eddystone"},   //  along with default values.
-            url: {value: ""},
+            url: {value: ""
+            //, validate: function(v) {var m = encodeURIComponent(v).match(/%[89ABab]/g);  if (v.length + (m ? m.length : 0) < 18){$('#node-input-url-shorten').prop('disabled', true);return true} else {$('#node-input-url-shorten').prop('disabled', false);return false}}
+            },
             power: {value:"-21"},
             period: {value: "10"}
         },
@@ -139,6 +142,12 @@
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+
+        },
+        oneditsave: function() {
+
         }
     });
 </script>
