@@ -34,11 +34,12 @@ A pixel is set by **msg.payload** with a CSV string `x,y,r,g,b` , where x and y
 are 0 to 7, and r, g and b are 0 - 255.
 If `x` or `y` are set to `*` then the complete row or column can be set.
 Setting both `x` and `y` to `*` fills the background.
+Multiple pixels can be specified at once by using `x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...` etc
 
 The background can also be set to a colour by setting **msg.payload** to an r,g,b triple.
 
-Any msg with a **msg.topic** identifies a 'sprite' pixel, which can then be moved
-independently of the background. A 'sprite' can be a single pixel or a complete line.
+Any msg with a **msg.topic** identifies a 'sprite', which can then be moved
+independently of the background. A 'sprite' can be a single pixel, or a group of pixels.
 
 Setting **msg.payload** to `0` will delete the sprite from the list identified by **msg.topic**.
 

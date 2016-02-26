@@ -29,16 +29,22 @@ UH.brightness(brightness)
 while True:
     try:
         data = raw_input()
-        if len(data) < 20:
+        if len(data) < 10:
             if data[0] == "B":
                 UH.brightness(float(data[1:])/100)
             if data[0] == "R":
                 UH.rotation(float(data[1:]))
         else:
-            q = 0
-            for p in range(64):
-                UH.set_pixel(p%8,int(p/8),ord(data[q]),ord(data[q+1]),ord(data[q+2]))
-                q+=3
+            if data[0] == "P":
+                data = data[1:].strip()
+                s = data.split(',')
+                for p in range(0,len(s),5):
+                    UH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
+            else:
+                q = 0
+                for p in range(64):
+                    UH.set_pixel(p%8,int(p/8),ord(data[q]),ord(data[q+1]),ord(data[q+2]))
+                    q += 3
             UH.show()
     except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
         sys.exit(0)

@@ -33,17 +33,18 @@
 <script type="text/x-red" data-help-name="rpi-unicorn">
     <p>Raspberry Pi Unicorn HAT Node</p>
     <p>The background of the array can be configured using an 8x8 pixel sized
-    png image, or by specifying a single colour using an r,g,b triple.</p>
-    <p>A pixel is set by <b>msg.payload</b> with a CSV string <i>x,y,r,g,b</i> .
+    png image, or by specifying a single colour using an <i>r,g,b</i> triple.</p>
+    <p>The background colour can also be set by a <code>msg.payload</code> with an <i>r,g,b</i> triple.</p>
+    <p>A pixel is set by a <code>payload</code> containing a CSV string <i>x,y,r,g,b</i> .
+    Multiple pixels strings can also be sent as <i>x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...</i> .
     If x or y are set to * then the complete row or column can be set.</p>
-    <p>The background can be set to a colour by setting msg.payload to an r,g,b triple.</p>
-    <p>Any msg with a <b>msg.topic</b> identifies a 'sprite' pixel, which can then
-    be moved independently. A 'sprite' can be a single pixel or a complete row.</p>
-    <p>Setting msg.payload to 0 will delete the sprite from the list.</p>
-    <p>Setting msg.payload to "CLS" will clear the display to off and delete any sprites.</p>
-    <p>Setting msg.payload to "DEL" will delete any sprites, and leave the background.</p>
-    <p>The brightness may be set by setting msg.payload to <i>brightness,nn</i>, where nn is 0 to 100.</p>
-    <p>The rotation may be set by setting msg.payload to <i>rotate,rr</i>, where rr is 0, 90, 180 or 270.</p>
+    <p>Any msg with a <code>topic</code> identifies a 'sprite', which can then
+    be moved independently. A 'sprite' can be a single pixel or a group of pixels.</p>
+    <p>Setting <code>payload</code> to 0 will delete the sprite from the list.</p>
+    <p>Setting <code>payload</code> to "CLS" will clear the display to off and delete any sprites.</p>
+    <p>Setting <code>payload</code> to "DEL" will delete any sprites, and leave the background.</p>
+    <p>The brightness may be set by setting <code>payload</code> to <i>brightness,nn</i> where nn is 0 to 100.</p>
+    <p>The rotation may be set by setting <code>payload</code> to <i>rotate,rr</i> where rr is 0, 90, 180 or 270.</p>
 </script>
 
 <script type="text/javascript">

@@ -16,9 +16,9 @@
 
 module.exports = function(RED) {
     "use strict";
-    var spawn = require('child_process').spawn;
-    var fs =  require('fs');
+    var fs = require('fs');
     var PNG = require('pngjs').PNG;
+    var spawn = require('child_process').spawn;
 
     var hatCommand = __dirname+'/unihat';
 
@@ -93,6 +93,7 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             var s = msg.payload.toUpperCase().split(",");
+            var doDraw = true;
             if (s.length === 1) {
                 if (s[0] == "CLS") {
                     //console.log("CLEAR")
@@ -123,71 +124,89 @@ module.exports = function(RED) {
                     i += 2;
                 }
             }
-            else if (s.length === 5) {
+            else if (s.length % 5 === 0) { // handles pixel updates
                 if (msg.topic) {
                     node.items[msg.topic] = msg.payload;
                 }
                 else {
-                    //console.log("PIXEL",b);
-                    if ((s[0] === "*") && (s[1] === "*")) {
-                        for (var c=0; c<192; c++) {
-                            pic[c]   = s[2];
-                            pic[c+1] = s[3];
-                            pic[c+2] = s[4];
-                            c += 2;
+                    node.child.stdin.write('P'+msg.payload+'\n');
+                    doDraw = false;
+                    for (var a=0; a<s.length; a++) {
+                        //console.log("PIXELS",a);
+                        if ((s[a] === "*") && (s[a+1] === "*")) {
+                            for (var c=0; c<192; c++) {
+                                pic[c]   = s[a+2];
+                                pic[c+1] = s[a+3];
+                                pic[c+2] = s[a+4];
+                                c += 2;
+                            }
                         }
-                    }
-                    else if (s[0] === "*") {
-                        for (var d=0; d<8; d++) {
-                            pic[d*3+s[1]*24]   = s[2];
-                            pic[d*3+s[1]*24+1] = s[3];
-                            pic[d*3+s[1]*24+2] = s[4];
+                        else if (s[a] === "*") {
+                            for (var d=0; d<8; d++) {
+                                pic[d*3+s[1]*24]   = s[a+2];
+                                pic[d*3+s[1]*24+1] = s[a+3];
+                                pic[d*3+s[1]*24+2] = s[a+4];
+                            }
                         }
-                    }
-                    else if (s[1] === "*") {
-                        for (var e=0; e<8; e++) {
-                            pic[s[0]*3+e*24]   = s[2];
-                            pic[s[0]*3+e*24+1] = s[3];
-                            pic[s[0]*3+e*24+2] = s[4];
+                        else if (s[a+1] === "*") {
+                            for (var e=0; e<8; e++) {
+                                pic[s[a]*3+e*24]   = s[a+2];
+                                pic[s[a]*3+e*24+1] = s[a+3];
+                                pic[s[a]*3+e*24+2] = s[a+4];
+                            }
                         }
+                        else {
+                            pic[s[a]*3+s[a+1]*24]   = s[a+2];
+                            pic[s[a]*3+s[a+1]*24+1] = s[a+3];
+                            pic[s[a]*3+s[a+1]*24+2] = s[a+4];
+                        }
+                        a += 4;
                     }
-                    else {
-                        pic[s[0]*3+s[1]*24]   = s[2];
-                        pic[s[0]*3+s[1]*24+1] = s[3];
-                        pic[s[0]*3+s[1]*24+2] = s[4];
-                    }
+                }
+            }
+            else if (s.length === 192) {  // handle complete buffer refresh.
+                for (var i=0; i<192; i++) {
+                    pic[i] = s[i];
+                    pic[i+1] = s[i+1];
+                    pic[i+2] = s[i+2];
+                    i += 2;
                 }
             }
             else {
                 if (node.items.hasOwnProperty(msg.topic)) { delete node.items[msg.topic]; }
             }
 
-            var pixels = new Buffer(192);
-            pic.copy(pixels);
-            for (var p in node.items) {
-                var b = node.items[p].split(",");
-                if (b[0] === "*") {
-                    for (var d=0; d<8; d++) {
-                        pixels[d*3+b[1]*24] = b[2];
-                        pixels[d*3+b[1]*24+1] = b[3];
-                        pixels[d*3+b[1]*24+2] = b[4];
+            if (doDraw) {
+                var pixels = new Buffer(192);
+                pic.copy(pixels);
+                for (var p in node.items) {
+                    var b = node.items[p].split(",");
+                    for (var a=0; a<b.length; a++) {
+                        if (b[a] === "*") {
+                            for (var d=0; d<8; d++) {
+                                pixels[d*3+b[a+1]*24] = b[a+2];
+                                pixels[d*3+b[a+1]*24+1] = b[a+3];
+                                pixels[d*3+b[a+1]*24+2] = b[a+4];
+                            }
+                        }
+                        else if (b[a+1] === "*") {
+                            for (var e=0; e<8; e++) {
+                                pixels[b[a]*3+e*24] = b[a+2];
+                                pixels[b[a]*3+e*24+1] = b[a+3];
+                                pixels[b[a]*3+e*24+2] = b[a+4];
+                            }
+                        }
+                        else {
+                            pixels[b[a]*3+b[a+1]*24] = b[a+2];
+                            pixels[b[a]*3+b[a+1]*24+1] = b[a+3];
+                            pixels[b[a]*3+b[a+1]*24+2] = b[a+4];
+                        }
+                        a += 4;
                     }
                 }
-                else if (b[1] === "*") {
-                    for (var e=0; e<8; e++) {
-                        pixels[b[0]*3+e*24] = b[2];
-                        pixels[b[0]*3+e*24+1] = b[3];
-                        pixels[b[0]*3+e*24+2] = b[4];
-                    }
-                }
-                else {
-                    pixels[b[0]*3+b[1]*24] = b[2];
-                    pixels[b[0]*3+b[1]*24+1] = b[3];
-                    pixels[b[0]*3+b[1]*24+2] = b[4];
-                }
+                node.child.stdin.write(pixels);
+                node.child.stdin.write("\n");
             }
-            node.child.stdin.write(pixels);
-            node.child.stdin.write("\n");
         }
 
         node.child = spawn(hatCommand, [node.bright]);
