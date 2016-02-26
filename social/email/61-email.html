@@ -77,6 +77,7 @@
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
     more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
+    <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
 <script type="text/javascript">
@@ -159,6 +160,7 @@
     <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
     <p>Uses the imap module.</p>
     <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
+    <p>Note: uses IMAP with SSL to port 993.</p>
 </script>
 
 <script type="text/javascript">
