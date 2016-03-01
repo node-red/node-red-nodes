@@ -1,10 +1,24 @@
 sudo: false
 language: node_js
-node_js:
-  - "0.10"
-  - "0.12"
+env:
+  - CXX="g++-4.8"
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+    - gcc-4.8
+matrix:
+  allow_failures:
+  - node_js: "5"
 before_install:
-  - npm install -g npm@~1.4.28
+  - npm install -g npm@latest-2
+node_js:
+  - "5"
+  - "4"
+  - "0.12"
+  - "0.10"
 before_script:
   - npm install -g istanbul grunt-cli
   - npm install coveralls
