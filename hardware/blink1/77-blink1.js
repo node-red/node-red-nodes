@@ -55,8 +55,8 @@ module.exports = function(RED) {
                             }
                             else if (p3.test(msg.payload)) {
                                 // if it is a r,g,b,index quad for a two led device
-                                var rgb = msg.payload.split(',');
-                                blink1[node.serial||"one"].fadeToRGB(node.fade, parseInt(rgb[0])&255, parseInt(rgb[1])&255, parseInt(rgb[2])&255, parseInt(rgb[3])&3);
+                                var rgb2 = msg.payload.split(',');
+                                blink1[node.serial||"one"].fadeToRGB(node.fade, parseInt(rgb2[0])&255, parseInt(rgb2[1])&255, parseInt(rgb2[2])&255, parseInt(rgb2[3])&3);
                             }
                             else {
                                 // you can add fancy colours by name here if you want...

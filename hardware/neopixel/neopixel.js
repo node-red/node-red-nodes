@@ -40,7 +40,7 @@ module.exports = function(RED) {
     // the magic to make python print stuff immediately
     process.env.PYTHONUNBUFFERED = 1;
 
-    function piNeopixelNode(n) {
+    function PiNeopixelNode(n) {
         RED.nodes.createNode(this,n);
         this.pixels = n.pixels || 1;
         this.bgnd = n.bgnd || "0,0,0";
@@ -86,13 +86,13 @@ module.exports = function(RED) {
                             else { node.warn("Invalid payload : "+pay); return; }
                         }
                         else { // it's a single number so just draw bar
-                            var l = pay;
-                            if (node.mode.indexOf("pcent") >= 0) { l = parseInt(l / 100 * node.pixels + 0.5); }
-                            l = l - 1;
+                            var ll = pay;
+                            if (node.mode.indexOf("pcent") >= 0) { ll = parseInt(ll / 100 * node.pixels + 0.5); }
+                            ll = ll - 1;
                             if (node.mode.indexOf("need") >= 0) {
-                                pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                                pay = "0,"+(ll-1)+","+node.fgnd+"\n"+ll+","+needle+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
                             } else {
-                                pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
+                                pay = "0,"+ll+","+node.fgnd+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
                         }
                     }
@@ -165,5 +165,5 @@ module.exports = function(RED) {
             }
         }
     }
-    RED.nodes.registerType("rpi-neopixels",piNeopixelNode);
+    RED.nodes.registerType("rpi-neopixels",PiNeopixelNode);
 }

@@ -44,7 +44,7 @@ module.exports = function(RED) {
             var pri = msg.priority||this.priority;
             var url = this.url||msg.url;
             var options = { priority:pri };
-            if (url) { options.url = url };
+            if (url) { options.url = url; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
