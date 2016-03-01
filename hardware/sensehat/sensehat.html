@@ -1,0 +1,103 @@
+<!--
+  Copyright 2016 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rpi-sensehat in">
+<div class="form-row">
+    <label><i class="fa fa-arrow-right"></i> Outputs</label>
+    <label style="width: auto" for="node-input-motion"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-motion"> Motion events</label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">accelerometer, gyroscope, magnetometer, compass</div>
+</div>
+<div class="form-row">
+    <label></label>
+    <label style="width: auto" for="node-input-env"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-env"> Environment events</label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">temperature, humidity, pressure</div>
+</div>
+<div class="form-row">
+    <label></label>
+    <label style="width: auto" for="node-input-stick"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-stick"> Joystick events</label>
+</div>
+
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-sensehat in">
+<p>Raspberry Pi Sense HAT input node.</p>
+<p>This node sends readings from the various sensors on the Sense HAT,
+grouped into three sets; motion events, environment events and joystick events.</p>
+<p><b>Motion events</b></p>
+<p>Motion events include readings from the accelerometer, gyroscope and magnetometer,
+as well as the current compass heading. They are sent at a rate of approximately 10
+per second. The <code>topic</code> is set to <code>motion</code> and the
+<code>payload</code> is an object with the following values:</p>
+<ul>
+    <li><code>acceleration.x/y/z</code> : the acceleration intensity in Gs</li>
+    <li><code>gyroscope.x/y/z</code> : the rotational intensity in radians/s</li>
+    <li><code>orientation.roll/pitch/yaw</code> : the angle of the axis in degrees</li>
+    <li><code>compass</code> : the direction of North in degrees</li>
+</ul>
+<p><b>Environment events</b></p>
+<p>Environment events include readings from the temperature, humidity and pressure
+sensors. They are sent at a rate of approximately 1 per second.  The <code>topic</code>
+is set to <code>environment</code> and the <code>payload</code> is an object
+with the following values:</p>
+<ul>
+<li><code>temperature</code> : degrees Celsius</li>
+<li><code>humidity</code> : percentage of relative humidity</li>
+<li><code>pressure</code> : Millibars</li>
+</ul>
+<p><b>Joystick events</b></p>
+<p>Joystick events are sent when the Sense HAT joystick is interacted with. The
+<code>topic</code> is set to <code>joystick</code> and the <code>payload</code>
+is an object with the following values:</p>
+<ul>
+    <li><code>key</code> : one of <code>UP</code>, <code>DOWN</code>, <code>LEFT</code>, <code>RIGHT</code>, <code>ENTER</code></li>
+        <li><code>state</code> : the state of the key:
+        <ul>
+            <li><code>0</code> : the key has been released</li>
+            <li><code>1</code> : the key has been pressed</li>
+            <li><code>2</code> : the key is being held down</li>
+        </ul>
+</li>
+</ul>
+
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-sensehat in',{
+        category: 'Raspberry Pi',
+        paletteLabel: "Sense HAT",
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            motion: { value: true },
+            env: { value: true },
+            stick: { value: true }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rpi.png",
+        label: function() {
+            return this.name||"Sense HAT";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-pi-sense-hat",
+    "version"       : "0.0.1",
+    "description"   : "A Node-RED node to interact with a Raspberry Pi Sense HAT",
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensehat"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "sensehat", "astropi" ],
+    "node-red"      : {
+        "nodes"     : {
+            "sensehat": "sensehat.js"
+        }
+    },
+    "scripts" : {
+        "postinstall" : "scripts/checklib.sh"
+    },
+    "author": {
+        "name": "Nick O'Leary",
+        "email": "nick.oleary@gmail.com",
+        "url": "http://nodered.org"
+    }
+}
