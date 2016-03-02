@@ -36,9 +36,12 @@
 <script type="text/x-red" data-help-name="mqlight in">
     <p>Provides an MQ Light receive client.</p>
     <p>Subscribes the client to a destination based on the supplied topic and (optional) share arguments.</p>
-    <p>Topic can contain any character in the Unicode character set, with # representing a multilevel wildcard and + a single level wildcard as described <a href="https://developer.ibm.com/messaging/mq-light/wildcard-topicpatterns/">here</a>.
-    <p>Share identifies a shared destination for which messages are anycast between connected subscribers. If left blank, it defaults to a private destination.</p>
-    <p>Received messages will be sent on in <b>msg.payload</b> with their topic sent in <b>msg.topic</b> and the share, if specified, sent in <b>msg.share</b>.</p>
+    <p>Topic can contain any character in the Unicode character set, with # representing a multilevel wildcard
+    and + a single level wildcard as described <a href="https://developer.ibm.com/messaging/mq-light/wildcard-topicpatterns/">here</a>.
+    <p>Share identifies a shared destination for which messages are anycast between connected subscribers.
+    If left blank, it defaults to a private destination.</p>
+    <p>Received messages will be sent on in <code>msg.payload</code> with their topic sent in <code>msg.topic</code>
+    and the share, if specified, sent in <code>msg.share</code>.</p>
 </script>
 
 <script type="text/javascript">
@@ -86,8 +89,10 @@
 
 <script type="text/x-red" data-help-name="mqlight out">
     <p>Provides an MQ Light send client.</p>
-    <p>Sends the value passed in on <b>msg.payload</b> to the specified topic.</p>
-    <p>The topic can be passed in on <b>msg.topic</b>, however the topic in the node must be blank for this to take effect. If the topic is set in the node <b>msg.topic</b> will be overridden.</p>
+    <p>Sends the value passed in on <code>msg.payload</code> to the specified topic.</p>
+    <p>The topic can be passed in on <code>msg.topic</code>, however the topic in the node
+    must be blank for this to take effect. If the topic is set in the node <code>msg.topic</code>
+    will be overridden.</p>
 </script>
 
 <script type="text/javascript">
