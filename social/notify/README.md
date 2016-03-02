@@ -8,7 +8,7 @@ Uses [Growl](http://growl.info//)
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-notify
 
@@ -21,6 +21,6 @@ If installing on Windows you MUST read the install instructions ... especially t
 Usage
 -----
 
-Uses Growl to push the **msg.payload** to the local desktop.
+Uses Growl to push the `msg.payload` to the local desktop.
 
-The title can be set by **msg.topic**.
+The title can be set by `msg.topic`.
