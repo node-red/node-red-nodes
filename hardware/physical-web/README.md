@@ -3,12 +3,29 @@ node-red-node-physical-web
 
 Nodes to allow Node-RED to act as an Eddystone BLE beacon.
 
+Prerequisites
+-------------
+
+You will need a suitable Bluetooth Low Energy (BLE) stack and drivers for your hardware
+- for example Bluez 5.2.x or better.
+
+#### Raspberry Pi
+
+Install Bluetooth drivers and bluez stack, and set executeable by non-root user
+
+    sudo apt-get install libbluetooth-dev libudev-dev pi-bluetooth
+    sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+
+#### Linux / OSX / Windows
+
+Follow **just** the pre-reqs for [noble here](https://github.com/sandeepmistry/noble).
+
 Install
 -------
 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-physical-web
+    npm i node-red-node-physical-web
 
 Then on Linux follow these instructions:
 
@@ -24,9 +41,9 @@ A node to allow Node-RED to act as an Eddystone beacon broadcasting URLs
 
 The config window lets you set the initial URL, announcement power and period for the Eddystone.
 
-Any messages received will update the advertised URL from the msg.payload
+Any messages received will update the advertised URL from the `msg.payload`
 
-## Physical-Web In
+### Physical-Web In
 
 A node to scan for local Eddystones and output information about discovered URLs and TLM data.
 

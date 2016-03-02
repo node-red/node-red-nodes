@@ -13,11 +13,9 @@
 <script type="text/x-red" data-template-name="PhysicalWeb in">
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
-        <input type="text" id="node-input-topic" placeholder="eddysone">
+        <input type="text" id="node-input-topic" placeholder="eddystone">
     </div>
     <br/>
-    <!-- By convention, most nodes have a 'name' property. The following div -->
-    <!-- provides the necessary field. Should always be the last option      -->
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -25,11 +23,10 @@
 </script>
 
 <script type="text/x-red" data-help-name="PhysicalWeb in">
-  <p><a href="https://google.github.io/physical-web/">Physical Web</a></p>
-  <p><a href="https://github.com/sandeepmistry/bleno#running-on-linux">READ THIS ON LINUX</a>
-  <p>This node scans for Eddystones and publishes what it finds. It can output 2 types of message</p>
-  <ul>
-    <li><strong>URL</strong> - 
+<p><a href="https://google.github.io/physical-web/">Physical Web</a> node to scan for Eddystone beacons.</p>
+<p>This node scans for Eddystones and publishes what it finds. It can output 2 types of message</p>
+<ul>
+    <li><strong>URL</strong> -
         <ul>
             <li>type - Eddystone type</li>
             <li>txPower - Received power at 0m in dBm</li>
@@ -39,7 +36,7 @@
             <li>distance - Estimated distance to the beacon</li>
         </ul>
     </li>
-    <li><strong>UID</strong> - 
+    <li><strong>UID</strong> -
         <ul>
             <li>type - Eddystone type</li>
             <li>txPower - Received power at 0m in dBm</li>
@@ -65,24 +62,24 @@
     <li>rssi - RSSI of diecovered beacon</li>
     <li>distance - Approximate distance to beacon</li>
 </ul>
+<p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('PhysicalWeb in',{
-        category: 'Physical_Web',      // the palette category
-        defaults: {             // defines the editable properties of the node
-            name: {value:"Eddystone"},   //  along with default values.
-            topic: {value: "eddystone"}
+        category: 'Physical_Web',
+        defaults: {
+            name: {value:"Eddystone"},
+            topic: {value:"eddystone"}
         },
         color: "#2F7ACD",
-        inputs:0,               // set the number of inputs - only 0 or 1
-        outputs:1,              // set the number of outputs - 0 to n
-        // set the icon (held in icons dir below where you save the node)
-        icon: "physical-web.png",     // saved in  icons/myicon.png
-        label: function() {     // sets the default label contents
+        inputs:0,
+        outputs:1,
+        icon: "physical-web.png",
+        label: function() {
             return this.name||"PhysicalWeb";
         },
-        labelStyle: function() { // sets the class to apply to the label
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
         }
     });
@@ -90,24 +87,21 @@
 
 <script type="text/x-red" data-template-name="PhysicalWeb out">
     <div class="form-row">
-        <label for="node-input-period"><i class="fa fa-tasks"></i> Period</label>
-        <input type="text" id="node-input-period" placeholder="Period">
-    </div>
-    <br/>
-    <div class="form-row">
         <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
         <input type="text" id="node-input-url" placeholder="http://...">
         <!--<button type="button" id="node-input-url-shorten" disabled=true>Shorten</button> -->
-        <p style="margin-left:100px;width: 70%">This URL needs to be shorter than 18 bytes in length to meet Eddystone spec</p>
+        <p style="margin-left:100px;width: 70%">This URL needs to be shorter than 18 bytes
+        in length to meet Eddystone spec</p>
     </div>
-    <br/>
     <div class="form-row">
-        <label for="node-input-power"><i class="fa fa-battery-half"></i> Power</label>
-        <input type="text" id="node-input-power" placeholder="Power">
+        <label for="node-input-period"><i class="fa fa-repeat"></i> Period (S)</label>
+        <input type="text" id="node-input-period" style="width:80px;" placeholder="Period">
+    </div>
+    <div class="form-row">
+        <label for="node-input-power"><i class="fa fa-battery-half"></i> Power (dB)</label>
+        <input type="text" id="node-input-power" style="width:80px;" placeholder="Power">
     </div>
     <br/>
-    <!-- By convention, most nodes have a 'name' property. The following div -->
-    <!-- provides the necessary field. Should always be the last option      -->
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -115,39 +109,36 @@
 </script>
 
 <script type="text/x-red" data-help-name="PhysicalWeb out">
-  <p><a href="https://google.github.io/physical-web/">Physical Web</a></p>
-  <p><a href="https://github.com/sandeepmistry/bleno#running-on-linux">READ THIS ON LINUX</a>
-  <p>This node takes the value of <i>msg.payload</i> and publishes it as a Eddystone URL announcement. URLs need to be less than 18 bytes long so should be run through a shortner first.</p>
-  <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (ms) between anouncements</p>
+    <p><a href="https://google.github.io/physical-web/">Physical Web</a> beacon node.</p>
+    <p>This node takes the value of <code>msg.payload</code> and publishes it as an Eddystone URL
+    announcement. URLs <b>must</b> be less than 18 bytes long, so should be run through a shortner first.</p>
+    <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (ms)
+    between anouncements</p>
+    <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('PhysicalWeb out',{
-        category: 'Physical_Web',      // the palette category
-        defaults: {             // defines the editable properties of the node
-            name: {value:"Eddystone"},   //  along with default values.
-            url: {value: ""
-            //, validate: function(v) {var m = encodeURIComponent(v).match(/%[89ABab]/g);  if (v.length + (m ? m.length : 0) < 18){$('#node-input-url-shorten').prop('disabled', true);return true} else {$('#node-input-url-shorten').prop('disabled', false);return false}}
-            },
+        category: 'Physical_Web',
+        defaults: {
+            name: {value:"Eddystone"},
+            url: {value:""},
             power: {value:"-21"},
-            period: {value: "10"}
+            period: {value:"10"}
         },
         color: "#2F7ACD",
-        inputs:1,               // set the number of inputs - only 0 or 1
-        outputs:0,              // set the number of outputs - 0 to n
-        // set the icon (held in icons dir below where you save the node)
-        icon: "physical-web.png",     // saved in  icons/myicon.png
-        label: function() {     // sets the default label contents
+        inputs:1,
+        outputs:0,
+        icon: "physical-web.png",
+        label: function() {
             return this.name||"PhysicalWeb";
         },
-        labelStyle: function() { // sets the class to apply to the label
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
-
-        },
-        oneditsave: function() {
-
+            $( "#node-input-period" ).spinner({min:1});
+            $( "#node-input-power" ).spinner({min:-30,max:100});
         }
     });
 </script>

@@ -16,11 +16,10 @@
 
 module.exports = function(RED) {
     "use strict";
-
     var eddystoneBeacon = require('eddystone-beacon');
     var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
 
-    function Beacon(n){
+    function Beacon(n) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.power = n.power;
@@ -33,28 +32,27 @@ module.exports = function(RED) {
             tlmCount: 2
         }
 
-
         if (node.url) {
             try {
                 eddystoneBeacon.advertiseUrl(node.url, node.options);
-            } catch(e){
+            } catch(e) {
                 node.error('Error setting beacon URL', e);
             }
         }
 
-        node.on('input', function(msg){
+        node.on('input', function(msg) {
             try {
                 eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-            } catch(e){
+            } catch(e) {
                 node.error('error updating beacon URL', e);
             }
         });
 
-        node.on('close', function(done){
+        node.on('close', function(done) {
             try {
                 eddystoneBeacon.stop();
                 done();
-            } catch(e){
+            } catch(e) {
                 node.error('error shuttingdown beacon', e);
             }
         });
@@ -62,7 +60,7 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("PhysicalWeb out", Beacon);
 
-    function Scanner(n){
+    function Scanner(n) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.topic = n.topic;
@@ -77,12 +75,11 @@ module.exports = function(RED) {
         EddystoneBeaconScanner.on('found', onFound);
         EddystoneBeaconScanner.on('updated', onFound);
 
-        node.on('close',function(done){
+        node.on('close',function(done) {
             EddystoneBeaconScanner.removeListener('found', onFound);
             EddystoneBeaconScanner.removeListener('updated', onFound);
             done();
         });
     }
     RED.nodes.registerType("PhysicalWeb in", Scanner);
-
 };
