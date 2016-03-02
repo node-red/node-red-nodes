@@ -13,15 +13,15 @@ Useful for monitoring command line based processes.
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-daemon
+    npm i node-red-node-daemon
 
 
 Usage
 -----
 
-Calls out to a long running system command. Sends <b>msg.payload</b> to stdin of the process.
+Calls out to a long running system command. Sends `msg.payload` to stdin of the process.
 
 **Note** Only the command itself should be placed in the command field.
 All parameters **must** be placed in the arguments field.
