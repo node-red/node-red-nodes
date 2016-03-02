@@ -1,5 +1,5 @@
 /**
- * Copyright 2013,2015 IBM Corp.
+ * Copyright 2013,2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,10 +134,10 @@ module.exports = function(RED) {
             node.board.on('connect', function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 //console.log("o",node.state,node.pin);
-                
+
                 node.on("input", function(msg) {
                     if (node.state === "OUTPUT") {
-			node.board.pinMode(node.pin, node.state);
+                        node.board.pinMode(node.pin, node.state);
                         if ((msg.payload === true)||(msg.payload.toString() == "1")||(msg.payload.toString().toLowerCase() == "on")) {
                             node.board.digitalWrite(node.pin, true);
                         }
@@ -146,14 +146,14 @@ module.exports = function(RED) {
                         }
                     }
                     if (node.state === "PWM") {
-			node.board.pinMode(node.pin, node.state);
+                        node.board.pinMode(node.pin, node.state);
                         msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 255)) {
                             node.board.analogWrite(node.pin, msg.payload);
                         }
                     }
                     if (node.state === "SERVO") {
-			node.board.pinMode(node.pin, node.state);
+                        node.board.pinMode(node.pin, node.state);
                         msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 180)) {
                             node.board.servoWrite(node.pin, msg.payload);

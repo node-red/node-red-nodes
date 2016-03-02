@@ -23,7 +23,7 @@ details and examples of how to use this node.
 
 Connects to local Arduino and monitors the selected pin for changes.
 
-You can select either **Digital** or **Analogue** input type.
+You can select either **Digital**, **Analogue**, or **String** input type.
 Outputs the value read as `msg.payload` and the pin number as `msg.topic`.
 
 It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.
@@ -39,6 +39,7 @@ You can select
  - **Digital** - accepts 0, 1, true, false, on, off
  - **Analogue** (PWM) - accepts Integer 0 to 255
  - **Servo** - accepts Integer 0 - 180
+ - **String** - to send a *String* to the Arduino
 
 Expects a numeric value in `msg.payload`. The pin number is set in the properties panel.
 

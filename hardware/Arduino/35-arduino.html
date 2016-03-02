@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013,2015 IBM Corp.
+  Copyright 2013,2016 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@
         <input type="text" id="node-input-arduino">
     </div>
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
-        <input type="text" id="node-input-pin" placeholder="2">
-    </div>
-    <div class="form-row">
         <label for="node-input-state"><i class="fa fa-wrench"></i> <span data-i18n="arduino.label.type"></span></label>
         <select type="text" id="node-input-state" style="width: 150px;">
             <option value="INPUT" data-i18n="arduino.state.in.digital"></option>
             <option value="ANALOG" data-i18n="arduino.state.in.analogue"></option>
             <option value="STRING" data-i18n="arduino.state.in.string"></option>
         </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
+        <input type="text" id="node-input-pin" placeholder="2">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -51,7 +51,10 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",required:true},
+            pin: {value:"",validate: function(v) {
+               var ct = $("#node-input-state").val() || this.state;
+               return ct === 'STRING' || (v != '');
+            }},
             state: {value:"INPUT",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -59,6 +62,7 @@
         outputs:1,
         icon: "arduino.png",
         label: function() {
+            if (this.state === "STRING") { return "String"; }
             var a = "";
             if (this.state === "ANALOG") { a = "A"; }
             return this.name||"Pin: "+a+this.pin;
@@ -75,10 +79,6 @@
         <input type="text" id="node-input-arduino">
     </div>
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
-        <input type="text" id="node-input-pin" placeholder="13">
-    </div>
-    <div class="form-row">
         <label for="node-input-state"><i class="fa fa-wrench"></i> <span data-i18n="arduino.label.type"></span></label>
         <select type="text" id="node-input-state" style="width: 200px;">
             <option value="OUTPUT" data-i18n="arduino.state.out.digital"></option>
@@ -86,6 +86,10 @@
             <option value="SERVO" data-i18n="arduino.state.out.servo"></option>
             <option value="STRING" data-i18n="arduino.state.out.string"></option>
         </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
+        <input type="text" id="node-input-pin" placeholder="13">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -108,7 +112,10 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",required:false},
+            pin: {value:"",validate: function(v) {
+               var ct = $("#node-input-state").val() || this.state;
+               return ct === 'STRING' || (v != '');
+            }},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -117,6 +124,7 @@
         icon: "arduino.png",
         align: "right",
         label: function() {
+            if (this.state === "STRING") { return "String"; }
             return this.name||"Pin: "+this.pin;
         },
         labelStyle: function() {
