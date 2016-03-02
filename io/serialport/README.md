@@ -14,15 +14,14 @@ this node - node-red-node-serialport@0.0.5
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install, usually
-this is ~/.node-red .
+Run the following command in your Node-RED user directory (typically `~/.node-red`):
 
-        npm install node-red-node-serialport
+        npm i node-red-node-serialport
 
 For versions on node.js prior to 4.x (ie v0.10.x and v0.12.x) please install using
 
         sudo npm i -g npm@2.x
-        npm install node-red-node-serialport
+        npm i node-red-node-serialport
 
 You may also have to install or upgrade GCC to be version 4.8 or better.
 Alternatively you can simply install the older version of this node.
@@ -54,7 +53,7 @@ It can either
  - wait for a timeout in milliseconds for the first character received
  - wait to fill a fixed sized buffer
 
-It then outputs **msg.payload** as either a UTF8 ascii string or a binary Buffer object.
+It then outputs `msg.payload` as either a UTF8 ascii string or a binary Buffer object.
 
 If no split character is specified, or a timeout or buffer size of 0, then a stream
 of single characters is sent - again either as ascii chars or size 1 binary buffers.
@@ -63,6 +62,6 @@ of single characters is sent - again either as ascii chars or size 1 binary buff
 
 Provides a connection to an outbound serial port.
 
-Only the **msg.payload** is sent.
+Only the `msg.payload` is sent.
 
 Optionally the new line character used to split the input can be appended to every message sent out to the serial port.

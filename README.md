@@ -57,7 +57,7 @@ Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **node-red-node-rbe** - *[rbe](function/rbe)*  - A simple node to provide report by exception and deadband / bandgap capability for simple inputs.
 
-**node-red-node-pidcontrol** - *[pidcontrol](function/pidcontrol)*  - A PID control node for numeric inputs - provides simple contoll loop feedback capability.
+**node-red-node-pidcontrol** - *[pidcontrol](function/PID)*  - A PID control node for numeric inputs - provides simple contoll loop feedback capability.
 
 **node-red-node-random** - *[random](function/random)*  - A simple random number generator - can generate integers for x to y - or floats between x and y.
 

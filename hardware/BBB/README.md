@@ -13,8 +13,8 @@ images - as they have node.js v0.10.x preinstalled.
 Install
 -------
 
-For Debian **Jessie** with kernel 4.1 run the following command in the root
-directory of your Node-RED install. This is usually `~/.node-red`
+For Debian **Jessie** with kernel 4.1 run the following command in your
+Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-beaglebone
 

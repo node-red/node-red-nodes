@@ -3,6 +3,21 @@ node-red-node-sensortag
 
 This node adds support to Node-RED to read from the Texas Instruments SensorTag.
 
+Install
+-------
+
+Run the following command in your Node-RED user directory - typically `~/.node-red`
+
+    npm i node-red-node-sensortag
+
+You will also need a suitable BLE dongle and an enabled Bluetooth stack - for example Bluez 5.2.x or better.
+On a Raspberry Pi this can be installed (as of Feb 2016) by
+
+    sudo apt-get install pi-bluetooth
+
+Usage
+-----
+
 The SensorTag is a Bluetooth LE device hosting the following sensors:
 
 * Humidity and Temperature
