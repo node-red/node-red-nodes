@@ -27,6 +27,7 @@
         <select type="text" id="node-input-state" style="width: 150px;">
             <option value="INPUT" data-i18n="arduino.state.in.digital"></option>
             <option value="ANALOG" data-i18n="arduino.state.in.analogue"></option>
+            <option value="STRING" data-i18n="arduino.state.in.string"></option>
         </select>
     </div>
     <div class="form-row">
@@ -83,6 +84,7 @@
             <option value="OUTPUT" data-i18n="arduino.state.out.digital"></option>
             <option value="PWM" data-i18n="arduino.state.out.analogue"></option>
             <option value="SERVO" data-i18n="arduino.state.out.servo"></option>
+            <option value="STRING" data-i18n="arduino.state.out.string"></option>
         </select>
     </div>
     <div class="form-row">
@@ -106,7 +108,7 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",required:true},
+            pin: {value:"",required:false},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
         },

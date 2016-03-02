@@ -102,6 +102,13 @@ module.exports = function(RED) {
                         node.send(msg);
                     });
                 }
+                if (node.state == "STRING") {
+                    node.board.on('sysex', function(e) {
+                        var string = new Buffer(e.data.slice(0, -1)).toString("utf8").replace(/\0/g, "");
+                        var msg = {payload:string, topic:"string"};
+                        node.send(msg);
+                    });
+                }
             });
         }
         else {
@@ -127,9 +134,10 @@ module.exports = function(RED) {
             node.board.on('connect', function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 //console.log("o",node.state,node.pin);
-                node.board.pinMode(node.pin, node.state);
+                
                 node.on("input", function(msg) {
                     if (node.state === "OUTPUT") {
+			node.board.pinMode(node.pin, node.state);
                         if ((msg.payload === true)||(msg.payload.toString() == "1")||(msg.payload.toString().toLowerCase() == "on")) {
                             node.board.digitalWrite(node.pin, true);
                         }
@@ -138,12 +146,14 @@ module.exports = function(RED) {
                         }
                     }
                     if (node.state === "PWM") {
+			node.board.pinMode(node.pin, node.state);
                         msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 255)) {
                             node.board.analogWrite(node.pin, msg.payload);
                         }
                     }
                     if (node.state === "SERVO") {
+			node.board.pinMode(node.pin, node.state);
                         msg.payload = parseInt((msg.payload * 1) + 0.5);
                         if ((msg.payload >= 0) && (msg.payload <= 180)) {
                             node.board.servoWrite(node.pin, msg.payload);
@@ -151,6 +161,16 @@ module.exports = function(RED) {
                     }
                     if (node.state === "SYSEX") {
                         node.board.sysex(msg.payload);
+                    }
+                    if (node.state === "STRING") {
+                        var bytes = new Buffer(msg.payload.toString(), "utf8");
+                        var data = [];
+                        for (var i = 0, length = bytes.length; i < length; i++) {
+                            data.push(bytes[i] & 0x7F);
+                            data.push((bytes[i] >> 7) & 0x7F);
+                        }
+                        data.push(0);
+                        node.board.sysex(0x71, data);
                     }
                 });
             });
