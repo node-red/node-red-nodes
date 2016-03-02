@@ -7,8 +7,7 @@ to write to a GPIO connected HD44780 style LCD panels.
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install.
-This is normally `~/.node-red`
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-pilcd
 
@@ -23,7 +22,7 @@ pin numbers that are connected to the RS, E, D4, D5, D6 and D7 pins of the LCD. 
 
         26,24,22,18,16,12
 
-Send the node a **msg.payload** with a string in it.
+Send the node a `msg.payload` with a string in it.
 
 Strings for the 2nd line of the display must start **2:** - the third start **3:** - and the fourth **4:** - For example
 

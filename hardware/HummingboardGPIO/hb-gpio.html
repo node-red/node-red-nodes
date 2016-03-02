@@ -52,9 +52,9 @@
 </script>
 
 <script type="text/x-red" data-help-name="hb-gpio in">
-    <p>Hummingboard GPIO input pin node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>Hummingboard GPIO input pin node. Generates a <code>msg.payload</code> with either a 0 or 1 depending on the state of the input pin.</p>
     <p>You may also enable the input pullup resitor or the pulldown resistor.</p>
-    <p>The <b>msg.topic</b> is set to <i>pi/{the pin number}</i></p>
+    <p>The <code>msg.topic</code> is set to <i>pi/{the pin number}</i></p>
     <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
     <p><b>Note:</b> requires the gpiohb command to be executeable as root in order to work.</p>
 </script>
@@ -120,7 +120,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="hb-gpio out">
-    <p>Hummingboard GPIO output pin node. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).</p>
+    <p>Hummingboard GPIO output pin node. Expects a <code>msg.payload</code> with either a 0 or 1 (or true or false).</p>
     <p>Will set the selected physical pin high or low depending on the value passed in.</p>
     <p>The initial value of the pin at deploy time can also be set to 0 or 1.</p>
     <p><b>Note:</b> we are using the actual physical pin numbers as they are easier to locate.</p>

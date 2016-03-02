@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-wemo",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "A Node-RED node to control a Belkin Wemo set of devices.",
     "dependencies"  : {
         "wemo"   : "0.2.*"

@@ -23,15 +23,15 @@ and either reload the udev rules or reboot.
 Install
 -------
 
-Run the following command in the user directory of your Node-RED install.
-Usually this is `~/.node-red`
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-blinkstick
+    npm i node-red-node-blinkstick
 
 Usage
 -----
 
-<i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <b>msg.payload</b> with one of:
+<i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node.
+Expects a `msg.payload` with one of:
 
 * A hex string <b>"#rrggbb"</b> triple
 * <b>"red,green,blue"</b> three 0-255 values as a string
@@ -43,5 +43,5 @@ An object payload can override any of the settings on the node. Omitted paramete
 
     { 'color': 'blue' }
     { 'task': 'blink', 'color': 'red' }
-    { 'task': 'pulse', 'color': 'gree', 'duration': 500 }
+    { 'task': 'pulse', 'color': 'green', 'duration': 500 }
     { 'task': 'morph', 'color': 'orange', 'duration': 500, 'steps': 20 }

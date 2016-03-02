@@ -9,8 +9,7 @@ to read range from an SRF05 Ultrasonic range sensor.
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install.
-This is usually `~/.node-red`
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-pisrf
 
@@ -19,12 +18,12 @@ Usage
 
 Raspberry Pi input from an SRF04 or SRF05 ultrasonic range finder.
 
-The configuartion requires two GPIO pin numbers, the trigger pin and the echo pin.
+The configuration requires two GPIO pin numbers, the trigger pin and the echo pin.
 These can be any spare valid Pi GPIO pins. e.g.
 
         7,11
 
-Outputs a <b>msg.payload</b> with a number representing the range in cm.
+Outputs a `msg.payload` with a number representing the range in cm.
 
 Produces one measure every 0.5s - but only if the distance is different from the previous reading.
 

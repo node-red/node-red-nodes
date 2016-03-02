@@ -12,7 +12,7 @@ We cannot automatically detect this so the user will have to apply some common s
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-piface
 
@@ -46,19 +46,19 @@ add-on board.
 ### Output
 
 The PiFace output node will set the selected relay, LED, or pin on or off
-depending on the value passed in. Expects a <b>msg.payload</b> with either a
+depending on the value passed in. Expects a `msg.payload` with either a
 1 or 0 (or true or false).
 
 Requires the WiringPi gpio command in order to work (see pre-reqs).
 
 ### Input
 
-The PiFace input node generates a <b>msg.payload</b> with either a 0 or 1
+The PiFace input node generates a `msg.payload` with either a 0 or 1
 depending on the state of the input pin.
 
 You may also enable the input pullup resistor if required.
 
-The <b>msg.topic</b> is set to <i>piface/{the pin number}</i>
+The `msg.topic` is set to <i>piface/{the pin number}</i>
 
 Requires the WiringPi gpio command in order to work (see pre-reqs).
 

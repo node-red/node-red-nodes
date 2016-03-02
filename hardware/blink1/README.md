@@ -22,18 +22,17 @@ and also setup these udev rules in `/etc/udev/rules.d/51-blink1.rules`
 Install
 -------
 
-Run the following command in the user directory of your Node-RED install.
-This is usually `~/.node-red`
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i node-red-node-blink1
 
 Usage
 -----
 
-Sends the <b>msg.payload</b> to a Thingm Blink(1) LED device. The payload can be any of the following:
+Sends the `msg.payload` to a Thingm Blink(1) LED device. The payload can be any of the following:
 
  - a three part csv string of r,g,b - e.g. red is  255,0,0
  - a hex colour #rrggbb - e.g. green is  #00FF00
  - a <a href="http://www.cheerlights.com/control-cheerlights">@cheerlights</a> colour name - e.g. blue
 
- The colours it accepts are - red, amber, green, blue, cyan, magenta, yellow, orange, pink, purple, white, warmwhite (or oldlace), black, (or off)
+ The colours it accepts are - red, amber, green, blue, cyan, magenta, yellow, orange, pink, purple, white, warmwhite (or oldlace), black, (and off)

@@ -1,49 +1,57 @@
-# node-red-node-physical-web
+node-red-node-physical-web
+==========================
 
-install with
+Nodes to allow Node-RED to act as an Eddystone BLE beacon.
 
-npm install node-red-node-physical-web
+Install
+-------
 
-Then on Linux follow these instrucations:
+Run the following command in your Node-RED user directory - typically `~/.node-red`
+
+    npm install node-red-node-physical-web
+
+Then on Linux follow these instructions:
 
 https://github.com/sandeepmistry/bleno#running-on-linux
 
 
-## Physical-Web out
+Usage
+-----
+
+### Physical-Web Out
 
 A node to allow Node-RED to act as an Eddystone beacon broadcasting URLs
 
-### Config
-
-The config window lets you set the inital URL, anouncement power and period for the Eddystone.
+The config window lets you set the initial URL, announcement power and period for the Eddystone.
 
 Any messages received will update the advertised URL from the msg.payload
 
-## Physical-Web in
+## Physical-Web In
 
 A node to scan for local Eddystones and output information about discovered URLs and TLM data.
 
 Two types of messages will be emitted:
 
-- **URL** -
+- **URL**
     - *type* - Eddystone type
     - *txPower* - Received power at 0m in dBm
     - *url* - The URL the beacon is broadcasting
     - *tlm* - TLM data, if the device is interleaving broadcasts
     - *rssi* - RSSI of the beacon
     - *distance* - Estimated distance to the beacon
-- **UID** -
+
+- **UID**
     - *type* - Eddystone type
     - *txPower* - Received power at 0m in dBm
-    - *namespace* - 10-byte ID of namspace
-    - *instance* - 6-byte ID insance
+    - *namespace* - 10-byte ID of namespace
+    - *instance* - 6-byte ID instance
     - *tlm* - TLM data, if the device is interleaving broadcasts
     - *rssi* - RSSI of the beacon
     - *distance* - Estimated distance to the beacon
 
 Where the tlm data will be in the following format
 
-- **tlm** -
+- **tlm**
     - *version* - TLM version
     - *vbatt* - Battery Voltage
     - *temp* - Temperature
