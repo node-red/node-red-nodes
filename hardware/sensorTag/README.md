@@ -3,17 +3,27 @@ node-red-node-sensortag
 
 This node adds support to Node-RED to read from the Texas Instruments SensorTag.
 
+Pre-requisites
+--------------
+
+You will need a suitable Bluetooth Low Energy (BLE) stack and drivers for your hardware
+- for example Bluez 5.2.x or better.
+
+#### Raspberry Pi
+
+Install Bluetooth drivers and bluez stack, and set executeable by non-root user
+
+    sudo apt-get install libbluetooth-dev libudev-dev pi-bluetooth
+    sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+
+
 Install
 -------
 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i node-red-node-sensortag
-
-You will also need a suitable BLE dongle and an enabled Bluetooth stack - for example Bluez 5.2.x or better.
-On a Raspberry Pi this can be installed (as of Feb 2016) by
-
-    sudo apt-get install pi-bluetooth
+    
 
 Usage
 -----

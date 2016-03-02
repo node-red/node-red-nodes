@@ -21,21 +21,21 @@
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-external-link"></i> Outputs</label>
-        <input type="checkbox" id="node-input-humidity" style="display: inline-block; width: auto; vertical-align: top;"> Temperature and Humidity<br/>
+        <input type="checkbox" id="node-input-humidity" style="display:inline-block; width:auto; vertical-align:top;"> Temperature and Humidity<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-temperature" style="display: inline-block; width: auto; vertical-align: top;"> IR Temperature<br/>
+        <input type="checkbox" id="node-input-temperature" style="display:inline-block; width:auto; vertical-align:top;"> IR Temperature<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-pressure" style="display: inline-block; width: auto; vertical-align: top;"> Pressure<br/>
+        <input type="checkbox" id="node-input-pressure" style="display:inline-block; width:auto; vertical-align:top;"> Pressure<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-magnetometer" style="display: inline-block; width: auto; vertical-align: top;"> Magnetometer<br/>
+        <input type="checkbox" id="node-input-magnetometer" style="display:inline-block; width:auto; vertical-align:top;"> Magnetometer<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-accelerometer" style="display: inline-block; width: auto; vertical-align: top;"> Accelerometer<br/>
+        <input type="checkbox" id="node-input-accelerometer" style="display:inline-block; width:auto; vertical-align:top;"> Accelerometer<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-gyroscope" style="display: inline-block; width: auto; vertical-align: top;"> Gyroscope<br/>
+        <input type="checkbox" id="node-input-gyroscope" style="display:inline-block; width:auto; vertical-align:top;"> Gyroscope<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-luxometer" style="display: inline-block; width: auto; vertical-align: top;"> Luminosity (CC2650 only)<br/>
+        <input type="checkbox" id="node-input-luxometer" style="display:inline-block; width:auto; vertical-align:top;"> Luminosity (CC2650 only)<br/>
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-keys" style="display: inline-block; width: auto; vertical-align: top;"> Button press<br/>
+        <input type="checkbox" id="node-input-keys" style="display:inline-block; width:auto; vertical-align:top;"> Button press<br/>
     </div>
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
@@ -54,7 +54,7 @@
       in Linux.</p>
    <p>The UUID field is the bluetooth mac address of the sensor tag, this is optional
       and can be used to bind to a specific SensorTag if you have more than one
-      active in range at the same time. <b>Note</b>: you can only have one SensorTag
+      active in range at the same time. <b>Note</b>:you can only have one SensorTag
       per node-red instance at the moment.</p>
    <p>The topic setting is a prefix that will be pre-pended to the name of the
       sensor that creates the reading. e.g. <i>sensorTag/temperature</i>. If
@@ -62,35 +62,36 @@
     <p><strong>NOTE:</strong> Only 1 sensorTag can be read from at a time,
       if you add more than one to the canvas then only the first to connect
       will work.</p>
+    <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('sensorTag',{
-        category: 'advanced-function',
+        category:'advanced-function',
         color:"GoldenRod",
-        defaults: {
-            name: {value:"sensorTag"},
-            topic: {value:"sensorTag"},
-            uuid: {value:undefined},
-            temperature: {value:true},
-            humidity: {value:true},
-            pressure: {value:true},
-            magnetometer: {value:true},
-            accelerometer: {value:true},
-            gyroscope: {value:true},
-            keys: {value:true},
-            luxometer: {value:false}
+        defaults:{
+            name:{value:"sensorTag"},
+            topic:{value:"sensorTag"},
+            uuid:{value:undefined},
+            temperature:{value:true},
+            humidity:{value:true},
+            pressure:{value:true},
+            magnetometer:{value:true},
+            accelerometer:{value:true},
+            gyroscope:{value:true},
+            keys:{value:true},
+            luxometer:{value:false}
         },
         inputs:0,
         outputs:1,
-        icon: "bluetooth.png",
-        label: function() {
+        icon:"bluetooth.png",
+        label:function() {
             return this.name||this.topic||"sensorTag";
         },
-        labelStyle: function() {
+        labelStyle:function() {
             return this.name?"node_label_italic":"";
         },
-        oneditsave: function() {
+        oneditsave:function() {
            var mac = $("#node-input-uuid").val();
            mac = mac.toLowerCase();
            // nasty hack as I can't get global replace to work
