@@ -30,7 +30,7 @@ module.exports = function(RED) {
             txPowerLevel: node.power,
             tlmPeriod: node.period,
             tlmCount: 2
-        }
+        };
 
         if (node.url) {
             try {
@@ -53,7 +53,7 @@ module.exports = function(RED) {
                 eddystoneBeacon.stop();
                 done();
             } catch(e) {
-                node.error('error shuttingdown beacon', e);
+                node.error('error shutting down beacon', e);
             }
         });
 

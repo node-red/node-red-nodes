@@ -69,7 +69,7 @@
     RED.nodes.registerType('PhysicalWeb in',{
         category: 'Physical_Web',
         defaults: {
-            name: {value:"Eddystone"},
+            name: {value:""},
             topic: {value:"eddystone"}
         },
         color: "#2F7ACD",
@@ -88,9 +88,9 @@
 <script type="text/x-red" data-template-name="PhysicalWeb out">
     <div class="form-row">
         <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
-        <input type="text" id="node-input-url" placeholder="http://...">
+        <input type="text" id="node-input-url" style="width:250px;" placeholder="http://...">
         <!--<button type="button" id="node-input-url-shorten" disabled=true>Shorten</button> -->
-        <p style="margin-left:100px;width: 70%">This URL needs to be shorter than 18 bytes
+        <p style="margin-left:100px; width:70%">This URL needs to be shorter than 18 bytes
         in length to meet Eddystone spec</p>
     </div>
     <div class="form-row">
@@ -121,10 +121,10 @@
     RED.nodes.registerType('PhysicalWeb out',{
         category: 'Physical_Web',
         defaults: {
-            name: {value:"Eddystone"},
-            url: {value:""},
-            power: {value:"-21"},
-            period: {value:"10"}
+            name: {value:""},
+            url: {value:"",validate:function(v) {return v.length<19; }},
+            power: {value:"-21",validate:RED.validators.number()},
+            period: {value:"10",validate:RED.validators.number()}
         },
         color: "#2F7ACD",
         inputs:1,

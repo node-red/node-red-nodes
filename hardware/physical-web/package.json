@@ -1,7 +1,7 @@
 {
   "name": "node-red-node-physical-web",
-  "version": "0.0.6",
-  "description": "A set of nodes to interact with the Phyical Web",
+  "version": "0.0.7",
+  "description": "Node-RED nodes to interact with the Physical Web",
   "main": "physical-web.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
