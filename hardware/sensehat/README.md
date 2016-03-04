@@ -75,18 +75,17 @@ be sent in a single message by separating them with newline (\n) characters.
 
 #### Set the colour of individual pixels
 
-Format: `&lt;x&gt;,&lt;y&gt;,&lt;colour&gt;`
+Format: `<x>,<y>,<colour>`
 
 `x` and `y` must either be a value in the range 0-7, or `*` to indicate the entire row or column.
 
 `colour` must be one of:
 
-    - the well-known <a href="https://en.wikipedia.org/wiki/Web_colors" target="_new">HTML colour names</a>
-     - eg `red` or `aquamarine`,
-    - the <a href="http://cheerlights.com/cheerlights-api/">CheerLights colour names</a>,
-    - a HEX colour value - eg `#aa9900`
-    - an RGB triple - `190,255,0`
-    - or simply `off`
+  - the well-known <a href="https://en.wikipedia.org/wiki/Web_colors" target="_new">HTML colour names</a> - eg `red` or `aquamarine`,
+  - the <a href="http://cheerlights.com/cheerlights-api/">CheerLights colour names</a>,
+  - a HEX colour value - eg `#aa9900`
+  - an RGB triple - `190,255,0`
+  - or simply `off`
 
 To set the entire screen to red: `*,*,red`
 
@@ -96,13 +95,13 @@ To set the four corners of the display to red, green (#00ff00), yellow and blue 
 
 #### Rotate the screen
 
-Format: `R&lt;angle&gt;`
+Format: `R<angle>`
 
 `angle` must be 0, 90, 180 or 270.
 
 #### Flip the screen
 
-Format: `R&lt;axis&gt;`
+Format: `R<axis>`
 
 `axis` must be either `H` or `V` to flip on the horizontal or vertical axis respectively.
 
@@ -113,6 +112,6 @@ as a text message to be scrolled across the screen.
 
 The following message properties can be used to customise the appearance:
 
-    - `msg.colour` - the colour of the text, default: `white`
-    - `msg.background` - the colour of the background, default: `off`
-    - `msg.speed` - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: `3`
+  - `msg.colour` - the colour of the text, default: `white`
+  - `msg.background` - the colour of the background, default: `off`
+  - `msg.speed` - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: `3`
