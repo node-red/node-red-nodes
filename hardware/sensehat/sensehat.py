@@ -157,7 +157,7 @@ def process_command(data):
       for p in range(0,len(s),5):
         SH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
     elif data[0] == "T":
-      data = data[1:].strip()
+      data = data[1:]
       tcol = (255,255,255)
       bcol = (0,0,0)
       speed = 0.1
