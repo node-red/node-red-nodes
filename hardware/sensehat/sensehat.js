@@ -18,6 +18,7 @@ module.exports = function(RED) {
     "use strict";
     var fs = require('fs');
     var spawn = require('child_process').spawn;
+    var colours = require('./colours');
 
     var hatCommand = __dirname+'/sensehat';
 
@@ -198,9 +199,15 @@ module.exports = function(RED) {
                 } else {
                     done();
                 }
+            },
+            send: function(msg) {
+                if (hat) {
+                    hat.stdin.write(msg+'\n');
+                }
             }
         }
     })();
+
 
     function SenseHatInNode(n) {
         RED.nodes.createNode(this,n);
@@ -215,4 +222,115 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("rpi-sensehat in",SenseHatInNode);
+
+    function SenseHatOutNode(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        HAT.open(this);
+
+        node.on("close", function(done) {
+            HAT.close(this,done);
+        });
+
+        node.on("input",function(msg) {
+            var command;
+            var parts;
+            var col;
+            if (typeof msg.payload === 'string') {
+                var lines = msg.payload.split("\n");
+                lines.forEach(function(line) {
+                    command = null;
+                    col = colours.getRGB(line);
+                    if ( /^(([0-7]|\*),([0-7]|\*),(\d{1,3},\d{1,3},\d{1,3}|#[a-f0-9]{3,6}|[a-z]+))(,([0-7]|\*),([0-7]|\*),(\d{1,3},\d{1,3},\d{1,3}|#[a-f0-9]{3,6}|[a-z]+))*$/i.test(line)) {
+                        parts = line.split(",");
+                        var expanded = [];
+                        var i=0;
+                        var j=0;
+                        while (i<parts.length) {
+                            var x = parts[i++];
+                            var y = parts[i++];
+                            col = parts[i++];
+                            if (/#[a-f0-9]{3,6}|[a-z]/i.test(col)) {
+                                col = colours.getRGB(col);
+                                if (col === null) {
+                                    // invalid colour, go no further
+                                    return;
+                                }
+                            } else {
+                                col += ","+parts[i++]+","+parts[i++];
+                            }
+                            if (x!=='*' && y!=='*') {
+                                expanded.push([x,y,col]);
+                            } else if (x == '*' && y == '*') {
+                                for (j=0;j<8;j++) {
+                                    for (var k=0;k<8;k++) {
+                                        expanded.push([j,k,col]);
+                                    }
+                                }
+                            } else if (x == '*') {
+                                for (j=0;j<8;j++) {
+                                    expanded.push([j,y,col]);
+                                }
+                            } else if (y == '*') {
+                                for (j=0;j<8;j++) {
+                                    expanded.push([x,j,col]);
+                                }
+                            }
+                        }
+                        if (expanded.length > 0) {
+                            var pixels = {};
+                            var rules = [];
+                            for (i=expanded.length-1;i>=0;i--) {
+                                var rule = expanded[i];
+                                if (!pixels[rule[0]+","+rule[1]]) {
+                                    rules.unshift(rule.join(","));
+                                    pixels[rule[0]+","+rule[1]] = true;
+                                }
+                            }
+                            if (rules.length > 0) {
+                                command = "P"+rules.join(",");
+                            }
+                        }
+                    }
+
+
+                    if (!command) {
+                        if (/^R(0|90|180|270)$/i.test(line)) {
+                            command = line.toUpperCase();
+                        } else if (/^F(H|V)$/i.test(line)) {
+                            command = line.toUpperCase();
+                        } else {
+                            var textCol = colours.getRGB(msg.color);
+                            var backCol = colours.getRGB(msg.background);
+                            var speed = null;
+                            if (!isNaN(msg.speed)) {
+                                speed = msg.speed;
+                            }
+                            command = "T";
+                            if (textCol) {
+                                command += textCol;
+                                if (backCol) {
+                                    command += ","+backCol;
+                                }
+                            }
+                            if (speed) {
+                                var s = parseInt(speed);
+                                if (s >= 1 && s <= 5) {
+                                    s = 0.1 + (3-s)*0.03;
+                                }
+                                command = command + ((command.length === 1)?"":",") + s;
+                            }
+                            command += ":" + line;
+                        }
+                    }
+                    if (command) {
+                        //console.log(command);
+                        HAT.send(command);
+                    }
+                });
+            }
+        });
+    }
+    RED.nodes.registerType("rpi-sensehat out",SenseHatOutNode);
+
 }

@@ -16,7 +16,7 @@
 #  C[R,G,B] - clear to colour (or off if no RGB provided)
 #  R[rot] - rotate by rot (0,90,180,270)
 #  P[x,y,R,G,B]+ - set individual pixel(s) to a colour
-#  T[R,G,B:]Message - scroll a message (nb: if message contains ':' it must be prefixed with ':')
+#  T[R,G,B[,R,G,B][,S]:]Message - scroll a message (nb: if message contains ':' it must be prefixed with ':')
 #  F[H|V] - flip horizontal|vertical
 #  X[0|1] - high frequency reporting (accel/gyro/orientation/compass) off|on
 #  Y[0|1] - low frequency reporting (temperature/humidity/pressure) off|on
@@ -32,8 +32,11 @@ import sys
 import glob
 import time
 import errno
+import ctypes
 import select
 import struct
+import inspect
+import threading
 
 from sense_hat import SenseHat
 
@@ -69,40 +72,48 @@ lf_interval = 1
 hf_enabled = False
 lf_enabled = False
 
+scroll = None
+
+class ScrollThread(threading.Thread):
+  def __init__(self,fcol,bcol,speed,message):
+    threading.Thread.__init__(self)
+    self.fcol = fcol
+    self.bcol = bcol
+    self.message = message
+    self.speed = speed
+
+  def run(self):
+    global SH
+    old_rotation = SH.rotation
+
+    try:
+      SH.show_message(self.message,text_colour=self.fcol,back_colour=self.bcol,scroll_speed=self.speed)
+    except:
+      SH.set_rotation(old_rotation,False)
+      SH.clear(self.bcol);
+      pass
+
+  def interrupt(self):
+    if not self.isAlive():
+      raise threading.ThreadError()
+    for thread_id, thread_object in threading._active.items():
+      if thread_object == self:
+        r = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id,ctypes.py_object(StandardError))
+        if r == 1:
+          pass
+        else:
+          if r > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+          raise SystemError()
+        return
+
+
+
 
 def process_command(data):
-  global hf_enabled, lf_enabled
-  if data[0] == "R":
-    SH.set_rotation(float(data[1:]))
-  elif data[0] == "C":
-    data = data[1:].strip()
-    if len(data) > 0:
-        s = data.split(",")
-        col = (int(s[0]),int(s[1]),int(s[2]))
-    else:
-        col = (0,0,0)
-    SH.clear(col)
-  elif data[0] == "P":
-    data = data[1:].strip()
-    s = data.split(',')
-    for p in range(0,len(s),5):
-      SH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
-  elif data[0] == "T":
-    data = data[1:].strip()
-    col = (255,255,255)
-    s = data.split(':',1)
-    if len(s) == 2:
-      data = s[1]
-      if len(s[0]) > 0:
-        c = s[0].split(",")
-        col = (int(c[0]),int(c[1]),int(c[2]))
-    SH.show_message(data,text_colour=col)
-  elif data[0] == "F":
-    if data[1] == "H":
-      SH.flip_h()
-    elif data[1] == "V":
-      SH.flip_v()
-  elif data[0] == "X":
+  global hf_enabled, lf_enabled,scroll
+
+  if data[0] == "X":
     if data[1] == '0':
       hf_enabled = False
     else:
@@ -112,6 +123,61 @@ def process_command(data):
       lf_enabled = False
     else:
       lf_enabled = True
+  else:
+    if threading.activeCount() == 2:
+      scroll.interrupt()
+      while scroll.isAlive():
+          time.sleep(0.01)
+          try:
+            scroll.interrupt()
+          except:
+            pass
+    if data[0] == "R":
+      SH.set_rotation(float(data[1:]))
+    elif data[0] == "C":
+      data = data[1:].strip()
+      if len(data) > 0:
+          s = data.split(",")
+          col = (int(s[0]),int(s[1]),int(s[2]))
+      else:
+          col = (0,0,0)
+      SH.clear(col)
+    elif data[0] == "P":
+      data = data[1:].strip()
+      s = data.split(',')
+      for p in range(0,len(s),5):
+        SH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
+    elif data[0] == "T":
+      data = data[1:].strip()
+      tcol = (255,255,255)
+      bcol = (0,0,0)
+      speed = 0.1
+      s = data.split(':',1)
+      if len(s) == 2:
+        data = s[1]
+        if len(s[0]) > 0:
+          c = s[0].split(",")
+          if len(c) == 1:
+            speed = float(c[0])
+          elif len(c) == 3:
+            tcol = (int(c[0]),int(c[1]),int(c[2]))
+          if len(c) == 4:
+            tcol = (int(c[0]),int(c[1]),int(c[2]))
+            speed = float(c[3])
+          elif len(c) == 6:
+            tcol = (int(c[0]),int(c[1]),int(c[2]))
+            bcol = (int(c[3]),int(c[4]),int(c[5]))
+          elif len(c) == 7:
+            tcol = (int(c[0]),int(c[1]),int(c[2]))
+            bcol = (int(c[3]),int(c[4]),int(c[5]))
+            speed = float(c[6])
+      scroll = ScrollThread(tcol,bcol,speed,data);
+      scroll.start()
+    elif data[0] == "F":
+      if data[1] == "H":
+        SH.flip_h()
+      elif data[1] == "V":
+        SH.flip_v()
 
 def idle_work():
   global last_hf_time, last_lf_time
