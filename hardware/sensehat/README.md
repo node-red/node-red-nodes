@@ -110,8 +110,11 @@ Format: `R<axis>`
 If `msg.payload` is not recognised as any of the above commands, it is treated
 as a text message to be scrolled across the screen.
 
+If the text is a single character, it will be displayed without scrolling. To
+scroll a single character, append a blank space after it - `"A "`.</p>
+
 The following message properties can be used to customise the appearance:
 
-  - `msg.colour` - the colour of the text, default: `white`
+  - `msg.color` - the colour of the text, default: `white`
   - `msg.background` - the colour of the background, default: `off`
   - `msg.speed` - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: `3`

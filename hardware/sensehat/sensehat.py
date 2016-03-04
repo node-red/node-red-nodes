@@ -17,6 +17,7 @@
 #  R[rot] - rotate by rot (0,90,180,270)
 #  P[x,y,R,G,B]+ - set individual pixel(s) to a colour
 #  T[R,G,B[,R,G,B][,S]:]Message - scroll a message (nb: if message contains ':' it must be prefixed with ':')
+#                                 if message is a single char, uses show_letter instead
 #  F[H|V] - flip horizontal|vertical
 #  X[0|1] - high frequency reporting (accel/gyro/orientation/compass) off|on
 #  Y[0|1] - low frequency reporting (temperature/humidity/pressure) off|on
@@ -173,8 +174,11 @@ def process_command(data):
             tcol = (int(c[0]),int(c[1]),int(c[2]))
             bcol = (int(c[3]),int(c[4]),int(c[5]))
             speed = float(c[6])
-      scroll = ScrollThread(tcol,bcol,speed,data);
-      scroll.start()
+      if len(data) > 1:
+        scroll = ScrollThread(tcol,bcol,speed,data);
+        scroll.start()
+      else:
+        SH.show_letter(data,text_colour=tcol,back_colour=bcol)
     elif data[0] == "F":
       if data[1] == "H":
         SH.flip_h()

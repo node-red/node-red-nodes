@@ -232,7 +232,7 @@ module.exports = function(RED) {
             HAT.close(this,done);
         });
         var handleTextMessage = function(line,msg) {
-            var textCol = colours.getRGB(msg.color);
+            var textCol = colours.getRGB(msg.color||msg.colour);
             var backCol = colours.getRGB(msg.background);
             var speed = null;
             if (!isNaN(msg.speed)) {

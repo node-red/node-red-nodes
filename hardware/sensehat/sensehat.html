@@ -122,9 +122,11 @@ the horizontal or vertical axis respectively.</p>
 <p><b>Scroll a message</b></p>
 <p>If <code>msg.payload</code> is not recognised as any of the above commands,
 it is treated as a text message to be scrolled across the screen.</p>
+<p>If the text is a single character, it will be displayed without scrolling.
+To scroll a single character, append a blank space after it - <code>"A "</code>.</p>
 <p>The following message properties can be used to customise the appearance:</p>
 <ul>
-    <li><code>msg.colour</code> - the colour of the text, default: <code>white</code></li>
+    <li><code>msg.color</code> - the colour of the text, default: <code>white</code></li>
     <li><code>msg.background</code> - the colour of the background, default: <code>off</code></li>
     <li><code>msg.speed</code> - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: <code>3</code></li>
 </ul>
