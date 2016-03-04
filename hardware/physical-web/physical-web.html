@@ -24,50 +24,41 @@
 
 <script type="text/x-red" data-help-name="PhysicalWeb in">
 <p><a href="https://google.github.io/physical-web/">Physical Web</a> node to scan for Eddystone beacons.</p>
-<p>This node scans for Eddystones and publishes what it finds. It can output 2 types of message</p>
-<ul>
-    <li><strong>URL</strong> -
-        <ul>
-            <li>type - Eddystone type</li>
-            <li>txPower - Received power at 0m in dBm</li>
-            <li>url - The URL the beacon is broadcasting</li>
-            <li>tlm - TLM data, if the device is interleaving broadcasts</li>
-            <li>rssi - RSSI of the beacon</li>
-            <li>distance - Estimated distance to the beacon</li>
-        </ul>
-    </li>
-    <li><strong>UID</strong> -
-        <ul>
-            <li>type - Eddystone type</li>
-            <li>txPower - Received power at 0m in dBm</li>
-            <li>namespace - 10-byte ID of namspace</li>
-            <li>instance - 6-byte ID insance</li>
-            <li>tlm - TLM data, if the device is interleaving broadcasts</li>
-            <li>rssi - RSSI of the beacon</li>
-            <li>distance - Estimated distance to the beacon</li>
-        </ul>
-    </li>
-</ul>
-<p>Where the tlm data will be in the following format</p>
-<ul>
-    <li>tlm -
-        <ul>
-            <li>version - TML version</li>
-            <li>vbatt - Battery Voltage</li>
-            <li>temp - Temperature</li>
-            <li>advCnt - Advertising PDU count</li>
-            <li>secCnt - Time since power on or reboot</li>
-        </ul>
-    </li>
-    <li>rssi - RSSI of diecovered beacon</li>
-    <li>distance - Approximate distance to beacon</li>
+<p>This node scans for Eddystones and publishes what it finds. It can output 2 types of `msg.payload`</p>
+<p>Either a <b>URL</b> type:</p>
+    <ul>
+        <li>`type` - Eddystone type</li>
+        <li>`txPower` - Received power at 0m in dBm</li>
+        <li>`url` - The URL the beacon is broadcasting</li>
+        <li>`tlm` - TLM data, if the device is interleaving broadcasts</li>
+        <li>`rssi` - RSSI of the beacon</li>
+        <li>`distance` - Estimated distance to the beacon</li>
+    </ul>
+<p>or a <b>UID</b> type:</p>
+    <ul>
+        <li>`type` - Eddystone type</li>
+        <li>`txPower` - Received power at 0m in dBm</li>
+        <li>`namespace` - 10-byte ID of namspace</li>
+        <li>`instance` - 6-byte ID insance</li>
+        <li>`rssi` - RSSI of the beacon</li>
+        <li>`distance` - Estimated distance to the beacon</li>
+        <li>`tlm` - TLM data, if the device is interleaving broadcasts</li>
+    </ul>
+<p>Where the `tlm` data will be an object containing:</p>
+    <ul>
+        <li>`version` - TML version</li>
+        <li>`vbatt` - Battery Voltage</li>
+        <li>`temp` - Temperature</li>
+        <li>`advCnt` - Advertising PDU count</li>
+        <li>`secCnt` - Time since power on or reboot</li>
+    </ul>
 </ul>
 <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('PhysicalWeb in',{
-        category: 'Physical_Web',
+        category: 'input',
         defaults: {
             name: {value:""},
             topic: {value:"eddystone"}
@@ -110,21 +101,22 @@
 
 <script type="text/x-red" data-help-name="PhysicalWeb out">
     <p><a href="https://google.github.io/physical-web/">Physical Web</a> beacon node.</p>
-    <p>This node takes the value of <code>msg.payload</code> and publishes it as an Eddystone URL
+    <p>This node can take the value of <code>msg.payload</code> and publishes it as an Eddystone URL
     announcement. URLs <b>must</b> be less than 18 bytes long, so should be run through a shortner first.</p>
-    <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (ms)
-    between anouncements</p>
+    <p>You can also preset the URL, in which case the node does not require any input.</p>
+    <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the period (S)
+    between anouncements.</p>
     <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('PhysicalWeb out',{
-        category: 'Physical_Web',
+        category: 'output',
         defaults: {
             name: {value:""},
             url: {value:"",validate:function(v) {return v.length<19; }},
             power: {value:"-21",validate:RED.validators.number()},
-            period: {value:"10",validate:RED.validators.number()}
+            period: {value:"1",validate:RED.validators.number()}
         },
         color: "#2F7ACD",
         inputs:1,

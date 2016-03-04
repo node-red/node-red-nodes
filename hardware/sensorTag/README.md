@@ -11,7 +11,7 @@ You will need a suitable Bluetooth Low Energy (BLE) stack and drivers for your h
 
 #### Raspberry Pi
 
-Install Bluetooth drivers and bluez stack, and set executeable by non-root user
+Install Bluetooth drivers and bluez stack, and set executable by non-root user
 
     sudo apt-get install libbluetooth-dev libudev-dev pi-bluetooth
     sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
@@ -23,7 +23,7 @@ Install
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i node-red-node-sensortag
-    
+
 
 Usage
 -----
@@ -51,6 +51,4 @@ these sensors will be sent as a JSON object payload with the sensor name appende
 * Luxometer - { topic: [topic_prefix]/luxometer , payload: { lux: 212 } }
 * Buttons - { topic: [topic_prefix]/keys , payload: { left: true, right: false} }
 
-The sensorTag library used by this node only supports using 1 SensorTag at a time.
-
-**NOTE:** On Linux Node-RED needs to be run as root in order or access the Linux Bluetooth 4.0 system calls
+**Note**: This sensorTag library only supports using 1 SensorTag at a time.

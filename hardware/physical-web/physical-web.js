@@ -18,12 +18,13 @@ module.exports = function(RED) {
     "use strict";
     var eddystoneBeacon = require('eddystone-beacon');
     var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
+    var eddyBeacon = false;
 
     function Beacon(n) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.power = n.power;
-        node.period = n.period;
+        node.period = n.period * 10;
         node.url = n.url;
 
         node.options = {
@@ -33,23 +34,32 @@ module.exports = function(RED) {
         };
 
         if (node.url) {
-            try {
-                eddystoneBeacon.advertiseUrl(node.url, node.options);
-            } catch(e) {
-                node.error('Error setting beacon URL', e);
+            if (!eddyBeacon) {
+                eddyBeacon = true;
+                try {
+                    eddystoneBeacon.advertiseUrl(node.url, node.options);
+                    node.status({fill:"green",shape:"dot",text:node.url});
+                } catch(e) {
+                    node.error('Error setting beacon URL', e);
+                }
             }
+            else {node.warn('Beacon node already in use');}
         }
 
         node.on('input', function(msg) {
             try {
                 eddystoneBeacon.advertiseUrl(msg.payload, node.options);
+                node.status({fill:"green",shape:"dot",text:node.url.toString()});
             } catch(e) {
+                node.status({fill:"red",shape:"circle",text:"URL too long"});
                 node.error('error updating beacon URL', e);
             }
         });
 
         node.on('close', function(done) {
+            eddyBeacon = false;
             try {
+                node.status({});
                 eddystoneBeacon.stop();
                 done();
             } catch(e) {
