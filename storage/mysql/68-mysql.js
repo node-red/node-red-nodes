@@ -103,8 +103,11 @@ module.exports = function(RED) {
                     //console.log("query:",msg.topic);
                     var bind = Array.isArray(msg.payload) ? msg.payload : [];
                     node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                        if (err) { node.error(err,msg); }
-                        else {
+                        if (err) {
+							node.warn(err);
+							msg.error = err;
+							node.send(msg);
+						}else {
                             msg.payload = rows;
                             node.send(msg);
                         }
