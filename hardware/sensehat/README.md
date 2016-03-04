@@ -39,9 +39,9 @@ per second. The `topic` is set to `motion` and the `payload` is an object with t
 following values:
 
   - `acceleration.x/y/z` : the acceleration intensity in Gs
-  -`gyroscope.x/y/z` : the rotational intensity in radians/s
-  -`orientation.roll/pitch/yaw` : the angle of the axis in degrees
-  -`compass` : the direction of North in degrees
+  - `gyroscope.x/y/z` : the rotational intensity in radians/s
+  - `orientation.roll/pitch/yaw` : the angle of the axis in degrees
+  - `compass` : the direction of North in degrees
 
 #### Environment events
 
@@ -50,20 +50,20 @@ sensors. They are sent at a rate of approximately 1 per second.  The `topic`
 is set to `environment` and the `payload` is an object
 with the following values:
 
-  -`temperature` : degrees Celsius
-  -`humidity` : percentage of relative humidity
-  -`pressure` : Millibars
+  - `temperature` : degrees Celsius
+  - `humidity` : percentage of relative humidity
+  - `pressure` : Millibars
 
 #### Joystick events
 
 Joystick events are sent when the Sense HAT joystick is interacted with. The
 `topic` is set to `joystick` and the `payload` is an object with the following values:
 
-  -`key` : one of `UP`, `DOWN`, `LEFT`, `RIGHT`, `ENTER`
-  -`state` : the state of the key:
-    -`0` : the key has been released
-    -`1` : the key has been pressed
-    -`2` : the key is being held down
+  - `key` : one of `UP`, `DOWN`, `LEFT`, `RIGHT`, `ENTER`
+  - `state` : the state of the key:
+    - `0` : the key has been released
+    - `1` : the key has been pressed
+    - `2` : the key is being held down
 
 
 ### Output Node
