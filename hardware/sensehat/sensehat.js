@@ -231,12 +231,38 @@ module.exports = function(RED) {
         node.on("close", function(done) {
             HAT.close(this,done);
         });
+        var handleTextMessage = function(line,msg) {
+            var textCol = colours.getRGB(msg.color);
+            var backCol = colours.getRGB(msg.background);
+            var speed = null;
+            if (!isNaN(msg.speed)) {
+                speed = msg.speed;
+            }
+            var command = "T";
+            if (textCol) {
+                command += textCol;
+                if (backCol) {
+                    command += ","+backCol;
+                }
+            }
+            if (speed) {
+                var s = parseInt(speed);
+                if (s >= 1 && s <= 5) {
+                    s = 0.1 + (3-s)*0.03;
+                }
+                command = command + ((command.length === 1)?"":",") + s;
+            }
+            command += ":" + line;
+            return command;
+        }
 
         node.on("input",function(msg) {
             var command;
             var parts;
             var col;
-            if (typeof msg.payload === 'string') {
+            if (typeof msg.payload === 'number') {
+                HAT.send(handleTextMessage(""+msg.payload,msg));
+            } else if (typeof msg.payload === 'string') {
                 var lines = msg.payload.split("\n");
                 lines.forEach(function(line) {
                     command = null;
@@ -300,27 +326,7 @@ module.exports = function(RED) {
                         } else if (/^F(H|V)$/i.test(line)) {
                             command = line.toUpperCase();
                         } else {
-                            var textCol = colours.getRGB(msg.color);
-                            var backCol = colours.getRGB(msg.background);
-                            var speed = null;
-                            if (!isNaN(msg.speed)) {
-                                speed = msg.speed;
-                            }
-                            command = "T";
-                            if (textCol) {
-                                command += textCol;
-                                if (backCol) {
-                                    command += ","+backCol;
-                                }
-                            }
-                            if (speed) {
-                                var s = parseInt(speed);
-                                if (s >= 1 && s <= 5) {
-                                    s = 0.1 + (3-s)*0.03;
-                                }
-                                command = command + ((command.length === 1)?"":",") + s;
-                            }
-                            command += ":" + line;
+                            command = handleTextMessage(line,msg);
                         }
                     }
                     if (command) {

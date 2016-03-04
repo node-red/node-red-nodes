@@ -89,9 +89,11 @@ class ScrollThread(threading.Thread):
     try:
       SH.show_message(self.message,text_colour=self.fcol,back_colour=self.bcol,scroll_speed=self.speed)
     except:
-      SH.set_rotation(old_rotation,False)
-      SH.clear(self.bcol);
-      pass
+      try:
+        SH.set_rotation(old_rotation,False)
+        SH.clear(self.bcol);
+      except:
+        pass
 
   def interrupt(self):
     if not self.isAlive():
