@@ -21,6 +21,7 @@
 #  F[H|V] - flip horizontal|vertical
 #  X[0|1] - high frequency reporting (accel/gyro/orientation/compass) off|on
 #  Y[0|1] - low frequency reporting (temperature/humidity/pressure) off|on
+#  D[0|1] - Set light level low|high
 #
 # Outputs:
 #  Xaccel.x,y,z,gyro.x,y,z,orientation.roll,pitch,yaw,compass
@@ -126,6 +127,11 @@ def process_command(data):
       lf_enabled = False
     else:
       lf_enabled = True
+  elif data[0] == "D":
+    if data[1] == '0':
+      SH.low_light = True
+    else:
+      SH.low_light = False
   else:
     if threading.activeCount() == 2:
       scroll.interrupt()

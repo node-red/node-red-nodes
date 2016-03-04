@@ -118,3 +118,9 @@ The following message properties can be used to customise the appearance:
   - `msg.color` - the colour of the text, default: `white`
   - `msg.background` - the colour of the background, default: `off`
   - `msg.speed` - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: `3`
+
+#### Set the screen brightness
+
+Format: `D<level>`
+
+`level` must be 0 (low) or 1 (high).

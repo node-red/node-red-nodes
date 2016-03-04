@@ -232,8 +232,8 @@ module.exports = function(RED) {
             HAT.close(this,done);
         });
         var handleTextMessage = function(line,msg) {
-            var textCol = colours.getRGB(msg.color||msg.colour);
-            var backCol = colours.getRGB(msg.background);
+            var textCol = colours.getRGB(msg.color||msg.colour)||"255,255,255";
+            var backCol = colours.getRGB(msg.background)||"0,0,0";
             var speed = null;
             if (!isNaN(msg.speed)) {
                 speed = msg.speed;
@@ -245,6 +245,7 @@ module.exports = function(RED) {
                     command += ","+backCol;
                 }
             }
+
             if (speed) {
                 var s = parseInt(speed);
                 if (s >= 1 && s <= 5) {
@@ -324,6 +325,8 @@ module.exports = function(RED) {
                         if (/^R(0|90|180|270)$/i.test(line)) {
                             command = line.toUpperCase();
                         } else if (/^F(H|V)$/i.test(line)) {
+                            command = line.toUpperCase();
+                        } else if (/^D(0|1)$/i.test(line)) {
                             command = line.toUpperCase();
                         } else {
                             command = handleTextMessage(line,msg);
