@@ -52,8 +52,8 @@
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-               var ct = $("#node-input-state").val() || this.state;
-               return ct === 'STRING' || (v != '');
+                var ct = $("#node-input-state").val() || this.state;
+                return ct === 'STRING' || (v !== '');
             }},
             state: {value:"INPUT",required:true},
             arduino: {type:"arduino-board"}
@@ -113,8 +113,8 @@
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-               var ct = $("#node-input-state").val() || this.state;
-               return ct === 'STRING' || (v != '');
+                var ct = $("#node-input-state").val() || this.state;
+                return ct === 'STRING' || (v !== '');
             }},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
@@ -166,7 +166,7 @@
                     $("#node-config-lookup-serial-icon").removeClass('spinner');
                     $("#node-config-lookup-serial").removeClass('disabled');
                     var ports = [];
-                    $.each(data, function(i, port){
+                    $.each(data, function(i, port) {
                         ports.push(port);
                     });
                     $("#node-config-input-device").autocomplete({
