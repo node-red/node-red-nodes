@@ -53,9 +53,9 @@ def get_stick():
               if f.read().strip() == 'Raspberry Pi Sense HAT Joystick':
                   return os.path.join('/dev', 'input', os.path.basename(evdev))
       except IOError as e:
-          if e.errno != errno.ENOENT:
-              raise
-  raise RuntimeError('unable to locate SenseHAT joystick device')
+          sys.exit(1)
+  sys.exit(1)
+
 
 
 stick_file = io.open(get_stick(),'rb')
@@ -217,20 +217,23 @@ def process_joystick():
 
 def main_loop():
   # while still waiting for input on at least one file
-  while files:
-    ready = select.select(files, [], [], 0.01)[0]
-    if not ready:
-      idle_work()
-    else:
-      for file in ready:
-        if file == sys.stdin:
-          line = file.readline()
-          if not line: # EOF, remove file from input list
-            sys.exit(0)
-          elif line.rstrip(): # optional: skipping empty lines
-            process_command(line)
-        else:
-          process_joystick()
+  try:
+    while files:
+      ready = select.select(files, [], [], 0.01)[0]
+      if not ready:
+        idle_work()
+      else:
+        for file in ready:
+          if file == sys.stdin:
+            line = file.readline()
+            if not line: # EOF, remove file from input list
+              sys.exit(0)
+            elif line.rstrip(): # optional: skipping empty lines
+              process_command(line)
+          else:
+            process_joystick()
+  except:
+    sys.exit(0)
 
 try:
     main_loop()

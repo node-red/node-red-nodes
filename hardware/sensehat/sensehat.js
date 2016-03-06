@@ -24,7 +24,7 @@ module.exports = function(RED) {
 
     if ( !(1 & parseInt ((fs.statSync(hatCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
         RED.log.error(hatCommand + " command is not executable");
-        throw "Error : "+RED._("rpi-gpio.errors.mustbeexecutable");
+        throw "Error : "+RED._("node-red:rpi-gpio.errors.mustbeexecutable");
     }
 
     // the magic to make python print stuff immediately
@@ -104,24 +104,28 @@ module.exports = function(RED) {
                         for (var j=0;j<users.length;j++) {
                             var node = users[j];
                             if (node.motion && msg.topic === "motion") {
-                                node.send(msg);
+                                node.send(RED.util.cloneMessage(msg));
                             } else if (node.env && msg.topic === 'environment') {
-                                node.send(msg);
+                                node.send(RED.util.cloneMessage(msg));
                             } else if (node.stick && msg.topic === 'joystick') {
-                                node.send(msg);
+                                node.send(RED.util.cloneMessage(msg));
                             }
                         }
                     }
                 }
             });
-
             hat.stderr.on('data', function (data) {
                 if (RED.settings.verbose) { RED.log.error("err: "+data+" :"); }
             });
+            hat.stderr.on('error', function(err) { });
+            hat.stdin.on('error', function(err) { });
 
             hat.on('close', function (code) {
                 hat = null;
-                if (RED.settings.verbose) { RED.log.info(RED._("rpi-gpio.status.closed")); }
+                users.forEach(function(node) {
+                    node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+                });
+                if (RED.settings.verbose) { RED.log.info(RED._("node-red:rpi-gpio.status.closed")); }
                 if (onclose) {
                     onclose();
                     onclose = null;
@@ -133,9 +137,11 @@ module.exports = function(RED) {
             });
 
             hat.on('error', function (err) {
-                if (err.errno === "ENOENT") { RED.log.error(RED._("rpi-gpio.errors.commandnotfound")); }
-                else if (err.errno === "EACCES") { RED.log.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
-                else { RED.log.error(RED._("rpi-gpio.errors.error")+': ' + err.errno); }
+                if (err.errno === "ENOENT") { RED.log.error(RED._("node-red:rpi-gpio.errors.commandnotfound")); }
+                else if (err.errno === "EACCES") { RED.log.error(RED._("node-red:rpi-gpio.errors.commandnotexecutable")); }
+                else {
+                    RED.log.error(RED._("node-red:rpi-gpio.errors.error")+': ' + err.errno);
+                }
             });
 
             if (motionUsers > 0) {
@@ -164,6 +170,9 @@ module.exports = function(RED) {
             open: function(node) {
                 if (!hat) {
                     connect();
+                }
+                if (!reconnectTimer) {
+                    node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 }
 
                 if (node.motion) {
@@ -215,6 +224,7 @@ module.exports = function(RED) {
         this.env = n.env;
         this.stick = n.stick;
         var node = this;
+        node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
         HAT.open(this);
 
         node.on("close", function(done) {
@@ -226,6 +236,8 @@ module.exports = function(RED) {
     function SenseHatOutNode(n) {
         RED.nodes.createNode(this,n);
         var node = this;
+        node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+
         HAT.open(this);
 
         node.on("close", function(done) {
