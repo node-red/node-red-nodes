@@ -43,7 +43,7 @@ module.exports = function(RED) {
                     node.error('Error setting beacon URL', e);
                 }
             }
-            else {node.warn('Beacon node already in use');}
+            else {node.warn('Beacon already in use');}
         }
 
         node.on('input', function(msg) {
@@ -88,6 +88,17 @@ module.exports = function(RED) {
         node.on('close',function(done) {
             EddystoneBeaconScanner.removeListener('found', onFound);
             EddystoneBeaconScanner.removeListener('updated', onFound);
+            done();
+        });
+
+        var tout = setTimeout(function() {
+            EddystoneBeaconScanner.startScanning(true);
+        },2000);
+
+
+        node.on("close", function(done) {
+            if (tout) { clearTimeout(tout); }
+            EddystoneBeaconScanner.stopScanning();
             done();
         });
     }
