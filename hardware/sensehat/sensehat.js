@@ -53,6 +53,7 @@ module.exports = function(RED) {
         var reconnectTimer = null;
 
         var connect = function() {
+            reconnectTimer = null;
             var buffer = "";
             hat = spawn(hatCommand);
             hat.stdout.on('data', function (data) {
@@ -115,7 +116,10 @@ module.exports = function(RED) {
                 }
             });
             hat.stderr.on('data', function (data) {
+                // Any data on stderr means a bad thing has happened.
+                // Best to kill it and let it reconnect.
                 if (RED.settings.verbose) { RED.log.error("err: "+data+" :"); }
+                hat.kill('SIGKILL');
             });
             hat.stderr.on('error', function(err) { });
             hat.stdin.on('error', function(err) { });
@@ -129,7 +133,7 @@ module.exports = function(RED) {
                 if (onclose) {
                     onclose();
                     onclose = null;
-                } else {
+                } else if (!reconnectTimer) {
                     reconnectTimer = setTimeout(function() {
                         connect();
                     },5000);
