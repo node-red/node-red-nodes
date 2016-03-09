@@ -18,6 +18,13 @@ module.exports = function(RED) {
     "use strict";
     var nodemailer = require("nodemailer");
     var Imap = require('imap');
+    
+    var POP3Client = require("poplib");
+    var MailParser = require("mailparser").MailParser;
+
+    var util = require("util");
+    
+
 
     //console.log(nodemailer.Transport.transports.SMTP.wellKnownHosts);
 
@@ -122,6 +129,10 @@ module.exports = function(RED) {
             global: { type:"boolean"}
         }
     });
+    
+
+    
+
 
     function EmailInNode(n) {
         RED.nodes.createNode(this,n);
@@ -159,6 +170,87 @@ module.exports = function(RED) {
         var node = this;
         this.interval_id = null;
         var oldmail = {};
+        
+
+        
+        function processNewMessage(msg, mailMessage) {
+            node.log("We are now processing a new message");
+            msg.html = mailMessage.html;
+            msg.payload = mailMessage.text;
+            msg.attachments = mailMessage.attachments;
+            msg.topic = mailMessage.subject;
+            msg.header = mailMessage.headers;
+            msg.date = mailMessage.date;
+            msg.from = mailMessage.from[0].address;
+            node.send(msg);
+        };
+        
+     // Check the POP3 email mailbox for any new messages.
+        function checkPOP3(msg) {
+            var mailparser = new MailParser();
+                    
+            mailparser.on("end", function(mailObject) {
+                node.log(util.format("mailparser: on(end): %j", mailObject));
+                processNewMessage(msg, mailObject);
+            });
+            var pop3Client = new POP3Client(n.port, n.server);
+            pop3Client.on("error", function(err) {
+                node.log("We caught an error: " + JSON.stringify(err));
+            });
+
+            pop3Client.on("connect", function() {
+                node.log("We are now connected");
+                pop3Client.login("kolban@test.com", "password");
+            });
+
+            pop3Client.on("login", function(status, rawData) {
+                node.log("login: " + status + ", " + rawData);
+                if (status) {
+                    pop3Client.list();
+                }
+            });
+
+            pop3Client.on("list", function(status, msgCount, msgNumber, data) {
+                node.log(util.format("list: status=%s, msgCount=%d, msgNumber=%j, data=%j", status, msgCount, msgNumber, data));
+                if (msgCount > 0) {
+                    pop3Client.retr(1);  
+                } else {
+                    pop3Client.quit();
+                }
+            });
+
+            pop3Client.on("retr", function(status, msgNumber, data, rawData) {
+                node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
+                mailparser.write(data);
+                mailparser.end();
+                pop3Client.dele(msgNumber);
+            });
+
+            pop3Client.on("invalid-state", function(cmd) {
+                node.log("Invalid state: " + cmd);
+            });
+
+            pop3Client.on("locked", function(cmd) {
+                node.log("We were locked: " + cmd);
+            });
+            
+            pop3Client.on("quit", function() {
+                node.log("Quit processed");
+            });
+            
+            pop3Client.on("dele", function(status, msgNumber) {
+                node.log("Message deleted");
+                pop3Client.quit();
+            });
+        }; // End of checkPOP3
+        
+        function checkEmail(msg) {
+            if (n.protocol === "POP3") {
+                checkPOP3(msg);
+            } else if (n.protocol === "IMAP") {
+                //checkIMAP(msg);
+            }
+        }; // End of checkEmail
 
         var imap = new Imap({
             user: node.userid,
@@ -178,6 +270,9 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg) {
+          node.log("Input called!");
+          checkEmail(msg);
+          /*
             imap.once('ready', function() {
                 node.status({fill:"blue",shape:"dot",text:"email.status.fetching"});
                 var pay = {};
@@ -252,6 +347,7 @@ module.exports = function(RED) {
             });
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
+            */
         });
 
         imap.on('error', function(err) {

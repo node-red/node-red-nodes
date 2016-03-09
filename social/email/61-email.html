@@ -124,6 +124,13 @@
         <input type="text" id="node-input-repeat" style="width: 80px"> <span data-i18n="email.label.seconds">seconds</span>
     </div>
     <div class="form-row">
+        <label for="node-input-protocol"><i class="fa fa-envelope"></i> <span data-i18n="email.label.protocol"></span></label>
+        <select type="text" id="node-input-protocol">
+            <option value="IMAP">IMAP</option>
+            <option value="POP3">POP3</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
         <input type="text" id="node-input-server" placeholder="imap.gmail.com">
     </div>
@@ -139,7 +146,7 @@
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-box">
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
         <input type="text" id="node-input-box">
     </div>
@@ -150,6 +157,16 @@
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
     <div id="node-input-tip" class="form-tips"><span data-i18n="[html]email.tip.recent"></span></div>
+    <script>
+        $("#node-input-protocol").change(function() {
+            var protocol = $("#node-input-protocol").val();
+            if (protocol === "IMAP") {
+                $(".node-input-box").show();
+            } else {
+                $(".node-input-box").hide();
+            }
+        });
+    </script>
 </script>
 
 <script type="text/x-red" data-help-name="e-mail in">
@@ -170,6 +187,7 @@
         color:"#c7e9c0",
         defaults: {
             name: {value:""},
+            protocol: {value: "IMAP", required:true},
             server: {value:"imap.gmail.com",required:true},
             port: {value:"993",required:true},
             box: {value:"INBOX"},
