@@ -14,6 +14,16 @@
  * limitations under the License.
  **/
 
+/**
+ * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
+ * 
+ * Dependencies:
+ * * poplib - https://www.npmjs.com/package/poplib
+ * * nodemailer - https://www.npmjs.com/package/nodemailer
+ * * imap - https://www.npmjs.com/package/imap
+ * * mailparser - https://www.npmjs.com/package/mailparser
+ */
+
 module.exports = function(RED) {
     "use strict";
     var nodemailer = require("nodemailer");
@@ -170,30 +180,63 @@ module.exports = function(RED) {
         var node = this;
         this.interval_id = null;
         var oldmail = {};
-        
-
-        
+ 
+ // Process a new email message by building a Node-RED message to be passed onwards
+ // in the message flow.  The parameter called `msg` is the template message we
+ // start with while `mailMessage` is an object returned from `mailparser` that
+ // will be used to populate the email.       
         function processNewMessage(msg, mailMessage) {
+            msg = JSON.parse(JSON.stringify(msg)); // Clone the message
             node.log("We are now processing a new message");
             msg.html = mailMessage.html;
             msg.payload = mailMessage.text;
-            msg.attachments = mailMessage.attachments;
+            if (mailMessage.attachments) {
+                msg.attachments = mailMessage.attachments;
+            } else {
+                msg.attachments = [];
+            }
             msg.topic = mailMessage.subject;
             msg.header = mailMessage.headers;
             msg.date = mailMessage.date;
-            msg.from = mailMessage.from[0].address;
-            node.send(msg);
-        };
+            if (mailMessage.from && mailMessage.from.length > 0) {
+                msg.from = mailMessage.from[0].address;
+            }
+            node.send(msg); // Propagate the message down the flow
+        }; // End of processNewMessage
         
-     // Check the POP3 email mailbox for any new messages.
+// Check the POP3 email mailbox for any new messages.  For any that are found,
+// retrieve each message, call processNewMessage to process it and then delete
+// the messages from the server.
         function checkPOP3(msg) {
-            var mailparser = new MailParser();
+            var currentMessage;
+            var maxMessage;
                     
-            mailparser.on("end", function(mailObject) {
-                node.log(util.format("mailparser: on(end): %j", mailObject));
-                processNewMessage(msg, mailObject);
-            });
             var pop3Client = new POP3Client(n.port, n.server);
+            
+            function nextMessage() {
+                if (currentMessage > maxMessage) {
+                    pop3Client.quit();
+                    return;
+                }
+                pop3Client.retr(currentMessage);
+                currentMessage++;
+            }
+            
+            pop3Client.on("stat", function(status, data) {
+// Data contains:
+// {
+//   count: <Number of messages to be read>
+//   octect: <size of messages to be read>
+// }
+                if (status) {
+                  currentMessage = 1;
+                  maxMessage = data.count;
+                  nextMessage();
+                } else {
+                  node.log(util.format("stat error: %s %j", status, data));
+                }
+            });
+            
             pop3Client.on("error", function(err) {
                 node.log("We caught an error: " + JSON.stringify(err));
             });
@@ -206,10 +249,14 @@ module.exports = function(RED) {
             pop3Client.on("login", function(status, rawData) {
                 node.log("login: " + status + ", " + rawData);
                 if (status) {
-                    pop3Client.list();
+                    pop3Client.stat();
+                } else {
+                    node.log(util.format("login error: %s %j", status, rawData));
+                    pop3Client.quit();
                 }
             });
 
+/*
             pop3Client.on("list", function(status, msgCount, msgNumber, data) {
                 node.log(util.format("list: status=%s, msgCount=%d, msgNumber=%j, data=%j", status, msgCount, msgNumber, data));
                 if (msgCount > 0) {
@@ -218,12 +265,27 @@ module.exports = function(RED) {
                     pop3Client.quit();
                 }
             });
+*/
 
             pop3Client.on("retr", function(status, msgNumber, data, rawData) {
                 node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
-                mailparser.write(data);
-                mailparser.end();
-                pop3Client.dele(msgNumber);
+                if (status) {
+
+// We have now received a new email message.  Create an instance of a mail parser
+// and pass in the email message.  The parser will signal when it has parsed the message.                    
+                    var mailparser = new MailParser();
+                    mailparser.on("end", function(mailObject) {
+                        node.log(util.format("mailparser: on(end): %j", mailObject));
+                        processNewMessage(msg, mailObject);
+                    });
+                    mailparser.write(data);
+                    mailparser.end();
+                    pop3Client.dele(msgNumber);
+                } 
+                else {
+                    node.log(util.format("retr error: %s %j", status, rawData));
+                    pop3Client.quit();
+                }
             });
 
             pop3Client.on("invalid-state", function(cmd) {
@@ -233,17 +295,21 @@ module.exports = function(RED) {
             pop3Client.on("locked", function(cmd) {
                 node.log("We were locked: " + cmd);
             });
-            
+
+/*            
             pop3Client.on("quit", function() {
-                node.log("Quit processed");
             });
+*/
             
+// When we have deleted the last processed message, we can move on to
+// processing the next message.
             pop3Client.on("dele", function(status, msgNumber) {
-                node.log("Message deleted");
-                pop3Client.quit();
+                nextMessage();
             });
         }; // End of checkPOP3
+
         
+// Perform a check of the email inboxes using either POP3 or IMAP        
         function checkEmail(msg) {
             if (n.protocol === "POP3") {
                 checkPOP3(msg);
