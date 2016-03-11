@@ -131,6 +131,10 @@
         </select>
     </div>
     <div class="form-row">
+		<label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+		<input type="checkbox" id="node-input-useSSL" style="width: auto;">
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
         <input type="text" id="node-input-server" placeholder="imap.gmail.com">
     </div>
@@ -178,6 +182,25 @@
     <p>Uses the imap module.</p>
     <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
     <p>Note: uses IMAP with SSL to port 993.</p>
+    <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
+    each object represents a specific attachments.  The format of the object is:</p>
+    
+<pre>
+{
+  contentType:        // The MIME content description
+  fileName:           // A suggested file name associated with this attachment
+  transferEncoding:   // How was the original email attachment encodded?
+  contentDisposition: // Unknown
+  generatedFileName:  // A suggested file name associated with this attachment
+  contentId:          // A unique generated ID for this attachment
+  checksum:           // A checksum against the data
+  length:             // Size of data in bytes
+  content:            // The actual content of the data contained in a Node.js Buffer object
+                      // We can turn this into a base64 data string with content.toString('base64')
+}
+</pre>
+<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+
 </script>
 
 <script type="text/javascript">
@@ -189,6 +212,7 @@
             name: {value:""},
             protocol: {value: "IMAP", required:true},
             server: {value:"imap.gmail.com",required:true},
+            useSSL: {value: true, required: true},
             port: {value:"993",required:true},
             box: {value:"INBOX"},
             repeat: {value:"300",required:true}

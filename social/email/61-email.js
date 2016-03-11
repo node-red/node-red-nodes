@@ -18,23 +18,19 @@
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
  * 
  * Dependencies:
- * * poplib - https://www.npmjs.com/package/poplib
+ * * poplib     - https://www.npmjs.com/package/poplib
  * * nodemailer - https://www.npmjs.com/package/nodemailer
- * * imap - https://www.npmjs.com/package/imap
+ * * imap       - https://www.npmjs.com/package/imap
  * * mailparser - https://www.npmjs.com/package/mailparser
  */
 
 module.exports = function(RED) {
     "use strict";
     var nodemailer = require("nodemailer");
-    var Imap = require('imap');
-    
+    var Imap = require('imap');   
     var POP3Client = require("poplib");
     var MailParser = require("mailparser").MailParser;
-
     var util = require("util");
-    
-
 
     //console.log(nodemailer.Transport.transports.SMTP.wellKnownHosts);
 
@@ -143,14 +139,17 @@ module.exports = function(RED) {
 
     
 
-
+// Setup the EmailInNode
     function EmailInNode(n) {
         RED.nodes.createNode(this,n);
-        this.name = n.name;
-        this.repeat = n.repeat * 1000 || 300000;
+        this.name     = n.name;
+        this.repeat   = n.repeat * 1000 || 300000;
         this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
-        this.inport = n.port || (globalkeys && globalkeys.port) || "993";
-        this.box = n.box || "INBOX";
+        this.inport   = n.port || (globalkeys && globalkeys.port) || "993";
+        this.box      = n.box || "INBOX";
+        this.useSSL   = n.useSSL;
+        this.protocol = n.protocol || "IMAP";
+        
         var flag = false;
 
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
@@ -187,7 +186,6 @@ module.exports = function(RED) {
  // will be used to populate the email.       
         function processNewMessage(msg, mailMessage) {
             msg = JSON.parse(JSON.stringify(msg)); // Clone the message
-            node.log("We are now processing a new message");
             msg.html = mailMessage.html;
             msg.payload = mailMessage.text;
             if (mailMessage.attachments) {
@@ -210,9 +208,15 @@ module.exports = function(RED) {
         function checkPOP3(msg) {
             var currentMessage;
             var maxMessage;
-                    
-            var pop3Client = new POP3Client(n.port, n.server);
-            
+
+// Form a new connection to our email server using POP3.                    
+            var pop3Client = new POP3Client(
+                node.inport, node.inserver,
+                {enabletls: node.useSSL} // Should we use SSL to connect to our email server?
+            );
+
+// If we have a next message to retrieve, ask to retrieve it otherwise issue a 
+// quit request.
             function nextMessage() {
                 if (currentMessage > maxMessage) {
                     pop3Client.quit();
@@ -220,7 +224,7 @@ module.exports = function(RED) {
                 }
                 pop3Client.retr(currentMessage);
                 currentMessage++;
-            }
+            } // End of nextMessage
             
             pop3Client.on("stat", function(status, data) {
 // Data contains:
@@ -242,12 +246,12 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("connect", function() {
-                node.log("We are now connected");
+                //node.log("We are now connected");
                 pop3Client.login("kolban@test.com", "password");
             });
 
             pop3Client.on("login", function(status, rawData) {
-                node.log("login: " + status + ", " + rawData);
+                //node.log("login: " + status + ", " + rawData);
                 if (status) {
                     pop3Client.stat();
                 } else {
@@ -275,7 +279,7 @@ module.exports = function(RED) {
 // and pass in the email message.  The parser will signal when it has parsed the message.                    
                     var mailparser = new MailParser();
                     mailparser.on("end", function(mailObject) {
-                        node.log(util.format("mailparser: on(end): %j", mailObject));
+                        //node.log(util.format("mailparser: on(end): %j", mailObject));
                         processNewMessage(msg, mailObject);
                     });
                     mailparser.write(data);
@@ -311,9 +315,9 @@ module.exports = function(RED) {
         
 // Perform a check of the email inboxes using either POP3 or IMAP        
         function checkEmail(msg) {
-            if (n.protocol === "POP3") {
+            if (node.protocol === "POP3") {
                 checkPOP3(msg);
-            } else if (n.protocol === "IMAP") {
+            } else if (node.protocol === "IMAP") {
                 //checkIMAP(msg);
             }
         }; // End of checkEmail
@@ -336,7 +340,7 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg) {
-          node.log("Input called!");
+          //node.log("Input called!");
           checkEmail(msg);
           /*
             imap.once('ready', function() {
