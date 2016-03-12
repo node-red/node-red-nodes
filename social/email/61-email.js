@@ -141,6 +141,8 @@ module.exports = function(RED) {
 
 // Setup the EmailInNode
     function EmailInNode(n) {
+    var imap;
+    
         RED.nodes.createNode(this,n);
         this.name     = n.name;
         this.repeat   = n.repeat * 1000 || 300000;
@@ -313,31 +315,101 @@ module.exports = function(RED) {
         }; // End of checkPOP3
 
         
+// Check the email sever using the IMAP protocol for new messages.        
+        function checkIMAP(msg) {
+      node.log("Checkimg IMAP for new messages");
+      
+      
+      // We get back a 'ready' event once we have connected to imap
+      imap.once("ready", function() {
+        console.log("> ready");
+        // Open the inbox folder
+        imap.openBox('INBOX', // Mailbox name
+          false, // Open readonly?
+          function(err, box) {
+          console.log("> Inbox open: %j", box);
+          imap.search([ 'UNSEEN' ], function(err, results) {
+            if (err) {
+              return;
+            }
+            console.log("> search - err=%j, results=%j", err, results);
+            if (results.length === 0) {
+              console.log(" [X] - Nothing to fetch");
+              return;
+            }
+
+            // We have the search results that contain the list of unseen messages and can now fetch those messages.
+            var fetch = imap.fetch(results, {
+              bodies : ["HEADER", "TEXT"],
+              markSeen : true
+            });
+
+            // For each fetched message returned ...
+            fetch.on('message', function(imapMessage, seqno) {
+              var messageText = "";
+              console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
+              imapMessage.on('body', function(stream, info) {
+                console.log("> message - body - stream=?, info=%j", info);
+                // Info defined which part of the message this is ... for example
+                // 'TEXT' or 'HEADER'
+                stream.on('data', function(chunk) {
+                  console.log("> stream - data - chunk=??");
+                  messageText += chunk.toString('utf8');
+                });
+              }); // End of msg->body
+              // When the `end` event is raised on the message
+              imapMessage.once('end', function() {
+                console.log("> msg - end : %j", messageText);
+                var mailparser = new MailParser();
+                mailparser.on("end", function(mailMessage) {
+                  //console.log("mailparser: on(end): %j", mailMessage);
+                  processNewMessage(msg, mailMessage);
+                });
+                mailparser.write(messageText);
+                mailparser.end();
+              }); // End of msg->end
+            }); // End of fetch->message
+
+            // When we have fetched all the messages, we don't need the imap connection any more.
+            fetch.on('end', function() {
+              imap.end();
+            });
+
+            fetch.once('error', function(err) {
+              console.log('Fetch error: ' + err);
+            });
+          }); // End of imap->search
+        }); // End of imap->openInbox
+      }); // End of imap->ready   
+      imap.connect();
+    }; // End of checkIMAP
+
+        
 // Perform a check of the email inboxes using either POP3 or IMAP        
         function checkEmail(msg) {
             if (node.protocol === "POP3") {
                 checkPOP3(msg);
             } else if (node.protocol === "IMAP") {
-                //checkIMAP(msg);
+                checkIMAP(msg);
             }
         }; // End of checkEmail
 
-        var imap = new Imap({
-            user: node.userid,
-            password: node.password,
-            host: node.inserver,
-            port: node.inport,
-            tls: true,
-            tlsOptions: { rejectUnauthorized: false },
-            connTimeout: node.repeat,
-            authTimeout: node.repeat
-        });
-
-        if (!isNaN(this.repeat) && this.repeat > 0) {
-            this.interval_id = setInterval( function() {
-                node.emit("input",{});
-            }, this.repeat );
-        }
+        if (node.protocol === "IMAP") {
+      imap = new Imap({
+        user: node.userid,
+        password: node.password,
+        host: node.inserver,
+        port: node.inport,
+        tls: node.useSSL,
+        tlsOptions: { rejectUnauthorized: false },
+        connTimeout: node.repeat,
+        authTimeout: node.repeat
+      });
+      imap.on('error', function(err) {
+        node.log(err);
+        node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+      });
+    };     
 
         this.on("input", function(msg) {
           //node.log("Input called!");
@@ -420,10 +492,7 @@ module.exports = function(RED) {
             */
         });
 
-        imap.on('error', function(err) {
-            node.log(err);
-            node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
-        });
+
 
         this.on("close", function() {
             if (this.interval_id != null) {
@@ -432,13 +501,20 @@ module.exports = function(RED) {
             if (imap) { imap.destroy(); }
         });
 
+
+    if (!isNaN(this.repeat) && this.repeat > 0) {
+      this.interval_id = setInterval( function() {
         node.emit("input",{});
+      }, this.repeat );
     }
+    node.emit("input",{});
+    }
+    
     RED.nodes.registerType("e-mail in",EmailInNode,{
         credentials: {
-            userid: {type:"text"},
-            password: {type: "password"},
-            global: { type:"boolean"}
+            userid:   { type:"text" },
+            password: { type: "password" },
+            global:   { type:"boolean" }
         }
     });
 };
