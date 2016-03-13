@@ -154,20 +154,24 @@
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
         <input type="text" id="node-input-box">
     </div>
+    <div class="form-row node-input-deleteAfter">
+		<label for="node-input-deleteAfter"><i class="fa fa-trash"></i> <span data-i18n="email.label.deleteAfter"></span></label>
+		<input type="checkbox" id="node-input-deleteAfter" style="width: auto;">
+    </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
-    <div id="node-input-tip" class="form-tips"><span data-i18n="[html]email.tip.recent"></span></div>
     <script>
         $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
                 $(".node-input-box").show();
+                $(".node-input-deleteAfter").show();
             } else {
                 $(".node-input-box").hide();
+                $(".node-input-deleteAfter").hide();                
             }
         });
     </script>
@@ -210,11 +214,12 @@
         color:"#c7e9c0",
         defaults: {
             name: {value:""},
-            protocol: {value: "IMAP", required:true},
+            protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
             server: {value:"imap.gmail.com",required:true},
-            useSSL: {value: true, required: true},
+            useSSL: {value: true},
             port: {value:"993",required:true},
-            box: {value:"INBOX"},
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process 
+            deleteAfter: {value: false}, // For IMAP, Should the message be deleted after processing
             repeat: {value:"300",required:true}
         },
         credentials: {

@@ -10,7 +10,8 @@
             "seconds": "seconds",
             "folder": "Folder",
             "protocol": "Protocol",
-            "useSSL": "Use SSL?"
+            "useSSL": "Use SSL?",
+            "deleteAfter": "Delete?"
         },
         
         "default-message": "Your file from Node-RED is attached: __filename__ __description__",

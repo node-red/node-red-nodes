@@ -32,8 +32,6 @@ module.exports = function(RED) {
     var MailParser = require("mailparser").MailParser;
     var util = require("util");
 
-    //console.log(nodemailer.Transport.transports.SMTP.wellKnownHosts);
-
     try {
         var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
     } catch(err) {
@@ -137,8 +135,10 @@ module.exports = function(RED) {
     });
     
 
-    
-
+  
+//  
+// EmailInNode
+//
 // Setup the EmailInNode
     function EmailInNode(n) {
     var imap;
@@ -180,7 +180,6 @@ module.exports = function(RED) {
 
         var node = this;
         this.interval_id = null;
-        var oldmail = {};
  
  // Process a new email message by building a Node-RED message to be passed onwards
  // in the message flow.  The parameter called `msg` is the template message we
@@ -188,6 +187,9 @@ module.exports = function(RED) {
  // will be used to populate the email.       
         function processNewMessage(msg, mailMessage) {
             msg = JSON.parse(JSON.stringify(msg)); // Clone the message
+            
+            // Populate the msg fields from the content of the email message
+            // that we have just parsed.
             msg.html = mailMessage.html;
             msg.payload = mailMessage.text;
             if (mailMessage.attachments) {
@@ -201,6 +203,7 @@ module.exports = function(RED) {
             if (mailMessage.from && mailMessage.from.length > 0) {
                 msg.from = mailMessage.from[0].address;
             }
+            
             node.send(msg); // Propagate the message down the flow
         }; // End of processNewMessage
         
@@ -262,17 +265,6 @@ module.exports = function(RED) {
                 }
             });
 
-/*
-            pop3Client.on("list", function(status, msgCount, msgNumber, data) {
-                node.log(util.format("list: status=%s, msgCount=%d, msgNumber=%j, data=%j", status, msgCount, msgNumber, data));
-                if (msgCount > 0) {
-                    pop3Client.retr(1);  
-                } else {
-                    pop3Client.quit();
-                }
-            });
-*/
-
             pop3Client.on("retr", function(status, msgNumber, data, rawData) {
                 node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
                 if (status) {
@@ -301,11 +293,6 @@ module.exports = function(RED) {
             pop3Client.on("locked", function(cmd) {
                 node.log("We were locked: " + cmd);
             });
-
-/*            
-            pop3Client.on("quit", function() {
-            });
-*/
             
 // When we have deleted the last processed message, we can move on to
 // processing the next message.
@@ -314,14 +301,16 @@ module.exports = function(RED) {
             });
         }; // End of checkPOP3
 
-        
+
+//
+// checkIMAP
+//        
 // Check the email sever using the IMAP protocol for new messages.        
         function checkIMAP(msg) {
-      node.log("Checkimg IMAP for new messages");
-      
-      
+      node.log("Checkimg IMAP for new messages");   
       // We get back a 'ready' event once we have connected to imap
       imap.once("ready", function() {
+        node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
         console.log("> ready");
         // Open the inbox folder
         imap.openBox('INBOX', // Mailbox name
@@ -330,6 +319,8 @@ module.exports = function(RED) {
           console.log("> Inbox open: %j", box);
           imap.search([ 'UNSEEN' ], function(err, results) {
             if (err) {
+              node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
+              node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
               return;
             }
             console.log("> search - err=%j, results=%j", err, results);
@@ -346,6 +337,7 @@ module.exports = function(RED) {
 
             // For each fetched message returned ...
             fetch.on('message', function(imapMessage, seqno) {
+              node.log(RED._("email.status.message",{number:seqno}));
               var messageText = "";
               console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
               imapMessage.on('body', function(stream, info) {
@@ -372,6 +364,7 @@ module.exports = function(RED) {
 
             // When we have fetched all the messages, we don't need the imap connection any more.
             fetch.on('end', function() {
+              node.status({});
               imap.end();
             });
 
@@ -382,6 +375,7 @@ module.exports = function(RED) {
         }); // End of imap->openInbox
       }); // End of imap->ready   
       imap.connect();
+      node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
     }; // End of checkIMAP
 
         
@@ -412,87 +406,8 @@ module.exports = function(RED) {
     };     
 
         this.on("input", function(msg) {
-          //node.log("Input called!");
           checkEmail(msg);
-          /*
-            imap.once('ready', function() {
-                node.status({fill:"blue",shape:"dot",text:"email.status.fetching"});
-                var pay = {};
-                imap.openBox(node.box, false, function(err, box) {
-                    if (err) {
-                        node.status({fill:"red",shape:"ring",text:"email.status.foldererror"});
-                        node.error(RED._("email.errors.fetchfail",{folder:node.box}),err);
-                    }
-                    else {
-                        if (box.messages.total > 0) {
-                            //var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER.FIELDS (FROM SUBJECT DATE TO CC BCC)','TEXT'] });
-                            var f = imap.seq.fetch(box.messages.total + ':*', { markSeen:true, bodies: ['HEADER','TEXT'] });
-                            f.on('message', function(msg, seqno) {
-                                node.log(RED._("email.status.message",{number:seqno}));
-                                var prefix = '(#' + seqno + ') ';
-                                msg.on('body', function(stream, info) {
-                                    var buffer = '';
-                                    stream.on('data', function(chunk) {
-                                        buffer += chunk.toString('utf8');
-                                    });
-                                    stream.on('end', function() {
-                                        if (info.which !== 'TEXT') {
-                                            var head = Imap.parseHeader(buffer);
-                                            if (head.hasOwnProperty("from")) { pay.from = head.from[0]; }
-                                            if (head.hasOwnProperty("subject")) { pay.topic = head.subject[0]; }
-                                            if (head.hasOwnProperty("date")) { pay.date = head.date[0]; }
-                                            pay.header = head;
-                                        } else {
-                                            var parts = buffer.split("Content-Type");
-                                            for (var p = 0; p < parts.length; p++) {
-                                                if (parts[p].indexOf("text/plain") >= 0) {
-                                                    pay.payload = parts[p].split("\n").slice(1,-2).join("\n").trim();
-                                                }
-                                                else if (parts[p].indexOf("text/html") >= 0) {
-                                                    pay.html = parts[p].split("\n").slice(1,-2).join("\n").trim();
-                                                } else {
-                                                    pay.payload = parts[0];
-                                                }
-                                            }
-                                            //pay.body = buffer;
-                                        }
-                                    });
-                                });
-                                msg.on('end', function() {
-                                    //node.log('finished: '+prefix);
-                                });
-                            });
-                            f.on('error', function(err) {
-                                node.warn(RED._("email.errors.messageerror",{error:err}));
-                                node.status({fill:"red",shape:"ring",text:"email.status.messageerror"});
-                            });
-                            f.on('end', function() {
-                                delete(pay._msgid);
-                                if (JSON.stringify(pay) !== oldmail) {
-                                    oldmail = JSON.stringify(pay);
-                                    node.send(pay);
-                                    node.log(RED._("email.status.newemail",{topic:pay.topic}));
-                                }
-                                else { node.log(RED._("email.status.duplicate",{topic:pay.topic})); }
-                                //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
-                                node.status({});
-                            });
-                        }
-                        else {
-                            node.log(RED._("email.status.inboxzero"));
-                            //node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
-                            node.status({});
-                        }
-                    }
-                    imap.end();
-                });
-            });
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
-            imap.connect();
-            */
         });
-
-
 
         this.on("close", function() {
             if (this.interval_id != null) {
@@ -501,12 +416,13 @@ module.exports = function(RED) {
             if (imap) { imap.destroy(); }
         });
 
-
+// Set the repetition timer as needed
     if (!isNaN(this.repeat) && this.repeat > 0) {
       this.interval_id = setInterval( function() {
         node.emit("input",{});
       }, this.repeat );
     }
+    
     node.emit("input",{});
     }
     
