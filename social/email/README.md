@@ -3,8 +3,6 @@ node-red-node-email
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
 
-**Note** : This is the same node as was in the core of Node-RED.
-As of v0.10.8 it will be installed from here instead.
 
 Pre-requisite
 -------------
@@ -25,7 +23,7 @@ Nodes to send and receive simple emails.
 
 ### Input
 
-Repeatedly gets a **single email** from an IMAP server and forwards on as a msg if not already seen.
+Repeatedly gets emails from an IMAP or POP3 server and forwards them onwards as messages if not already seen.
 
 The subject is loaded into `msg.topic` and `msg.payload` is the plain text body.
 If there is text/html then that is returned in `msg.html`. `msg.from` and
