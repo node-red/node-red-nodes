@@ -164,6 +164,23 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <script>
+        var checkPorts = function() {
+            var currentPort = $("#node-input-port").val();
+            if (currentPort === "143" || currentPort === "993" || currentPort === "110" || currentPort == "995") {
+                if ($("#node-input-useSSL").prop("checked") === true) {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"993":"995");
+                } else {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"143":"110");
+                }
+            }
+        };
+        
+        $("#node-input-useSSL").change(function(x, y) {
+          console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+          console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+          checkPorts();
+        });
+        
         $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
@@ -173,6 +190,7 @@
                 $(".node-input-box").hide();
                 $(".node-input-deleteAfter").hide();                
             }
+            checkPorts();
         });
     </script>
 </script>
