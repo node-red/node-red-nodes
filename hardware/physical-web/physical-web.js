@@ -25,7 +25,8 @@ module.exports = function(RED) {
         var node = this;
         node.mode = n.mode;
         node.power = n.power;
-        node.period = n.period * 10;
+        node.period = n.period;
+        node.count = n.count;
         node.url = n.url;
         node.namespace = n.namespace;
         node.instance = n.instance;
@@ -33,7 +34,7 @@ module.exports = function(RED) {
         node.options = {
             txPowerLevel: node.power,
             tlmPeriod: node.period,
-            tlmCount: 2
+            tlmCount: node.count
         };
 
         if (node.mode === "url" && node.url) {
