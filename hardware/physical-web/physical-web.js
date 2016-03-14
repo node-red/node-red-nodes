@@ -23,9 +23,12 @@ module.exports = function(RED) {
     function Beacon(n) {
         RED.nodes.createNode(this,n);
         var node = this;
+        node.mode = n.mode;
         node.power = n.power;
         node.period = n.period * 10;
         node.url = n.url;
+        node.namespace = n.namespace;
+        node.instance = n.instance;
 
         node.options = {
             txPowerLevel: node.power,
@@ -33,7 +36,7 @@ module.exports = function(RED) {
             tlmCount: 2
         };
 
-        if (node.url) {
+        if (node.mode === "url" && node.url) {
             if (!eddyBeacon) {
                 eddyBeacon = true;
                 try {
@@ -46,13 +49,38 @@ module.exports = function(RED) {
             else {node.warn('Beacon already in use');}
         }
 
+        if (node.mode === "uid") {
+            if (!eddyBeacon) {
+                eddyBeacon = true;
+                try {
+                    eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
+                    node.status({fill:"green",shape:"dot",text:node.namespace});
+                } catch(e) {
+                    node.error('Error setting beacon information', e);
+                }
+            }
+            else {node.warn('Beacon already in use');}
+        }
+
         node.on('input', function(msg) {
-            try {
-                eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-                node.status({fill:"green",shape:"dot",text:node.url.toString()});
-            } catch(e) {
-                node.status({fill:"red",shape:"circle",text:"URL too long"});
-                node.error('error updating beacon URL', e);
+            if (node.mode === "url") {
+              try {
+                  eddystoneBeacon.advertiseUrl(msg.payload, node.options);
+                  node.status({fill:"green",shape:"dot",text:msg.payload});
+              } catch(e) {
+                  node.status({fill:"red",shape:"dot",text:"URL too long"});
+                  node.error('error updating beacon URL', e);
+              }
+            }
+            // uid mode
+            else {
+              try {
+                  eddystoneBeacon.advertiseUid(msg.payload, msg.topic, node.options);
+                  node.status({fill:"green",shape:"dot",text:msg.payload});
+              } catch(e) {
+                  node.status({fill:"red",shape:"dot",text:"Error setting beacon information"});
+                  node.error('Error setting beacon information', e);
+              }
             }
         });
 

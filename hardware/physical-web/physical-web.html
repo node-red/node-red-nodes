@@ -78,11 +78,26 @@
 
 <script type="text/x-red" data-template-name="PhysicalWeb out">
     <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-wrench"></i> <span>Mode</span></label>
+        <select id="node-input-mode" style='width:250px'>
+          <option value="url">url</option>
+          <option value="uid">uid</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-url">
         <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
         <input type="text" id="node-input-url" style="width:250px;" placeholder="http://...">
         <!--<button type="button" id="node-input-url-shorten" disabled=true>Shorten</button> -->
         <p style="margin-left:100px; width:70%">This URL needs to be shorter than 18 bytes
         in length to meet Eddystone spec</p>
+    </div>
+    <div class="form-row" id="node-namespace">
+        <label for="node-input-namespace"><i class="fa fa-bluetooth"></i> Namespace</label>
+        <input type="text" id="node-input-namespace" style="width:250px;">
+    </div>
+    <div class="form-row" id="node-instance">
+        <label for="node-input-instance"><i class="fa fa-bluetooth"></i> Instance</label>
+        <input type="text" id="node-input-instance" style="width:250px;">
     </div>
     <div class="form-row">
         <label for="node-input-period"><i class="fa fa-repeat"></i> Period (S)</label>
@@ -114,7 +129,10 @@
         category: 'output',
         defaults: {
             name: {value:""},
+            mode: {value:"url"},
             url: {value:"",validate:function(v) {return v.length<19; }},
+            namespace: {value:""},
+            instance: {value:""},
             power: {value:"-21",validate:RED.validators.number()},
             period: {value:"1",validate:RED.validators.number()}
         },
@@ -131,6 +149,17 @@
         oneditprepare: function() {
             $( "#node-input-period" ).spinner({min:1});
             $( "#node-input-power" ).spinner({min:-30,max:100});
+            $("#node-input-mode").on("change",function() {
+              if ($("#node-input-mode").val() === "uid") {
+                  $("#node-url").hide();
+                  $("#node-namespace").show();
+                  $("#node-instance").show();
+              } else {
+                  $("#node-url").show();
+                  $("#node-namespace").hide();
+                  $("#node-instance").hide();
+              }
+          });
         }
     });
 </script>
