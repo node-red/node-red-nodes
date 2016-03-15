@@ -144,13 +144,14 @@ module.exports = function(RED) {
     var imap;
     
         RED.nodes.createNode(this,n);
-        this.name     = n.name;
-        this.repeat   = n.repeat * 1000 || 300000;
-        this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
-        this.inport   = n.port || (globalkeys && globalkeys.port) || "993";
-        this.box      = n.box || "INBOX";
-        this.useSSL   = n.useSSL;
-        this.protocol = n.protocol || "IMAP";
+        this.name        = n.name;
+        this.repeat      = n.repeat * 1000 || 300000;
+        this.inserver    = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
+        this.inport      = n.port || (globalkeys && globalkeys.port) || "993";
+        this.box         = n.box || "INBOX";
+        this.useSSL      = n.useSSL;
+        this.protocol    = n.protocol || "IMAP";
+        this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         
         var flag = false;
 
@@ -364,12 +365,21 @@ module.exports = function(RED) {
 
             // When we have fetched all the messages, we don't need the imap connection any more.
             fetch.on('end', function() {
-              node.status({});
-              imap.end();
+               var cleanup = function() {
+                   node.status({});
+                   imap.end();
+               };
+               if (this.disposition == "Delete") {
+                  imap.addFlags(results, "\Deleted", cleanup);
+               } else if (this.disposition == "Read") {
+                  imap.addFlags(results, "\Answered", cleanup);
+               } else {
+                  cleanup();
+               }
             });
 
             fetch.once('error', function(err) {
-              console.log('Fetch error: ' + err);
+                console.log('Fetch error: ' + err);
             });
           }); // End of imap->search
         }); // End of imap->openInbox

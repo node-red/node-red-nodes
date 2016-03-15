@@ -154,9 +154,13 @@
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
         <input type="text" id="node-input-box">
     </div>
-    <div class="form-row node-input-deleteAfter">
-		<label for="node-input-deleteAfter"><i class="fa fa-trash"></i> <span data-i18n="email.label.deleteAfter"></span></label>
-		<input type="checkbox" id="node-input-deleteAfter" style="width: auto;">
+    <div class="form-row node-input-disposition">
+		    <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+        <select type="text" id="node-input-disposition">
+            <option value="None" selected="selected">None</option>
+            <option value="Read">Mark Read/Answered</option>
+            <option value="Delete">Delete</option>
+        </select>
     </div>
     <br/>
     <div class="form-row">
@@ -185,10 +189,10 @@
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
                 $(".node-input-box").show();
-                $(".node-input-deleteAfter").show();
+                $(".node-input-disposition").show();
             } else {
                 $(".node-input-box").hide();
-                $(".node-input-deleteAfter").hide();                
+                $(".node-input-disposition").hide();                
             }
             checkPorts();
         });
@@ -237,7 +241,7 @@
             useSSL: {value: true},
             port: {value:"993",required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process 
-            deleteAfter: {value: false}, // For IMAP, Should the message be deleted after processing
+            disposition: { value: "None" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },
         credentials: {
