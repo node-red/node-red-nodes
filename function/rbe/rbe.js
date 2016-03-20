@@ -59,16 +59,15 @@ module.exports = function(RED) {
                         if (!node.previous.hasOwnProperty(t)) { node.previous[t] = n - node.gap; }
                         if (Math.abs(n - node.previous[t]) >= node.gap) {
                             if (this.func === "deadband") {
-                                node.previous[t] = n;
                                 node.send(msg);
                             }
                         }
                         else {
                             if (this.func === "narrowband") {
-                                node.previous[t] = n;
                                 node.send(msg);
                             }
                         }
+                        node.previous[t] = n;
                     }
                     else {
                         node.warn(RED._("rbe.warn.nonumber"));
