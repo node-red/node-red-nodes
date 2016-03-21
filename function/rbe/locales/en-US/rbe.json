@@ -12,7 +12,9 @@
         "opts": {
             "rbe": "block unless value changes",
             "deadband": "block unless value changes by more than",
-            "narrowband": "block if value changes by more than"
+            "narrowband": "block if value changes by more than",
+            "in": "compared to last input value",
+            "out": "compared to last valid output value"
         },
         "warn": {
             "nonumber": "no number found in payload"

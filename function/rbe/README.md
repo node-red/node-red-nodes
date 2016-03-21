@@ -36,7 +36,12 @@ same value. Saves bandwidth, etc...
 In deadband mode the incoming payload should contain a parseable *number* and is
 output only if greater than + or - the *band gap* away from the previous output.
 It can also be set to block values more than a certain distance away from the present value.
-This can be used to remove outliers or unexpected readings. 
+This can be used to remove outliers or unexpected readings.
+
+You can specify compare with *previous valid output value* or *previous input value*.
+The former ignores any values outside the valid range, whereas the latter allows
+two "bad" readings in a row to reset the range based on those values.
+For example a valid step change.
 
 The deadband value can be specified as a fixed number, or a percentage. E.g. 10
 or 5% . If % mode is used then the output will only get sent if the input payload

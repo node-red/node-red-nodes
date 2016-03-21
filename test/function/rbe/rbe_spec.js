@@ -197,4 +197,28 @@ describe('rbe node', function() {
         });
     });
 
+        it('should not send output if more than x away from original value (narrowband in step mode)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", inout:"in", start:"500", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 55);
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", 205);
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:50});
+            n1.emit("input", {payload:55});
+            n1.emit("input", {payload:200});
+            n1.emit("input", {payload:205});
+        });
+    });
+
 });
