@@ -33,18 +33,18 @@
 <script type="text/x-red" data-help-name="rpi-unicorn">
     <p>Raspberry Pi Unicorn HAT Node</p>
     <p>The background of the array can be configured using an 8x8 pixel sized
-    png image, or by specifying a single colour using an <i>r,g,b</i> triple.</p>
-    <p>The background colour can also be set by a <code>msg.payload</code> with an <i>r,g,b</i> triple.</p>
-    <p>A pixel is set by a <code>payload</code> containing a CSV string <i>x,y,r,g,b</i> .
-    Multiple pixels strings can also be sent as <i>x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...</i> .
-    If x or y are set to * then the complete row or column can be set.</p>
+    png image, or by specifying a single colour using an <code>r,g,b</code> triple.</p>
+    <p>A pixel is set by a <code>payload</code> containing a CSV string <code>x,y,r,g,b</code> .
+    <code>x</code> and <code>y</code> can be a single pixel <code>0</code> to <code>7</code>,
+    a range of pixels, eg <code>2-5</code>, or <code>*</code> to indicate the whole line.
+    Multiple pixels strings can also be sent as <code>x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...</code> .</p>
     <p>Any msg with a <code>topic</code> identifies a 'sprite', which can then
     be moved independently. A 'sprite' can be a single pixel or a group of pixels.</p>
-    <p>Setting <code>payload</code> to 0 will delete the sprite from the list.</p>
-    <p>Setting <code>payload</code> to "CLS" will clear the display to off and delete any sprites.</p>
-    <p>Setting <code>payload</code> to "DEL" will delete any sprites, and leave the background.</p>
-    <p>The brightness may be set by setting <code>payload</code> to <i>brightness,nn</i> where nn is 0 to 100.</p>
-    <p>The rotation may be set by setting <code>payload</code> to <i>rotate,rr</i> where rr is 0, 90, 180 or 270.</p>
+    <p>Setting <code>payload</code> to <code>0</code> will delete the sprite from the list.</p>
+    <p>Setting <code>payload</code> to <code>CLS</code> will clear the display to off and delete any sprites.</p>
+    <p>Setting <code>payload</code> to <ode>DEL</ode> will delete any sprites, and leave the background.</p>
+    <p>The brightness may be set by setting <code>payload</code> to <code>brightness,nn</code> where nn is 0 to 100.</p>
+    <p>The rotation may be set by setting <code>payload</code> to <code>rotate,rr</code> where rr is 0, 90, 180 or 270.</p>
 </script>
 
 <script type="text/javascript">

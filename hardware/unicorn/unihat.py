@@ -39,19 +39,35 @@ while True:
                 data = data[1:].strip()
                 s = data.split(',')
                 for p in range(0,len(s),5):
-                    j = 1
-                    if (s[p] == "*") and (s[p+1] == "*"):
-                        for i in range(0,8):
-                            for j in range(0,8):
-                                UH.set_pixel(i,j,int(s[p+2]),int(s[p+3]),int(s[p+4]))
-                    elif s[p] == "*":
-                        for i in range(0,8):
-                             UH.set_pixel(i,int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
-                    elif s[p+1] == "*":
-                        for i in range(0,8):
-                             UH.set_pixel(int(s[p]),i,int(s[p+2]),int(s[p+3]),int(s[p+4]))
-                    else : 
-                        UH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
+                    x1 = 0
+                    x2 = 0
+                    y1 = 0
+                    y2 = 0
+                    if s[p] == "*":
+                        x1 = 0
+                        x2 = 8
+                    elif "-" in s[p]:
+                        x1 = int(s[p].split('-')[0]) % 8
+                        x2 = int(s[p].split('-')[1]) % 8 + 1
+                        if x1 >= x2:
+                            x2,x1 = x1+1,x2-1
+                    else:
+                        x1 = int(s[p])
+                        x2 = int(s[p])+1
+                    if s[p+1] == "*":
+                        y1 = 0
+                        y2 = 8
+                    elif "-" in s[p+1]:
+                        y1 = int(s[p+1].split('-')[0]) % 8
+                        y2 = int(s[p+1].split('-')[1]) % 8 + 1
+                        if y1 >= y2:
+                            y2,y1 = y1+1,y2-1
+                    else:
+                        y1 = int(s[p+1]) % 8
+                        y2 = int(s[p+1]) % 8 + 1
+                    for i in range(x1,x2):
+                        for j in range(y1,y2):
+                            UH.set_pixel(i,j,int(s[p+2]),int(s[p+3]),int(s[p+4]))
             else:
                 q = 0
                 for p in range(64):

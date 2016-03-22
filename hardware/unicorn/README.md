@@ -29,13 +29,12 @@ png image, or by specifying a single colour using an r,g,b triple.
 The brightness can also be set in the configuration. Defaults to 20% so as not
 to blind you.
 
-A pixel is set by `msg.payload` with a CSV string `x,y,r,g,b` , where x and y
-are 0 to 7, and r, g and b are 0 - 255.
-If `x` or `y` are set to `*` then the complete row or column can be set.
-Setting both `x` and `y` to `*` fills the background.
-Multiple pixels can be specified at once by using `x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...` etc
+A pixel is set by a `payload` containing a CSV string `x,y,r,g,b` .
+`x` and `y` can be a single pixel `0` to `7`, a range of pixels, eg `2-5`, or
+`*` to indicate the whole line. Multiple pixels strings can also be sent as
+`x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...` .
 
-The background can also be set to a colour by setting `msg.payload` to an r,g,b triple.
+The background can also be set to a colour by setting `msg.payload` to an `r,g,b` triple.
 
 Any msg with a `msg.topic` identifies a 'sprite', which can then be moved
 independently of the background. A 'sprite' can be a single pixel, or a group of pixels.
@@ -46,6 +45,6 @@ Setting `msg.payload` to `DEL` delete any sprites - leaving the background.
 
 Setting `msg.payload` to `CLS` will clear the display to off and delete any sprites.
 
-The overall brightness may be set by setting `msg.payload` to `brightness,nn`, where `nn` is 0 to 100.
+The overall brightness may be set by setting `msg.payload` to `brightness,nn`, where `nn` is `0 to 100`.
 
-The rotation may be set by setting `msg.payload` to 'rotate,rr', where 'rr' is 0, 90, 180 or 270.
+The rotation may be set by setting `msg.payload` to `rotate,rr`, where `rr` is `0`, `90`, `180` or `270`.

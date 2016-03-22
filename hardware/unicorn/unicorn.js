@@ -92,124 +92,128 @@ module.exports = function(RED) {
         else { ready = true; }
 
         function inputlistener(msg) {
-            var a,b,c,d,e;
-            var s = msg.payload.toUpperCase().split(",");
-            var doDraw = true;
-            if (s.length === 1) {
-                if (s[0] == "CLS") {
-                    //console.log("CLEAR")
-                    pic.fill(0);
-                    node.items = {};
-                }
-                if (s[0] == "DEL") {
-                    //console.log("DELETE")
-                    node.items = {};
-                }
-            }
-            else if (s.length === 2) {
-                if (s[0] === "BRIGHTNESS") {
-                    //console.log("BRIGHTNESS",s[1])
-                    node.child.stdin.write("B"+s[1]+"\n");
-                }
-                if (s[0] === "ROTATE") {
-                    //console.log("ROTATE",s[1])
-                    node.child.stdin.write("R"+s[1]+"\n");
-                }
-            }
-            else if (s.length === 3) {
-                //console.log("BACKGROUND",s)
-                for (var i=0; i<192; i++) {
-                    pic[i] = s[0];
-                    pic[i+1] = s[1];
-                    pic[i+2] = s[2];
-                    i += 2;
-                }
-            }
-            else if (s.length % 5 === 0) { // handles pixel updates
-                if (msg.topic) {
-                    node.items[msg.topic] = msg.payload;
-                }
-                else {
-                    node.child.stdin.write('P'+msg.payload+'\n');
-                    doDraw = false;
-                    for (a=0; a<s.length; a++) {
-                        //console.log("PIXELS",a);
-                        if ((s[a] === "*") && (s[a+1] === "*")) {
-                            for (c=0; c<192; c++) {
-                                pic[c] = s[a+2];
-                                pic[c+1] = s[a+3];
-                                pic[c+2] = s[a+4];
-                                c += 2;
-                            }
-                        }
-                        else if (s[a] === "*") {
-                            for (d=0; d<8; d++) {
-                                pic[d*3+s[1]*24] = s[a+2];
-                                pic[d*3+s[1]*24+1] = s[a+3];
-                                pic[d*3+s[1]*24+2] = s[a+4];
-                            }
-                        }
-                        else if (s[a+1] === "*") {
-                            for (e=0; e<8; e++) {
-                                pic[s[a]*3+e*24] = s[a+2];
-                                pic[s[a]*3+e*24+1] = s[a+3];
-                                pic[s[a]*3+e*24+2] = s[a+4];
-                            }
-                        }
-                        else {
-                            pic[s[a]*3+s[a+1]*24] = s[a+2];
-                            pic[s[a]*3+s[a+1]*24+1] = s[a+3];
-                            pic[s[a]*3+s[a+1]*24+2] = s[a+4];
-                        }
-                        a += 4;
+            if (typeof msg.payload === "string") {
+                var a,b,c,d,e;
+                msg.payload = msg.payload.replace('"','');
+                var s = msg.payload.toUpperCase().split(",");
+                var doDraw = true;
+                if (s.length === 1) {
+                    if (s[0] == "CLS") {
+                        //console.log("CLEAR")
+                        pic.fill(0);
+                        node.items = {};
+                    }
+                    if (s[0] == "DEL") {
+                        //console.log("DELETE")
+                        node.items = {};
                     }
                 }
-            }
-            else if (s.length === 192) {  // handle complete buffer refresh.
-                for (var h=0; h<192; h++) {
-                    pic[h] = s[h];
-                    pic[h+1] = s[h+1];
-                    pic[h+2] = s[h+2];
-                    h += 2;
+                else if (s.length === 2) {
+                    if (s[0] === "BRIGHTNESS") {
+                        //console.log("BRIGHTNESS",s[1])
+                        node.child.stdin.write("B"+s[1]+"\n");
+                    }
+                    if (s[0] === "ROTATE") {
+                        //console.log("ROTATE",s[1])
+                        node.child.stdin.write("R"+s[1]+"\n");
+                    }
                 }
-            }
-            else {
-                if (node.items.hasOwnProperty(msg.topic)) { delete node.items[msg.topic]; }
-            }
-
-            if (doDraw) {
-                var pixels = new Buffer(192);
-                pic.copy(pixels);
-                for (var p in node.items) {
-                    if (node.items.hasOwnProperty(p)) {
-                        b = node.items[p].split(",");
-                        for (a=0; a<b.length; a++) {
-                            if (b[a] === "*") {
-                                for (d=0; d<8; d++) {
-                                    pixels[d*3+b[a+1]*24] = b[a+2];
-                                    pixels[d*3+b[a+1]*24+1] = b[a+3];
-                                    pixels[d*3+b[a+1]*24+2] = b[a+4];
+                else if (s.length === 3) {
+                    //console.log("BACKGROUND",s)
+                    for (var i=0; i<192; i++) {
+                        pic[i] = s[0];
+                        pic[i+1] = s[1];
+                        pic[i+2] = s[2];
+                        i += 2;
+                    }
+                }
+                else if (s.length % 5 === 0) { // handles pixel updates
+                    if (msg.topic) {
+                        node.items[msg.topic] = msg.payload;
+                    }
+                    else {
+                        node.child.stdin.write('P'+msg.payload+'\n');
+                        doDraw = false;
+                        for (a=0; a<s.length; a++) {
+                            //console.log("PIXELS",a);
+                            if ((s[a] === "*") && (s[a+1] === "*")) {
+                                for (c=0; c<192; c++) {
+                                    pic[c] = s[a+2];
+                                    pic[c+1] = s[a+3];
+                                    pic[c+2] = s[a+4];
+                                    c += 2;
                                 }
                             }
-                            else if (b[a+1] === "*") {
+                            else if (s[a] === "*") {
+                                for (d=0; d<8; d++) {
+                                    pic[d*3+s[1]*24] = s[a+2];
+                                    pic[d*3+s[1]*24+1] = s[a+3];
+                                    pic[d*3+s[1]*24+2] = s[a+4];
+                                }
+                            }
+                            else if (s[a+1] === "*") {
                                 for (e=0; e<8; e++) {
-                                    pixels[b[a]*3+e*24] = b[a+2];
-                                    pixels[b[a]*3+e*24+1] = b[a+3];
-                                    pixels[b[a]*3+e*24+2] = b[a+4];
+                                    pic[s[a]*3+e*24] = s[a+2];
+                                    pic[s[a]*3+e*24+1] = s[a+3];
+                                    pic[s[a]*3+e*24+2] = s[a+4];
                                 }
                             }
                             else {
-                                pixels[b[a]*3+b[a+1]*24] = b[a+2];
-                                pixels[b[a]*3+b[a+1]*24+1] = b[a+3];
-                                pixels[b[a]*3+b[a+1]*24+2] = b[a+4];
+                                pic[s[a]*3+s[a+1]*24] = s[a+2];
+                                pic[s[a]*3+s[a+1]*24+1] = s[a+3];
+                                pic[s[a]*3+s[a+1]*24+2] = s[a+4];
                             }
                             a += 4;
                         }
                     }
                 }
-                node.child.stdin.write(pixels);
-                node.child.stdin.write("\n");
+                else if (s.length === 192) {  // handle complete buffer refresh.
+                    for (var h=0; h<192; h++) {
+                        pic[h] = s[h];
+                        pic[h+1] = s[h+1];
+                        pic[h+2] = s[h+2];
+                        h += 2;
+                    }
+                }
+                else {
+                    if (node.items.hasOwnProperty(msg.topic)) { delete node.items[msg.topic]; }
+                }
+
+                if (doDraw) {
+                    var pixels = new Buffer(192);
+                    pic.copy(pixels);
+                    for (var p in node.items) {
+                        if (node.items.hasOwnProperty(p)) {
+                            b = node.items[p].split(",");
+                            for (a=0; a<b.length; a++) {
+                                if (b[a] === "*") {
+                                    for (d=0; d<8; d++) {
+                                        pixels[d*3+b[a+1]*24] = b[a+2];
+                                        pixels[d*3+b[a+1]*24+1] = b[a+3];
+                                        pixels[d*3+b[a+1]*24+2] = b[a+4];
+                                    }
+                                }
+                                else if (b[a+1] === "*") {
+                                    for (e=0; e<8; e++) {
+                                        pixels[b[a]*3+e*24] = b[a+2];
+                                        pixels[b[a]*3+e*24+1] = b[a+3];
+                                        pixels[b[a]*3+e*24+2] = b[a+4];
+                                    }
+                                }
+                                else {
+                                    pixels[b[a]*3+b[a+1]*24] = b[a+2];
+                                    pixels[b[a]*3+b[a+1]*24+1] = b[a+3];
+                                    pixels[b[a]*3+b[a+1]*24+2] = b[a+4];
+                                }
+                                a += 4;
+                            }
+                        }
+                    }
+                    node.child.stdin.write(pixels);
+                    node.child.stdin.write("\n");
+                }
             }
+            else { node.warn("Input not a string"); }
         }
 
         node.child = spawn(hatCommand, [node.bright]);
