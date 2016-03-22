@@ -39,7 +39,19 @@ while True:
                 data = data[1:].strip()
                 s = data.split(',')
                 for p in range(0,len(s),5):
-                    UH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
+                    j = 1
+                    if (s[p] == "*") and (s[p+1] == "*"):
+                        for i in range(0,8):
+                            for j in range(0,8):
+                                UH.set_pixel(i,j,int(s[p+2]),int(s[p+3]),int(s[p+4]))
+                    elif s[p] == "*":
+                        for i in range(0,8):
+                             UH.set_pixel(i,int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
+                    elif s[p+1] == "*":
+                        for i in range(0,8):
+                             UH.set_pixel(int(s[p]),i,int(s[p+2]),int(s[p+3]),int(s[p+4]))
+                    else : 
+                        UH.set_pixel(int(s[p]),int(s[p+1]),int(s[p+2]),int(s[p+3]),int(s[p+4]))
             else:
                 q = 0
                 for p in range(64):
