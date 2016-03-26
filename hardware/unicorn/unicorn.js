@@ -98,12 +98,12 @@ module.exports = function(RED) {
                 var s = msg.payload.toUpperCase().split(",");
                 var doDraw = true;
                 if (s.length === 1) {
-                    if (s[0] == "CLS") {
+                    if ((s[0] == "CLS") || (s[0] == "CLR") || (s[0] == "CLEAR")) {
                         //console.log("CLEAR")
                         pic.fill(0);
                         node.items = {};
                     }
-                    if (s[0] == "DEL") {
+                    if ((s[0] == "DEL") || (s[0] == "DELETE")) {
                         //console.log("DELETE")
                         node.items = {};
                     }
@@ -130,39 +130,40 @@ module.exports = function(RED) {
                 else if (s.length % 5 === 0) { // handles pixel updates
                     if (msg.topic) {
                         node.items[msg.topic] = msg.payload;
+                        console.log("ITEMS",node.items);
                     }
                     else {
                         node.child.stdin.write('P'+msg.payload+'\n');
                         doDraw = false;
-                        for (a=0; a<s.length; a++) {
+                        var x = [];
+                        var y = [];
+                        for (a = 0; a < s.length; a++) {
                             //console.log("PIXELS",a);
-                            if ((s[a] === "*") && (s[a+1] === "*")) {
-                                for (c=0; c<192; c++) {
-                                    pic[c] = s[a+2];
-                                    pic[c+1] = s[a+3];
-                                    pic[c+2] = s[a+4];
-                                    c += 2;
+                            if (s[a] === "*") {
+                                x[0] = 0;
+                                x[1] = 7;
+                            }
+                            else if (s[a].indexOf("-") !== -1) {
+                                x = s[a].split("-").sort();
+                            }
+                            else { x[0] = x[1] = s[a]; }
+                            if (s[a+1] === "*") {
+                                y[0] = 0;
+                                y[1] = 7;
+                            }
+                            else if (s[a+1].indexOf("-") !== -1) {
+                                y = s[a+1].split("-").sort();
+                            }
+                            else { y[0] = y[1] = s[a+1]; }
+
+                            for (var j = y[0]; j <= y[1]; j++) {
+                                for (var i = x[0]; i <= x[1]; i++) {
+                                    pic[i*3+j*24] = s[a+2];
+                                    pic[i*3+j*24+1] = s[a+3];
+                                    pic[i*3+j*24+2] = s[a+4];
                                 }
                             }
-                            else if (s[a] === "*") {
-                                for (d=0; d<8; d++) {
-                                    pic[d*3+s[1]*24] = s[a+2];
-                                    pic[d*3+s[1]*24+1] = s[a+3];
-                                    pic[d*3+s[1]*24+2] = s[a+4];
-                                }
-                            }
-                            else if (s[a+1] === "*") {
-                                for (e=0; e<8; e++) {
-                                    pic[s[a]*3+e*24] = s[a+2];
-                                    pic[s[a]*3+e*24+1] = s[a+3];
-                                    pic[s[a]*3+e*24+2] = s[a+4];
-                                }
-                            }
-                            else {
-                                pic[s[a]*3+s[a+1]*24] = s[a+2];
-                                pic[s[a]*3+s[a+1]*24+1] = s[a+3];
-                                pic[s[a]*3+s[a+1]*24+2] = s[a+4];
-                            }
+
                             a += 4;
                         }
                     }
@@ -185,25 +186,31 @@ module.exports = function(RED) {
                     for (var p in node.items) {
                         if (node.items.hasOwnProperty(p)) {
                             b = node.items[p].split(",");
-                            for (a=0; a<b.length; a++) {
+                            var x = [];
+                            var y = [];
+                            for (a = 0; a < b.length; a++) {
                                 if (b[a] === "*") {
-                                    for (d=0; d<8; d++) {
-                                        pixels[d*3+b[a+1]*24] = b[a+2];
-                                        pixels[d*3+b[a+1]*24+1] = b[a+3];
-                                        pixels[d*3+b[a+1]*24+2] = b[a+4];
-                                    }
+                                    x[0] = 0;
+                                    x[1] = 7;
                                 }
-                                else if (b[a+1] === "*") {
-                                    for (e=0; e<8; e++) {
-                                        pixels[b[a]*3+e*24] = b[a+2];
-                                        pixels[b[a]*3+e*24+1] = b[a+3];
-                                        pixels[b[a]*3+e*24+2] = b[a+4];
-                                    }
+                                else if (b[a].indexOf("-") !== -1) {
+                                    x = b[a].split("-").sort();
                                 }
-                                else {
-                                    pixels[b[a]*3+b[a+1]*24] = b[a+2];
-                                    pixels[b[a]*3+b[a+1]*24+1] = b[a+3];
-                                    pixels[b[a]*3+b[a+1]*24+2] = b[a+4];
+                                else { x[0] = x[1] = b[a]; }
+                                if (b[a+1] === "*") {
+                                    y[0] = 0;
+                                    y[1] = 7;
+                                }
+                                else if (b[a+1].indexOf("-") !== -1) {
+                                    y = b[a+1].split("-").sort();
+                                }
+                                else { y[0] = y[1] = b[a+1]; }
+                                for (var j = y[0]; j <= y[1]; j++) {
+                                    for (var i = x[0]; i <= x[1]; i++) {
+                                        pixels[i*3+j*24]   = b[a+2];
+                                        pixels[i*3+j*24+1] = b[a+3];
+                                        pixels[i*3+j*24+2] = b[a+4];
+                                    }
                                 }
                                 a += 4;
                             }
