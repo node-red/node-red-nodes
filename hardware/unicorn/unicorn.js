@@ -130,7 +130,6 @@ module.exports = function(RED) {
                 else if (s.length % 5 === 0) { // handles pixel updates
                     if (msg.topic) {
                         node.items[msg.topic] = msg.payload;
-                        console.log("ITEMS",node.items);
                     }
                     else {
                         node.child.stdin.write('P'+msg.payload+'\n');
