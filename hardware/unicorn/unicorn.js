@@ -93,7 +93,7 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             if (typeof msg.payload === "string") {
-                var a,b,c,d,e;
+                var a,b,c,d,e,i,j,x,y;
                 msg.payload = msg.payload.replace('"','');
                 var s = msg.payload.toUpperCase().split(",");
                 var doDraw = true;
@@ -120,7 +120,7 @@ module.exports = function(RED) {
                 }
                 else if (s.length === 3) {
                     //console.log("BACKGROUND",s)
-                    for (var i=0; i<192; i++) {
+                    for (i=0; i<192; i++) {
                         pic[i] = s[0];
                         pic[i+1] = s[1];
                         pic[i+2] = s[2];
@@ -134,8 +134,8 @@ module.exports = function(RED) {
                     else {
                         node.child.stdin.write('P'+msg.payload+'\n');
                         doDraw = false;
-                        var x = [];
-                        var y = [];
+                        x = [];
+                        y = [];
                         for (a = 0; a < s.length; a++) {
                             //console.log("PIXELS",a);
                             if (s[a] === "*") {
@@ -155,8 +155,8 @@ module.exports = function(RED) {
                             }
                             else { y[0] = y[1] = s[a+1]; }
 
-                            for (var j = y[0]; j <= y[1]; j++) {
-                                for (var i = x[0]; i <= x[1]; i++) {
+                            for (j = y[0]; j <= y[1]; j++) {
+                                for (i = x[0]; i <= x[1]; i++) {
                                     pic[i*3+j*24] = s[a+2];
                                     pic[i*3+j*24+1] = s[a+3];
                                     pic[i*3+j*24+2] = s[a+4];
@@ -185,8 +185,8 @@ module.exports = function(RED) {
                     for (var p in node.items) {
                         if (node.items.hasOwnProperty(p)) {
                             b = node.items[p].split(",");
-                            var x = [];
-                            var y = [];
+                            x = [];
+                            y = [];
                             for (a = 0; a < b.length; a++) {
                                 if (b[a] === "*") {
                                     x[0] = 0;
@@ -204,9 +204,9 @@ module.exports = function(RED) {
                                     y = b[a+1].split("-").sort();
                                 }
                                 else { y[0] = y[1] = b[a+1]; }
-                                for (var j = y[0]; j <= y[1]; j++) {
-                                    for (var i = x[0]; i <= x[1]; i++) {
-                                        pixels[i*3+j*24]   = b[a+2];
+                                for (j = y[0]; j <= y[1]; j++) {
+                                    for (i = x[0]; i <= x[1]; i++) {
+                                        pixels[i*3+j*24] = b[a+2];
                                         pixels[i*3+j*24+1] = b[a+3];
                                         pixels[i*3+j*24+2] = b[a+4];
                                     }
