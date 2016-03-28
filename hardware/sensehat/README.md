@@ -77,7 +77,8 @@ be sent in a single message by separating them with newline (\n) characters.
 
 Format: `<x>,<y>,<colour>`
 
-`x` and `y` must either be a value in the range 0-7, or `*` to indicate the entire row or column.
+`x` and `y` must either be a value from 0 to 7, a `*` to indicate the entire row
+or column, or a range such as `3-6`.
 
 `colour` must be one of:
 
@@ -92,6 +93,9 @@ To set the entire screen to red: `*,*,red`
 To set the four corners of the display to red, green (#00ff00), yellow and blue (0,0,255):
 
 `0,0,red,0,7,#00ff00,7,7,yellow,7,0,0,0,255`
+
+To set a 3-pixel wide column to purple: `4-6,*,purple`
+
 
 #### Rotate the screen
 

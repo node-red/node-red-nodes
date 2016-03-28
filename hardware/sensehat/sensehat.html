@@ -92,8 +92,8 @@ be sent in a single message by separating them with newline (\n) characters.<p>
 
 <p><b>Set the colour of individual pixels</b></p>
 <p>Format: <code>&lt;x&gt;,&lt;y&gt;,&lt;colour&gt;</code>
-<p><code>x</code> and <code>y</code> must either be a value in the range 0-7, or
-<code>*</code> to indicate the entire row or column.</p>
+<p><code>x</code> and <code>y</code> must either be a value from 0 to 7, a
+<code>*</code> to indicate the entire row or column, or a range such as <code>3-6</code>.</p>
 <p><code>colour</code> must be one of:
 <ul>
     <li>the well-known <a href="https://en.wikipedia.org/wiki/Web_colors" target="_new">HTML colour names</a>
@@ -109,6 +109,8 @@ be sent in a single message by separating them with newline (\n) characters.<p>
 <p><code>*,*,red</code></p>
 <p>To set the four corners of the display to red, green (#00ff00), yellow and blue (0,0,255):</p>
 <p><code>0,0,red,0,7,#00ff00,7,7,yellow,7,0,0,0,255</code></p>
+<p>To set a 3-pixel wide column to purple:</p>
+<p><code>4-6,*,purple</code></p>
 
 <p><b>Rotate the screen</b></p>
 <p>Format: <code>R&lt;angle&gt;</code></p>
