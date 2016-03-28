@@ -48,3 +48,11 @@ Setting `msg.payload` to `CLS` will clear the display to off and delete any spri
 The overall brightness may be set by setting `msg.payload` to `brightness,nn`, where `nn` is `0 to 100`.
 
 The rotation may be set by setting `msg.payload` to `rotate,rr`, where `rr` is `0`, `90`, `180` or `270`.
+
+Examples
+--------
+
+Includes two example flows - found under `Menu - Import - Examples - pi unicorn-hat`.
+One shows drawing simple blocks and lines.
+The other is a simple graphical clock that shows the current time in hours
+and minutes using a number of coloured pixels.
