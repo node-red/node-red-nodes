@@ -49,7 +49,7 @@ module.exports = function(RED) {
                             node.log("connected to sensor tag: " + sensorTag._peripheral.uuid);
                             node.status({fill:"green", shape:"dot", text:"connected"});
 
-                            sensorTag.on('disconnect', function() {
+                            sensorTag.once('disconnect', function() {
                                 node.discovering = false;
                                 node.status({fill:"red", shape:"ring", text:"disconnected"});
                                 node.log("disconnected ",node.uuid);
@@ -102,7 +102,6 @@ module.exports = function(RED) {
                                     msg.payload = {'left': left, 'right': right, 'magnet': mag};
                                     node.send(msg);
                                 });
-
                                 sensorTag.on('luxometerChange', function(lux) {
                                     var msg = {'topic': node.topic + '/luxometer'};
                                     msg.payload = {'lux': parseInt(lux)};
