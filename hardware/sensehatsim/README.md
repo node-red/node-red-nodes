@@ -25,7 +25,7 @@ three sets; motion events, environment events and joystick events.
 
 #### Motion events
 
-*** The current version of the simulator does not support Motion events ***
+**The current version of the simulator does not support Motion events**
 
 Motion events include readings from the accelerometer, gyroscope and magnetometer,
 as well as the current compass heading. They are sent at a rate of approximately 10
@@ -105,7 +105,7 @@ Format: `R<axis>`
 
 #### Scroll a message
 
-*** The current version of the simulator does not support displaying text ***
+**The current version of the simulator does not support displaying text**
 
 If `msg.payload` is not recognised as any of the above commands, it is treated
 as a text message to be scrolled across the screen.
