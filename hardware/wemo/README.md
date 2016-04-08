@@ -4,6 +4,14 @@ A set of Node-RED nodes for working with Belkin WeMo devices.
 
 These nodes use the uPnP discovery so may not discover your devices if you have a firewall enabled
 
+Install
+-------
+
+Run the following command in your Node-RED user directory - typically `~/.node-red`
+
+    npm install node-red-node-wemo
+
+
 ## Output node
 
 The output node switches a socket, a light or group of lights on or off
