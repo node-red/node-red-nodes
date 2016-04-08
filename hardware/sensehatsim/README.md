@@ -1,28 +1,20 @@
-node-red-node-pi-sense-hat
-==========================
+node-red-node-pi-sense-hat-simulator
+====================================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to interact with
-a Raspberry Pi Sense HAT.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to simulate a
+Raspberry Pi Sense HAT.
 
-## Pre-requisites
+This allows you to create flows that interact with a virtual Sense HAT without the actual
+hardware - whether you're running on a Raspberry Pi, a laptop or elsewhere.
 
-The Sense HAT python drivers need to be installed manually:
-
-```
-sudo apt-get update
-sudo apt-get install sense-hat
-sudo pip-3.2 install pillow
-```
-
-See the <a href="http://pythonhosted.org/sense-hat/" target="_new">driver documentation</a>
-for more information.
-
+Once a Sense HAT simulator node has been deployed, the web page that provides
+a UI to the simulator can be accessed by clicking the link in the node's info panel.
 
 ## Install
 
 Run the following command in your Node-RED user directory (typically `~/.node-red`):
 
-    npm install node-red-node-pi-sense-hat
+    npm install node-red-node-pi-sense-hat-simulator
 
 ## Usage
 
@@ -32,6 +24,8 @@ This node sends readings from the various sensors on the Sense HAT, grouped into
 three sets; motion events, environment events and joystick events.
 
 #### Motion events
+
+**The current version of the simulator does not support Motion events**
 
 Motion events include readings from the accelerometer, gyroscope and magnetometer,
 as well as the current compass heading. They are sent at a rate of approximately 10
@@ -110,6 +104,8 @@ Format: `R<axis>`
 `axis` must be either `H` or `V` to flip on the horizontal or vertical axis respectively.
 
 #### Scroll a message
+
+**The current version of the simulator does not support displaying text**
 
 If `msg.payload` is not recognised as any of the above commands, it is treated
 as a text message to be scrolled across the screen.

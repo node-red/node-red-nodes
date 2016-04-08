@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "0.1.2",
+    "version"       : "0.2.0",
     "description"   : "Node-RED nodes to talk to an serial port",
     "dependencies"  : {
         "serialport"   : "2.0.*"
@@ -11,8 +11,9 @@
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "serial" ],
-    "node-red"      : {
-        "nodes"     : {
+    "node-red": {
+        "version": ">=0.13.0",
+        "nodes": {
             "serialport": "25-serial.js"
         }
     },
