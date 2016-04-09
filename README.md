@@ -25,7 +25,7 @@ To manually install using this repo:
 
 ## Contributing
 
-Now that we support npm installaton of nodes we recommend people post their own
+Now that we support npm installation of nodes we recommend people post their own
 nodes via [npm](https://www.npmjs.org/). Please read the
 [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
 
@@ -39,11 +39,15 @@ before doing so.
 
 ## Copyright and license
 
-Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
+Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 # Extra Node Information
 
 **NPM name** - *File-link* - Description
+
+### Misc
+
+**N/A** - *[99-sample](./)* - A sample node with more comments than most to try to help you get started without any other docs...
 
 ### Analysis
 
@@ -156,7 +160,3 @@ Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 **node-red-node-exif** - *[94-exif](utility/exif)* - Extracts GPS and other EXIF information from a passed in jpeg image,
 
 **node-red-node-daemon** - *[daemon](utility/daemon)* - starts up (calls) a long running system program and pipes STDIN, STDOUT and STDERR to and from that process. Good for monitoring long running command line applications,
-
-### Misc
-
-**N/A** - *[99-sample](./)* - A sample node with more comments than most to try to help you get started without any other docs...

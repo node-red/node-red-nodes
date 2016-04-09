@@ -23,8 +23,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
         var node = this;
-        this.on("input",function(msg) {
-            var titl = this.title || msg.topic;
+        node.on("input",function(msg) {
+            var titl = node.title || msg.topic;
             if (typeof(msg.payload) == 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }

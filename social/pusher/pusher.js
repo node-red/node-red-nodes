@@ -39,7 +39,7 @@ module.exports = function(RED) {
 
         //create a subscription to the channel and event defined by user
         var socket = new PusherClient(''+this.appkey);
-        var my_channel = socket.subscribe(''+this.channel);
+        node.channel = socket.subscribe(''+this.channel);
         socket.bind(''+this.eventname,
             function(data) {
                 var msg = {topic:this.eventname};
@@ -60,7 +60,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 
         var node = this;
-
         var credentials = this.credentials;
 
         if ((credentials) && (credentials.hasOwnProperty("pusherappid"))) { this.appid = credentials.pusherappid; }
@@ -80,24 +79,15 @@ module.exports = function(RED) {
             secret: this.appsecret
         });
 
-        this.on("input", function(msg) {
+        node.on("input", function(msg) {
             pusher.trigger(this.channel, this.eventname, {
                 "payload": msg.payload
             });
         });
 
-        this.on("close", function() {
+        node.on("close", function() {
         });
     }
-
-    //debugging on the output:
-    var displayResult = function(result) {
-        node.log(result);
-    };
-
-    var displayError = function(err) {
-        node.log("Error: "+err);
-    };
 
     RED.nodes.registerType("pusher in",PusherNode,{
         credentials: {

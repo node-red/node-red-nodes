@@ -1,5 +1,5 @@
 {
-  "name": "node-red-nodes-wemo",
+  "name": "node-red-node-wemo",
   "version": "0.1.4",
   "description": "Input and Output nodes for Belkin WeMo devices",
   "repository": "https://github.com/node-red/node-red-nodes/tree/master/hardware",

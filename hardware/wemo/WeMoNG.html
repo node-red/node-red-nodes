@@ -164,28 +164,30 @@
             return this.name;
         },
         oneditprepare: function() {
-          var devices;
-          $.getJSON('wemoNG/devices', function(data){
-            devices = data;
-            var devs = Object.keys(data);
-            if (devs.length != 0) {
-              for (d in devs) {
-                $('<option/>',{
-                  'value': devs[d],
-                  'text': data[devs[d]].name
-                }).appendTo('#node-config-input-device');
-                console.log(data[devs[d]].name);
-              }
-            }
-          });
+            var devices;
+            $.getJSON('wemoNG/devices', function(data) {
+                devices = data;
+                var devs = Object.keys(data);
+                if (devs.length !== 0) {
+                    for (var d in devs) {
+                        if (devs.hasOwnProperty(d)) {
+                            $('<option/>',{
+                                'value': devs[d],
+                                'text': data[devs[d]].name
+                            }).appendTo('#node-config-input-device');
+                            console.log(data[devs[d]].name);
+                        }
+                    }
+                }
+            });
 
-          $('#node-config-input-device').change(function(){
-            var id = $( "#node-config-input-device option:selected" ).first().val();
-            if (devices) {
-              $('#node-config-input-type').val(devices[id].type);
-              $('#node-config-input-name').val(devices[id].name);
-            }
-          });
+            $('#node-config-input-device').change(function() {
+                var id = $( "#node-config-input-device option:selected" ).first().val();
+                if (devices) {
+                    $('#node-config-input-type').val(devices[id].type);
+                    $('#node-config-input-name').val(devices[id].name);
+                }
+            });
         }
     });
 </script>

@@ -93,7 +93,7 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             if (typeof msg.payload === "string") {
-                var a,b,c,d,e,i,j,x,y;
+                var a,b,i,j,x,y;
                 msg.payload = msg.payload.replace('"','');
                 var s = msg.payload.toUpperCase().split(",");
                 var doDraw = true;
@@ -235,7 +235,7 @@ module.exports = function(RED) {
             if (RED.settings.verbose) { node.log("err: "+data+" :"); }
         });
 
-        node.child.on('close', function (code) {
+        node.child.on('close', function () {
             node.child = null;
             if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
             if (node.done) {
@@ -253,7 +253,7 @@ module.exports = function(RED) {
 
         node.on("close", function(done) {
             node.status({fill:"grey",shape:"ring",text:"closed"});
-            if (node.tout) { clearTimeout(tout); }
+            if (node.tout) { clearTimeout(node.tout); }
             if (node.child != null) {
                 node.done = done;
                 node.child.kill('SIGKILL');
