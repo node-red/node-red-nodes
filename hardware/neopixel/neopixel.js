@@ -51,7 +51,7 @@ module.exports = function(RED) {
         if (this.wipe < 0) { this.wipe = 0; }
         var node = this;
         var needle = "255,255,255";
-        var p1 = /^\#[A-Fa-f0-9]{6}$/
+        //var p1 = /^\#[A-Fa-f0-9]{6}$/
         var p2 = /^[0-9]+,[0-9]+,[0-9]+$/
         var p3 = /^[0-9]+,[0-9]+,[0-9]+,[0-9]+$/
         var p4 = /^[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+$/
@@ -125,7 +125,7 @@ module.exports = function(RED) {
             if (RED.settings.verbose) { node.log("err: "+data+" :"); }
         });
 
-        node.child.on('close', function (code) {
+        node.child.on('close', function () {
             node.child = null;
             if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
             if (node.done) {

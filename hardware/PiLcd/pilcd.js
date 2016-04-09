@@ -43,7 +43,6 @@ module.exports = function(RED) {
         var node = this;
 
         function inputlistener(msg) {
-            var out = msg.payload.toString();
             if (RED.settings.verbose) { node.log("inp: " + msg.payload); }
             if (node.child !== null) { node.child.stdin.write(msg.payload + "\n"); }
             else { node.warn("Command not running"); }
@@ -90,7 +89,6 @@ module.exports = function(RED) {
         }
 
         node.on("close", function(done) {
-            delete pinsInUse[node.pin];
             if (node.child != null) {
                 node.child.stdin.write("c:lose" + node.pin);
                 node.child.kill('SIGKILL');

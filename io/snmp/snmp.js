@@ -65,6 +65,7 @@ module.exports = function(RED) {
         this.oids = n.oids.replace(/\s/g,"");
         this.session = snmp.createSession (this.host, this.community, {version: this.version});
         var node = this;
+        var msg;
         var maxRepetitions = 20;
 
         function sortInt (a, b) {
@@ -101,7 +102,8 @@ module.exports = function(RED) {
                 node.send(msg);
             }
         }
-        this.on("input",function(msg) {
+        this.on("input",function(m) {
+            msg = m;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;

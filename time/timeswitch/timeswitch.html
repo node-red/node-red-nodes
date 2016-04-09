@@ -370,7 +370,7 @@
                     url: "timeswitch/"+this.id,
                     type:"POST",
                     success: function(resp) {
-                        RED.notify("Successfully injected: "+label,"success");
+                        RED.notify("Successfully injected: ","success");
                     },
                     error: function(jqXHR,textStatus,errorThrown) {
                         if (jqXHR.status === 404) {

@@ -7,10 +7,10 @@
     "disallowMultipleSpaces": {"allowEOLComments": true},
     "disallowKeywordsOnNewLine": [],
     "requireSpaceBeforeBlockStatements": 1,
-    "requireSpaceBeforeObjectValues": false,
+    //"requireSpaceBeforeObjectValues": false,
     //"requireSemicolons": true,
     //"validateParameterSeparator": ", ",
+    //"validateQuoteMarks": false,
     "requireSpaceAfterKeywords": ["do","for","if","else","switch","case","try","while"],
-    "maximumLineLength": 255,
-    "validateQuoteMarks": false
+    "maximumLineLength": 255
 }
