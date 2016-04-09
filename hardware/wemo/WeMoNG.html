@@ -168,13 +168,15 @@
           $.getJSON('wemoNG/devices', function(data){
             devices = data;
             var devs = Object.keys(data);
-            if (devs.length != 0) {
-              for (d in devs) {
-                $('<option/>',{
-                  'value': devs[d],
-                  'text': data[devs[d]].name
-                }).appendTo('#node-config-input-device');
-                console.log(data[devs[d]].name);
+            if (devs.length !== 0) {
+              for (var d in devs) {
+                if (dev.hasOwnProperty(d)) {
+                  $('<option/>',{
+                    'value': devs[d],
+                    'text': data[devs[d]].name
+                  }).appendTo('#node-config-input-device');
+                  console.log(data[devs[d]].name);
+                }
               }
             }
           });
