@@ -1,4 +1,8 @@
 {
+    "predef": [ "RED" ],
+    "node": true,
+    "browser": true,
+    "jquery": true,
     "asi": true,        // allow missing semicolons
     "curly": true,      // require braces
     "eqnull": true,     // ignore ==null
@@ -9,5 +13,6 @@
     //"unused": true,     // Check for unused functions and variables
     "loopfunc": true,   // allow functions to be defined in loops
     //"expr": true,     // allow ternery operator syntax...
-    "sub": true         // don't warn that foo['bar'] should be written as foo.bar
+    "sub": true,        // don't warn that foo['bar'] should be written as foo.bar
+    "undef": true       // warn about undefined variables
 }
