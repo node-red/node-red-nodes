@@ -36,3 +36,7 @@ want to use `msg.oid` to provide input.
 
 Outputs `msg.payload` containing the table of objects, and the requested `msg.oid`.
 Values depends on the oids being requested.
+
+### snmp-walker
+
+### snmp-subtree
