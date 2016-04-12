@@ -126,3 +126,117 @@
         }
     });
 </script>
+
+<script type="text/x-red" data-template-name="snmp subtree">
+    <div class="form-row">
+         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+         <input type="text" id="node-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+    <div class="form-row">
+        <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
+        <select type="text" id="node-input-version" style="width: 150px;">
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
+        <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
+</script>
+
+<script type="text/x-red" data-help-name="snmp subtree">
+    <p>Simple SNMP oid subtree fetcher. Triggered by any input.</p>
+    <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('snmp subtree',{
+        category: 'network-input',
+        color:"YellowGreen",
+        defaults: {
+            host: {value:"",required:true},
+            community: {value:"public",required:true},
+            version: {value:"1",required:true},
+            oids: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "snmp.png",
+        label: function() {
+            return this.name||"snmp subtree "+this.host;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+
+<script type="text/x-red" data-template-name="snmp walker">
+    <div class="form-row">
+         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+         <input type="text" id="node-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+    <div class="form-row">
+        <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
+        <select type="text" id="node-input-version" style="width: 150px;">
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
+        <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
+</script>
+
+<script type="text/x-red" data-help-name="snmp walker">
+    <p>Simple SNMP oid walker fetcher. Triggered by any input.</p>
+    <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('snmp walker',{
+        category: 'network-input',
+        color:"YellowGreen",
+        defaults: {
+            host: {value:"",required:true},
+            community: {value:"public",required:true},
+            version: {value:"1",required:true},
+            oids: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "snmp.png",
+        label: function() {
+            return this.name||"snmp walker "+this.host;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
