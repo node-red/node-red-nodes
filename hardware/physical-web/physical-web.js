@@ -20,6 +20,48 @@ module.exports = function(RED) {
     var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
     var eddyBeacon = false;
 
+    var checkLength = function(text) {
+        var l = text.length;
+        switch(true) {
+            case /^http:\/\/www./.test(text):
+            l -= 10;
+            break;
+            case /^https:\/\/www./.test(text):
+            l -= 11;
+            break;
+            case /^http:\/\//.test(text):
+            l -= 6;
+            break;
+            case /^https:\/\//.test(text):
+            l -= 7;
+            break;
+        }
+
+        switch(true) {
+            case /.*\.info\/.*/.test(text):
+            l -= 5;
+            break;
+            case /.*\.com\/.*/.test(text):
+            case /.*\.net\/.*/.test(text):
+            case /.*\.org\/.*/.test(text):
+            case /.*\.edu\/.*/.test(text):
+            case /.*\.biz\/.*/.test(text):
+            case /.*\.gov\/.*/.test(text):
+            case /.*\.info.*/.test(text):
+            l -= 4;
+            break;
+            case /.*\.com.*/.test(text):
+            case /.*\.net.*/.test(text):
+            case /.*\.org.*/.test(text):
+            case /.*\.edu.*/.test(text):
+            case /.*\.biz.*/.test(text):
+            case /.*\.gov.*/.test(text):
+            l -= 3;
+            break;
+        }
+        return l;
+    }
+
     function Beacon(n) {
         RED.nodes.createNode(this,n);
         var node = this;
@@ -65,12 +107,16 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             if (node.mode === "url") {
-              try {
-                  eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-                  node.status({fill:"green",shape:"dot",text:msg.payload});
-              } catch(e) {
+              if (checkLength(msg.payload) <= 18) {
+                  try {
+                      eddystoneBeacon.advertiseUrl(msg.payload, node.options);
+                      node.status({fill:"green",shape:"dot",text:msg.payload});
+                  } catch(e) {
+                      node.status({fill:"red",shape:"dot",text:"Error setting URL"});
+                      node.error('error updating beacon URL', e);
+                  }
+              } else {
                   node.status({fill:"red",shape:"dot",text:"URL too long"});
-                  node.error('error updating beacon URL', e);
               }
             }
             // uid mode
