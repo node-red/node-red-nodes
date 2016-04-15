@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pilcd",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "description"   : "A Node-RED node for Raspberry Pi to write to HD44780 style LCD panels.",
     "dependencies"  : {
     },

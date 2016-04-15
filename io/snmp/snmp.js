@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014,2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var snmp = require ("net-snmp");
+    var snmp = require("net-snmp");
 
     function SnmpNode(n) {
         RED.nodes.createNode(this,n);
@@ -24,7 +24,7 @@ module.exports = function(RED) {
         this.host = n.host || "127.0.0.1";
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g,"");
-        this.session = snmp.createSession (this.host, this.community, {version: this.version});
+        this.session = snmp.createSession(this.host, this.community, {version: this.version});
         var node = this;
 
         this.on("input",function(msg) {
@@ -32,11 +32,11 @@ module.exports = function(RED) {
             if (oids) {
                 node.session.get(oids.split(","), function(error, varbinds) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(),msg);
                     } else {
                         for (var i = 0; i < varbinds.length; i++) {
-                            if (snmp.isVarbindError (varbinds[i])) {
-                                node.error(snmp.varbindError (varbinds[i]));
+                            if (snmp.isVarbindError(varbinds[i])) {
+                                node.error(snmp.varbindError(varbinds[i]),msg);
                             }
                             else {
                                 if (varbinds[i].type == 4) { varbinds[i].value = varbinds[i].value.toString(); }
@@ -63,45 +63,48 @@ module.exports = function(RED) {
         this.host = n.host || "127.0.0.1";
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g,"");
-        this.session = snmp.createSession (this.host, this.community, {version: this.version});
+        this.session = snmp.createSession(this.host, this.community, {version: this.version});
         var node = this;
+        var msg;
         var maxRepetitions = 20;
 
-        function sortInt (a, b) {
+        function sortInt(a, b) {
             if (a > b) { return 1; }
             else if (b > a) { return -1; }
             else { return 0; }
         }
 
-        function responseCb (error, table) {
+        function responseCb(error, table) {
             if (error) {
-                console.error (error.toString ());
+                console.error(error.toString());
             } else {
                 var indexes = [];
                 for (var index in table) {
                     if (table.hasOwnProperty(index)) {
-                        indexes.push (parseInt (index));
+                        indexes.push(parseInt(index));
                     }
                 }
-                indexes.sort (sortInt);
+                indexes.sort(sortInt);
                 for (var i = 0; i < indexes.length; i++) {
                     var columns = [];
                     for (var column in table[indexes[i]]) {
                         if (table[indexes[i]].hasOwnProperty(column)) {
-                            columns.push(parseInt (column));
+                            columns.push(parseInt(column));
                         }
                     }
                     columns.sort(sortInt);
-                    console.log ("row index = " + indexes[i]);
+                    console.log("row index = " + indexes[i]);
                     for (var j = 0; j < columns.length; j++) {
-                        console.log ("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
+                        console.log("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
                     }
                 }
                 msg.payload = table;
                 node.send(msg);
             }
         }
-        this.on("input",function(msg) {
+
+        this.on("input",function(m) {
+            msg = m;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
@@ -113,4 +116,101 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("snmp table",SnmpTNode);
-}
+
+    function SnmpSubtreeNode(n) {
+        RED.nodes.createNode(this,n);
+        this.community = n.community || "public";
+        this.host = n.host || "127.0.0.1";
+        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.oids = n.oids.replace(/\s/g,"");
+        this.session = snmp.createSession(this.host, this.community, {version: this.version});
+        var node = this;
+        var maxRepetitions = 20;
+        var response = [];
+
+        function doneCb(error) {
+            if (error) {
+                console.error(error.toString());
+            }
+            else {
+                var msg = {};
+                msg.payload = response;
+                node.send(msg);
+                response.clear();
+            }
+        }
+
+        function feedCb(varbinds) {
+            for (var i = 0; i < varbinds.length; i++) {
+                if (snmp.isVarbindError(varbinds[i])) {
+                    node.error(snmp.varbindError(varbinds[i]));
+                }
+                else {
+                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    response.add({oid: varbinds[i].oid, value: varbinds[i].value});
+                }
+            }
+        }
+
+        this.on("input",function(msg) {
+            var oids = node.oids || msg.oid;
+            if (oids) {
+                msg.oid = oids;
+                node.session.subtree(msg.oid, maxRepetitions, feedCb, doneCb);
+                //node.session.subtree(oids, maxRepetitions, responseCb);
+            }
+            else {
+                node.warn("No oid to search for");
+            }
+        });
+    }
+    RED.nodes.registerType("snmp subtree",SnmpSubtreeNode);
+
+    function SnmpWalkerNode(n) {
+        RED.nodes.createNode(this,n);
+        this.community = n.community || "public";
+        this.host = n.host || "127.0.0.1";
+        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.oids = n.oids.replace(/\s/g,"");
+        this.session = snmp.createSession(this.host, this.community, {version: this.version});
+        var node = this;
+        var maxRepetitions = 20;
+        var response = [];
+
+        function doneCb(error) {
+            if (error) {
+                node.error(error.toString());
+            }
+            else {
+                var msg = {};
+                msg.payload = response;
+                node.send(msg);
+                response.clear();
+            }
+        }
+
+        function feedCb(varbinds) {
+            for (var i = 0; i < varbinds.length; i++) {
+                if (snmp.isVarbindError(varbinds[i])) {
+                    node.error(snmp.varbindError(varbinds[i]));
+                }
+                else {
+                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    response.add({oid: varbinds[i].oid, value: varbinds[i].value});
+                }
+            }
+        }
+
+        this.on("input",function(msg) {
+            var oids = node.oids || msg.oid;
+            if (oids) {
+                msg.oid = oids;
+                node.session.walk(msg.oid, maxRepetitions, feedCb, doneCb);
+            }
+            else {
+                node.warn("No oid to search for");
+            }
+        });
+    }
+    RED.nodes.registerType("snmp walker",SnmpWalkerNode);
+};
