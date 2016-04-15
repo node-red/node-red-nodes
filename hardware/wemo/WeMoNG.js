@@ -15,7 +15,6 @@
  **/
 var WeMoNG = require('./lib/wemo.js');
 
-
 var wemo = new WeMoNG();
 
 //this won't work as there is no way to stop it...
