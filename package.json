@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-nodes",
-    "version"      : "0.0.2",
+    "version"      : "0.0.3",
     "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage"     : "http://nodered.org",
     "license"      : "Apache-2.0",
@@ -31,8 +31,10 @@
         "when": "^3.6.4",
         "exif": "0.4.0",
         "ngeohash": "0.6.*",
-        "nodemailer"   : "1.3.4",
-        "imap" : "0.8.14"
+        "nodemailer"   : "1.11.*",
+        "poplib" : "0.1.7",
+        "mailparser" : "0.5.3",
+        "imap" : "0.8.17"
     },
     "engines": {
         "node": ">=0.10"
