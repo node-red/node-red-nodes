@@ -124,6 +124,17 @@
         <input type="text" id="node-input-repeat" style="width: 80px"> <span data-i18n="email.label.seconds">seconds</span>
     </div>
     <div class="form-row">
+        <label for="node-input-protocol"><i class="fa fa-envelope"></i> <span data-i18n="email.label.protocol"></span></label>
+        <select type="text" id="node-input-protocol">
+            <option value="IMAP">IMAP</option>
+            <option value="POP3">POP3</option>
+        </select>
+    </div>
+    <div class="form-row">
+		<label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+		<input type="checkbox" id="node-input-useSSL" style="width: auto;">
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
         <input type="text" id="node-input-server" placeholder="imap.gmail.com">
     </div>
@@ -139,17 +150,53 @@
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-box">
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
         <input type="text" id="node-input-box">
+    </div>
+    <div class="form-row node-input-disposition">
+		    <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+        <select type="text" id="node-input-disposition">
+            <option value="None" selected="selected">None</option>
+            <option value="Read">Mark Read/Answered</option>
+            <option value="Delete">Delete</option>
+        </select>
     </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
-    <div id="node-input-tip" class="form-tips"><span data-i18n="[html]email.tip.recent"></span></div>
+    <script>
+        var checkPorts = function() {
+            var currentPort = $("#node-input-port").val();
+            if (currentPort === "143" || currentPort === "993" || currentPort === "110" || currentPort == "995") {
+                if ($("#node-input-useSSL").prop("checked") === true) {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"993":"995");
+                } else {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"143":"110");
+                }
+            }
+        };
+        
+        $("#node-input-useSSL").change(function(x, y) {
+          console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+          console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+          checkPorts();
+        });
+        
+        $("#node-input-protocol").change(function() {
+            var protocol = $("#node-input-protocol").val();
+            if (protocol === "IMAP") {
+                $(".node-input-box").show();
+                $(".node-input-disposition").show();
+            } else {
+                $(".node-input-box").hide();
+                $(".node-input-disposition").hide();                
+            }
+            checkPorts();
+        });
+    </script>
 </script>
 
 <script type="text/x-red" data-help-name="e-mail in">
@@ -161,6 +208,25 @@
     <p>Uses the imap module.</p>
     <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
     <p>Note: uses IMAP with SSL to port 993.</p>
+    <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
+    each object represents a specific attachments.  The format of the object is:</p>
+    
+<pre>
+{
+  contentType:        // The MIME content description
+  fileName:           // A suggested file name associated with this attachment
+  transferEncoding:   // How was the original email attachment encodded?
+  contentDisposition: // Unknown
+  generatedFileName:  // A suggested file name associated with this attachment
+  contentId:          // A unique generated ID for this attachment
+  checksum:           // A checksum against the data
+  length:             // Size of data in bytes
+  content:            // The actual content of the data contained in a Node.js Buffer object
+                      // We can turn this into a base64 data string with content.toString('base64')
+}
+</pre>
+<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+
 </script>
 
 <script type="text/javascript">
@@ -170,9 +236,12 @@
         color:"#c7e9c0",
         defaults: {
             name: {value:""},
+            protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
             server: {value:"imap.gmail.com",required:true},
+            useSSL: {value: true},
             port: {value:"993",required:true},
-            box: {value:"INBOX"},
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process 
+            disposition: { value: "None" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },
         credentials: {
