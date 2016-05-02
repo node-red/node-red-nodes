@@ -106,11 +106,44 @@ module.exports = function(RED) {
         }
 
         node.on('input', function(msg) {
+            if (msg.advertising == false) {
+                if (eddyBeacon) {
+                    try {
+                        eddystoneBeacon.stop();
+                        node.status({fill:"red",shape:"dot",text:"Stopped"});
+                    } catch(e) {
+                        node.error('error shutting down beacon', e);
+                    }
+                    return;
+                }
+            }
+            if (msg.advertising == true) {
+                if (node.mode === "url") {
+                    try {
+                        eddystoneBeacon.advertiseUrl(node.url, node.options);
+                        node.status({fill:"green",shape:"dot",text:node.url});
+                    } catch(e) {
+                        node.error('Error setting beacon URL', e);
+                    }
+                    return;
+                }
+                if (node.mode === "uid") {
+                    try {
+                        eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
+                        node.status({fill:"green",shape:"dot",text:node.namespace});
+                    } catch(e) {
+                        node.error('Error setting beacon information', e);
+                    }
+                    return;
+                }
+            }
+            // url mode
             if (node.mode === "url") {
               if (checkLength(msg.payload) <= 18) {
                   try {
-                      eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-                      node.status({fill:"green",shape:"dot",text:msg.payload});
+                      node.url = msg.payload;
+                      eddystoneBeacon.advertiseUrl(node.url, node.options);
+                      node.status({fill:"green",shape:"dot",text:node.url});
                   } catch(e) {
                       node.status({fill:"red",shape:"dot",text:"Error setting URL"});
                       node.error('error updating beacon URL', e);
@@ -122,7 +155,9 @@ module.exports = function(RED) {
             // uid mode
             else {
               try {
-                  eddystoneBeacon.advertiseUid(msg.payload, msg.topic, node.options);
+                  node.namespace = msg.payload;
+                  node.instance = msg.topic;
+                  eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
                   node.status({fill:"green",shape:"dot",text:msg.payload});
               } catch(e) {
                   node.status({fill:"red",shape:"dot",text:"Error setting beacon information"});
