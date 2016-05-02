@@ -106,7 +106,7 @@ module.exports = function(RED) {
         }
 
         node.on('input', function(msg) {
-            if (msg.advertising == false) {
+            if (msg.advertising === false) {
                 if (eddyBeacon) {
                     try {
                         eddystoneBeacon.stop();
@@ -117,7 +117,7 @@ module.exports = function(RED) {
                     return;
                 }
             }
-            if (msg.advertising == true) {
+            if (msg.advertising === true) {
                 if (node.mode === "url") {
                     try {
                         eddystoneBeacon.advertiseUrl(node.url, node.options);
