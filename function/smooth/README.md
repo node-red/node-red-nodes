@@ -9,7 +9,7 @@ several simple smoothing algorithms for incoming data values. These include
  - Mean
  - Standard Deviation
  - High Pass Smoothing
- - Loww Pass Smoothing
+ - Low Pass Smoothing
 
 Install
 -------
