@@ -196,7 +196,8 @@ def idle_work():
   now = time.time()
   if hf_enabled and (now-last_hf_time > hf_interval):
     orientation = SH.get_orientation()
-    compass = SH.get_compass()
+    # Calling get_compass interferes with get_orientation - so just reuse its value
+    compass = orientation['yaw']
     gyro = SH.get_gyroscope_raw()
     accel = SH.get_accelerometer_raw()
 
