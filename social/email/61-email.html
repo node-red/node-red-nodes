@@ -77,6 +77,7 @@
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
     more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
+    <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p> 
     <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
@@ -178,13 +179,13 @@
                 }
             }
         };
-        
+
         $("#node-input-useSSL").change(function(x, y) {
           console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
           console.log("Value: " + $("#node-input-useSSL").prop("checked"));
           checkPorts();
         });
-        
+
         $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
@@ -192,7 +193,7 @@
                 $(".node-input-disposition").show();
             } else {
                 $(".node-input-box").hide();
-                $(".node-input-disposition").hide();                
+                $(".node-input-disposition").hide();
             }
             checkPorts();
         });
@@ -210,7 +211,7 @@
     <p>Note: uses IMAP with SSL to port 993.</p>
     <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
     each object represents a specific attachments.  The format of the object is:</p>
-    
+
 <pre>
 {
   contentType:        // The MIME content description
@@ -240,7 +241,7 @@
             server: {value:"imap.gmail.com",required:true},
             useSSL: {value: true},
             port: {value:"993",required:true},
-            box: {value:"INBOX"}, // For IMAP, The mailbox to process 
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "None" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },
