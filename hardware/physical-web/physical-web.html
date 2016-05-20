@@ -12,6 +12,10 @@
 -->
 <script type="text/x-red" data-template-name="PhysicalWeb in">
     <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="eddystone">
+    </div>
+    <div class="form-row">
         <label><i class="fa fa-list"></i> Duplicates</span></label>
         <input type="checkbox" id="node-input-duplicates" style="display: inline-block; width: auto; vertical-align: top;">
         Check this to allow duplicate messages
@@ -26,6 +30,7 @@
 <p><a href="https://google.github.io/physical-web/">Physical Web</a> node to scan for Eddystone beacons.</p>
 <p>This node scans for Eddystones and publishes what it finds. The status of the Eddystone
 (found, updated or lost) will be sent as <code>msg.topic</code> and the data as <code>msg.payload</code></p>
+<p>If a <code>topic</code> is specified in the node configuration, it will override the status.</p>
 <p><b>URL</b> type:</p>
     <ul>
         <li><code>type</code> - Eddystone type</li>
@@ -62,6 +67,7 @@
         category: 'input',
         defaults: {
             name: {value:""},
+            topic: {value:""},
             duplicates: {value: true}
         },
         color: "#2F7ACD",

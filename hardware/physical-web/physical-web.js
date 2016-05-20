@@ -187,24 +187,33 @@ module.exports = function(RED) {
         node.duplicates = n.duplicates;
 
         function onFound(beacon) {
-            node.send({
-                topic: 'found',
-                payload: beacon
-            });
+            var topic_data;
+            if (node.topic !== "") {
+                topic_data = node.topic;
+            } else {
+                topic_data = 'found';
+            }
+            node.send({topic: topic_data, payload: beacon});
         }
 
         function onUpdated(beacon) {
-            node.send({
-                topic: 'updated',
-                payload: beacon
-            });
+            var topic_data;
+            if (node.topic !== "") {
+                topic_data = node.topic;
+            } else {
+                topic_data = 'updated';
+            }
+            node.send({topic: topic_data, payload: beacon});
         }
 
         function onLost(beacon) {
-            node.send({
-                topic: 'lost',
-                payload: beacon
-            });
+            var topic_data;
+            if (node.topic !== "") {
+                topic_data = node.topic;
+            } else {
+                topic_data = 'lost';
+            }
+            node.send({topic: topic_data, payload: beacon});
         }
 
         EddystoneBeaconScanner.on('found', onFound);
