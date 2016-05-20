@@ -184,26 +184,34 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.topic = n.topic;
+        node.duplicates = n.duplicates;
 
         function onFound(beacon) {
-            node.send({
-                topic: node.topic,
-                payload: beacon
-            });
+            node.send({topic: node.topic || 'found', payload: beacon});
+        }
+
+        function onUpdated(beacon) {
+            node.send({topic: node.topic || 'updated', payload: beacon});
+        }
+
+        function onLost(beacon) {
+            node.send({topic: node.topic || 'lost', payload: beacon});
         }
 
         EddystoneBeaconScanner.on('found', onFound);
-        EddystoneBeaconScanner.on('updated', onFound);
+        EddystoneBeaconScanner.on('updated', onUpdated);
+        EddystoneBeaconScanner.on('lost', onLost);
 
         node.on('close',function(done) {
             EddystoneBeaconScanner.removeListener('found', onFound);
-            EddystoneBeaconScanner.removeListener('updated', onFound);
+            EddystoneBeaconScanner.removeListener('updated', onUpdated);
+            EddystoneBeaconScanner.removeListener('lost', onLost);
             done();
         });
 
         var tout = setTimeout(function() {
-            EddystoneBeaconScanner.startScanning(true);
-        },2000);
+            EddystoneBeaconScanner.startScanning(node.duplicates);
+        }, 2000);
 
 
         node.on("close", function(done) {

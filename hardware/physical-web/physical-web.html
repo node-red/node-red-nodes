@@ -15,7 +15,11 @@
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="eddystone">
     </div>
-    <br/>
+    <div class="form-row">
+        <label><i class="fa fa-list"></i> Duplicates</span></label>
+        <input type="checkbox" id="node-input-duplicates" style="display: inline-block; width: auto; vertical-align: top;">
+        Check this to allow duplicate messages
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -24,33 +28,35 @@
 
 <script type="text/x-red" data-help-name="PhysicalWeb in">
 <p><a href="https://google.github.io/physical-web/">Physical Web</a> node to scan for Eddystone beacons.</p>
-<p>This node scans for Eddystones and publishes what it finds. It can output 2 types of `msg.payload`</p>
-<p>Either a <b>URL</b> type:</p>
+<p>This node scans for Eddystones and publishes what it finds. The status of the Eddystone
+(found, updated or lost) will be sent as <code>msg.topic</code> and the data as <code>msg.payload</code></p>
+<p>If a <code>topic</code> is specified in the node configuration, it will override the status.</p>
+<p><b>URL</b> type:</p>
     <ul>
-        <li>`type` - Eddystone type</li>
-        <li>`txPower` - Received power at 0m in dBm</li>
-        <li>`url` - The URL the beacon is broadcasting</li>
-        <li>`tlm` - TLM data, if the device is interleaving broadcasts</li>
-        <li>`rssi` - RSSI of the beacon</li>
-        <li>`distance` - Estimated distance to the beacon</li>
+        <li><code>type</code> - Eddystone type</li>
+        <li><code>txPower</code> - Received power at 0m in dBm</li>
+        <li><code>url</code> - The URL the beacon is broadcasting</li>
+        <li><code>tlm</code> - TLM data, if the device is interleaving broadcasts</li>
+        <li><code>rssi</code> - RSSI of the beacon</li>
+        <li><code>distance</code> - Estimated distance to the beacon</li>
     </ul>
-<p>or a <b>UID</b> type:</p>
+<p><b>UID</b> type:</p>
     <ul>
-        <li>`type` - Eddystone type</li>
-        <li>`txPower` - Received power at 0m in dBm</li>
-        <li>`namespace` - 10-byte ID of namspace</li>
-        <li>`instance` - 6-byte ID insance</li>
-        <li>`rssi` - RSSI of the beacon</li>
-        <li>`distance` - Estimated distance to the beacon</li>
-        <li>`tlm` - TLM data, if the device is interleaving broadcasts</li>
+        <li><code>type</code> - Eddystone type</li>
+        <li><code>txPower</code> - Received power at 0m in dBm</li>
+        <li><code>namespace</code> - 10-byte ID of namspace</li>
+        <li><code>instance</code> - 6-byte ID insance</li>
+        <li><code>rssi</code> - RSSI of the beacon</li>
+        <li><code>distance</code> - Estimated distance to the beacon</li>
+        <li><code>tlm</code> - TLM data, if the device is interleaving broadcasts</li>
     </ul>
-<p>Where the `tlm` data will be an object containing:</p>
+<p>Where the <code>tlm</code> data will be an object containing:</p>
     <ul>
-        <li>`version` - TML version</li>
-        <li>`vbatt` - Battery Voltage</li>
-        <li>`temp` - Temperature</li>
-        <li>`advCnt` - Advertising PDU count</li>
-        <li>`secCnt` - Time since power on or reboot</li>
+        <li><code>version</code> - TML version</li>
+        <li><code>vbatt</code> - Battery Voltage</li>
+        <li><code>temp</code> - Temperature</li>
+        <li><code>advCnt</code> - Advertising PDU count</li>
+        <li><code>secCnt</code> - Time since power on or reboot</li>
     </ul>
 </ul>
 <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
@@ -61,7 +67,8 @@
         category: 'input',
         defaults: {
             name: {value:""},
-            topic: {value:"eddystone"}
+            topic: {value:""},
+            duplicates: {value: true}
         },
         color: "#2F7ACD",
         inputs:0,
