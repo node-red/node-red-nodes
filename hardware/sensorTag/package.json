@@ -1,7 +1,7 @@
 {
     "name": "node-red-node-sensortag",
     "description": "A Node-RED node to read data from a TI SensorTag",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "keywords": [
         "node-red",
         "sensortag",
@@ -10,6 +10,9 @@
     ],
     "dependencies": {
         "sensortag": "~1.2.0"
+    },
+    "scripts" : {
+        "postinstall" : "scripts/pibt.sh"
     },
     "license": "Apache-2.0",
     "repository": {
