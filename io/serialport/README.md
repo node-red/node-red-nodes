@@ -1,8 +1,8 @@
 node-red-node-serialport
 ========================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to a
-hardware Serial port.
+<a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to
+hardware Serial ports.
 
 **Note** : The version 0.1.x of this package requires underlying serialport
 v2.0.x
