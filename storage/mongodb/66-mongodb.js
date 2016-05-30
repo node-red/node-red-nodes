@@ -124,7 +124,7 @@ module.exports = function(RED) {
                             }
                         } else if (node.operation === "update") {
                             if (typeof msg.payload !== "object") {
-                                msg.payload = {"payload": msg.payload};
+                                msg.payload = JSON.parse(msg.payload);
                             }
                             var query = msg.query || {};
                             var payload = msg.payload || {};
