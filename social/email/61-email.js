@@ -88,6 +88,10 @@ module.exports = function(RED) {
                     }
                     var sendopts = { from: node.userid };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
+                    if (node.name === "") {
+                        sendopts.cc = msg.cc;
+                        sendopts.bcc = msg.bcc;
+                    }
                     sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
                     if (msg.hasOwnProperty("envelope")) { sendopts.envelope = msg.envelope; }
                     if (Buffer.isBuffer(msg.payload)) { // if it's a buffer in the payload then auto create an attachment instead
