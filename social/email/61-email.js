@@ -327,11 +327,14 @@ module.exports = function(RED) {
                         if (err) {
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
+                            imap.end();
                             return;
                         }
                         console.log("> search - err=%j, results=%j", err, results);
                         if (results.length === 0) {
                             console.log(" [X] - Nothing to fetch");
+                            node.status({});
+                            imap.end();
                             return;
                         }
 
