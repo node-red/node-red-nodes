@@ -1,27 +1,32 @@
 {
-    "name"          : "node-red-node-email",
-    "version"       : "0.1.7",
-    "description"   : "Node-RED nodes to send and receive simple emails",
-    "dependencies": {
-        "nodemailer": "^1.11.0",
-        "poplib": "^0.1.7",
-        "mailparser": "^0.5.3",
-        "imap": "^0.8.17"
-    },
-    "repository": {
-        "type": "git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/email"
-    },
-    "license": "Apache-2.0",
-    "keywords": [ "node-red", "email", "gmail", "imap" ],
-    "node-red": {
-        "nodes": {
-            "email": "61-email.js"
-        }
-    },
-    "author": {
-        "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
-        "url": "http://nodered.org"
+  "name": "node-red-node-email",
+  "version": "0.1.8",
+  "description": "Node-RED nodes to send and receive simple emails",
+  "dependencies": {
+    "nodemailer": "^1.11.0",
+    "poplib": "^0.1.7",
+    "mailparser": "^0.6.0",
+    "imap": "^0.8.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/social/email"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "node-red",
+    "email",
+    "gmail",
+    "imap"
+  ],
+  "node-red": {
+    "nodes": {
+      "email": "61-email.js"
     }
+  },
+  "author": {
+    "name": "Dave Conway-Jones",
+    "email": "ceejay@vnet.ibm.com",
+    "url": "http://nodered.org"
+  }
 }
