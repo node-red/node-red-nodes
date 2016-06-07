@@ -1,5 +1,6 @@
+<!DOCTYPE html>
 <!--
-  Copyright 2014 IBM Corp.
+  Copyright 2014,2016 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,13 +21,13 @@
         <input type="text" id="node-input-command" placeholder="command">
     </div>
     <div class="form-row">
-        <label for="node-input-args"><i class="fa fa-list"></i> Args</label>
+        <label for="node-input-args"><i class="fa fa-list"></i> Arguments</label>
         <input type="text" id="node-input-args" placeholder="space separated arguments">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-cr" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-cr" style="width: 70%;">Add [enter] to every message ?</label>
+        <label for="node-input-cr" style="width: 70%;">Add [enter] to every message sent ?</label>
     </div>
         <div class="form-row">
         <label>&nbsp;</label>
@@ -36,19 +37,22 @@
     <div class="form-row">
         <label for="node-input-op"> and</label>
         <select id="node-input-op" style='width:70%'>
-          <option value="string">format reply as a string</option>
-          <option value="buffer">leave reply as a buffer</option>
-          <option value="number">try to convert reply to a number</option>
+            <option value="buffer">leave reply as a buffer</option>
+            <option value="string">format reply as a string</option>
+            <option value="lines">output lines of text</option>
+            <option value="number">try to convert reply to a number</option>
         </select>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips"><b>Note:</b> The command should just be the actual command.
+    All parameters should be passed in as arguments.</div>
 </script>
 
 <script type="text/x-red" data-help-name="daemon">
-    <p>Calls out to a long running system command. Sends <b>msg.payload</b> to stdin of the process.</p>
+    <p>Calls out to a long running system command. Sends <code>msg.payload</code> to stdin of the process.</p>
     <p>Provides 3 outputs... stdout, stderr, and return code , from the running command.</p>
     <p>If the called program stops (i.e. a return code is produced), this node can attempt to restart the command.</p>
     <p><b>Note :</b> when you stop Node-RED running we may not get a chance to kill the called program so it may remain running. You <i>may</i> have to kill it manually.</p>

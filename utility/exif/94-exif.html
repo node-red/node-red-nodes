@@ -24,9 +24,9 @@
 <script type="text/x-red" data-help-name="exif">
     <p>Extract <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a> information from JPEG images.</p>
     <p>This node expects an incoming JPEG image buffer. If Exif data is present,
-    it extracts the data into the <b>msg.exif</b> object.</p>
-    <p>The node then adds location data as <b>msg.location</b>, should the Exif data carry this information. 
-    <b>msg.payload</b> remains the original, unmodified image buffer. </p>
+    it extracts the data into the <code>msg.exif</code> object.</p>
+    <p>The node then adds location data as <code>msg.location</code>, should the Exif data carry this information.
+    <code>msg.payload</code> remains the original, unmodified image buffer. </p>
 </script>
 
 <script type="text/javascript">

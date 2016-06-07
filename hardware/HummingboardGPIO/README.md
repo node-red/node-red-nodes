@@ -8,14 +8,14 @@ Install
 
 **This install is for Debian based OS on Hummingboard.**
 
-Run the following command in the root directory of your Node-RED install:
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-hpgpio
 
 **Note :** This **should** be run as root in order to move and set SUID permissions on a script to talk to the gpio pins. Alternatively you can run as a normal user and then move the file and change permissions manually.
 
     sudo cp node_modules/node-red-node-hpgpio/gpiohb /usr/local/bin/
-    sudo chmod 4755 /usr/lcoal/bin/gpiohb
+    sudo chmod 4755 /usr/local/bin/gpiohb
 
 
 Usage
@@ -27,19 +27,19 @@ This requires a small script (gpiohb) to run as root in order to work. It should
 
 **Note:** We are using the actual physical pin numbers as they are easier to locate.
 
-###Output node
+### Output node
 
-Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).
+Expects a `msg.payload` with either a 0 or 1 (or true or false).
 
 Will set the selected physical pin high or low depending on the value passed in.
 
 The initial value of the pin at deploy time can also be set to 0 or 1.
 
 
-###Input node
+### Input node
 
-Generates a **msg.payload** with either a 0 or 1 depending on the state of the input pin.
+Generates a `msg.payload` with either a 0 or 1 depending on the state of the input pin.
 
-The **msg.topic** is set to **pin/{the pin number}**
+The `msg.topic` is set to *pin/{the pin number}*
 
 **Note:** The input node waits for a change on the level of the pin before reading the value - and then resets to wait for the next interrupt - so it is possible to miss very fast changes as we may still be reading the value when the second edge occurs.

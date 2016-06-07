@@ -20,8 +20,8 @@
         <input type="text" id="node-input-emonServer">
     </div>
     <div class="form-row">
-        <label for="node-input-nodegroup"><i class="fa fa-tag"></i> Node</label>
-        <input type="text" id="node-input-nodegroup" placeholder="">
+        <label for="node-input-nodegroup"><i class="fa fa-object-group"></i> Node</label>
+        <input type="text" id="node-input-nodegroup" placeholder="number eg: 3">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -31,10 +31,12 @@
 
 <script type="text/x-red" data-help-name="emoncms">
     <p>Posts data to Emoncms.</p>
-    <p>The <b>msg.payload</b> can contain either a comma separated list of name
-    value pairs ex. name:value,... or a comma separated list of values ex. 1,2,.. .
-    <p>If Node is left blank <b>msg.nodegroup</b> will used.</p>
-    <p>Insertion time can be manipulated by setting <b>msg.time</b>.</p>
+    <p>The <code>msg.payload</code> can contain either a comma separated list of name
+    value pairs e.g. <pre>name:value,...</pre> or a comma separated list of values e.g. <pre>1,2,...</pre>
+    or a simple javascript object e.g. <pre>msg.payload = {temp:12}</pre>
+    <p>If <i>Node</i> is left blank <code>msg.nodegroup</code> will used.</p>
+    <p>Insertion time can be manipulated by setting <code>msg.time</code>.
+    This must be in epoch format - seconds since 1970.</p>
 </script>
 
 <script type="text/javascript">
@@ -44,7 +46,7 @@
         defaults: {
             name: {value:"Emoncms"},
             emonServer: {type:"emoncms-server", required:true},
-            nodegroup: {value:""}
+            nodegroup: {value:"", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }}
         },
         inputs:1,
         outputs:0,
@@ -58,6 +60,64 @@
         }
     });
 </script>
+
+
+
+
+
+<script type="text/x-red" data-template-name="emoncms in">
+    <div class="form-row">
+        <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
+        <input type="text" id="node-input-emonServer">
+    </div>
+    <div class="form-row">
+        <label for="node-input-feedid"><i class="fa fa-tag"></i> Feed ID</label>
+        <input type="text" id="node-input-feedid" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Emoncms">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="emoncms in">
+    <p>Fetches data from emoncms.</p>
+    <p>The <code>msg.payload</code> contains last emoncms feed value
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('emoncms in',{
+        category: 'input',
+        color:"rgb(91, 192, 222)",
+        defaults: {
+            name: {value:"Emoncms"},
+            emonServer: {type:"emoncms-server", required:true},
+            feedid: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "emoncms.png",
+        align: "right",
+        label: function() {
+            return this.name||this.baseurl;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script type="text/x-red" data-template-name="emoncms-server">
     <div class="form-row">

@@ -23,12 +23,12 @@
 
 <script type="text/x-red" data-help-name="geohash">
     <p>A function that encodes lat,lon to and from a geohash.</p>
-    <p>If the <b>msg.payload</b> is a string it tries to see if it's a geohash -
+    <p>If the <code>msg.payload</code> is a string it tries to see if it is a geohash -
     if so it tries to decode it and outputs a payload object containing
     <ul><li>latitude<li>longitude<li>error.latitude<li>error.longitude</ul></p>
-    <p>If the <b>msg.payload</b> is an object with properties lat or latitude and lon or longitude
-    - it will add a <b>geohash</b> property to the payload.</p>
-    <p>The precision can be set by <b>msg.payload.precision</b> from 1 to 9.
+    <p>If the <code>msg.payload</code> is an object with properties lat or latitude and lon or longitude
+    - it will add a <code>geohash</code> property to the payload.</p>
+    <p>The precision can be set by <code>msg.payload.precision</code> from 1 to 9.
     <p><b>Note:</b> If the msg contains a .location property it will operate on that in preference to the .payload.</p>
 </script>
 

@@ -25,7 +25,7 @@ To manually install using this repo:
 
 ## Contributing
 
-Now that we support npm installaton of nodes we recommend people post their own
+Now that we support npm installation of nodes we recommend people post their own
 nodes via [npm](https://www.npmjs.org/). Please read the
 [packaging guide notes](http://nodered.org/docs/creating-nodes/packaging.html).
 
@@ -39,11 +39,15 @@ before doing so.
 
 ## Copyright and license
 
-Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
+Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 # Extra Node Information
 
 **NPM name** - *File-link* - Description
+
+### Misc
+
+**N/A** - *[99-sample](./)* - A sample node with more comments than most to try to help you get started without any other docs...
 
 ### Analysis
 
@@ -53,17 +57,23 @@ Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 ### Function
 
-**node-red-node-smooth** - *[17-smooth](analysis/smooth)*  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
+**node-red-node-smooth** - *[17-smooth](function/smooth)*  - A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.
 
-**node-red-node-rbe** - *[rbe](analysis/rbe)*  - A simple node to provide report by exception and deadband / bandgap capability for simple inputs.
+**node-red-node-rbe** - *[rbe](function/rbe)*  - A simple node to provide report by exception and deadband / bandgap capability for simple inputs.
 
-**node-red-node-pidcontrol** - *[pidcontrol](analysis/pidcontrol)*  - A PID control node for numeric inputs - provides simple contoll loop feedback capability.
+**node-red-node-pidcontrol** - *[pidcontrol](function/PID)*  - A PID control node for numeric inputs - provides simple contoll loop feedback capability.
 
-**node-red-node-random** - *[random](analysis/random)*  - A simple random number generator - can generate integers for x to y - or floats between x and y.
+**node-red-node-random** - *[random](function/random)*  - A simple random number generator - can generate integers for x to y - or floats between x and y.
 
 ### Hardware
 
 **node-red-node-beaglebone** - *[145-BBB-hardware](hardware/BBB)* - A collection of analogue & digital input & output nodes for the [Beaglebone Black](http://beagleboard.org/black).
+
+**node-red-node-intel-galileo** - *[mraa-spio](hardware/intel)* - A collection of analogue & digital input & output nodes for the Intel Galileo and Edison.
+
+**node-red-node-pi-neopixel** - *[neopixel](hardware/neopixel)* - Allows A Raspberry Pi to drive a strip of NeoPixels directly.
+
+**node-red-node-pi-unicorn-hat** - *[unicorn](hardware/unicorn)* - Lets a Raspbeery Pi control a Pimorini Unicorn HAT 8x8 LED display.
 
 **node-red-node-piface** - *[37-rpi-piface](hardware/PiFace)* - Adds support for the [PiFace](http://www.piface.org.uk/) interface module for Raspberry Pi.
 
@@ -150,7 +160,3 @@ Copyright 2013, 2015 IBM Corp. under [the Apache 2.0 license](LICENSE).
 **node-red-node-exif** - *[94-exif](utility/exif)* - Extracts GPS and other EXIF information from a passed in jpeg image,
 
 **node-red-node-daemon** - *[daemon](utility/daemon)* - starts up (calls) a long running system program and pipes STDIN, STDOUT and STDERR to and from that process. Good for monitoring long running command line applications,
-
-### Misc
-
-**N/A** - *[99-sample](./)* - A sample node with more comments than most to try to help you get started without any other docs...

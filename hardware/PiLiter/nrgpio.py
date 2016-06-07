@@ -19,6 +19,10 @@ import sys
 
 bounce = 20     # bounce time in mS to apply
 
+if sys.version_info >= (3,0):
+    print("Sorry - currently only configured to work with python 2.x")
+    sys.exit(1)
+
 if len(sys.argv) > 1:
     cmd = sys.argv[1].lower()
     pin = int(sys.argv[2])
@@ -34,11 +38,10 @@ if len(sys.argv) > 1:
         while True:
             try:
                 data = raw_input()
-                if data == "close":
-                    GPIO.cleanup(pin)
+                if 'close' in data:
                     sys.exit(0)
                 p.ChangeDutyCycle(float(data))
-            except EOFError:        # hopefully always caused by us sigint'ing the program
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
                 GPIO.cleanup(pin)
                 sys.exit(0)
             except Exception as ex:
@@ -53,15 +56,14 @@ if len(sys.argv) > 1:
         while True:
             try:
                 data = raw_input()
-                if data == "close":
-                    GPIO.cleanup(pin)
+                if 'close' in data:
                     sys.exit(0)
                 elif float(data) == 0:
                     p.stop()
                 else:
                     p.start(50)
                     p.ChangeFrequency(float(data))
-            except EOFError:        # hopefully always caused by us sigint'ing the program
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
                 GPIO.cleanup(pin)
                 sys.exit(0)
             except Exception as ex:
@@ -76,11 +78,10 @@ if len(sys.argv) > 1:
         while True:
             try:
                 data = raw_input()
-                if data == "close":
-                    GPIO.cleanup(pin)
+                if 'close' in data:
                     sys.exit(0)
                 data = int(data)
-            except EOFError:        # hopefully always caused by us sigint'ing the program
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
                 GPIO.cleanup(pin)
                 sys.exit(0)
             except:
@@ -109,10 +110,9 @@ if len(sys.argv) > 1:
         while True:
             try:
                 data = raw_input()
-                if data == "close":
-                    GPIO.cleanup(pin)
+                if 'close' in data:
                     sys.exit(0)
-            except EOFError:        # hopefully always caused by us sigint'ing the program
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
                 GPIO.cleanup(pin)
                 sys.exit(0)
 
@@ -124,11 +124,10 @@ if len(sys.argv) > 1:
         while True:
             try:
                 data = raw_input()
-                if data == "close":
-                    GPIO.cleanup()
+                if 'close' in data:
                     sys.exit(0)
                 data = int(data)
-            except EOFError:        # hopefully always caused by us sigint'ing the program
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
                 GPIO.cleanup()
                 sys.exit(0)
             except:
@@ -139,6 +138,33 @@ if len(sys.argv) > 1:
                 else:
                     mask = 1 << bit
                 GPIO.output(list[bit], data & mask)
+
+    elif cmd == "borg":
+        #print "Initialised BORG mode - "+str(pin)+
+        GPIO.setup(11,GPIO.OUT)
+        GPIO.setup(13,GPIO.OUT)
+        GPIO.setup(15,GPIO.OUT)
+        r = GPIO.PWM(11, 100)
+        g = GPIO.PWM(13, 100)
+        b = GPIO.PWM(15, 100)
+        r.start(0)
+        g.start(0)
+        b.start(0)
+
+        while True:
+            try:
+                data = raw_input()
+                if 'close' in data:
+                    sys.exit(0)
+                c = data.split(",")
+                r.ChangeDutyCycle(float(c[0]))
+                g.ChangeDutyCycle(float(c[1]))
+                b.ChangeDutyCycle(float(c[2]))
+            except (EOFError, SystemExit):        # hopefully always caused by us sigint'ing the program
+                GPIO.cleanup()
+                sys.exit(0)
+            except:
+                data = 0
 
     elif cmd == "rev":
         print GPIO.RPI_REVISION
@@ -168,4 +194,4 @@ if len(sys.argv) > 1:
                 sys.exit(0)
 
 else:
-    print "Bad parameters - {in|out|pwm} {pin} {value|up|down}"
+    print "Bad parameters - in|out|pwm|buzz|byte|borg|mouse|ver pin {value|up|down}"

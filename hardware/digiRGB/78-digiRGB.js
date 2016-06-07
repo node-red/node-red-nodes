@@ -27,8 +27,7 @@ module.exports = function(RED) {
         var devices = HID.devices(0x16c0,0x05df);
         for (var i=0; i< devices.length; i++) {
             if (devices[i].product == 'DigiUSB') {
-                path = devices[i].path;
-                node.log("found: " + path);
+                node.log("found: " + devices[i].path);
                 try {
                     device = new HID.HID(devices[i].path);
                     break;

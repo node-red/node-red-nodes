@@ -1,0 +1,56 @@
+<!--
+  Copyright 2015 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="rpi-srf">
+    <div class="form-row">
+        <label for="node-input-pins"><i class="fa fa-circle"></i> Pins</label>
+        <input type="text" id="node-input-pins" placeholder="Trigger,Echo">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Tip</b>: Pins MUST be a comma separated list of the 2 GPIO
+    connector pin numbers that are connected to the Trigger and Echo pins of the SRF04 or SRF05.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-srf">
+    <p>Raspberry Pi input from an SRF04 or SRF05 ultrasonic range finder.</p>
+    <p>Outputs a <code>msg.payload</code> with a number representing the range in cm.</p>
+    <p>Produces one measure every 0.5s - but only if the distance is different from the previous reading.</p>
+    <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-srf',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) }
+        },
+        inputs:0,
+        outputs:1,
+        icon:"rpi.png",
+        label:function() {
+            return this.name||"Pi SRF";
+        },
+        labelStyle:function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

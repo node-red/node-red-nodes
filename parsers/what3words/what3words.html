@@ -42,10 +42,11 @@
 <script type="text/x-red" data-help-name="what3words">
     <p>Uses what3words to convert a location to a unique three.word.combination .</p>
     <p>Expects either <ul>
-        <li><b>msg.location.lat</b> and <b>msg.location.lon</b>, or </li>
-        <li><b>msg.payload</b> to contain a <i>lat,lon</i> string,</li>
+        <li><code>msg.location.lat</code> and <code>msg.location.lon</code>, or </li>
+        <li><code>msg.payload</code> to contain a <i>lat,lon</i> string,</li>
     </ul> and produces a msg.payload of unique.three.words .</p>
-    <p>Also does the reverse by accepting a <b>dot (.)</b> separated three.word.string in <b>msg.payload</b>, and adds the corresponding <b>msg.location</b> property.</p>
+    <p>Also does the reverse by accepting a <b>dot (.)</b> separated three.word.string in <code>msg.payload</code>, 
+    and adds the corresponding <code>msg.location</code> property.</p>
     <p><b>Note:</b> This is an online service and requires a live internet connection.</p>
     <p>The API-key is stored in a separate credentials file.</p>
     <p>See <i><a href="http://www.what3words.com/" target="_new">what3words</a></i> for more details.</p>

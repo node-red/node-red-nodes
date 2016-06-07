@@ -31,6 +31,9 @@
 
 <script type="text/x-red" data-help-name="feedparse">
     <p>Monitors an RSS/atom feed for new entries.</p>
+    <p>The <code>msg.topic</code> contains the original article link. The <code>msg.payload</code>
+    contains the description, and <code>msg.article</code> contains the complete article object,
+    which has properties such as <code>.title</code>, <code>.summary</code>, <code>.date</code> and so on.</p>
 </script>
 
 <script type="text/javascript">

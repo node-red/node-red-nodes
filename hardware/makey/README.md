@@ -5,7 +5,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to read from a Ma
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-makeymakey
 

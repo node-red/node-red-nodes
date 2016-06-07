@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-arduino",
-    "version"       : "0.0.2",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to talk to an Arduino running firmata",
     "dependencies"  : {
-        "arduino-firmata"   : "0.3.2"
+        "arduino-firmata"   : "0.3.4"
     },
     "repository" : {
         "type":"git",

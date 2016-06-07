@@ -104,13 +104,18 @@
     <p>A simple MongoDB output node. Can save, insert, update and remove objects from a chosen collection.</p>
     <p>Save will update an existing object or insert a new object if one does not already exist.</p>
     <p>Insert will insert a new object.</p>
-    <p>Save and insert either store <b>msg</b> or <b>msg.payload</b>.</p>
-    <p>Update will modify an existing object or objects. The query to select objects to update uses <b>msg.query</b> and the update to the element uses <b>msg.payload</b>.</p>
+    <p>Save and insert either store <code>msg</code> or <code>msg.payload</code>.</p>
+    <p>Update will modify an existing object or objects. The query to select objects to update uses <code>msg.query</code>
+    and the update to the element uses <code>msg.payload</code>.</p>
     <p>Update can add a object if it does not exist or update multiple objects.</p>
-    <p>Remove will remove objects that match the query passed in on <b>msg.payload</b>. A blank query will delete <i>all of the objects</i> in the collection.</p>
-    <p>You can either set the collection method in the node config or on <b>msg.collection</b>. Setting it in the node will override <b>msg.collection</b>.</p>
-    <p>By default MongoDB creates an <i>_id</i> property as the primary key - so repeated injections of the same <b>msg</b> will result in many database entries.</p>
-    <p>If this is NOT the desired behaviour - ie. you want repeated entries to overwrite, then you must set the <b>msg._id</b> property to be a constant by the use of a previous function node.</p>
+    <p>Remove will remove objects that match the query passed in on <code>msg.payload</code>. A blank query will delete
+    <i>all of the objects</i> in the collection.</p>
+    <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in the
+    node will override <code>msg.collection</code>.</p>
+    <p>By default MongoDB creates an <i>_id</i> property as the primary key - so repeated injections of the
+    same <code>msg</code> will result in many database entries.</p>
+    <p>If this is NOT the desired behaviour - ie. you want repeated entries to overwrite, then you must set
+    the <code>msg._id</code> property to be a constant by the use of a previous function node.</p>
     <p>This could be a unique constant or you could create one based on some other msg property.</p>
     <p>Currently we do not limit or cap the collection size at all... this may well change.</p>
 </script>
@@ -195,12 +200,17 @@
 
 <script type="text/x-red" data-help-name="mongodb in">
     <p>Calls a MongoDB collection method based on the selected operator.</p>
-        <p>Find queries a collection using the <b>msg.payload</b> as the query statement as per the .find() function. Optionally, you may also (via a function) set a <b>msg.projection</b> object to constrain the returned fields, a <b>msg.sort</b> object, a <b>msg.limit</b> number and a <b>msg.skip</b> number.</p>
-    <p>Count returns a count of the number of documents in a collection or matching a query using the <b>msg.payload</b> as the query statement.</p>
-    <p>Aggregate provides access to the aggregation pipeline using the <b>msg.payload</b> as the pipeline array.</p>
-    <p>You can either set the collection method in the node config or on <b>msg.collection</b>. Setting it in the node will override <b>msg.collection</b>.</p>
-    <p>See the <a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB collection methods docs</i></a> for examples.</p>
-    <p>The result is returned in <b>msg.payload</b>.</p>
+    <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
+    Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
+    fields, a <code>msg.sort</code> object, a <code>msg.limit</code> number and a <code>msg.skip</code> number.</p>
+    <p>Count returns a count of the number of documents in a collection or matching a query using the
+    <code>msg.payload</code> as the query statement.</p>
+    <p>Aggregate provides access to the aggregation pipeline using the <code>msg.payload</code> as the pipeline array.</p>
+    <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in
+    the node will override <code>msg.collection</code>.</p>
+    <p>See the <a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB
+    collection methods docs</i></a> for examples.</p>
+    <p>The result is returned in <code>msg.payload</code>.</p>
 </script>
 
 <script type="text/javascript">

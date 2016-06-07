@@ -20,6 +20,7 @@ module.exports = function(RED) {
     //var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
     var fs = require('fs');
+    var LedBorgInUse = false;
 
     var gpioCommand = __dirname+'/nrgpio';
 
@@ -42,6 +43,8 @@ module.exports = function(RED) {
 
     function LedBorgNode(n) {
         RED.nodes.createNode(this,n);
+        if (LedBorgInUse) { this.error("LEDborg node already in use - you may only have one."); }
+        else { LedBorgInUse = true; }
         this.pin = n.pin;
         this.set = n.set || false;
         this.level = n.level || 0;
@@ -53,6 +56,14 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             var rgb = "000";
+
+            if (typeof msg.payload === "number") {
+                msg.payload = ("000"+msg.payload.toString()).substr(-3);
+            }
+
+            if (typeof msg.payload === "boolean") {
+                msg.payload = msg.payload ? "222" : "000";
+            }
 
             if (p1.test(msg.payload)) {
                 rgb = msg.payload;
@@ -75,7 +86,7 @@ module.exports = function(RED) {
                 // you can add fancy colours by name here if you want...
                 // these are the @cheerlight ones.
                 var colors = {"red":"200","green":"020","blue":"002","cyan":"022","white":"222","pink":"201","oldlace":"221",
-                    "warmwhite":"221","purple":"101","magenta":"202","yellow":"220","amber":"220","orange":"210","black":"000"}
+                    "warmwhite":"221","purple":"101","magenta":"202","yellow":"220","amber":"220","orange":"210","black":"000","off":"000"}
                 if (msg.payload.toLowerCase() in colors) {
                     rgb = colors[msg.payload.toLowerCase()];
                     rgb = Number(rgb[0])*50+","+Number(rgb[1])*50+","+Number(rgb[2])*50;
@@ -86,9 +97,14 @@ module.exports = function(RED) {
             }
 
             if (RED.settings.verbose) { node.log("out: "+msg.payload); }
-            if (node.child !== null) { node.child.stdin.write(rgb+"\n"); }
-            else { node.warn("Command not running"); }
-            node.status({fill:"green",shape:"dot",text:msg.payload});
+            if (node.child !== null) {
+                node.child.stdin.write(rgb+"\n");
+                node.status({fill:"green",shape:"dot",text:msg.payload});
+            }
+            else {
+                node.warn("Command not running");
+                node.status({fill:"red",shape:"ring",text:"Command not running"});
+            }
         }
 
         node.child = spawn(gpioCommand, ["borg","11"]);
@@ -120,6 +136,7 @@ module.exports = function(RED) {
         });
 
         node.on("close", function(done) {
+            LedBorgInUse = false;
             node.status({fill:"red",shape:"circle",text:""});
             if (node.child != null) {
                 node.done = done;

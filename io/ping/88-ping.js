@@ -49,12 +49,13 @@ module.exports = function(RED) {
                 }
                 var msg = { payload:false, topic:node.host };
                 if (code === 0) { msg = { payload:res, topic:node.host }; }
-                node.send(msg);
+                try { node.send(msg); }
+                catch(e) {}
             });
         }, node.timer);
 
         this.on("close", function() {
-            clearInterval(this.tout);
+            if (this.tout) { clearInterval(this.tout); }
         });
     }
     RED.nodes.registerType("ping",PingNode);

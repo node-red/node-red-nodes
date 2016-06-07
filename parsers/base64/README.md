@@ -1,20 +1,20 @@
 node-red-node-base64
 ====================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to endcode and decode base64 format messages.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to encode and decode base64 format messages.
 
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-base64
+    npm i node-red-node-base64
 
 Usage
 -----
 
-A function that converts the **msg.payload** to and from base64 format.
+A function that converts the `msg.payload` to and from base64 format.
 
 If the input is a binary buffer it converts it to a Base64 encoded string.
 

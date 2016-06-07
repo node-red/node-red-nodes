@@ -72,12 +72,16 @@ module.exports = function(RED) {
                 else {
                     node._interval = setInterval( function() {
                         exec("gpio -p read "+node.pin, function(err,stdout,stderr) {
-                            if (err) { node.error(err); }
+                            if (err) {
+                                node.error(err);
+                                node.status({fill:"red",shape:"ring",text:"error"});
+                            }
                             else {
                                 if (node.buttonState !== Number(stdout)) {
                                     var previousState = node.buttonState;
                                     node.buttonState = Number(stdout);
                                     if (previousState !== -1) {
+                                        node.status({fill:"green",shape:"dot",text:node.buttonState.toString()});
                                         var msg = {topic:"piface/"+node.npin, payload:node.buttonState};
                                         node.send(msg);
                                     }
@@ -99,11 +103,19 @@ module.exports = function(RED) {
     function PiFACEOutNode(n) {
         RED.nodes.createNode(this,n);
         this.pin = pintable[n.pin];
+        this.set = n.set;
+        this.level = n.level;
         var node = this;
         if (node.pin) {
             if (node.set) {
                 exec("gpio -p write "+node.pin+" "+node.level, function(err,stdout,stderr) {
-                    if (err) { node.error(err); }
+                    if (err) {
+                        node.status({fill:"red",shape:"ring",text:"error"});
+                        node.error(err);
+                    }
+                    else {
+                        node.status({fill:"yellow",shape:"dot",text:node.level});
+                    }
                 });
             }
             node.on("input", function(msg) {
@@ -112,7 +124,13 @@ module.exports = function(RED) {
                 var out = Number(msg.payload);
                 if ((out === 0)|(out === 1)) {
                     exec("gpio -p write "+node.pin+" "+out, function(err,stdout,stderr) {
-                        if (err) { node.error(err); }
+                        if (err) {
+                            node.status({fill:"red",shape:"ring",text:"error"});
+                            node.error(err);
+                        }
+                        else {
+                            node.status({fill:"green",shape:"dot",text:out.toString()});
+                        }
                     });
                 }
                 else { node.warn("Invalid input - not 0 or 1"); }
@@ -123,10 +141,9 @@ module.exports = function(RED) {
         }
     }
 
-
     exec("gpio load spi",function(err,stdout,stderr) {
         if (err) {
-            util.log('[37-rpi-piface.js] Error: "gpio load spi" command failed for some reason.');
+            util.log('[37-rpi-piface.js] Error: "gpio load spi" command failed. Check device tree is disabled.');
         }
         RED.nodes.registerType("rpi-piface in",PiFACEInNode);
         RED.nodes.registerType("rpi-piface out",PiFACEOutNode);

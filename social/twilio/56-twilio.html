@@ -60,8 +60,7 @@
     Alternatively, if the number is left blank, it can be set using <code>msg.topic</code>.
     If the node is configured to make a call then the TWiML URL must be publically accessible.
     <p>You must have an account with Twilio to use this node. You can register for one <a href="https://www.twilio.com/">here</a>.</p>
-    <p>You can either set your account details within the node, or provide it globally using either the settings file or a file
-    called 'twiliokey.js' located in the directory above node-red.</p>
+    <p>You can either set your account details within the node, or provide it globally using either the settings file.</p>
     <p>To use the settings.js file, add an entry such as:
     <pre>twilio: { account:'My-ACCOUNT-SID', authtoken:'TWILIO-TOKEN', from:'FROM-NUMBER' }</pre></p>
     <p>To use the 'twiliokey.js' file in the directory <b>above</b> node-red, use the following format:
@@ -111,7 +110,7 @@
         });
 
         RED.nodes.registerType('twilio out',{
-            category: 'output',
+            category: 'mobile-output',
             defaults: {
                 twilio:{type:"twilio-api",validate:function(v) {
                     return hasGlobal || (v && v!="_ADD_");

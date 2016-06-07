@@ -313,7 +313,8 @@ module.exports = function(RED) {
                         form.append("media[]",msg.media,{filename:"image"});
 
                     } else {
-                        twit.updateStatus(msg.payload, function (err, data) {
+                        if (typeof msg.params === 'undefined') { msg.params = {}; }
+                        twit.updateStatus(msg.payload, msg.params, function (err, data) {
                             if (err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                                 node.error(err,msg);
@@ -350,7 +351,7 @@ module.exports = function(RED) {
             } else {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
-                res.redirect('https://twitter.com/oauth/authorize?oauth_token='+oauth_token)
+                res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
                 RED.nodes.addCredentials(req.params.id,credentials);
             }
         });

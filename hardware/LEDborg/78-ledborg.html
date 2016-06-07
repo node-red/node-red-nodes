@@ -19,22 +19,25 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">See info panel for the various input options.</div>
+    <div class="form-tips">Uses pins 11, 13 aand 15.<br/>
+    See info panel for the various input options and limitations.</div>
 </script>
 
 <script type="text/x-red" data-help-name="ledborg">
-    <p>PiBorg LedBorg LED output node. Expects a <b>msg.payload</b> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
+    <p>PiBorg LedBorg LED output node. Expects a <code>msg.payload</code> with a three digit rgb triple, from <b>000</b> to <b>222</b>.</p>
     <p>See <i><a href="http://www.piborg.com/ledborg/install" target="_new">the PiBorg site</a></i> for more information.</p>
-    <p>You can also use a <b>msg.payload</b> in the standard hex format "#rrggbb".</p>
-    <p>You can also use the @cheerlight colour names - red, amber, green, blue, cyan, magenta, yellow, orange, pink, purple,
-       white, warmwhite, black</p>
-    <p>You may also supply a comma seperated rrr,ggg,bbb where the value can be between 0 and 255.</p>
+    <p>You can also use a <code>msg.payload</code> in the standard hex format "#rrggbb".</p>
+    <p>You can use the @cheerlight colour names - red, green, blue, cyan, magenta,
+    yellow, orange, pink, purple, white, oldlace (warmwhite), and also amber and black (off).</p>
+    <p>You may also supply a comma separated rrr,ggg,bbb where each value can be between 0 and 255.</p>
+    <p>You can only use one LEDborg node per flow... but you may wire multiple things to it.</p>
+    <p><b>Note</b> : This node uses physical pins 11, 13, and 15. These cannot be used for anything else while this node is in use.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('ledborg',{
         category: 'Raspberry Pi',
-        color:"GoldenRod",
+        color:"#c6dbef",
         defaults: {
             name: {value:""}
         },

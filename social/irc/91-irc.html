@@ -76,6 +76,10 @@
             <td>a user is kicked from a channel</td>
         </tr>
         <tr>
+            <td>topic</td>
+            <td>a topic has been changed on a joined channel</td>
+        </tr>
+        <tr>
             <td>names</td>
             <td>retrieves the list of users when the bot joins a channel</td>
         </tr>
@@ -91,6 +95,10 @@
             name: {value:""},
             ircserver: {type:"irc-server", required:true},
             channel: {value:"",required:true,validate:RED.validators.regex(/^#/)}
+        },
+        credentials: {
+          username: {type:"text"},
+          password: {type:"password"}
         },
         color:"Silver",
         inputs:0,
@@ -197,8 +205,16 @@
         <label for="node-config-input-cert" style="width: 70%;"><span data-i18n="irc.label.self"></span></label>
     </div>
     <div class="form-row">
-        <label for="node-config-input-nickname"><i class="fa fa-user"></i> <span data-i18n="irc.label.nickname"></span></label>
+        <label for="node-config-input-nickname"><i class="fa fa-heart"></i> <span data-i18n="irc.label.nickname"></span></label>
         <input type="text" id="node-config-input-nickname">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-user"></i> <span data-i18n="irc.label.username"></span></label>
+        <input type="text" id="node-config-input-username" data-i18n="[placeholder]irc.placeholder.ifreq">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> <span data-i18n="irc.label.password"></span></label>
+        <input type="text" id="node-config-input-password" data-i18n="[placeholder]irc.placeholder.ifreq">
     </div>
 </script>
 
@@ -211,6 +227,10 @@
             ssl: {value:false},
             cert: {value:false},
             nickname: {value:"",required:true}
+        },
+        credentials: {
+            username: {type:"text"},
+            password: {type:"password"}
         },
         label: function() {
             return this.server;

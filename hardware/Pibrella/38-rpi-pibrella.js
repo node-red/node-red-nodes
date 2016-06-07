@@ -34,7 +34,7 @@ module.exports = function(RED) {
 
     if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
         util.log("[rpi-pibrella] Error : "+gpioCommand+" needs to be executable.");
-        throw "Error : nrgpio must to be executable.";
+        throw "Error : " + gpioCommand + " must to be executable.";
     }
 
     var pinsInUse = {};
@@ -90,7 +90,7 @@ module.exports = function(RED) {
         }
 
         if (node.pin !== undefined) {
-            node.child = spawn(gpioCommand, ["in",node.pin]);
+            node.child = spawn(gpioCommand, ["in",node.pin,"down",35]);
             node.running = true;
             node.status({fill:"green",shape:"dot",text:"OK"});
 

@@ -1,12 +1,12 @@
 node-red-node-wordpos
 =====================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node that breaks a sentance into the various parts of (English) speech.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node that breaks a sentence into the various parts of (English) speech.
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-wordpos
 
@@ -14,9 +14,9 @@ Run the following command in the root directory of your Node-RED install
 Usage
 -----
 
-Uses the wordpos npm to analyse the **msg.payload** and classify the part-of-speech of each word.
+Uses the wordpos npm to analyse the `msg.payload` and classify the part-of-speech of each word.
 
-The resulting message has a **msg.pos** object added with the results split into the following:
+The resulting message has a `msg.pos` object added with the results split into the following:
 
     nouns:[],
     verbs:[],

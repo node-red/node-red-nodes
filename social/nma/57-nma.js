@@ -30,7 +30,9 @@ module.exports = function(RED) {
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
-            else { msg.payload = msg.payload.toString(); }
+            else {
+                msg.payload = msg.payload.toString();
+            }
             if (node.pushkey) {
                 nma({
                     "apikey": node.pushkey,
@@ -40,7 +42,7 @@ module.exports = function(RED) {
                     "priority": 0
                 }, function (error) {
                     if (error) {
-                        node.warn("NMA error: " + error);
+                        node.error("NMA error: " + error,msg);
                     }
                 });
             }

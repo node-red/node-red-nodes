@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright 2014,2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         this.action = n.action;
         this.round = n.round || false;
+        if (this.round == "true") { this.round = 0; }
         this.count = Number(n.count);
         var node = this;
         var a = [];
         var tot = 0;
+        var tot2 = 0;
         var pop = 0;
         var old = null;
 
@@ -51,8 +53,18 @@ module.exports = function(RED) {
                             tot = tot + n - pop;
                             msg.payload = tot / a.length;
                         }
+                        if (node.action === "sd") {
+                            tot = tot + n - pop;
+                            tot2 = tot2 + (n*n) - (pop * pop);
+                            if (a.length > 1) {
+                               msg.payload = Math.sqrt((a.length * tot2 - tot * tot)/(a.length * (a.length - 1)));
+                            }
+                            else { msg.payload = 0; }
+                        }
                     }
-                    if (node.round) { msg.payload = Math.round(msg.payload); }
+                    if (node.round !== false) {
+                        msg.payload = Math.round(msg.payload * Math.pow(10, node.round)) / Math.pow(10, node.round);
+                    }
                     node.send(msg);
                 }
                 else { node.log("Not a number: "+msg.payload); }

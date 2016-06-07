@@ -6,7 +6,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to encode and dec
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-geohash
 
@@ -14,9 +14,9 @@ Run the following command in the root directory of your Node-RED install
 Usage
 -----
 
-This function encodes a lat,lon string to and from a geohash.
+This function encodes a `lat,lon` string to and from a geohash.
 
-If the **msg.payload** is a string it tries to see if it's a geohash -
+If the `msg.payload` is a string it tries to see if it's a geohash -
     if so it tries to decode it and outputs a payload object containing
 
  - latitude
@@ -24,9 +24,9 @@ If the **msg.payload** is a string it tries to see if it's a geohash -
  - errorlatitude
  - error.longitude
 
-If the **msg.payload** is an object with properties **lat** or **latitude** and **lon** or **longitude**  - it will add a <b>geohash</b> property to the payload.
+If the `msg.payload` is an object with properties `lat` or `latitude` and `lon` or `longitude`  - it will add a `geohash` property to the payload.
 
-The precision can be set by **msg.payload.precision** from 1 to 9.
+The precision can be set by `msg.payload.precision` from 1 to 9.
 
 
 Example flow

@@ -8,7 +8,10 @@
             "password": "Password",
             "repeat": "Refresh",
             "seconds": "seconds",
-            "folder": "Folder"
+            "folder": "Folder",
+            "protocol": "Protocol",
+            "useSSL": "Use SSL?",
+            "disposition": "Disposition"
         },
         
         "default-message": "Your file from Node-RED is attached: __filename__ __description__",

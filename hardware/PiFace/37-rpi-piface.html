@@ -58,11 +58,14 @@
 </script>
 
 <script type="text/x-red" data-help-name="rpi-piface in">
-    <p>Raspberry Pi PiFace input node. Generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.</p>
+    <p>Raspberry Pi PiFace input node. Generates a <code>msg.payload</code> with either a 0 or 1 depending
+    on the state of the input pin.</p>
     <p>You may also enable the input pullup resistor if required.</p>
-    <p>The <b>msg.topic</b> is set to <i>piface/{the pin number}</i></p>
+    <p>The <code>msg.topic</code> is set to <i>piface/{the pin number}</i></p>
     <p>Requires the WiringPi gpio command in order to work.</p>
     <p><b>Note:</b> This node currently polls the pin every 250mS. This is not ideal as it loads the cpu.</p>
+    <p><b>Note:</b> Some versions of the PiFace relabelled the switch inputs to be 0 - 7 instead of 1 - 8. 
+    We cannot automatically detect this so the user will have to apply some common sense.</p>
 </script>
 
 <script type="text/javascript">
@@ -125,7 +128,7 @@
 
 <script type="text/x-red" data-help-name="rpi-piface out">
     <p>Raspberry Pi PiFace output node. The PiFace board must be fitted.</p>
-    <p>Will set the selected relay, LED, or pin on or off depending on the value passed in. Expects a <b>msg.payload</b> with either a 1 or 0 (or true or false).</p>
+    <p>Will set the selected relay, LED, or pin on or off depending on the value passed in. Expects a <code>msg.payload</code> with either a 1 or 0 (or true or false).</p>
     <p>Requires the WiringPi gpio command in order to work.</p>
 </script>
 

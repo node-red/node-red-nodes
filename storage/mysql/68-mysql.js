@@ -46,7 +46,7 @@ module.exports = function(RED) {
             node.connection.connect(function(err) {
                 node.connecting = false;
                 if (err) {
-                    node.warn(err);
+                    node.error(err);
                     node.tick = setTimeout(doConnect, reconnect);
                 } else {
                     node.connected = true;
@@ -103,7 +103,7 @@ module.exports = function(RED) {
                     //console.log("query:",msg.topic);
                     var bind = Array.isArray(msg.payload) ? msg.payload : [];
                     node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                        if (err) { node.warn(err); }
+                        if (err) { node.error(err,msg); }
                         else {
                             msg.payload = rows;
                             node.send(msg);

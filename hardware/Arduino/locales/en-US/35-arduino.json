@@ -18,12 +18,14 @@
         "state": {
             "in": {
                 "digital": "Digital pin",
-                "analogue": "Analogue pin"
+                "analogue": "Analogue pin",
+                "string": "String"
             },
             "out": {
                 "digital": "Digital (0/1)",
                 "analogue": "Analogue (0-255)",
-                "servo": "Servo (0-180)"
+                "servo": "Servo (0-180)",
+                "string": "String"
             }
         },
         "tip": {

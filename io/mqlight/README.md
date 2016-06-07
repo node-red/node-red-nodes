@@ -6,8 +6,6 @@ A [Node-RED](http://nodered.org) node to send/receive messages using [IBM MQ Lig
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-mqlight
-
-

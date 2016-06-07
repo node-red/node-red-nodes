@@ -26,7 +26,8 @@ module.exports = function(RED) {
         var node = this;
 
         var isObject = function(a) {
-            return (!!a) && (a.constructor === Object);
+            if ((typeof(a) === "object") && (!Buffer.isBuffer(a)) && (!Array.isArray(a))) { return true; }
+            else { return false; }
         };
 
         this.on("input",function(msg) {
@@ -58,7 +59,7 @@ module.exports = function(RED) {
         dweetio.listen_for(node.thing, function(dweet) {
             // This will be called anytime there is a new dweet for my-thing
             if (dweet.content.hasOwnProperty("payload")) {
-                dweet.payload=dweet.content.payload;
+                dweet.payload = dweet.content.payload;
             } else {
                 dweet.payload = dweet.content;
             }

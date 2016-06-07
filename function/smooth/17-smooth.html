@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014 IBM Corp.
+  Copyright 2014,2016 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@
         <select id="node-input-action" style="width:60%; margin-right:5px;">
             <option value="max">Return the maximum value seen</option>
             <option value="min">Return the minimum value seen</option>
-            <option value="mean">Return the mean value seen</option>
+            <option value="mean">Return the mean value</option>
+            <option value="sd">Return the standard deviation</option>
             <option value="low">Perform low pass filter</option>
             <option value="high">Perform high pass filter</option>
         </select>
@@ -28,12 +29,12 @@
     <div class="form-row">
         <label for="node-input-count">&nbsp;</label>
         <span id="node-over">over the most recent </span>
-        <input type="text" id="node-input-count" placeholder="10" style="width:80px;"/>
-        <span id="node-over2"> values.</span>
+        <input type="text" id="node-input-count" placeholder="10" style="width:50px;"/>
+        <span id="node-over2"> values</span>
     </div>
     <div class="form-row">
-        <label for="node-input-round">&nbsp;</label>
-        <input type="checkbox" id="node-input-round" style="display: inline-block; width: auto; vertical-align: top;"> Round to the nearest integer ?
+        <label for="node-input-round">(optionally)</label>
+        round to <input type="text" id="node-input-round" placeholder="ignore" style="width:50px;"/> decimal places
     </div>
     <br/>
     <div class="form-row">
@@ -55,10 +56,10 @@
         color: "#E2D96E",
         category: 'function',
         defaults: {
-            count: {value:"10",required:true,validate:RED.validators.number()},
+            name: {value:""},
             action: {value:"mean"},
-            round: {value:false},
-            name: {value:""}
+            count: {value:"10",required:true,validate:RED.validators.number()},
+            round: {value:""}
         },
         inputs: 1,
         outputs: 1,
@@ -71,8 +72,9 @@
         },
         oneditprepare: function() {
             $("#node-input-count").spinner({
-                min:1,
-                width:80
+                min:1
+            });
+            $("#node-input-round").spinner({
             });
             $("#node-input-action").change( function() {
                 var a = $("#node-input-action").val();
@@ -82,10 +84,13 @@
                 }
                 else {
                     $("#node-over").html("over the most recent ");
-                    $("#node-over2").html(" values.");
+                    $("#node-over2").html(" values");
                 }
             });
             $("#node-input-action").change();
+            if ($("#node-input-round").val() === "true") {
+                $("#node-input-round").val(0);
+            }
         }
     });
 </script>
