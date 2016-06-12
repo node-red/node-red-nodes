@@ -140,7 +140,6 @@ module.exports = function(RED) {
     });
 
 
-
     //
     // EmailInNode
     //
@@ -196,64 +195,21 @@ module.exports = function(RED) {
             msg = JSON.parse(JSON.stringify(msg)); // Clone the message
             // Populate the msg fields from the content of the email message
             // that we have just parsed.
-            if ((mailMessage.text) && (mailMessage.text.indexOf("--=_") !== -1)) {
-                //processNewMessage(msg,mailMessage.text);
-                var parts = mailMessage.text.split("--=_");
-                msg.payload = parts[0].trim();
-                for (var p = 0; p < parts.length; p++) {
-                    //console.log("\n\nP***",p+"\n"+JSON.stringify(parts[p]),"\n***P\n\n");
-                    if (parts[p].indexOf("text/plain") >= 0) {
-                        msg.payload = parts[p].split("\n\n",2)[1].trim();
-                    }
-                    if (parts[p].indexOf("text/html") >= 0) {
-                        msg.html = parts[p].split("\n\n",2)[1].trim();
-                    }
-                    if (parts[p].indexOf("=--\n\n") >= 0) {
-                        //msg.header = "text: "+msg.payload+"\n\n"+parts[p].split("\n\n",2)[1].trim();
-                        var mailparser = new MailParser();
-                        mailparser.on("end", function(mailMessage) {
-                            //console.log("DONG",mailMessage);
-                            msg.header = mailMessage.headers;
-                            msg.topic = mailMessage.subject;
-                            msg.date = mailMessage.date;
-                            if (mailMessage.from && mailMessage.from.length > 0) {
-                                msg.from = mailMessage.from[0].address;
-                            }
-                            if (mailMessage.attachments) {
-                                msg.attachments = mailMessage.attachments;
-                            } else {
-                                msg.attachments = [];
-                            }
-                            node.send(msg); // Propagate the message down the flow
-                        });
-                        mailparser.write(parts[p].split("\n\n",2)[1].trim());
-                        mailparser.end();
-                    }
-                }
+            msg.payload = mailMessage.text;
+            msg.topic = mailMessage.subject;
+            msg.date = mailMessage.date;
+            if (mailMessage.html) {
+                msg.html = mailMessage.html;
             }
-            else {
-                if (!mailMessage.text) {
-                    msg.payload = mailMessage.headers.text;
-                    msg.topic = mailMessage.subject;
-                    msg.header = mailMessage.headers;
-                    msg.date = mailMessage.date;
-                }
-                else {
-                    msg.payload = mailMessage.text;
-                }
-                if (mailMessage.html) {
-                    msg.html = mailMessage.html;
-                }
-                if (mailMessage.from && mailMessage.from.length > 0) {
-                    msg.from = mailMessage.from[0].address;
-                }
-                if (mailMessage.attachments) {
-                    msg.attachments = mailMessage.attachments;
-                } else {
-                    msg.attachments = [];
-                }
-                node.send(msg); // Propagate the message down the flow
+            if (mailMessage.from && mailMessage.from.length > 0) {
+                msg.from = mailMessage.from[0].address;
             }
+            if (mailMessage.attachments) {
+                msg.attachments = mailMessage.attachments;
+            } else {
+                msg.attachments = [];
+            }
+            node.send(msg); // Propagate the message down the flow
         } // End of processNewMessage
 
         // Check the POP3 email mailbox for any new messages.  For any that are found,
@@ -383,34 +339,29 @@ module.exports = function(RED) {
 
                         // We have the search results that contain the list of unseen messages and can now fetch those messages.
                         var fetch = imap.fetch(results, {
-                            //bodies : ['HEADER.FIELDS (FROM SUBJECT DATE)','TEXT'],
-                            bodies : ['HEADER','TEXT'],
+                            bodies: '',
+                            struct: true,
                             markSeen : true
                         });
 
                         // For each fetched message returned ...
                         fetch.on('message', function(imapMessage, seqno) {
                             //node.log(RED._("email.status.message",{number:seqno}));
-                            var messageText = "text: ";
+                            var messageText = "";
                             //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                             imapMessage.on('body', function(stream, info) {
                                 //console.log("> message - body - stream=?, info=%j", info);
-                                // Info defined which part of the message this is ... for example
-                                // 'TEXT' or 'HEADER'
                                 stream.on('data', function(chunk) {
                                     //console.log("> stream - data - chunk=??");
                                     messageText += chunk.toString('utf8');
                                 });
                                 stream.once('end', function() {
-                                    if (info.which !== 'TEXT') {
-                                        var mailparser = new MailParser();
-                                        mailparser.on("end", function(mailMessage) {
-                                            //console.log("mailparser: on(end): %j", mailMessage);
-                                            processNewMessage(msg, mailMessage);
-                                        });
-                                        mailparser.write(messageText);
-                                        mailparser.end();
-                                    }
+                                    var mailParser = new MailParser();
+                                    mailParser.on('end', function(mailMessage) {
+                                        processNewMessage(msg, mailMessage);
+                                    });
+                                    mailParser.write(messageText);
+                                    mailParser.end();
                                 }); // End of msg->end
                             }); // End of msg->body
                         }); // End of fetch->message
@@ -461,9 +412,11 @@ module.exports = function(RED) {
                 connTimeout: node.repeat,
                 authTimeout: node.repeat
             });
-            imap.on('error', function(err) {
-                node.log(err);
-                //node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+            imap.on('error', function(err) {                
+                if (err.errno !== "ECONNRESET") {
+                    node.log(err);
+                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+                }
             });
         }
 
