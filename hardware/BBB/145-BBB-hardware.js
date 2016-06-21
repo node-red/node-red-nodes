@@ -495,7 +495,7 @@ module.exports = function (RED) {
             bonescript.detachInterrupt(node._pin);
             process.nextTick(function () {
                 setPinMode(node._pin, bonescript.OUTPUT, function (response, pin) {
-                    if (response.value === true) {
+                    if (!response) {
                         node.on("input", inputCallback);
                         // Set the pin to the default state once the dust settles
                         setTimeout(endPulseCallback, 50);
