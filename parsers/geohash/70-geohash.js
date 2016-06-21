@@ -61,7 +61,13 @@ module.exports = function(RED) {
                 else if (msg.payload.indexOf(",") !== -1) {
                     // has a comma so assume it's lat,lon(,precision)
                     var bits = msg.payload.split(",");
-                    if (bits.length === 2) {
+                    if ((bits.length === 2) || (bits.length === 3)) {
+                        var li = 9;
+                        if (bits.length === 3) {
+                            li = parseInt(bits[2]);
+                            if (li < 1) { li = 1; }
+                            if (li > 9) { li = 9; }
+                        }
                         var la = Number(bits[0]);
                         if (la < -90) { la = -90; }
                         if (la > 90) { la = 90; }
@@ -69,7 +75,7 @@ module.exports = function(RED) {
                         if (lo < -180) { lo = ((lo-180)%360)+180; }
                         if (lo > 180) { lo = ((lo+180)%360)-180; }
                         if (!isNaN(la) && !isNaN(lo)) {
-                            msg.payload = geohash.encode(la, lo);
+                            msg.payload = geohash.encode(la, lo, li);
                             node.send(msg);
                         } else {
                             node.warn("Incorrect string format - should be lat,lon");

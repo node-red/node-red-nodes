@@ -106,11 +106,44 @@ module.exports = function(RED) {
         }
 
         node.on('input', function(msg) {
+            if (msg.advertising === false) {
+                if (eddyBeacon) {
+                    try {
+                        eddystoneBeacon.stop();
+                        node.status({fill:"red",shape:"dot",text:"Stopped"});
+                    } catch(e) {
+                        node.error('error shutting down beacon', e);
+                    }
+                    return;
+                }
+            }
+            if (msg.advertising === true) {
+                if (node.mode === "url") {
+                    try {
+                        eddystoneBeacon.advertiseUrl(node.url, node.options);
+                        node.status({fill:"green",shape:"dot",text:node.url});
+                    } catch(e) {
+                        node.error('Error setting beacon URL', e);
+                    }
+                    return;
+                }
+                if (node.mode === "uid") {
+                    try {
+                        eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
+                        node.status({fill:"green",shape:"dot",text:node.namespace});
+                    } catch(e) {
+                        node.error('Error setting beacon information', e);
+                    }
+                    return;
+                }
+            }
+            // url mode
             if (node.mode === "url") {
               if (checkLength(msg.payload) <= 18) {
                   try {
-                      eddystoneBeacon.advertiseUrl(msg.payload, node.options);
-                      node.status({fill:"green",shape:"dot",text:msg.payload});
+                      node.url = msg.payload;
+                      eddystoneBeacon.advertiseUrl(node.url, node.options);
+                      node.status({fill:"green",shape:"dot",text:node.url});
                   } catch(e) {
                       node.status({fill:"red",shape:"dot",text:"Error setting URL"});
                       node.error('error updating beacon URL', e);
@@ -122,7 +155,9 @@ module.exports = function(RED) {
             // uid mode
             else {
               try {
-                  eddystoneBeacon.advertiseUid(msg.payload, msg.topic, node.options);
+                  node.namespace = msg.payload;
+                  node.instance = msg.topic;
+                  eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
                   node.status({fill:"green",shape:"dot",text:msg.payload});
               } catch(e) {
                   node.status({fill:"red",shape:"dot",text:"Error setting beacon information"});
@@ -149,26 +184,34 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.topic = n.topic;
+        node.duplicates = n.duplicates;
 
         function onFound(beacon) {
-            node.send({
-                topic: node.topic,
-                payload: beacon
-            });
+            node.send({topic: node.topic || 'found', payload: beacon});
+        }
+
+        function onUpdated(beacon) {
+            node.send({topic: node.topic || 'updated', payload: beacon});
+        }
+
+        function onLost(beacon) {
+            node.send({topic: node.topic || 'lost', payload: beacon});
         }
 
         EddystoneBeaconScanner.on('found', onFound);
-        EddystoneBeaconScanner.on('updated', onFound);
+        EddystoneBeaconScanner.on('updated', onUpdated);
+        EddystoneBeaconScanner.on('lost', onLost);
 
         node.on('close',function(done) {
             EddystoneBeaconScanner.removeListener('found', onFound);
-            EddystoneBeaconScanner.removeListener('updated', onFound);
+            EddystoneBeaconScanner.removeListener('updated', onUpdated);
+            EddystoneBeaconScanner.removeListener('lost', onLost);
             done();
         });
 
         var tout = setTimeout(function() {
-            EddystoneBeaconScanner.startScanning(true);
-        },2000);
+            EddystoneBeaconScanner.startScanning(node.duplicates);
+        }, 2000);
 
 
         node.on("close", function(done) {

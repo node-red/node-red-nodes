@@ -46,31 +46,38 @@ module.exports = function(RED) {
             if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
             node.status({fill:"green",shape:"dot",text:"running"});
             node.running = true;
+            var line = "";
 
             node.on("input", inputlistener);
 
             node.child.stdout.on('data', function (data) {
-                if (node.op == "string") { data = data.toString(); }
-                if (node.op == "number") { data = Number(data); }
+                if (node.op === "string") { data = data.toString(); }
+                if (node.op === "number") { data = Number(data); }
                 if (RED.settings.verbose) { node.log("out: "+data); }
-                if (data && data.trim() !== "") {
-                    var msg = {payload:data};
-                    node.send([msg,null,null]);
+                if (node.op === "lines") {
+                    line += data.toString();
+                    var bits = line.split("\n");
+                    while (bits.length > 1) {
+                        node.send([{payload:bits.shift()},null,null]);
+                    }
+                    line = bits[0];
+                } else {
+                    if (data && data.trim() !== "") {
+                        node.send([{payload:data},null,null]);
+                    }
                 }
             });
 
             node.child.stderr.on('data', function (data) {
-                if (node.op == "string") { data = data.toString(); }
-                if (node.op == "number") { data = Number(data); }
+                if (node.op === "string") { data = data.toString(); }
+                if (node.op === "number") { data = Number(data); }
                 if (RED.settings.verbose) { node.log("err: "+data); }
-                var msg = {payload:data};
-                node.send([null,msg,null]);
+                node.send([null,{payload:data},null]);
             });
 
             node.child.on('close', function (code) {
                 if (RED.settings.verbose) { node.log("ret: "+code); }
-                var msg = {payload:code};
-                node.send([null,null,msg]);
+                node.send([null,null,{payload:code}]);
                 node.child = null;
                 node.running = false;
                 node.status({fill:"red",shape:"ring",text:"stopped"});
@@ -98,6 +105,7 @@ module.exports = function(RED) {
             if (node.child != null) { node.child.kill('SIGKILL'); }
             if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
             clearInterval(loop);
+            node.status({});
         });
 
         runit();
