@@ -79,119 +79,129 @@ WeMoNG.prototype.start = function start() {
     var location = url.parse(headers.LOCATION);
     var port = location.port;
     request.get(location.href, function(err, res, xml) {
-      xml2js.parseString(xml, function(err, json) {
-        var device = { ip: location.hostname, port: location.port };
-        for (var key in json.root.device[0]) {
-          device[key] = json.root.device[0][key][0];
-        }
-        if (device.deviceType == "urn:Belkin:device:bridge:1") {
-          //console.log( device.ip + ' -' + device.deviceType);
-          var ip = device.ip;
-          var port = device.port;
-          var udn = device.UDN;
-          var postoptions = {
-            host: ip,
-            port: port,
-            path: getenddevs.path,
-            method: 'POST',
-            headers: {
-              'SOAPACTION': getenddevs.action,
-              'Content-Type': 'text/xml; charset="utf-8"',
-              'Accept': ''
+      if (!err) {
+        xml2js.parseString(xml, function(err, json) {
+          if (!err) {
+            var device = { ip: location.hostname, port: location.port };
+            for (var key in json.root.device[0]) {
+              device[key] = json.root.device[0][key][0];
             }
-          };
+            if (device.deviceType == "urn:Belkin:device:bridge:1") {
+              //console.log( device.ip + ' -' + device.deviceType);
+              var ip = device.ip;
+              var port = device.port;
+              var udn = device.UDN;
+              var postoptions = {
+                host: ip,
+                port: port,
+                path: getenddevs.path,
+                method: 'POST',
+                headers: {
+                  'SOAPACTION': getenddevs.action,
+                  'Content-Type': 'text/xml; charset="utf-8"',
+                  'Accept': ''
+                }
+              };
 
-          var post_request = http.request(postoptions, function(res) {
-            var data = "";
-            res.setEncoding('utf8');
-            res.on('data', function(chunk) {
-              data += chunk;
-            });
+              var post_request = http.request(postoptions, function(res) {
+                var data = "";
+                res.setEncoding('utf8');
+                res.on('data', function(chunk) {
+                  data += chunk;
+                });
 
-            res.on('end',function() {
-              xml2js.parseString(data, function(err, result) {
-                if(!err) {
-                  var list = result["s:Envelope"]["s:Body"][0]["u:GetEndDevicesResponse"][0].DeviceLists[0];
-                  xml2js.parseString(list, function(err, result2) {
-                    if (!err) {
-                      var devinfo = result2.DeviceLists.DeviceList[0].DeviceInfos[0].DeviceInfo;
-                      for (var i=0; i<devinfo.length; i++) {
-                        var light = {
-                          "ip": ip,
-                          "port": port,
-                          "udn": device.UDN,
-                          "name": devinfo[i].FriendlyName[0],
-                          "id": devinfo[i].DeviceID[0],
-                          "capabilities": devinfo[i].CapabilityIDs[0],
-                          "state": devinfo[i].CurrentState[0],
-                          "type": "light",
-                          "device": device
-                        };
-                        var key = device.serialNumber + "-" + light.id;
-                        if (!_wemo.devices[key]){
-                          _wemo.devices[key] = light;
-                          _wemo.emit('discovered', key);
-                        } else {
-                          _wemo.devices[key] = light;
-                        }
-                      }
-                      var groupinfo = result2.DeviceLists.DeviceList[0].GroupInfos;
-                      if (groupinfo) {
-                        for(var i=0; i<groupinfo.length; i++) {
-                          var group = {
-                            "ip": ip,
-                            "port": port,
-                            "udn": device.UDN,
-                            "name": groupinfo[i].GroupInfo[0].GroupName[0],
-                            "id": groupinfo[i].GroupInfo[0].GroupID[0],
-                            "capabilities": groupinfo[i].GroupInfo[0].GroupCapabilityIDs[0],
-                            "state": groupinfo[i].GroupInfo[0].GroupCapabilityValues[0],
-                            "type": "light group",
-                            "lights": [],
-                            "device": device
+                res.on('end',function() {
+                  xml2js.parseString(data, function(err, result) {
+                    if(!err) {
+                      var list = result["s:Envelope"]["s:Body"][0]["u:GetEndDevicesResponse"][0].DeviceLists[0];
+                      xml2js.parseString(list, function(err, result2) {
+                        if (!err) {
+                          var devinfo = result2.DeviceLists.DeviceList[0].DeviceInfos[0].DeviceInfo;
+                          for (var i=0; i<devinfo.length; i++) {
+                            var light = {
+                              "ip": ip,
+                              "port": port,
+                              "udn": device.UDN,
+                              "name": devinfo[i].FriendlyName[0],
+                              "id": devinfo[i].DeviceID[0],
+                              "capabilities": devinfo[i].CapabilityIDs[0],
+                              "state": devinfo[i].CurrentState[0],
+                              "type": "light",
+                              "device": device
+                            };
+                            var key = device.serialNumber + "-" + light.id;
+                            if (!_wemo.devices[key]){
+                              _wemo.devices[key] = light;
+                              _wemo.emit('discovered', key);
+                            } else {
+                              _wemo.devices[key] = light;
+                            }
                           }
-                          for(var j=0; j<groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo.length; j++) {
-                            group.lights.push(groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo[j].DeviceID[0]);
+                          var groupinfo = result2.DeviceLists.DeviceList[0].GroupInfos;
+                          if (groupinfo) {
+                            for(var i=0; i<groupinfo.length; i++) {
+                              var group = {
+                                "ip": ip,
+                                "port": port,
+                                "udn": device.UDN,
+                                "name": groupinfo[i].GroupInfo[0].GroupName[0],
+                                "id": groupinfo[i].GroupInfo[0].GroupID[0],
+                                "capabilities": groupinfo[i].GroupInfo[0].GroupCapabilityIDs[0],
+                                "state": groupinfo[i].GroupInfo[0].GroupCapabilityValues[0],
+                                "type": "light group",
+                                "lights": [],
+                                "device": device
+                              }
+                              for(var j=0; j<groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo.length; j++) {
+                                group.lights.push(groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo[j].DeviceID[0]);
+                              }
+                            }
+                            var key = device.serialNumber + "-" + group.id;
+                            if (!_wemo.devices[key]) {
+                              _wemo.devices[key] = group;
+                              _wemo.emit('discovered', key);
+                            } else {
+                              _wemo.devices[key] = group;
+                            }
                           }
                         }
-                        var key = device.serialNumber + "-" + group.id;
-                        if (!_wemo.devices[key]) {
-                          _wemo.devices[key] = group;
-                          _wemo.emit('discovered', key);
-                        } else {
-                          _wemo.devices[key] = group;
-                        }
-                      }
+                      });
                     }
                   });
-                }
+                });
               });
-            });
-          });
 
-          post_request.write(util.format(getenddevs.body, udn));
-          post_request.end();
+              post_request.write(util.format(getenddevs.body, udn));
+              post_request.end();
 
-        } else if (device.deviceType.indexOf('urn:Belkin:device') != -1) {
-          //socket
-          var socket = {
-            "ip": location.hostname,
-            "port": location.port,
-            "name": device.friendlyName,
-            "type": "socket",
-            "device": device
-          };
-          if (!_wemo.devices[device.serialNumber]) {
-            _wemo.devices[device.serialNumber] = socket;
-            _wemo.emit('discovered',device.serialNumber);
+            } else if (device.deviceType.indexOf('urn:Belkin:device') != -1) {
+              //socket
+              var socket = {
+                "ip": location.hostname,
+                "port": location.port,
+                "name": device.friendlyName,
+                "type": "socket",
+                "device": device
+              };
+              if (!_wemo.devices[device.serialNumber]) {
+                _wemo.devices[device.serialNumber] = socket;
+                _wemo.emit('discovered',device.serialNumber);
+              } else {
+                _wemo.devices[device.serialNumber] = socket;
+              }
+            } else {
+              //other stuff
+              //console.log( device.ip + ' -' + device.deviceType);
+            }
           } else {
-            _wemo.devices[device.serialNumber] = socket;
+            console.error("failed to parse respose from " + location.href);
+            console.error(err);
           }
-        } else {
-          //other stuff
-          //console.log( device.ip + ' -' + device.deviceType);
-        }
-      });
+        });
+      } else {
+        console.error("Failed to GET info from " + location.href);
+        console.error(err);
+      }
     });
   });
   _wemo._client.search(urn);

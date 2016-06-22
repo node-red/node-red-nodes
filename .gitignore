@@ -2,8 +2,6 @@ npm-debug.log
 node_modules
 .npm
 coverage
-coverall
-
 puball.sh
-
 setenv.sh
+/.project

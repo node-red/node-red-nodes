@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pi-sense-hat",
-    "version"       : "0.0.10",
+    "version"       : "0.0.11",
     "description"   : "A Node-RED node to interact with a Raspberry Pi Sense HAT",
     "repository" : {
         "type":"git",
