@@ -1,4 +1,4 @@
-# node-red-contrib-nodes-wemo
+# node-red-node-wemo
 
 A set of Node-RED nodes for working with Belkin WeMo devices.
 
