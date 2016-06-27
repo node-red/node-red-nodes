@@ -318,7 +318,7 @@ module.exports = function(RED) {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
                 // Open the inbox folder
-                imap.openBox('INBOX', // Mailbox name
+                imap.openBox(node.box, // Mailbox name
                     false, // Open readonly?
                     function(err, box) {
                     //console.log("> Inbox open: %j", box);
@@ -412,7 +412,7 @@ module.exports = function(RED) {
                 connTimeout: node.repeat,
                 authTimeout: node.repeat
             });
-            imap.on('error', function(err) {                
+            imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     node.log(err);
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
