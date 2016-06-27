@@ -318,7 +318,7 @@ module.exports = function(RED) {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
                 // Open the inbox folder
-                imap.openBox('INBOX', // Mailbox name
+                imap.openBox(node.box, // Mailbox name
                     false, // Open readonly?
                     function(err, box) {
                     //console.log("> Inbox open: %j", box);
