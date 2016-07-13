@@ -13,7 +13,7 @@
             "connect": "connecting to __device__",
             "connected": "connected to __device__",
             "version": "version: __version__",
-            "portclosed": "port closed"
+            "portclosed": "Arduino serial port closed"
         },
         "state": {
             "in": {
@@ -34,6 +34,7 @@
         },
         "errors": {
             "portnotconf": "port not configured",
+            "portnotfound": "port not found : __device__",
             "devnotfound": "device __dev__ not found. Trying to find board."
         }
     }
