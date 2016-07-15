@@ -70,7 +70,7 @@ module.exports = function(RED) {
             this.board = this.serverConfig.board;
             var node = this;
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.connecting"});
-            node.board.on('ready', function() {
+            var doit = function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 if (node.state === "ANALOG") {
                     node.board.pinMode(node.pin, 0x02);
@@ -89,10 +89,16 @@ module.exports = function(RED) {
                         node.send({payload:v, topic:"string"});
                     });
                 }
-                node.board.on('close', function() {
-                    node.status({fill:"grey",shape:"ring",text:"node-red:common.status.not-connected"});
-                });
-            });
+                // node.board.on('close', function() {
+                //     node.board.removeAllListeners();
+                //     node.status({fill:"grey",shape:"ring",text:"node-red:common.status.not-connected"});
+                // });
+            }
+            if (node.board.isReady) { doit(); }
+            else { node.board.on("ready", function() { doit(); }); }
+            node.on("close", function() {
+                if (node.tout) { clearTimeout(node.tout); }
+            })
         }
         else {
             this.warn(RED._("arduino.errors.portnotconf"));
@@ -113,8 +119,7 @@ module.exports = function(RED) {
             this.board = this.serverConfig.board;
             var node = this;
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.connecting"});
-
-            node.board.on('ready', function() {
+            var doit = function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 node.on("input", function(msg) {
                     if (node.state === "OUTPUT") {
@@ -147,10 +152,15 @@ module.exports = function(RED) {
                         node.board.sendString(msg.payload.toString());
                     }
                 });
-                node.board.on('close', function() {
-                    node.status({fill:"grey",shape:"ring",text:"node-red:common.status.not-connected"});
-                });
-            });
+                // node.board.on('close', function() {
+                //     node.status({fill:"grey",shape:"ring",text:"node-red:common.status.not-connected"});
+                // });
+            }
+            if (node.board.isReady) { doit(); }
+            else { node.board.on("ready", function() { doit(); }); }
+            node.on("close", function() {
+                if (node.tout) { clearTimeout(node.tout); }
+            })
         }
         else {
             this.warn(RED._("arduino.errors.portnotconf"));
