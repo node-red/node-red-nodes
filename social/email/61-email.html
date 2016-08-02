@@ -70,8 +70,8 @@
 
 <script type="text/x-red" data-help-name="e-mail">
     <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
-	<p>You may optionally set <code>msg.from</code> in the payload which will override the <code>node.userid</code> 
-	default value.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>node.userid</code> 
+    default value.</p>
     <p>The default message recipient can be configured in the node, if it is left
     blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
     you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
@@ -135,8 +135,8 @@
         </select>
     </div>
     <div class="form-row">
-		<label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
-		<input type="checkbox" id="node-input-useSSL" style="width: auto;">
+        <label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+        <input type="checkbox" id="node-input-useSSL" style="width: auto;">
     </div>
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
@@ -159,7 +159,7 @@
         <input type="text" id="node-input-box">
     </div>
     <div class="form-row node-input-disposition">
-		    <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+            <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
         <select type="text" id="node-input-disposition">
             <option value="None" selected="selected">None</option>
             <option value="Read">Mark Read/Answered</option>
