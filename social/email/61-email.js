@@ -86,7 +86,7 @@ module.exports = function(RED) {
                     if (msg.to && node.name && (msg.to !== node.name)) {
                         node.warn(RED._("node-red:common.errors.nooverride"));
                     }
-                    var sendopts = { from: node.userid };   // sender address
+                    var sendopts = { from: ((msg.from) ? msg.from : node.userid) };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
                     if (node.name === "") {
                         sendopts.cc = msg.cc;
