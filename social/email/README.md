@@ -39,7 +39,9 @@ Uses the *imap* npm module.
 
 ### Output
 
-Sends the `msg.payload` as an email, with a subject of `msg.topic`.
+Sends the `msg.payload` as an email, with a subject of `msg.topic`. You may 
+optionally override the from email address by setting `msg.from` otherwise the 
+node will use the `node.userid` setting.
 
 The default message recipient can be configured in the node, if it is left
 blank it should be set using the `msg.to` property of the incoming message.
