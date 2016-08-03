@@ -70,11 +70,11 @@
 
 <script type="text/x-red" data-help-name="e-mail">
     <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
-    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>node.userid</code> 
-    default value.</p>
     <p>The default message recipient can be configured in the node, if it is left
     blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
     you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
+    default value.</p>
     <p>The payload can be html format.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>

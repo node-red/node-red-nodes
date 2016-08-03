@@ -39,12 +39,13 @@ Uses the *imap* npm module.
 
 ### Output
 
-Sends the `msg.payload` as an email, with a subject of `msg.topic`. You may 
-optionally override the from email address by setting `msg.from` otherwise the 
-node will use the `node.userid` setting.
+Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 
 The default message recipient can be configured in the node, if it is left
 blank it should be set using the `msg.to` property of the incoming message.
+
+You may optionally override the *from* email address by setting `msg.from`,
+otherwise the node will use the `userid` setting from the server connection.
 
 The payload can be html format.
 
