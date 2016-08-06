@@ -19,6 +19,7 @@ module.exports = function(RED) {
     "use strict";
     var blinkstick = require("blinkstick");
 
+    var availableModes = ["normal", "inverted", "neopixel"];
     var availableTasks = ["set_color", "blink", "pulse", "morph"];
 
     Object.size = function(obj) {
@@ -74,6 +75,7 @@ module.exports = function(RED) {
 
         this.name = n.name;
         this.serial = n.serial;
+	    this.mode = n.mode || "normal";
         this.task = n.task || "set_color";
         this.delay = n.delay || 500;
         this.repeats = n.repeats || 1;
@@ -101,6 +103,9 @@ module.exports = function(RED) {
                         node.error("BlinkStick with serial number " + node.serial + " not found");
                     } else {
                         node.status({fill:"green",shape:"dot",text:"connected"});
+                        if(node.mode == "normal"){node.led.setMode(0);}
+                        else if(node.mode == "inverted"){node.led.setMode(1);}
+                        else if(node.mode == "neopixel"){node.led.setMode(2);}
                         if (callback) { callback(); }
                     }
                 });
@@ -112,6 +117,9 @@ module.exports = function(RED) {
                     node.error("No BlinkStick found");
                 } else {
                     node.status({fill:"green",shape:"dot",text:"connected"});
+                    if(node.mode == "normal"){node.led.setMode(0);}
+                    else if(node.mode == "inverted"){node.led.setMode(1);}
+                    else if(node.mode == "neopixel"){node.led.setMode(2);}
                     if (callback) { callback(); }
                 }
             }
@@ -196,7 +204,6 @@ module.exports = function(RED) {
                     // if it's an array then hopefully it's r,g,b,r,g,b or name,name,name
                     if (Array.isArray(msg.payload)) {
                         if (Object.size(node.led) !== 0) {
-                            node.led.setMode(2); // put it into ws2812B LED mode
                             var dat = [];
                             for (var i = 0; i < msg.payload.length; i++) {
                                 if (typeof msg.payload[i] === "string") { // if string then assume must be colour names

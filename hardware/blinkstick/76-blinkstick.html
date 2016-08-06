@@ -23,6 +23,15 @@
             <a id="node-lookup-serial" class="btn"><i id="node-lookup-serial-icon" class="fa fa-search"></i></a>
         </div>
         <div class="form-row">
+            <label for="node-input-mode">Mode</label>
+            <select id="node-input-mode" style="width:125px !important">
+                <option value="normal">Normal</option>
+                <option value="inverted">Inverted</option>
+                <option value="neopixel">NeoPixel</option>
+            </select>
+        </div>
+
+        <div class="form-row">
             <label for="node-input-task"><i class="fa fa-empire"></i> Task</label>
             <select id="node-input-task" style="width:125px !important">
                 <option value="set_color">Set Color</option>
@@ -41,7 +50,6 @@
             <label for="node-input-repeats"><i class="fa fa-history"></i> Repeats</label>
             <input type="text" id="node-input-repeats" placeholder="Times" style="text-align:end; width:50px !important">
         </div>
-
         <div id="duration-details" class="form-row">
             <label for="node-input-duration"><i class="fa fa-clock-o"></i> Duration</label>
             <input type="text" id="node-input-duration" placeholder="Duration" style="text-align:end; width:50px !important">
@@ -120,6 +128,7 @@
         defaults: {             // defines the default editable properties of the node
             name: {value:""},   //  along with default values.
             serial: {value:""},
+            mode: {value:"normal", validate:function(v) {return ((v === undefined)||v=="normal"||v=="inverted"||v=="neopixel"); }},
             task: {value:"set_color", validate:function(v) {return ((v === undefined)||v=="set_color"||v=="blink"||v=="morph"||v=="pulse"); }},
             delay: {value:"500", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
             repeats: {value:"1", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
@@ -138,6 +147,10 @@
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
+          if (!$("#node-input-mode").val()) {
+              $("#node-input-mode").val("normal");
+          }
+
           if (!$("#node-input-task").val()) {
               $("#node-input-task").val("set_color");
           }
