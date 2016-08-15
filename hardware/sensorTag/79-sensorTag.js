@@ -77,7 +77,9 @@ module.exports = function(RED) {
                                     msg.payload = {'temperature': +temp.toFixed(1),
                                     'humidity': +humidity.toFixed(1)
                                     };
-                                    node.send(msg);
+                                    if ((temp !== -40) || (humidity !== 100)) {
+                                        node.send(msg);
+                                    }
                                 });
                                 sensorTag.enableAccelerometer(function() {});
                                 sensorTag.on('accelerometerChange', function(x,y,z) {

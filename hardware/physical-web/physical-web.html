@@ -134,7 +134,7 @@
     <p>You can also preset the URL, in which case the node does not require any input.</p>
     <p>In <strong>UID mode</strong> this node can take the 10 bytes namespace (as an HEX string) as <code>msg.payload</code>
     and the 6 bytes instance (as an HEX string) as <code>msg.topic</code>.
-    <p>The config window will allow you to set the powerlevel (-30 to 100 db) and the TLM count and period values.</p>
+    <p>The config window will allow you to set the powerlevel (-100 to 20 dbm) and the TLM count and period values.</p>
     <p>TLM stands for telemetry data and is a type of packet sent alongside the main packet that provides diagnostics information.
     The count and period determine the ratio of TLM packets sent versus normal packets.
     A period of 10 and a count of 2 means that 2 TLM packets are sent for each 10 advertisements.</p>
@@ -218,7 +218,7 @@
 
             $("#node-input-period").spinner({min:0});
             $("#node-input-count").spinner({min:0});
-            $("#node-input-power").spinner({min:-30,max:100});
+            $("#node-input-power").spinner({min:-100,max:20});
             $("#url-length").text(checkLength($('#node-input-url').val()));
             $("#node-input-mode").on("change",function() {
               if ($("#node-input-mode").val() === "uid") {

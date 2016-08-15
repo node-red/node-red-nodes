@@ -86,7 +86,7 @@ module.exports = function(RED) {
                     if (msg.to && node.name && (msg.to !== node.name)) {
                         node.warn(RED._("node-red:common.errors.nooverride"));
                     }
-                    var sendopts = { from: node.userid };   // sender address
+                    var sendopts = { from: ((msg.from) ? msg.from : node.userid) };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
                     if (node.name === "") {
                         sendopts.cc = msg.cc;
@@ -318,7 +318,7 @@ module.exports = function(RED) {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
                 // Open the inbox folder
-                imap.openBox('INBOX', // Mailbox name
+                imap.openBox(node.box, // Mailbox name
                     false, // Open readonly?
                     function(err, box) {
                     //console.log("> Inbox open: %j", box);
@@ -412,7 +412,7 @@ module.exports = function(RED) {
                 connTimeout: node.repeat,
                 authTimeout: node.repeat
             });
-            imap.on('error', function(err) {                
+            imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     node.log(err);
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});

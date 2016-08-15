@@ -73,6 +73,8 @@
     <p>The default message recipient can be configured in the node, if it is left
     blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
     you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
+    default value.</p>
     <p>The payload can be html format.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
@@ -133,8 +135,8 @@
         </select>
     </div>
     <div class="form-row">
-		<label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
-		<input type="checkbox" id="node-input-useSSL" style="width: auto;">
+        <label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+        <input type="checkbox" id="node-input-useSSL" style="width: auto;">
     </div>
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
@@ -157,7 +159,7 @@
         <input type="text" id="node-input-box">
     </div>
     <div class="form-row node-input-disposition">
-		    <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+            <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
         <select type="text" id="node-input-disposition">
             <option value="None" selected="selected">None</option>
             <option value="Read">Mark Read/Answered</option>

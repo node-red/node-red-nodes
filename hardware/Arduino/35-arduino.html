@@ -52,9 +52,9 @@
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-                var ct = $("#node-input-state").val() || this.state;
-                return ct === 'STRING' || (v !== '');
-            }},
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"INPUT",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -107,15 +107,15 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('arduino out',{
+    RED.nodes.registerType('arduino out', {
         category: 'Arduino',
         color:"#3fadb5",
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-                var ct = $("#node-input-state").val() || this.state;
-                return ct === 'STRING' || (v !== '');
-            }},
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -167,7 +167,7 @@
                     $("#node-config-lookup-serial").removeClass('disabled');
                     var ports = [];
                     $.each(data, function(i, port) {
-                        ports.push(port);
+                        ports.push(port.comName);
                     });
                     $("#node-config-input-device").autocomplete({
                         source:ports,

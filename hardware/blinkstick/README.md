@@ -16,7 +16,7 @@ For more information see <i><a href="http://www.blinkstick.com/help/tutorials" t
 
 You also currently need to create a file `/etc/udev/rules.d/80-blinkstick.rules` containing
 
-    SUBSYSTEMS=="usb", ATTRS{idVendor}=="20a0", ATTRS{idProduct}=="41e5", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="20a0", ATTRS{idProduct}=="41e5", TAG+="uaccess"
 
 and either reload the udev rules or reboot.
 

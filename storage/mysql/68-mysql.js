@@ -40,7 +40,8 @@ module.exports = function(RED) {
                 password : node.credentials.password,
                 database : node.dbname,
                 timezone : node.tz,
-                insecureAuth: true
+                insecureAuth: true,
+                multipleStatements: true
             });
 
             node.connection.connect(function(err) {
