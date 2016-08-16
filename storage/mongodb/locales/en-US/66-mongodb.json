@@ -22,6 +22,11 @@
             "count": "count",
             "aggregate": "aggregate"
         },
+        "status": {
+            "connecting": "connecting",
+            "connected": "connected",
+            "error": "error"
+        },
         "tip": "<b> Tip:</b> If no collection is set, ensure <code>msg.collection</code> will contain the collection name",
         "errors": {
             "nocollection": "No collection defined",
