@@ -73,6 +73,7 @@ util.inherits(WeMoNG, events.EventEmitter);
 WeMoNG.prototype.start = function start() {
   //console.log("searching");
   var _wemo = this;
+  _wemo.setMaxListeners(0);
   _wemo._client = new Client();
   _wemo._client.setMaxListeners(0);
   _wemo._client.on('response', function (headers, statusCode, rinfo) {
@@ -195,6 +196,7 @@ WeMoNG.prototype.start = function start() {
             }
           } else {
             console.error("failed to parse respose from " + location.href);
+            console.error(xml);
             console.error(err);
           }
         });
