@@ -35,7 +35,7 @@ module.exports = function(RED) {
                         node.send(msg);
                     }
                     else {
-                        node.log("Not a Base64 string - maybe we should encode it...");
+                        //node.log("Not a Base64 string - maybe we should encode it...");
                         msg.payload = (new Buffer(msg.payload,"binary")).toString('base64');
                         node.send(msg);
                     }
