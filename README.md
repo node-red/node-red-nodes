@@ -71,6 +71,8 @@ Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **node-red-node-intel-galileo** - *[mraa-spio](hardware/intel)* - A collection of analogue & digital input & output nodes for the Intel Galileo and Edison.
 
+**node-red-node-pi-mcp3008** - *[pimcp3008](hardware/mcp3008)* - Allows A Raspberry Pi to node to read from an MCP3008 Analogue to Digital Converter chip via the SPI bus.
+
 **node-red-node-pi-neopixel** - *[neopixel](hardware/neopixel)* - Allows A Raspberry Pi to drive a strip of NeoPixels directly.
 
 **node-red-node-pi-unicorn-hat** - *[unicorn](hardware/unicorn)* - Lets a Raspbeery Pi control a Pimorini Unicorn HAT 8x8 LED display.
