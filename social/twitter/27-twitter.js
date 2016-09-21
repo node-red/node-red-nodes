@@ -236,6 +236,12 @@ module.exports = function(RED) {
                         }
                     }
                     setupStream();
+                    node.on("input", function(msg) {
+                       node.warn("Twitter node now searching for: " + msg.payload);
+                       this.stream.destroy();
+                       st = { track: [msg.payload] };
+                       setupStream();
+                       });
                 }
                 catch (err) {
                     node.error(err);
