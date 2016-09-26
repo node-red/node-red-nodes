@@ -124,7 +124,7 @@
         <li>all tweets by specific users</li>
         <li>direct messages received by the authenticated user</li>
     </ul></p>
-    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.  The terms can also be sent in the <code>msg.payload</code>, which will overwrite the node config setting.</p>
+    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.  If you want to pass in the term(s) via the <code>msg.payload</code>, leave the field blank.</p>
     <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
     <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
     <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
@@ -188,7 +188,6 @@
         oneditsave: function() {
             if ($('#node-input-tags').val() == '' && $("#node-input-user option:selected").val() != 'dm'
             && $("#node-input-user option:selected").val() != 'user') {
-               console.log("Twitter input node: Tag search field is empty, you will need to pass it in the msg.payload");
                this.inputs=1;
                }
             else {

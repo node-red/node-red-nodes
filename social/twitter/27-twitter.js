@@ -243,7 +243,7 @@ module.exports = function(RED) {
                     else setupStream();
                     node.on("input", function(msg) {
                        if (this.tags == '') {
-                          node.warn("Twitter node now searching for: " + msg.payload);
+                          this.warn("Twitter node now searching for: " + msg.payload);
                           if (this.stream) this.stream.destroy();
                           st = { track: [msg.payload] };
                           setupStream();
