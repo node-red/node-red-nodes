@@ -238,7 +238,7 @@ module.exports = function(RED) {
                     }
                     if (this.tags == '')
                        {
-                       this.warn("Twitter node: No search term specified in config; must pass in through the msg.payload");
+                       this.warn("Twitter node: No search term(s) specified - add to node config or pass in through msg.payload");
                        }
                     else setupStream();
                     node.on("input", function(msg) {
