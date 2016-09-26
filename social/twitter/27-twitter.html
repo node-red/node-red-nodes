@@ -140,12 +140,12 @@
         color:"#C0DEED",
         defaults: {
             twitter: {type:"twitter-credentials",required:true},
-            tags: {value:"",validate:function(v) { return this.user == "dm" || v.length > 0;}},
+            tags: {value:""},
             user: {value:"false",required:true},
             name: {value:""},
             topic: {value:"tweets"}
         },
-        inputs:1,
+        inputs:0,
         outputs:1,
         icon: "twitter.png",
         label: function() {
@@ -184,6 +184,17 @@
 
             });
             $("#node-input-user").change();
+        },
+        oneditsave: function() {
+            if ($('#node-input-tags').val() == '' && $("#node-input-user option:selected").val() != 'dm'
+            && $("#node-input-user option:selected").val() != 'user') {
+               console.log("Twitter input node: Tag search field is empty, you will need to pass it in the msg.payload");
+               this.inputs=1;
+               }
+            else {
+               //set back the default state of 0 inputs
+               this.inputs=0;
+               }
         }
     });
 </script>
