@@ -1,5 +1,5 @@
 /**
- * Copyright 2013, 2015 IBM Corp.
+ * Copyright 2013, 2016 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,9 @@ module.exports = function(RED) {
                 node.poll_ids = [];
                 node.since_ids = {};
                 var users = node.tags.split(",");
-                if (users == '') node.warn("User option selected but no users specified");
-                for (var i=0;i<users.length;i++) {
+                //if (users == '') node.warn("User option selected but no users specified");
+                if (users.length === 0) { node.warn(RED._("twitter.warn.nousers")); }
+                for (var i=0; i<users.length; i++) {
                     var user = users[i].replace(" ","");
                     twit.getUserTimeline({
                         screen_name:user,
@@ -236,29 +237,30 @@ module.exports = function(RED) {
                             });
                         }
                     }
-                    if (this.tags == '')
-                       {
-                       this.warn("No search term(s) specified - add to node config or pass in through msg.payload");
-                       }
-                    else setupStream();
+                    if (this.tags === '') {
+                        node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                    }
+                    else {
+                        setupStream();
+                    }
                     node.on("input", function(msg) {
-                       if (this.tags == '') {
-                          this.warn("Now searching for: " + msg.payload);
-                          if (this.stream) this.stream.destroy();
-                          st = { track: [msg.payload] };
-                          setupStream();
-                          node.status({fill:"green",shape:"dot",text:msg.payload});
-                       }
-                       //We shouldn't get into this state, but just incase, check for it
-                       else {
-                          this.warn("msg.payload passed in, but tag config is not blank, defaulting to tag config");
-                       }
-                       });
+                        if (this.tags === '') {
+                            if (this.stream) { this.stream.destroy(); }
+                            st = { track: [msg.payload] };
+                            setupStream();
+                            node.status({fill:"green", shape:"dot", text:msg.payload});
+                        }
+                        //We shouldn't get into this state, but just incase, check for it
+                        else {
+                            // node.warn("msg.payload passed in, but tag config is not blank, defaulting to tag config");
+                            node.status({fill:"green", shape:"dot", text:node.tags});
+                        }
+                    });
                 }
                 catch (err) {
                     node.error(err);
                 }
-            } 
+            }
         } else {
             this.error(RED._("twitter.errors.missingcredentials"));
         }
