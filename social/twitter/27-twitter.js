@@ -89,6 +89,7 @@ module.exports = function(RED) {
                 node.poll_ids = [];
                 node.since_ids = {};
                 var users = node.tags.split(",");
+                if (users == '') node.warn("User option selected but no users specified");
                 for (var i=0;i<users.length;i++) {
                     var user = users[i].replace(" ","");
                     twit.getUserTimeline({
@@ -182,7 +183,7 @@ module.exports = function(RED) {
                     },120000));
                 });
 
-            } else if (this.tags !== "") {
+            } else {
                 try {
                     var thing = 'statuses/filter';
                     if (this.user === "true") { thing = 'user'; }
@@ -235,14 +236,29 @@ module.exports = function(RED) {
                             });
                         }
                     }
-                    setupStream();
+                    if (this.tags == '')
+                       {
+                       this.warn("No search term(s) specified - add to node config or pass in through msg.payload");
+                       }
+                    else setupStream();
+                    node.on("input", function(msg) {
+                       if (this.tags == '') {
+                          this.warn("Now searching for: " + msg.payload);
+                          if (this.stream) this.stream.destroy();
+                          st = { track: [msg.payload] };
+                          setupStream();
+                          node.status({fill:"green",shape:"dot",text:msg.payload});
+                       }
+                       //We shouldn't get into this state, but just incase, check for it
+                       else {
+                          this.warn("msg.payload passed in, but tag config is not blank, defaulting to tag config");
+                       }
+                       });
                 }
                 catch (err) {
                     node.error(err);
                 }
-            } else {
-                this.error(RED._("twitter.errors.invalidtag"));
-            }
+            } 
         } else {
             this.error(RED._("twitter.errors.missingcredentials"));
         }
