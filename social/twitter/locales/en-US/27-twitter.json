@@ -6,7 +6,7 @@
             "for": "for",
             "user": "User",
             "dmslabel": "DMs",
-            "followers": "user stream tweets",
+            "followers": "user's stream tweets",
             "tweetslabel": "tweets",
             "clickhere": "Click here to authenticate with Twitter."
         },
@@ -16,7 +16,7 @@
         },
         "search": {
             "public": "all public tweets",
-            "follow": "the tweets of user stream",
+            "follow": "the tweets from the user's stream",
             "user": "the tweets of specific users",
             "direct": "your direct messages"
         },
