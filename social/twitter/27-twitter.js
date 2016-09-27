@@ -246,9 +246,14 @@ module.exports = function(RED) {
                     node.on("input", function(msg) {
                         if (this.tags === '') {
                             if (this.stream) { this.stream.destroy(); }
-                            st = { track: [msg.payload] };
-                            setupStream();
-                            node.status({fill:"green", shape:"dot", text:msg.payload});
+                            if (msg.payload !== "") {
+                                st = { track: [msg.payload] };
+                                setupStream();
+                                node.status({fill:"green", shape:"dot", text:msg.payload});
+                            }
+                            else {
+                                node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                            }
                         }
                         //We shouldn't get into this state, but just incase, check for it
                         else {
