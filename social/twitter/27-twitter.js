@@ -89,7 +89,7 @@ module.exports = function(RED) {
                 node.poll_ids = [];
                 node.since_ids = {};
                 var users = node.tags.split(",");
-                if (users == '') node.warn("Twitter node: User option selected but no users specified");
+                if (users == '') node.warn("User option selected but no users specified");
                 for (var i=0;i<users.length;i++) {
                     var user = users[i].replace(" ","");
                     twit.getUserTimeline({
@@ -238,15 +238,16 @@ module.exports = function(RED) {
                     }
                     if (this.tags == '')
                        {
-                       this.warn("Twitter node: No search term(s) specified - add to node config or pass in through msg.payload");
+                       this.warn("No search term(s) specified - add to node config or pass in through msg.payload");
                        }
                     else setupStream();
                     node.on("input", function(msg) {
                        if (this.tags == '') {
-                          this.warn("Twitter node now searching for: " + msg.payload);
+                          this.warn("Now searching for: " + msg.payload);
                           if (this.stream) this.stream.destroy();
                           st = { track: [msg.payload] };
                           setupStream();
+                          node.status({fill:"green",shape:"dot",text:msg.payload});
                        }
                        //We shouldn't get into this state, but just incase, check for it
                        else {
