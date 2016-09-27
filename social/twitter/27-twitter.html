@@ -124,7 +124,8 @@
         <li>all tweets by specific users</li>
         <li>direct messages received by the authenticated user</li>
     </ul></p>
-    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.  If you want to pass in the term(s) via the <code>msg.payload</code>, leave the field blank.</p>
+    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
+    If you want to pass in the search term(s) via the <code>msg.payload</code>, leave the <b>for</b> field blank.</p>
     <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
     <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
     <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
@@ -145,8 +146,8 @@
             name: {value:""},
             topic: {value:"tweets"}
         },
-        inputs:0,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "twitter.png",
         label: function() {
             if (this.name) {
@@ -158,7 +159,10 @@
             } else if (this.user == "user") {
                 return this.tags+" "+this._("twitter.label.tweetslabel");
             }
-            return this.tags;
+            else if (this.user == "true") {
+                return this._("twitter.label.followers");
+            }
+            return "twitter";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -181,19 +185,18 @@
                     $("#node-input-tags-label").html(forlabel);
                     $("#node-input-tags").attr("placeholder",forph);
                 }
-
             });
             $("#node-input-user").change();
-        },
-        oneditsave: function() {
-            if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() != 'dm' && $("#node-input-user option:selected").val() != 'user') {
-                this.inputs=1;
-            }
-            else {
-                //set back the default state of 0 inputs
-                this.inputs=0;
-            }
-        }
+        }//,
+        // oneditsave: function() {
+        //     if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() != 'dm' && $("#node-input-user option:selected").val() != 'user') {
+        //         this.inputs=1;
+        //     }
+        //     else {
+        //         //set back the default state of 0 inputs
+        //         this.inputs=0;
+        //     }
+        // }
     });
 </script>
 

@@ -88,59 +88,64 @@ module.exports = function(RED) {
             if (this.user === "user") {
                 node.poll_ids = [];
                 node.since_ids = {};
+                node.status({});
                 var users = node.tags.split(",");
-                //if (users == '') node.warn("User option selected but no users specified");
-                if (users.length === 0) { node.warn(RED._("twitter.warn.nousers")); }
-                for (var i=0; i<users.length; i++) {
-                    var user = users[i].replace(" ","");
-                    twit.getUserTimeline({
-                        screen_name:user,
-                        trim_user:0,
-                        count:1
-                    },(function() {
-                        var u = user+"";
-                        return function(err,cb) {
-                            if (err) {
-                                node.error(err);
-                                return;
-                            }
-                            if (cb[0]) {
-                                node.since_ids[u] = cb[0].id_str;
-                            } else {
-                                node.since_ids[u] = '0';
-                            }
-                            node.poll_ids.push(setInterval(function() {
-                                twit.getUserTimeline({
-                                    screen_name:u,
-                                    trim_user:0,
-                                    since_id:node.since_ids[u]
-                                },function(err,cb) {
-                                    if (cb) {
-                                        for (var t=cb.length-1;t>=0;t-=1) {
-                                            var tweet = cb[t];
-                                            var where = tweet.user.location;
-                                            var la = tweet.lang || tweet.user.lang;
-                                            var msg = { topic:node.topic+"/"+tweet.user.screen_name, payload:tweet.text, lang:la, tweet:tweet };
-                                            if (where) {
-                                                msg.location = {place:where};
-                                                addLocationToTweet(msg);
-                                            }
-                                            node.send(msg);
-                                            if (t === 0) {
-                                                node.since_ids[u] = tweet.id_str;
+                if (users === '') { node.warn(RED._("twitter.warn.nousers")); }
+                //if (users.length === 0) { node.warn(RED._("twitter.warn.nousers")); }
+                else {
+                    for (var i=0; i<users.length; i++) {
+                        var user = users[i].replace(" ","");
+                        twit.getUserTimeline({
+                            screen_name:user,
+                            trim_user:0,
+                            count:1
+                        },(function() {
+                            var u = user+"";
+                            return function(err,cb) {
+                                if (err) {
+                                    node.error(err);
+                                    return;
+                                }
+                                if (cb[0]) {
+                                    node.since_ids[u] = cb[0].id_str;
+                                } else {
+                                    node.since_ids[u] = '0';
+                                }
+                                node.poll_ids.push(setInterval(function() {
+                                    twit.getUserTimeline({
+                                        screen_name:u,
+                                        trim_user:0,
+                                        since_id:node.since_ids[u]
+                                    }, function(err,cb) {
+                                        if (cb) {
+                                            for (var t=cb.length-1; t>=0; t-=1) {
+                                                var tweet = cb[t];
+                                                var where = tweet.user.location;
+                                                var la = tweet.lang || tweet.user.lang;
+                                                var msg = { topic:node.topic+"/"+tweet.user.screen_name, payload:tweet.text, lang:la, tweet:tweet };
+                                                if (where) {
+                                                    msg.location = {place:where};
+                                                    addLocationToTweet(msg);
+                                                }
+                                                node.send(msg);
+                                                if (t === 0) {
+                                                    node.since_ids[u] = tweet.id_str;
+                                                }
                                             }
                                         }
-                                    }
-                                    if (err) {
-                                        node.error(err);
-                                    }
-                                });
-                            },60000));
-                        }
-                    }()));
+                                        if (err) {
+                                            node.error(err);
+                                        }
+                                    });
+                                },60000));
+                            }
+                        }()));
+                    }
                 }
-            } else if (this.user === "dm") {
+            }
+            else if (this.user === "dm") {
                 node.poll_ids = [];
+                node.status({});
                 twit.getDirectMessages({
                     screen_name:node.twitterConfig.screen_name,
                     trim_user:0,
@@ -183,8 +188,8 @@ module.exports = function(RED) {
                             });
                     },120000));
                 });
-
-            } else {
+            }
+            else {
                 try {
                     var thing = 'statuses/filter';
                     if (this.user === "true") { thing = 'user'; }
@@ -218,11 +223,13 @@ module.exports = function(RED) {
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
+                                    node.status({fill:"grey", shape:"circle", text:"Rate limiting"});
                                     node.warn(RED._("twitter.errors.ratelimit"));
                                 });
                                 stream.on('error', function(tweet,rc) {
                                     if (rc == 420) {
-                                        node.warn(RED._("twitter.errors.ratelimit"));
+                                        node.status({fill:"grey", shape:"dot", text:"Rate limit hit"});
+                                        //node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
@@ -241,13 +248,14 @@ module.exports = function(RED) {
                         node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
                     }
                     else {
+                        node.status({fill:"green", shape:"dot", text:node.tags});
                         setupStream();
                     }
                     node.on("input", function(msg) {
                         if (this.tags === '') {
                             if (this.stream) { this.stream.destroy(); }
-                            if (msg.payload !== "") {
-                                st = { track: [msg.payload] };
+                            if ((typeof msg.payload === "string") && (msg.payload !== "")) {
+                                st = { track:[msg.payload] };
                                 setupStream();
                                 node.status({fill:"green", shape:"dot", text:msg.payload});
                             }
@@ -257,7 +265,6 @@ module.exports = function(RED) {
                         }
                         //We shouldn't get into this state, but just incase, check for it
                         else {
-                            // node.warn("msg.payload passed in, but tag config is not blank, defaulting to tag config");
                             node.status({fill:"green", shape:"dot", text:node.tags});
                         }
                     });
@@ -266,7 +273,8 @@ module.exports = function(RED) {
                     node.error(err);
                 }
             }
-        } else {
+        }
+        else {
             this.error(RED._("twitter.errors.missingcredentials"));
         }
 
