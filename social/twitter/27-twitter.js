@@ -192,8 +192,18 @@ module.exports = function(RED) {
             else {
                 try {
                     var thing = 'statuses/filter';
-                    if (this.user === "true") { thing = 'user'; }
-                    var st = { track: [node.tags] };
+                    var tags = node.tags;
+                    var st = { track: [tags] };
+                    if (this.user === "true") {
+                        thing = 'user';
+                        //st.with = "user";
+                        // twit.getFriendsIds(node.twitterConfig.screen_name.substr(1), function(err,list) {
+                        //     friends = list;
+                        // });
+                        st = null;
+                    }
+
+
                     var bits = node.tags.split(",");
                     if (bits.length == 4) {
                         if ((Number(bits[0]) < Number(bits[2])) && (Number(bits[1]) < Number(bits[3]))) {
@@ -202,13 +212,11 @@ module.exports = function(RED) {
                         }
                     }
 
+
                     var setupStream = function() {
                         if (node.active) {
                             twit.stream(thing, st, function(stream) {
                                 //console.log(st);
-                                //twit.stream('user', { track: [node.tags] }, function(stream) {
-                                //twit.stream('site', { track: [node.tags] }, function(stream) {
-                                //twit.stream('statuses/filter', { track: [node.tags] }, function(stream) {
                                 node.stream = stream;
                                 stream.on('data', function(tweet) {
                                     if (tweet.user !== undefined) {
@@ -220,15 +228,19 @@ module.exports = function(RED) {
                                             addLocationToTweet(msg);
                                         }
                                         node.send(msg);
+                                        if (tags !== "zyxxyzyxxyzyxxyzyxxyzyxxyzyxxy") {
+                                            node.status({fill:"green", shape:"dot", text:tags});
+                                        }
+                                        else { node.status({fill:"green", shape:"dot", text:node.twitterConfig.screen_name}); }
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
-                                    node.status({fill:"grey", shape:"circle", text:"Rate limiting"});
-                                    node.warn(RED._("twitter.errors.ratelimit"));
+                                    node.status({fill:"grey", shape:"dot", text:"Rate limiting"});
+                                    //node.warn(RED._("twitter.errors.ratelimit"));
                                 });
                                 stream.on('error', function(tweet,rc) {
                                     if (rc == 420) {
-                                        node.status({fill:"grey", shape:"dot", text:"Rate limit hit"});
+                                        node.status({fill:"red", shape:"ring", text:"Rate limit hit"});
                                         //node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
@@ -244,30 +256,34 @@ module.exports = function(RED) {
                             });
                         }
                     }
-                    if (this.tags === '') {
+                    if (tags === '') {
                         node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
                     }
                     else {
-                        node.status({fill:"green", shape:"dot", text:node.tags});
                         setupStream();
                     }
-                    node.on("input", function(msg) {
-                        if (this.tags === '') {
-                            if (this.stream) { this.stream.destroy(); }
-                            if ((typeof msg.payload === "string") && (msg.payload !== "")) {
-                                st = { track:[msg.payload] };
-                                setupStream();
-                                node.status({fill:"green", shape:"dot", text:msg.payload});
+                    if (this.user === "false") {
+                        node.on("input", function(msg) {
+                            if (this.tags === '') {
+                                if (this.stream) { this.stream.destroy(); }
+                                if ((typeof msg.payload === "string") && (msg.payload !== "")) {
+                                    st = { track:[msg.payload] };
+                                    tags = msg.payload;
+                                    node.status({fill:"green", shape:"ring", text:tags});
+                                    setupStream();
+                                }
+                                else {
+                                    node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                                }
                             }
+                            //We shouldn't get into this state, but just incase, check for it
                             else {
-                                node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                                //console.log("oops");
+                                //node.status({fill:"green", shape:"dot", text:node.tags});
                             }
-                        }
-                        //We shouldn't get into this state, but just incase, check for it
-                        else {
-                            node.status({fill:"green", shape:"dot", text:node.tags});
-                        }
-                    });
+                        });
+                    }
+                    else { node.status({fill:"green", shape:"ring", text:node.twitterConfig.screen_name}); }
                 }
                 catch (err) {
                     node.error(err);

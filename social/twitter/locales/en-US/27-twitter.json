@@ -6,7 +6,7 @@
             "for": "for",
             "user": "User",
             "dmslabel": "DMs",
-            "followers": "user's stream tweets",
+            "followers": "followed users",
             "tweetslabel": "tweets",
             "clickhere": "Click here to authenticate with Twitter."
         },
@@ -16,7 +16,7 @@
         },
         "search": {
             "public": "all public tweets",
-            "follow": "the tweets from the user's stream",
+            "follow": "all tweets from people I follow",
             "user": "the tweets of specific users",
             "direct": "your direct messages"
         },
@@ -28,7 +28,7 @@
         },
         "warn": {
             "nousers":"User option selected but no users specified",
-            "waiting":"Waiting to search"
+            "waiting":"Waiting for search term"
         },
         "errors": {
             "ratelimit":"tweet rate limit hit",

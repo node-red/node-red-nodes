@@ -178,7 +178,7 @@
                     $("#node-input-tags-row").show();
                     $("#node-input-tags-label").html(userlabel);
                     $("#node-input-tags").attr("placeholder",userph);
-                } else if (type == "dm") {
+                } else if ((type == "dm")||(type == "true")) {
                     $("#node-input-tags-row").hide();
                 } else {
                     $("#node-input-tags-row").show();
@@ -189,7 +189,7 @@
             $("#node-input-user").change();
         }//,
         // oneditsave: function() {
-        //     if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() != 'dm' && $("#node-input-user option:selected").val() != 'user') {
+        //     if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() === 'false') {
         //         this.inputs=1;
         //     }
         //     else {
