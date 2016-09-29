@@ -194,24 +194,6 @@ module.exports = function(RED) {
                     var thing = 'statuses/filter';
                     var tags = node.tags;
                     var st = { track: [tags] };
-                    if (this.user === "true") {
-                        thing = 'user';
-                        //st.with = "user";
-                        // twit.getFriendsIds(node.twitterConfig.screen_name.substr(1), function(err,list) {
-                        //     friends = list;
-                        // });
-                        st = null;
-                    }
-
-
-                    var bits = node.tags.split(",");
-                    if (bits.length == 4) {
-                        if ((Number(bits[0]) < Number(bits[2])) && (Number(bits[1]) < Number(bits[3]))) {
-                            st = { locations: node.tags };
-                            node.log(RED._("twitter.status.using-geo",{location:node.tags.toString()}));
-                        }
-                    }
-
 
                     var setupStream = function() {
                         if (node.active) {
@@ -228,10 +210,7 @@ module.exports = function(RED) {
                                             addLocationToTweet(msg);
                                         }
                                         node.send(msg);
-                                        if (tags !== "zyxxyzyxxyzyxxyzyxxyzyxxyzyxxy") {
-                                            node.status({fill:"green", shape:"dot", text:tags});
-                                        }
-                                        else { node.status({fill:"green", shape:"dot", text:node.twitterConfig.screen_name}); }
+                                        node.status({fill:"green", shape:"dot", text:(tags||" ")});
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
@@ -256,12 +235,26 @@ module.exports = function(RED) {
                             });
                         }
                     }
-                    if (tags === '') {
-                        node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+
+                    // ask for users stream instead of public
+                    if (this.user === "true") {
+                        thing = 'user';
+                        // twit.getFriendsIds(node.twitterConfig.screen_name.substr(1), function(err,list) {
+                        //     friends = list;
+                        // });
+                        st = null;
                     }
-                    else {
-                        setupStream();
+
+                    // if 4 numeric tags that look like a geo area then set geo area
+                    var bits = node.tags.split(",");
+                    if (bits.length == 4) {
+                        if ((Number(bits[0]) < Number(bits[2])) && (Number(bits[1]) < Number(bits[3]))) {
+                            st = { locations: node.tags };
+                            node.log(RED._("twitter.status.using-geo",{location:node.tags.toString()}));
+                        }
                     }
+
+                    // all public tweets
                     if (this.user === "false") {
                         node.on("input", function(msg) {
                             if (this.tags === '') {
@@ -276,14 +269,17 @@ module.exports = function(RED) {
                                     node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
                                 }
                             }
-                            //We shouldn't get into this state, but just incase, check for it
-                            else {
-                                //console.log("oops");
-                                //node.status({fill:"green", shape:"dot", text:node.tags});
-                            }
                         });
                     }
-                    else { node.status({fill:"green", shape:"ring", text:node.twitterConfig.screen_name}); }
+
+                    // wait for input or start the stream
+                    if ((this.user === "false") && (tags === '')) {
+                        node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                    }
+                    else {
+                        node.status({fill:"green", shape:"ring", text:(tags||" ")});
+                        setupStream();
+                    }
                 }
                 catch (err) {
                     node.error(err);

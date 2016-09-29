@@ -120,8 +120,9 @@
 
 <script type="text/x-red" data-help-name="twitter in">
     <p>Twitter input node. Can be used to search either:
-    <ul><li>the public or a user's stream for tweets containing the configured search term</li>
-        <li>all tweets by specific users</li>
+    <ul><li>the public stream for tweets containing the configured search term</li>
+        <li>all the tweets from accounts that the authenticated user follows</li>
+        <li>all tweets by specified users</li>
         <li>direct messages received by the authenticated user</li>
     </ul></p>
     <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
@@ -129,10 +130,10 @@
     <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
     <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
     <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
-    <p><b>Note:</b> when set to a specific user's tweets, or your direct messages, the node is subject to
-      Twitter's API rate limiting. If you deploy the flows multiple times within a 15 minute window, you may
-      exceed the limit and will see errors from the node. These errors will clear when the current 15 minute window
-      passes.</p>
+    <p><b>Note:</b> when set to follow specific users, or your direct messages, the node is subject to
+      the rate limiting of the Twitter API. If you deploy the flows multiple times within a 15 minute window, you may
+      exceed the limit and will see errors from the node. These errors will clear automatically when the current 15
+      minute window passes.</p>
 </script>
 
 <script type="text/javascript">
@@ -153,14 +154,14 @@
             if (this.name) {
                 return this.name;
             }
+            var uname = RED.nodes.node(this.twitter);
             if (this.user == "dm") {
-                var user = RED.nodes.node(this.twitter);
-                return (user?user.label()+" ":"")+this._("twitter.label.dmslabel");
+                return (uname?uname.label()+" ":"")+this._("twitter.label.dmslabel");
             } else if (this.user == "user") {
                 return this.tags+" "+this._("twitter.label.tweetslabel");
             }
             else if (this.user == "true") {
-                return this._("twitter.label.followers");
+                return this._("twitter.label.followers") + (uname?(" "+uname.label()):"");
             }
             return "twitter";
         },
