@@ -19,6 +19,7 @@ module.exports = function(RED) {
     var Ntwitter = require('twitter-ng');
     var OAuth= require('oauth').OAuth;
     var request = require('request');
+    var twitterRateTimeout;
 
     function TwitterNode(n) {
         RED.nodes.createNode(this,n);
@@ -197,9 +198,11 @@ module.exports = function(RED) {
 
                     var setupStream = function() {
                         if (node.restart) {
+                            node.status({fill:"green", shape:"dot", text:(tags||" ")});
                             twit.stream(thing, st, function(stream) {
                                 //console.log("ST",st);
                                 node.stream = stream;
+                                var retry = 15000; // 15 secs for general errors
                                 stream.on('data', function(tweet) {
                                     if (tweet.user !== undefined) {
                                         var where = tweet.user.location;
@@ -214,24 +217,27 @@ module.exports = function(RED) {
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
-                                    node.status({fill:"grey", shape:"dot", text:"Rate limiting"});
+                                    node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
                                     //node.warn(RED._("twitter.errors.ratelimit"));
                                 });
                                 stream.on('error', function(tweet,rc) {
-                                    var retry = 15000;  // 15 secs for general errors
                                     if (rc == 420) {
-                                        node.status({fill:"red", shape:"ring", text:"Rate limit hit"});
+                                        node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
                                         retry = 60000;  // 60 secs for rate limit
                                         //node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
+                                        node.status({fill:"red", shape:"ring", text:"rc:"+rc});
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
+                                    twitterRateTimeout = Date.now() + retry;
                                     if (node.restart) {
                                         node.tout = setTimeout(function() { setupStream() },retry);
                                     }
                                 });
                                 stream.on('destroy', function (response) {
+                                    twitterRateTimeout = Date.now() + retry;
                                     if (node.restart) {
+                                        node.status({fill:"red", shape:"dot", text:" "});
                                         node.warn(RED._("twitter.errors.unexpectedend"));
                                         node.tout = setTimeout(function() { setupStream() },15000);
                                     }
@@ -262,7 +268,9 @@ module.exports = function(RED) {
                     if (this.user === "false") {
                         node.on("input", function(msg) {
                             if (this.tags === '') {
-                                if (node.tout) { clearTimeout(node.tout); }
+                                if (node.tout) {
+                                    clearTimeout(node.tout);
+                                }
                                 if (this.stream) {
                                     this.restart = false;
                                     node.stream.removeAllListeners();
@@ -271,9 +279,17 @@ module.exports = function(RED) {
                                 if ((typeof msg.payload === "string") && (msg.payload !== "")) {
                                     st = { track:[msg.payload] };
                                     tags = msg.payload;
-                                    node.status({fill:"green", shape:"ring", text:tags});
+
                                     this.restart = true;
-                                    setupStream();
+                                    if ((twitterRateTimeout - Date.now()) > 0 ) {
+                                        node.status({fill:"red", shape:"ring", text:tags});
+                                        node.tout = setTimeout(function() {
+                                            setupStream();
+                                        }, twitterRateTimeout - Date.now() );
+                                    }
+                                    else {
+                                        setupStream();
+                                    }
                                 }
                                 else {
                                     node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
@@ -287,7 +303,7 @@ module.exports = function(RED) {
                         node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
                     }
                     else {
-                        node.status({fill:"green", shape:"ring", text:(tags||" ")});
+                        node.status({fill:"green", shape:"dot", text:(tags||" ")});
                         setupStream();
                     }
                 }

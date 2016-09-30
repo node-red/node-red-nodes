@@ -31,8 +31,9 @@
             "waiting":"Waiting for search term"
         },
         "errors": {
-            "ratelimit":"tweet rate limit hit",
-            "streamerror":"stream errosr: __error__ (__rc__)",
+            "ratelimit":"rate limit hit",
+            "limitrate":"limiting rate",
+            "streamerror":"stream error: __error__ (__rc__)",
             "unexpectedend":"stream ended unexpectedly",
             "invalidtag":"invalid tag property",
             "missingcredentials":"missing twitter credentials",
