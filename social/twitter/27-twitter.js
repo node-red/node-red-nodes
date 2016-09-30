@@ -219,6 +219,7 @@ module.exports = function(RED) {
                                 stream.on('limit', function(tweet) {
                                     //node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
                                     node.status({fill:"grey", shape:"dot", text:(tags||" ")});
+                                    node.tout2 = setTimeout(function() { node.status({fill:"green", shape:"dot", text:(tags||" ")}); },10000);
                                 });
                                 stream.on('error', function(tweet,rc) {
                                     //console.log("ERRO",rc,tweet);
@@ -268,9 +269,8 @@ module.exports = function(RED) {
                     if (this.user === "false") {
                         node.on("input", function(msg) {
                             if (this.tags === '') {
-                                if (node.tout) {
-                                    clearTimeout(node.tout);
-                                }
+                                if (node.tout) { clearTimeout(node.tout); }
+                                if (node.tout2) { clearTimeout(node.tout2); }
                                 if (this.stream) {
                                     this.restart = false;
                                     node.stream.removeAllListeners();
@@ -318,6 +318,7 @@ module.exports = function(RED) {
 
         this.on('close', function() {
             if (node.tout) { clearTimeout(node.tout); }
+            if (node.tout2) { clearTimeout(node.tout2); }
             if (this.stream) {
                 this.restart = false;
                 node.stream.removeAllListeners();
