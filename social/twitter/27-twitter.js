@@ -193,12 +193,13 @@ module.exports = function(RED) {
                 try {
                     var thing = 'statuses/filter';
                     var tags = node.tags;
+                    var tout;
                     var st = { track: [tags] };
 
                     var setupStream = function() {
-                        if (node.active) {
+                        if (node.restart) {
                             twit.stream(thing, st, function(stream) {
-                                //console.log(st);
+                                //console.log("ST",st);
                                 node.stream = stream;
                                 stream.on('data', function(tweet) {
                                     if (tweet.user !== undefined) {
@@ -224,12 +225,14 @@ module.exports = function(RED) {
                                     } else {
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
-                                    setTimeout(setupStream,10000);
+                                    if (node.restart) {
+                                        tout = setTimeout(setupStream(),15000);
+                                    }
                                 });
                                 stream.on('destroy', function (response) {
-                                    if (this.active) {
+                                    if (node.restart) {
                                         node.warn(RED._("twitter.errors.unexpectedend"));
-                                        setTimeout(setupStream,10000);
+                                        tout = setTimeout(setupStream(),15000);
                                     }
                                 });
                             });
@@ -258,11 +261,17 @@ module.exports = function(RED) {
                     if (this.user === "false") {
                         node.on("input", function(msg) {
                             if (this.tags === '') {
-                                if (this.stream) { this.stream.destroy(); }
+                                if (tout) { clearTimeout(tout); }
+                                if (this.stream) {
+                                    this.restart = false;
+                                    node.stream.removeAllListeners();
+                                    this.stream.destroy();
+                                }
                                 if ((typeof msg.payload === "string") && (msg.payload !== "")) {
                                     st = { track:[msg.payload] };
                                     tags = msg.payload;
                                     node.status({fill:"green", shape:"ring", text:tags});
+                                    this.restart = true;
                                     setupStream();
                                 }
                                 else {
@@ -292,7 +301,8 @@ module.exports = function(RED) {
 
         this.on('close', function() {
             if (this.stream) {
-                this.active = false;
+                this.restart = false;
+                node.stream.removeAllListeners();
                 this.stream.destroy();
             }
             if (this.poll_ids) {
