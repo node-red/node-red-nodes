@@ -202,7 +202,7 @@ module.exports = function(RED) {
                             twit.stream(thing, st, function(stream) {
                                 //console.log("ST",st);
                                 node.stream = stream;
-                                var retry = 15000; // 15 secs for general errors
+                                var retry = 60000; // 60 secs backoff for now
                                 stream.on('data', function(tweet) {
                                     if (tweet.user !== undefined) {
                                         var where = tweet.user.location;
@@ -213,20 +213,19 @@ module.exports = function(RED) {
                                             addLocationToTweet(msg);
                                         }
                                         node.send(msg);
-                                        node.status({fill:"green", shape:"dot", text:(tags||" ")});
+                                        //node.status({fill:"green", shape:"dot", text:(tags||" ")});
                                     }
                                 });
                                 stream.on('limit', function(tweet) {
-                                    node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
-                                    //node.warn(RED._("twitter.errors.ratelimit"));
+                                    //node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
+                                    node.status({fill:"grey", shape:"dot", text:(tags||" ")});
                                 });
                                 stream.on('error', function(tweet,rc) {
+                                    //console.log("ERRO",rc,tweet);
                                     if (rc == 420) {
                                         node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
-                                        retry = 60000;  // 60 secs for rate limit
-                                        //node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
-                                        node.status({fill:"red", shape:"ring", text:"rc:"+rc});
+                                        node.status({fill:"red", shape:"ring", text:tweet.toString()});
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
                                     twitterRateTimeout = Date.now() + retry;
@@ -235,7 +234,8 @@ module.exports = function(RED) {
                                     }
                                 });
                                 stream.on('destroy', function (response) {
-                                    twitterRateTimeout = Date.now() + retry;
+                                    //console.log("DEST",response)
+                                    twitterRateTimeout = Date.now() + 15000;
                                     if (node.restart) {
                                         node.status({fill:"red", shape:"dot", text:" "});
                                         node.warn(RED._("twitter.errors.unexpectedend"));
@@ -303,7 +303,7 @@ module.exports = function(RED) {
                         node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
                     }
                     else {
-                        node.status({fill:"green", shape:"dot", text:(tags||" ")});
+                        this.restart = true;
                         setupStream();
                     }
                 }

@@ -145,9 +145,10 @@
             tags: {value:""},
             user: {value:"false",required:true},
             name: {value:""},
-            topic: {value:"tweets"}
+            topic: {value:"tweets"},
+            inputs: {value:0}
         },
-        inputs: 1,
+        inputs: 0,
         outputs: 1,
         icon: "twitter.png",
         label: function() {
@@ -188,16 +189,16 @@
                 }
             });
             $("#node-input-user").change();
-        }//,
-        // oneditsave: function() {
-        //     if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() === 'false') {
-        //         this.inputs=1;
-        //     }
-        //     else {
-        //         //set back the default state of 0 inputs
-        //         this.inputs=0;
-        //     }
-        // }
+        },
+        oneditsave: function() {
+            if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() === 'false') {
+                this.inputs = 1;
+            }
+            else {
+                //set back the default state of 0 inputs
+                //this.inputs = 0;
+            }
+        }
     });
 </script>
 
