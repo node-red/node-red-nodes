@@ -193,7 +193,6 @@ module.exports = function(RED) {
                 try {
                     var thing = 'statuses/filter';
                     var tags = node.tags;
-                    var tout;
                     var st = { track: [tags] };
 
                     var setupStream = function() {
@@ -219,20 +218,22 @@ module.exports = function(RED) {
                                     //node.warn(RED._("twitter.errors.ratelimit"));
                                 });
                                 stream.on('error', function(tweet,rc) {
+                                    var retry = 15000;  // 15 secs for general errors
                                     if (rc == 420) {
                                         node.status({fill:"red", shape:"ring", text:"Rate limit hit"});
+                                        retry = 60000;  // 60 secs for rate limit
                                         //node.warn(RED._("twitter.errors.ratelimit"));
                                     } else {
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
                                     if (node.restart) {
-                                        tout = setTimeout(setupStream(),15000);
+                                        node.tout = setTimeout(function() { setupStream() },retry);
                                     }
                                 });
                                 stream.on('destroy', function (response) {
                                     if (node.restart) {
                                         node.warn(RED._("twitter.errors.unexpectedend"));
-                                        tout = setTimeout(setupStream(),15000);
+                                        node.tout = setTimeout(function() { setupStream() },15000);
                                     }
                                 });
                             });
@@ -261,7 +262,7 @@ module.exports = function(RED) {
                     if (this.user === "false") {
                         node.on("input", function(msg) {
                             if (this.tags === '') {
-                                if (tout) { clearTimeout(tout); }
+                                if (node.tout) { clearTimeout(node.tout); }
                                 if (this.stream) {
                                     this.restart = false;
                                     node.stream.removeAllListeners();
@@ -300,6 +301,7 @@ module.exports = function(RED) {
         }
 
         this.on('close', function() {
+            if (node.tout) { clearTimeout(node.tout); }
             if (this.stream) {
                 this.restart = false;
                 node.stream.removeAllListeners();
