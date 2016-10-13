@@ -218,13 +218,14 @@ module.exports = function(RED) {
                         //newline = newline.replace("\\n","\n").replace("\\r","\r");
                         var olderr = "";
                         var setupSerial = function() {
-                            obj.serial = new serialp.SerialPort(port,{
+                            obj.serial = new serialp(port,{
                                 baudrate: baud,
                                 databits: databits,
                                 parity: parity,
                                 stopbits: stopbits,
-                                parser: serialp.parsers.raw
-                            },true, function(err, results) {
+                                parser: serialp.parsers.raw,
+                                autoOpen: true
+                            }, function(err, results) {
                                 if (err) {
                                     if (err.toString() !== olderr) {
                                         olderr = err.toString();
