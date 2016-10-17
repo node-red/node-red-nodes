@@ -62,7 +62,7 @@ module.exports = function(RED) {
                     }
                     line = bits[0];
                 } else {
-                    if (data && data.trim() !== "") {
+                    if (data && (data.length !== 0)) {
                         node.send([{payload:data},null,null]);
                     }
                 }
