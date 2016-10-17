@@ -56,6 +56,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
+        <input type="text" id="node-input-url" placeholder="optional url">
+    </div>
+    <div class="form-row">
+        <label for="node-input-url_title"><i class="fa fa-anchor"></i> URL title</label>
+        <input type="text" id="node-input-url_title" placeholder="optionas url title">
+    </div>
+    <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
         <input type="text" id="node-input-deviceid">
     </div>
@@ -76,8 +84,9 @@
 
 <script type="text/x-red" data-help-name="pushover">
     <p>Uses Pushover to push the <code>msg.payload</code> to a device that has the Pushover app installed.</p>
-    <p>Optionally uses <code>msg.topic</code> to set the title, <code>msg.device</code> to set the device, <code>msg.priority</code>
-    to set the priority, and <code>msg.sound</code> to set a named sound, if not already set in the properties.</p>
+    <p>Optionally uses <code>msg.topic</code> to set the title, <code>msg.device</code> to set the device,
+    <code>msg.priority</code> to set the priority, <code>msg.url</code> to add a web address and <code>msg.url_title</code>
+    to add a url title if not already set in the properties.</p>
     <p>The User-key and API-token are stored in a separate credentials file.</p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
@@ -90,7 +99,9 @@
             device: {value:""},
             title: {value:""},
             priority: {value:0},
-            sound: {value:""}
+            sound: {value:""},
+            url: {value:""},
+            url_title: {value:""},
         },
         credentials: {
             deviceid: {type:"text"},

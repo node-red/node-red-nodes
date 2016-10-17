@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-pushover",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "A Node-RED node to send alerts via Pushover",
     "dependencies"  : {
-        "pushover-notifications"   : "0.2.2"
+        "pushover-notifications"   : "~0.2.3"
     },
     "repository" : {
         "type":"git",
