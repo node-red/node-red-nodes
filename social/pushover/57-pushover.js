@@ -48,6 +48,8 @@ module.exports = function(RED) {
             var pri = this.priority || msg.priority || 0;
             var dev = this.device || msg.device;
             var sound = this.sound || msg.sound || null;
+            var url = this.url || msg.url || null;
+            var url_title = this.url_title || msg.url_title || null;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
@@ -65,6 +67,8 @@ module.exports = function(RED) {
                 };
                 if (dev) { pushmsg.device = dev; }
                 if (typeof(sound) === 'string') { pushmsg.sound = sound; }
+                if (typeof(url) === 'string') { pushmsg.url = url; }
+                if (typeof(url_title) === 'string') { pushmsg.url_title = url_title; }
                 //node.log("Sending "+JSON.stringify(pushmsg));
                 pusher.send( pushmsg, function(err, response) {
                     if (err) { node.error("Pushover Error: "+err); }
