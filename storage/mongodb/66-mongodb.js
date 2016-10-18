@@ -59,13 +59,17 @@ module.exports = function(RED) {
         this.multi = n.multi || false;
         this.operation = n.operation;
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodbstatus.connecting")});
+        var node = this;
 
-        if (this.mongoConfig) {
-            var node = this;
-            MongoClient.connect(this.mongoConfig.url, function(err, db) {
+        var connectToDB = function() {
+            MongoClient.connect(node.mongoConfig.url, function(err, db) {
                 if (err) {
+                    node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     node.error(err);
+                    node.tout = setTimeout(connectToDB(), 10000);
                 } else {
+                    node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
                     var coll;
                     if (node.collection) {
@@ -148,17 +152,19 @@ module.exports = function(RED) {
                     });
                 }
             });
-        } else {
-            this.error(RED._("mongodb.errors.missingconfig"));
         }
 
-        this.on("close", function() {
-            if (this.clientDb) {
-                this.clientDb.close();
-            }
+        if (node.mongoConfig) { connectToDB(); }
+        else { node.error(RED._("mongodb.errors.missingconfig")); }
+
+        node.on("close", function() {
+            node.status({});
+            if (node.tout) { clearTimeout(node.tout); }
+            if (node.clientDb) { node.clientDb.close(); }
         });
     }
     RED.nodes.registerType("mongodb out",MongoOutNode);
+
 
     function MongoInNode(n) {
         RED.nodes.createNode(this,n);
@@ -166,13 +172,17 @@ module.exports = function(RED) {
         this.mongodb = n.mongodb;
         this.operation = n.operation || "find";
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
+        var node = this;
 
-        if (this.mongoConfig) {
-            var node = this;
-            MongoClient.connect(this.mongoConfig.url, function(err,db) {
+        var connectToDB = function() {
+            MongoClient.connect(node.mongoConfig.url, function(err,db) {
                 if (err) {
+                    node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     node.error(err);
+                    node.tout = setTimeout(connectToDB(), 10000);
                 } else {
+                    node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
                     var coll;
                     if (node.collection) {
@@ -236,14 +246,15 @@ module.exports = function(RED) {
                     });
                 }
             });
-        } else {
-            this.error(RED._("mongodb.errors.missingconfig"));
         }
 
-        this.on("close", function() {
-            if (this.clientDb) {
-                this.clientDb.close();
-            }
+        if (node.mongoConfig) { connectToDB(); }
+        else { node.error(RED._("mongodb.errors.missingconfig")); }
+
+        node.on("close", function() {
+            node.status({});
+            if (node.tout) { clearTimeout(node.tout); }
+            if (node.clientDb) { node.clientDb.close(); }
         });
     }
     RED.nodes.registerType("mongodb in",MongoInNode);

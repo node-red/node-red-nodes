@@ -16,7 +16,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var reconnect = RED.settings.mysqlReconnectTime || 30000;
+    var reconnect = RED.settings.mysqlReconnectTime || 20000;
     var mysqldb = require('mysql');
 
     function MySQLNode(n) {
@@ -73,6 +73,7 @@ module.exports = function(RED) {
 
         this.on('close', function (done) {
             if (this.tick) { clearTimeout(this.tick); }
+            node.connected = false;
             if (this.connection) {
                 node.connection.end(function(err) {
                     if (err) { node.error(err); }
@@ -100,19 +101,30 @@ module.exports = function(RED) {
             this.mydbConfig.connect();
             var node = this;
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
-                    //console.log("query:",msg.topic);
-                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                    node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                        if (err) { node.error(err,msg); }
-                        else {
-                            msg.payload = rows;
-                            node.send(msg);
-                        }
-                    });
+                if (node.mydbConfig.connected) {
+                    node.status({fill:"green",shape:"dot",text:"connected"});
+                    if (typeof msg.topic === 'string') {
+                        //console.log("query:",msg.topic);
+                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                            if (err) {
+                                node.error(err,msg);
+                                node.status({fill:"red",shape:"ring",text:"Error"});
+                            }
+                            else {
+                                msg.payload = rows;
+                                node.send(msg);
+                                node.status({fill:"green",shape:"dot",text:"OK"});
+                            }
+                        });
+                    }
+                    else {
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    }
                 }
                 else {
-                    if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    node.error("Database not connected",msg);
+                    node.status({fill:"grey",shape:"ring",text:"Not connected"});
                 }
             });
         }

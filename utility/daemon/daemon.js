@@ -21,7 +21,7 @@ module.exports = function(RED) {
     function DaemonNode(n) {
         RED.nodes.createNode(this,n);
         this.cmd = n.command;
-        this.args = n.args.split(" ") || [];
+        this.args = n.args.trim().split(" ") || [];
         this.cr = n.cr;
         this.op = n.op;
         this.redo = n.redo;
@@ -62,7 +62,7 @@ module.exports = function(RED) {
                     }
                     line = bits[0];
                 } else {
-                    if (data && data.trim() !== "") {
+                    if (data && (data.length !== 0)) {
                         node.send([{payload:data},null,null]);
                     }
                 }
