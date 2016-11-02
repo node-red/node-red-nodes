@@ -76,7 +76,7 @@ module.exports = function(RED) {
 
         function responseCb(error, table) {
             if (error) {
-                console.error(error.toString());
+                le.error(error.toString());
             } else {
                 var indexes = [];
                 for (var index in table) {
@@ -93,10 +93,10 @@ module.exports = function(RED) {
                         }
                     }
                     columns.sort(sortInt);
-                    console.log("row index = " + indexes[i]);
-                    for (var j = 0; j < columns.length; j++) {
-                        console.log("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
-                    }
+                    // console.log("row index = " + indexes[i]);
+                    // for (var j = 0; j < columns.length; j++) {
+                    //     console.log("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
+                    // }
                 }
                 msg.payload = table;
                 node.send(msg);
@@ -146,7 +146,7 @@ module.exports = function(RED) {
                     node.error(snmp.varbindError(varbinds[i]));
                 }
                 else {
-                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    //console.log(varbinds[i].oid + "|" + varbinds[i].value);
                     response.add({oid: varbinds[i].oid, value: varbinds[i].value});
                 }
             }
@@ -195,7 +195,7 @@ module.exports = function(RED) {
                     node.error(snmp.varbindError(varbinds[i]));
                 }
                 else {
-                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    //console.log(varbinds[i].oid + "|" + varbinds[i].value);
                     response.add({oid: varbinds[i].oid, value: varbinds[i].value});
                 }
             }

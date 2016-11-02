@@ -55,7 +55,9 @@
     <p>Calls out to a long running system command. Sends <code>msg.payload</code> to stdin of the process.</p>
     <p>Provides 3 outputs... stdout, stderr, and return code , from the running command.</p>
     <p>If the called program stops (i.e. a return code is produced), this node can attempt to restart the command.</p>
-    <p><b>Note :</b> when you stop Node-RED running we may not get a chance to kill the called program so it may remain running. You <i>may</i> have to kill it manually.</p>
+    <p><b>Note :</b> when you stop Node-RED running we may not get a chance to kill the called program so it may remain
+    running. You <i>may</i> have to kill it manually.</p>
+    <p>If running a Python app you may need to use the <code>-u</code> parameter to stop the output being buffered.</p>
 </script>
 
 <script type="text/javascript">
