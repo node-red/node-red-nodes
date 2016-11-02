@@ -24,9 +24,11 @@ module.exports = function(RED) {
 
     var gpioCommand = __dirname+'/nrgpio';
 
-    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //util.log("Info : Ignoring Raspberry LEDborg specific node.");
-        throw "Info : Ignoring Raspberry LEDborg specific node.";
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+    } catch(err) {
+        throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
     if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {

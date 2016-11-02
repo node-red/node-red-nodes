@@ -18,8 +18,12 @@ module.exports = function(RED) {
     "use strict";
     var fs = require('fs');
     // unlikely if not on a Pi
-    try { fs.statSync("/dev/ttyAMA0"); }
-    catch(err) { throw "Info : Ignoring Raspberry Pi specific node"; }
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+    } catch(err) {
+        throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
+    }
 
     var mcpadc = require('mcp-spi-adc');
     var mcp3008 = [];

@@ -22,8 +22,10 @@ module.exports = function(RED) {
 
     var piCommand = __dirname+'/neopix';
 
-    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //RED.log.info(RED._("rpi-gpio.errors.ignorenode"));
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+    } catch(err) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
