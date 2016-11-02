@@ -106,7 +106,8 @@
     <p>Insert will insert a new object.</p>
     <p>Save and insert either store <code>msg</code> or <code>msg.payload</code>.</p>
     <p>Update will modify an existing object or objects. The query to select objects to update uses <code>msg.query</code>
-    and the update to the element uses <code>msg.payload</code>.</p>
+    and the update to the element uses <code>msg.payload</code>. If <code>msg.query._id</code> is
+    a valid mongo ObjectId string it will be converted to an ObjectId type.</p>
     <p>Update can add a object if it does not exist or update multiple objects.</p>
     <p>Remove will remove objects that match the query passed in on <code>msg.payload</code>. A blank query will delete
     <i>all of the objects</i> in the collection.</p>

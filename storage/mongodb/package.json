@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-mongodb",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "Node-RED nodes to talk to an Mongo database",
     "dependencies"  : {
-        "mongodb"   : "^2.2.5"
+        "mongodb"   : "^2.2.11"
     },
     "repository" : {
         "type":"git",

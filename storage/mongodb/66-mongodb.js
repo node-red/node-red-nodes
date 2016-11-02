@@ -17,6 +17,7 @@
 module.exports = function(RED) {
     "use strict";
     var mongo = require('mongodb');
+    var ObjectID = require('mongodb').ObjectID;
     var MongoClient = mongo.MongoClient;
 
     function MongoNode(n) {
@@ -136,7 +137,9 @@ module.exports = function(RED) {
                                 upsert: node.upsert,
                                 multi: node.multi
                             };
-
+                            if (ObjectID.isValid(msg.query._id)) {
+                                msg.query._id = new ObjectID(msg.query._id);
+                            }
                             coll.update(query, payload, options, function(err, item) {
                                 if (err) {
                                     node.error(err,msg);
