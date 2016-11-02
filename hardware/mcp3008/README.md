@@ -5,6 +5,8 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to read from
 the MCP3008 Analogue to Digital Converter,
 such as the <a href="http://rasp.io/analogzero" target="_new">Rasp.io analogzero</a>, though it will work with breadboard versions also.
 
+It will appear in the menu as ` A/D Converter `.
+
 **Warning**: Input voltages must not exceed 3.3V
 
 ### Pre-requisites
@@ -23,6 +25,8 @@ You must ensure that SPI is enabled. For recent (2016) versions of Raspbian you 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
         npm install node-red-node-pi-mcp3008
+
+**Note**: It will appear in the menu as ` A/D Converter `.
 
 ### Usage
 
