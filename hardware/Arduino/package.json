@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-arduino",
-    "version"       : "0.0.10",
+    "version"       : "0.0.11",
     "description"   : "A Node-RED node to talk to an Arduino running firmata",
     "dependencies"  : {
         "firmata"   : "~0.14.1"

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-dweetio",
-    "version"       : "0.0.12",
+    "version"       : "0.0.13",
     "description"   : "A Node-RED node to send and receive simple dweets",
     "dependencies"  : {
         "node-dweetio"   : "0.0.11"

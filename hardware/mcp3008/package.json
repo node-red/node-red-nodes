@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-pi-mcp3008",
-    "version"       : "0.0.4",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to read from the MCP3008 Analogue to Digital Converter",
     "dependencies"  : {
-        "mcp-spi-adc": "^0.0.1"
+        "mcp-spi-adc": "^0.3.1"
     },
     "repository" : {
         "type":"git",

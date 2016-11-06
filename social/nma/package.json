@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-nma",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "A Node-RED node to send alerts via Notify-My-Android",
     "dependencies"  : {
         "nma"   : "0.2.2"

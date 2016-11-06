@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pi-unicorn-hat",
-    "version"       : "0.0.13",
+    "version"       : "0.0.14",
     "description"   : "A Node-RED node to output to a Raspberry Pi Unicorn HAT from Pimorini.",
     "dependencies"  : {
         "pngjs": "2.2.*"
