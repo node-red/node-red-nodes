@@ -1,18 +1,3 @@
-/**
- * Copyright 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -66,8 +51,8 @@ module.exports = function(RED) {
                 var wsPath = RED.settings.httpNodeRoot || "/";
                 wsPath = wsPath + (wsPath.slice(-1) == "/" ? "":"/") + "sensehat-simulator/ws"
 
-                var storeListener = function(event,listener){
-                    if(event == "error" || event == "upgrade" || event == "listening"){
+                var storeListener = function(event,listener) {
+                    if (event == "error" || event == "upgrade" || event == "listening") {
                         wsServerListeners[event] = listener;
                     }
                 }
@@ -106,7 +91,7 @@ module.exports = function(RED) {
                     socket.on('close',function() {
                         delete wsConnections[id];
                     });
-                    socket.on('message',function(data,flags){
+                    socket.on('message',function(data,flags) {
                         var m;
                         var msg;
                         if ((m = LF_RE.exec(data)) !== null) {
@@ -335,9 +320,9 @@ module.exports = function(RED) {
                                 }
                             }
                             x = x0;
-                            while(x<=x1) {
+                            while (x<=x1) {
                                 y = y0;
-                                while(y<=y1) {
+                                while (y<=y1) {
                                     expanded.push([x,y,col]);
                                     y++;
                                 }
@@ -389,7 +374,7 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("rpi-sensehatsim out",SenseHatOutNode);
 
-    RED.httpAdmin.get("/sensehat-simulator",function(req,res) {
+    RED.httpAdmin.get("/sensehat-simulator", RED.auth.needsPermission('sensehat-simulator.read'), function(req,res) {
         res.sendFile(path.join(__dirname,"public","index.html"));
     });
 }
