@@ -1,4 +1,4 @@
-/
+
 module.exports = function(RED) {
     "use strict";
     var Prowl = require('node-prowl');

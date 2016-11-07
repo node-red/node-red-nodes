@@ -1,4 +1,4 @@
-/
+
 var colours = {
     'aqua':'#00FFFF',
     'aliceblue':'#F0F8FF',
