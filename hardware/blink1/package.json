@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-blink1",
-    "version"       : "0.0.16",
+    "version"       : "0.0.17",
     "description"   : "A Node-RED node to control a Thingm Blink(1)",
     "dependencies"  : {
         "node-blink1"   : "0.2.2"

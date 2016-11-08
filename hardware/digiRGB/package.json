@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-digirgb",
-    "version"       : "0.0.6",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to control a Digispark RGB LED",
     "dependencies"  : {
         "node-hid"   : "0.4.*"

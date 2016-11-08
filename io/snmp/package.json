@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "0.0.8",
+    "version"       : "0.0.9",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
         "net-snmp"  : "^1.1.19"

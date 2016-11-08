@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-twilio",
-    "version"       : "0.0.10",
+    "version"       : "0.0.11",
     "description"   : "A Node-RED node to send SMS messages via the Twilio service.",
     "dependencies"  : {
         "twilio"   : "1.6.0"

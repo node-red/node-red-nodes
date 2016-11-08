@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pi-neopixel",
-    "version"       : "0.0.12",
+    "version"       : "0.0.14",
     "description"   : "A Node-RED node to output to a neopixel (ws2812) string of LEDS from a Raspberry Pi.",
     "dependencies"  : {
     },

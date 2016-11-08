@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-geohash",
-    "version"       : "0.0.6",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to encode and decode lat,lon pairs to a geohash.",
     "dependencies"  : {
         "ngeohash"   : "0.6.0"

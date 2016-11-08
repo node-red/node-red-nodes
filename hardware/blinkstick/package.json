@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-blinkstick",
-    "version"       : "0.1.13",
+    "version"       : "0.1.15",
     "description"   : "A Node-RED node to control a Blinkstick",
     "dependencies"  : {
         "blinkstick"   : "1.1.3"

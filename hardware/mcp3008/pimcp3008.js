@@ -1,25 +1,14 @@
-/**
- * Copyright 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
     var fs = require('fs');
     // unlikely if not on a Pi
-    try { fs.statSync("/dev/ttyAMA0"); }
-    catch(err) { throw "Info : Ignoring Raspberry Pi specific node"; }
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+    } catch(err) {
+        throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
+    }
 
     var mcpadc = require('mcp-spi-adc');
     var mcp3008 = [];
@@ -28,13 +17,14 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.pin = n.pin || 0;
         this.interval = n.interval || 1000;
+        this.dnum = parseInt(n.dnum || 0);
         var node = this;
 
         try {
-            fs.statSync("/dev/spidev0.0");
+            fs.statSync("/dev/spidev0."+node.dnum);
             if (mcp3008.length === 0) {
                 for (var i=0; i<8; i++) {
-                    mcp3008.push(mcpadc.open(i, function (err) {
+                    mcp3008.push(mcpadc.openMcp3008(i, { deviceNumber:node.dnum }, function (err) {
                         if (err) { node.error("Error: "+err); }
                     }));
                 }
