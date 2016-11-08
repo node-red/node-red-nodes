@@ -100,7 +100,7 @@ WeMoNG.prototype.start = function start() {
                 res.on('end',function() {
                   xml2js.parseString(data, function(err, result) {
                     if(!err) {
-                      if (result[]"s:Envelope") {
+                      if (result["s:Envelope"]) {
                         var list = result["s:Envelope"]["s:Body"][0]["u:GetEndDevicesResponse"][0].DeviceLists[0];
                         xml2js.parseString(list, function(err, result2) {
                           if (!err) {
