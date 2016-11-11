@@ -53,7 +53,7 @@ module.exports = function(RED) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     node.error(err);
-                    node.tout = setTimeout(connectToDB(), 10000);
+                    node.tout = setTimeout(connectToDB, 10000);
                 } else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
@@ -168,7 +168,7 @@ module.exports = function(RED) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     node.error(err);
-                    node.tout = setTimeout(connectToDB(), 10000);
+                    node.tout = setTimeout(connectToDB, 10000);
                 } else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
