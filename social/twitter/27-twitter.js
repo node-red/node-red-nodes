@@ -175,6 +175,61 @@ module.exports = function(RED) {
                     },120000));
                 });
             }
+            else if (this.user === "event") {
+                try {
+                    var thingu = 'user';
+                    var setupEvStream = function() {
+                        if (node.active) {
+                            twit.stream(thingu, st, function(stream) {
+                                node.status({fill:"green", shape:"dot", text:" "});
+                                node.stream = stream;
+                                stream.on('data', function(tweet) {
+                                    if (tweet.event !== undefined) {
+                                        var where = tweet.source.location;
+                                        var la = tweet.source.lang;
+                                        var msg = { topic:node.topic+"/"+tweet.source.screen_name, payload:tweet.event, lang:la, tweet:tweet };
+                                        if (where) {
+                                            msg.location = {place:where};
+                                            addLocationToTweet(msg);
+                                        }
+                                        node.send(msg);
+                                    }
+                                });
+                                stream.on('limit', function(tweet) {
+                                    node.status({fill:"grey", shape:"dot", text:" "});
+                                    node.tout2 = setTimeout(function() { node.status({fill:"green", shape:"dot", text:" "}); },10000);
+                                });
+                                stream.on('error', function(tweet,rc) {
+                                    //console.log("ERRO",rc,tweet);
+                                    if (rc == 420) {
+                                        node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
+                                    } else {
+                                        node.status({fill:"red", shape:"ring", text:" "});
+                                        node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
+                                    }
+                                    twitterRateTimeout = Date.now() + retry;
+                                    if (node.restart) {
+                                        node.tout = setTimeout(function() { setupEvStream() },retry);
+                                    }
+                                });
+                                stream.on('destroy', function (response) {
+                                    //console.log("DEST",response)
+                                    twitterRateTimeout = Date.now() + 15000;
+                                    if (node.restart) {
+                                        node.status({fill:"red", shape:"dot", text:" "});
+                                        node.warn(RED._("twitter.errors.unexpectedend"));
+                                        node.tout = setTimeout(function() { setupEvStream() },15000);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                    setupEvStream();
+                }
+                catch (err) {
+                    node.error(err);
+                }
+            }
             else {
                 try {
                     var thing = 'statuses/filter';
