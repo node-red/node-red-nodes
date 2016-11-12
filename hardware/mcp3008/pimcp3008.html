@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<script type="text/x-red" data-template-name="pimcp3008">
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-map-pin"></i> Input pin</label>
+        <select type="text" id="node-input-pin" style="width:150px;">
+          <option value=0>A0</option>
+          <option value=1>A1</option>
+          <option value=2>A2</option>
+          <option value=3>A3</option>
+          <option value=4>A4</option>
+          <option value=5>A5</option>
+          <option value=6>A6</option>
+          <option value=7>A7</option>
+          <option value="M">set by msg.payload</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-toggle-on"></i> Device ID</label>
+        <select type="text" id="node-input-dnum" style="width:150px;">
+          <option value=0>CE0</option>
+          <option value=1>CE1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name"/>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="pimcp3008">
+   <p>Reads from an MCP3008 Analogue to Digital Converter (ADC) chip on the Pi SPI CE0 or CE1 connection,
+   such as the rasp.io/analogzero.</p>
+   <p>You can either set a channel in the edit dialogue, or you can set the <code>msg.payload</code>
+   to select the channel dynamically. If so then the expected payload must be a value from 0 to 7.</p>
+   <p>Outputs a numeric <code>msg.payload</code> with a range of 0 to 1023, representing 0V to 3.3V.</p>
+   <p><i>Hint</i>: use a <code>range</code> node to re-scale the values to ones you want.</p>
+   <p>Also sets <code>msg.topic</code> to <i>adc/{the pin number}</i></p>
+   <p><b>Warning</b>: Input voltages must not exceed 3.3V</p>
+   <p>The SPI bus must be enabled for this node to work. This can be achieved by using the
+   advanced menu (option 9 A5) of the <b>raspi-config</b> utility.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('pimcp3008',{
+        category: 'Raspberry Pi',
+        paletteLabel: 'A/D converter',
+        color: "#c6dbef",
+        defaults: {
+            name: {value:""},
+            pin: {value:0, required:true},
+            dnum: {value:0}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "rpi.png",
+        label: function() {
+            return this.name || "ADC "+((this.pin==="M")?"":this.pin);
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

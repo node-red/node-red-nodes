@@ -1,22 +1,7 @@
-/**
- * Copyright 2013 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
-    var reconnect = RED.settings.mysqlReconnectTime || 30000;
+    var reconnect = RED.settings.mysqlReconnectTime || 20000;
     var mysqldb = require('mysql');
 
     function MySQLNode(n) {
@@ -40,7 +25,8 @@ module.exports = function(RED) {
                 password : node.credentials.password,
                 database : node.dbname,
                 timezone : node.tz,
-                insecureAuth: true
+                insecureAuth: true,
+                multipleStatements: true
             });
 
             node.connection.connect(function(err) {
@@ -72,6 +58,7 @@ module.exports = function(RED) {
 
         this.on('close', function (done) {
             if (this.tick) { clearTimeout(this.tick); }
+            node.connected = false;
             if (this.connection) {
                 node.connection.end(function(err) {
                     if (err) { node.error(err); }
@@ -99,19 +86,30 @@ module.exports = function(RED) {
             this.mydbConfig.connect();
             var node = this;
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
-                    //console.log("query:",msg.topic);
-                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                    node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                        if (err) { node.error(err,msg); }
-                        else {
-                            msg.payload = rows;
-                            node.send(msg);
-                        }
-                    });
+                if (node.mydbConfig.connected) {
+                    node.status({fill:"green",shape:"dot",text:"connected"});
+                    if (typeof msg.topic === 'string') {
+                        //console.log("query:",msg.topic);
+                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                            if (err) {
+                                node.error(err,msg);
+                                node.status({fill:"red",shape:"ring",text:"Error"});
+                            }
+                            else {
+                                msg.payload = rows;
+                                node.send(msg);
+                                node.status({fill:"green",shape:"dot",text:"OK"});
+                            }
+                        });
+                    }
+                    else {
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    }
                 }
                 else {
-                    if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    node.error("Database not connected",msg);
+                    node.status({fill:"grey",shape:"ring",text:"Not connected"});
                 }
             });
         }

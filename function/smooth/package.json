@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-smooth",
-    "version"       : "0.0.8",
+    "version"       : "0.0.9",
     "description"   : "A Node-RED node that provides several simple smoothing algorithms for incoming data values.",
     "dependencies"  : {
     },

@@ -6,7 +6,9 @@
             "for": "for",
             "user": "User",
             "dmslabel": "DMs",
+            "followers": "followed by",
             "tweetslabel": "tweets",
+            "eventslabel": "events",
             "clickhere": "Click here to authenticate with Twitter."
         },
         "placeholder": {
@@ -15,18 +17,24 @@
         },
         "search": {
             "public": "all public tweets",
-            "follow": "the tweets of who you follow",
+            "follow": "all tweets from people I follow",
             "user": "the tweets of specific users",
-            "direct": "your direct messages"
+            "direct": "your direct messages",
+            "events": "your twitter events"
         },
-        "tip": "Tip: Use commas without spaces between multiple search terms. Comma = OR, Space = AND.<br/>The Twitter API WILL NOT deliver 100% of all tweets.<br/>Tweets of who you follow will include their retweets and favourites.",
+        "tip": "Tip: Use commas without spaces between multiple search terms. Comma = OR, Space = AND.<br/>The Twitter API WILL NOT deliver 100% of all tweets.<br/>Tweets of who you follow will include their retweets and favourites.<br/><br/>Leave <b>for</b> blank to set using msg.payload.",
         "status": {
             "using-geo": "Using geo location: __location__",
             "tweeting": "tweeting",
             "failed":"failed"
         },
+        "warn": {
+            "nousers":"User option selected but no users specified",
+            "waiting":"Waiting for search term"
+        },
         "errors": {
-            "ratelimit":"tweet rate limit hit",
+            "ratelimit":"rate limit hit",
+            "limitrate":"limiting rate",
             "streamerror":"stream error: __error__ (__rc__)",
             "unexpectedend":"stream ended unexpectedly",
             "invalidtag":"invalid tag property",
@@ -34,7 +42,6 @@
             "truncated":"truncated tweet greater than 140 characters",
             "sendfail":"send tweet failed: __error__",
             "nopayload":"no payload to tweet",
-            
             "oauthbroke":"something in twitter oauth broke.",
             "oautherror": "<html><head></head><body><p>Something went wrong with the authentication process. The following error was returned:</p><p><b>__statusCode__</b>: __errorData__</p><p>One known cause of this type of failure is if the clock is wrong on system running Node-RED</p></body></html>",
             "authorized": "<html><head></head><body><p>Authorised - you can close this window and return to Node-RED</p></body></html>"

@@ -1,18 +1,3 @@
-/**
- * Copyright 2013, 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -41,6 +26,9 @@ module.exports = function(RED) {
                 util.log('[mqlight] ['+id+'] connected to service '+n.service);
             }
         });
+        this.client.on("error", function(err) {
+            if (err) { util.log('[mqlight] ['+id+'] '+ err.toString()); }
+        });
     }
     RED.nodes.registerType("mqlight service",MQLightServiceNode,{
         credentials: {
@@ -59,7 +47,11 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var recvClient = node.serviceConfig.client;
+                var recvClient;
+                recvClient.on("error", function(err) {
+                    if (err) { node.error(err.toString()); }
+                });
+                recvClient = node.serviceConfig.client;
                 recvClient.on("started", function() {
                     recvClient.on("message", function(data, delivery) {
                         if (node.topic === delivery.destination.topicPattern) {
@@ -77,11 +69,6 @@ module.exports = function(RED) {
                             node.send(msg);
                         }
                     });
-                    recvClient.on("error", function(err) {
-                        if (err) {
-                            node.error(err.toString());
-                        }
-                    });
                     var subscribeCallback = function(err) {
                         if (err) {
                             node.error("Failed to subscribe: " + err);
@@ -89,7 +76,6 @@ module.exports = function(RED) {
                             node.log("Subscribed to "+node.topic+(node.share?" ["+node.share+"]":""));
                         }
                     };
-
                     if (node.share) {
                         recvClient.subscribe(node.topic, node.share, subscribeCallback);
                     } else {
@@ -116,32 +102,29 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var sendClient = node.serviceConfig.client;
-
+                var sendClient;
+                sendClient.on("error", function(err) {
+                    if (err) { node.error(err.toString()); }
+                });
+                sendClient = node.serviceConfig.client;
                 sendClient.on("started", function () {
                     node.on("input", function(msg) {
                         var topic = node.topic;
                         if (topic === "") {
                             if (msg.topic) {
-                                node.topic = msg.topic;
+                                topic = msg.topic;
                             } else {
                                 node.warn("No topic set in MQ Light out node");
                                 return;
                             }
                         }
-                        sendClient.send(node.topic, msg.payload, function(err) {
+                        sendClient.send(topic, msg.payload, function(err) {
                             if (err) {
                                 node.error(err,msg);
                             }
                         });
                     });
                 });
-                sendClient.on("error", function(err) {
-                    if (err) {
-                        node.error(err.toString());
-                    }
-                });
-
                 sendClient.start();
 
                 node.on("close", function (done) {

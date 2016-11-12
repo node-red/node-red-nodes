@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-exif",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "description"   : "A Node-RED node that extracts Exif information from JPEG image buffers.",
     "dependencies"  : {
         "exif": "0.4.0"

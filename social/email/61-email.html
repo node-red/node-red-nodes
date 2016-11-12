@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013, 2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="e-mail">
     <div class="form-row">
@@ -71,12 +56,16 @@
 <script type="text/x-red" data-help-name="e-mail">
     <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
     <p>The default message recipient can be configured in the node, if it is left
-    blank it should be set using the <code>msg.to</code> property of the incoming message.</p>
+    blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
+    you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
+    default value.</p>
     <p>The payload can be html format.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
     more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
+    <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
     <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
@@ -131,8 +120,8 @@
         </select>
     </div>
     <div class="form-row">
-		<label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
-		<input type="checkbox" id="node-input-useSSL" style="width: auto;">
+        <label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+        <input type="checkbox" id="node-input-useSSL" style="width: auto;">
     </div>
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
@@ -155,7 +144,7 @@
         <input type="text" id="node-input-box">
     </div>
     <div class="form-row node-input-disposition">
-		    <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+            <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
         <select type="text" id="node-input-disposition">
             <option value="None" selected="selected">None</option>
             <option value="Read">Mark Read/Answered</option>
@@ -178,13 +167,13 @@
                 }
             }
         };
-        
+
         $("#node-input-useSSL").change(function(x, y) {
           console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
           console.log("Value: " + $("#node-input-useSSL").prop("checked"));
           checkPorts();
         });
-        
+
         $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
@@ -192,7 +181,7 @@
                 $(".node-input-disposition").show();
             } else {
                 $(".node-input-box").hide();
-                $(".node-input-disposition").hide();                
+                $(".node-input-disposition").hide();
             }
             checkPorts();
         });
@@ -210,7 +199,7 @@
     <p>Note: uses IMAP with SSL to port 993.</p>
     <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
     each object represents a specific attachments.  The format of the object is:</p>
-    
+
 <pre>
 {
   contentType:        // The MIME content description
@@ -240,7 +229,7 @@
             server: {value:"imap.gmail.com",required:true},
             useSSL: {value: true},
             port: {value:"993",required:true},
-            box: {value:"INBOX"}, // For IMAP, The mailbox to process 
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "None" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-what3words",
-    "version"       : "0.0.3",
+    "version"       : "0.0.4",
     "description"   : "A Node-RED node to convert locations to/from what3words",
     "dependencies"  : {
         "geo.what3words"   : "0.0.2"

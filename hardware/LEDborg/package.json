@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-ledborg",
-    "version"       : "0.0.15",
+    "version"       : "0.0.17",
     "description"   : "A Node-RED node to control a PiBorg LedBorg board for a Raspberry Pi.",
     "dependencies"  : {
     },

@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013, 2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="twitter-credentials">
     <div class="form-row" id="node-config-twitter-row"></div>
@@ -105,6 +90,7 @@
             <option value="true" data-i18n="twitter.search.follow"></option>
             <option value="user" data-i18n="twitter.search.user"></option>
             <option value="dm" data-i18n="twitter.search.direct"></option>
+            <option value="event" data-i18n="twitter.search.events"></option>
         </select>
     </div>
     <div class="form-row" id="node-input-tags-row">
@@ -120,18 +106,25 @@
 
 <script type="text/x-red" data-help-name="twitter in">
     <p>Twitter input node. Can be used to search either:
-    <ul><li>the public or a user's stream for tweets containing the configured search term</li>
-        <li>all tweets by specific users</li>
+    <ul><li>the public stream for tweets containing the configured search term</li>
+        <li>all the tweets from accounts that the authenticated user follows</li>
+        <li>all tweets by specified users</li>
         <li>direct messages received by the authenticated user</li>
+        <li>twitter events for the authenticated user</li>
     </ul></p>
-    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.</p>
+    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
+    If you want to pass in the search term(s) via the <code>msg.payload</code>, leave the <b>for</b> field blank.</p>
     <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
     <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
-    <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets">Twitter</a>.
-    <p><b>Note:</b> when set to a specific user's tweets, or your direct messages, the node is subject to
-      Twitter's API rate limiting. If you deploy the flows multiple times within a 15 minute window, you may
-      exceed the limit and will see errors from the node. These errors will clear when the current 15 minute window
-      passes.</p>
+    <p>When returning events it sets the <code>msg.payload</code> to the twitter event, a full list is documented by
+    <a href="https://dev.twitter.com/streaming/overview/messages-types#Events_event" target="_new">Twitter</a>.</p>
+    <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets" target="_new">Twitter</a>.
+
+    <p><b>Note</b>: This node is not connected to the FireHose, so will not return 100% of all tweets to a busy @id or #hashtag.</p>
+    <p><b>Note:</b> when set to follow specific users, or your direct messages, the node is subject to
+      the rate limiting of the Twitter API. If you deploy the flows multiple times within a 15 minute window, you may
+      exceed the limit and will see errors from the node. These errors will clear automatically when the current 15
+      minute window passes.</p>
 </script>
 
 <script type="text/javascript">
@@ -140,25 +133,32 @@
         color:"#C0DEED",
         defaults: {
             twitter: {type:"twitter-credentials",required:true},
-            tags: {value:"",validate:function(v) { return this.user == "dm" || v.length > 0;}},
+            tags: {value:""},
             user: {value:"false",required:true},
             name: {value:""},
-            topic: {value:"tweets"}
+            topic: {value:"tweets"},
+            inputs: {value:0}
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "twitter.png",
         label: function() {
             if (this.name) {
                 return this.name;
             }
+            var uname = RED.nodes.node(this.twitter);
             if (this.user == "dm") {
+                return (uname?uname.label()+" ":"")+this._("twitter.label.dmslabel");
+            } else if (this.user == "event") {
                 var user = RED.nodes.node(this.twitter);
-                return (user?user.label()+" ":"")+this._("twitter.label.dmslabel");
+                return (user?user.label()+" ":"")+this._("twitter.label.eventslabel");
             } else if (this.user == "user") {
                 return this.tags+" "+this._("twitter.label.tweetslabel");
             }
-            return this.tags;
+            else if (this.user == "true") {
+                return this._("twitter.label.followers") + (uname?(" "+uname.label()):"");
+            }
+            return "twitter";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -174,16 +174,24 @@
                     $("#node-input-tags-row").show();
                     $("#node-input-tags-label").html(userlabel);
                     $("#node-input-tags").attr("placeholder",userph);
-                } else if (type == "dm") {
+                } else if ((type == "dm")||(type == "true")||(type == "event")) {
                     $("#node-input-tags-row").hide();
                 } else {
                     $("#node-input-tags-row").show();
                     $("#node-input-tags-label").html(forlabel);
                     $("#node-input-tags").attr("placeholder",forph);
                 }
-
             });
             $("#node-input-user").change();
+        },
+        oneditsave: function() {
+            if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() === 'false') {
+                this.inputs = 1;
+            }
+            else {
+                //set back the default state of 0 inputs
+                //this.inputs = 0;
+            }
         }
     });
 </script>

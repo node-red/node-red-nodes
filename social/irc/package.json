@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-irc",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "A Node-RED node to talk to an IRC server",
     "dependencies"  : {
         "irc"   : "~0.4.0"

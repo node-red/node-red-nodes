@@ -1,18 +1,3 @@
-/**
- * Copyright 2014,2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -76,7 +61,7 @@ module.exports = function(RED) {
 
         function responseCb(error, table) {
             if (error) {
-                console.error(error.toString());
+                le.error(error.toString());
             } else {
                 var indexes = [];
                 for (var index in table) {
@@ -93,10 +78,10 @@ module.exports = function(RED) {
                         }
                     }
                     columns.sort(sortInt);
-                    console.log("row index = " + indexes[i]);
-                    for (var j = 0; j < columns.length; j++) {
-                        console.log("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
-                    }
+                    // console.log("row index = " + indexes[i]);
+                    // for (var j = 0; j < columns.length; j++) {
+                    //     console.log("  column " + columns[j] + " = " + table[indexes[i]][columns[j]]);
+                    // }
                 }
                 msg.payload = table;
                 node.send(msg);
@@ -146,7 +131,7 @@ module.exports = function(RED) {
                     node.error(snmp.varbindError(varbinds[i]));
                 }
                 else {
-                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    //console.log(varbinds[i].oid + "|" + varbinds[i].value);
                     response.add({oid: varbinds[i].oid, value: varbinds[i].value});
                 }
             }
@@ -195,7 +180,7 @@ module.exports = function(RED) {
                     node.error(snmp.varbindError(varbinds[i]));
                 }
                 else {
-                    console.log(varbinds[i].oid + "|" + varbinds[i].value);
+                    //console.log(varbinds[i].oid + "|" + varbinds[i].value);
                     response.add({oid: varbinds[i].oid, value: varbinds[i].value});
                 }
             }

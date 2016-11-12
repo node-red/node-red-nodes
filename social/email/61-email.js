@@ -1,18 +1,3 @@
-/**
- * Copyright 2013, 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
@@ -86,9 +71,14 @@ module.exports = function(RED) {
                     if (msg.to && node.name && (msg.to !== node.name)) {
                         node.warn(RED._("node-red:common.errors.nooverride"));
                     }
-                    var sendopts = { from: node.userid };   // sender address
+                    var sendopts = { from: ((msg.from) ? msg.from : node.userid) };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addressees
+                    if (node.name === "") {
+                        sendopts.cc = msg.cc;
+                        sendopts.bcc = msg.bcc;
+                    }
                     sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
+                    if (msg.hasOwnProperty("envelope")) { sendopts.envelope = msg.envelope; }
                     if (Buffer.isBuffer(msg.payload)) { // if it's a buffer in the payload then auto create an attachment instead
                         if (!msg.filename) {
                             var fe = "bin";
@@ -133,7 +123,6 @@ module.exports = function(RED) {
             global: { type:"boolean"}
         }
     });
-
 
 
     //
@@ -186,25 +175,25 @@ module.exports = function(RED) {
         // in the message flow.  The parameter called `msg` is the template message we
         // start with while `mailMessage` is an object returned from `mailparser` that
         // will be used to populate the email.
+        // DCJ NOTE: - heirachical multipart mime parsers seem to not exist - this one is barely functional.
         function processNewMessage(msg, mailMessage) {
             msg = JSON.parse(JSON.stringify(msg)); // Clone the message
-
             // Populate the msg fields from the content of the email message
             // that we have just parsed.
-            msg.html = mailMessage.html;
             msg.payload = mailMessage.text;
+            msg.topic = mailMessage.subject;
+            msg.date = mailMessage.date;
+            if (mailMessage.html) {
+                msg.html = mailMessage.html;
+            }
+            if (mailMessage.from && mailMessage.from.length > 0) {
+                msg.from = mailMessage.from[0].address;
+            }
             if (mailMessage.attachments) {
                 msg.attachments = mailMessage.attachments;
             } else {
                 msg.attachments = [];
             }
-            msg.topic = mailMessage.subject;
-            msg.header = mailMessage.headers;
-            msg.date = mailMessage.date;
-            if (mailMessage.from && mailMessage.from.length > 0) {
-                msg.from = mailMessage.from[0].address;
-            }
-
             node.send(msg); // Propagate the message down the flow
         } // End of processNewMessage
 
@@ -308,59 +297,58 @@ module.exports = function(RED) {
         //
         // Check the email sever using the IMAP protocol for new messages.
         function checkIMAP(msg) {
-            node.log("Checkimg IMAP for new messages");
+            node.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             imap.once("ready", function() {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
-                console.log("> ready");
+                //console.log("> ready");
                 // Open the inbox folder
-                imap.openBox('INBOX', // Mailbox name
+                imap.openBox(node.box, // Mailbox name
                     false, // Open readonly?
                     function(err, box) {
-                    console.log("> Inbox open: %j", box);
+                    //console.log("> Inbox open: %j", box);
                     imap.search([ 'UNSEEN' ], function(err, results) {
                         if (err) {
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
+                            imap.end();
                             return;
                         }
-                        console.log("> search - err=%j, results=%j", err, results);
+                        //console.log("> search - err=%j, results=%j", err, results);
                         if (results.length === 0) {
-                            console.log(" [X] - Nothing to fetch");
+                            //console.log(" [X] - Nothing to fetch");
+                            node.status({});
+                            imap.end();
                             return;
                         }
 
                         // We have the search results that contain the list of unseen messages and can now fetch those messages.
                         var fetch = imap.fetch(results, {
-                            bodies : ["HEADER", "TEXT"],
+                            bodies: '',
+                            struct: true,
                             markSeen : true
                         });
 
                         // For each fetched message returned ...
                         fetch.on('message', function(imapMessage, seqno) {
-                            node.log(RED._("email.status.message",{number:seqno}));
+                            //node.log(RED._("email.status.message",{number:seqno}));
                             var messageText = "";
-                            console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
+                            //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                             imapMessage.on('body', function(stream, info) {
-                                console.log("> message - body - stream=?, info=%j", info);
-                                // Info defined which part of the message this is ... for example
-                                // 'TEXT' or 'HEADER'
+                                //console.log("> message - body - stream=?, info=%j", info);
                                 stream.on('data', function(chunk) {
-                                    console.log("> stream - data - chunk=??");
+                                    //console.log("> stream - data - chunk=??");
                                     messageText += chunk.toString('utf8');
                                 });
+                                stream.once('end', function() {
+                                    var mailParser = new MailParser();
+                                    mailParser.on('end', function(mailMessage) {
+                                        processNewMessage(msg, mailMessage);
+                                    });
+                                    mailParser.write(messageText);
+                                    mailParser.end();
+                                }); // End of msg->end
                             }); // End of msg->body
-                            // When the `end` event is raised on the message
-                            imapMessage.once('end', function() {
-                                console.log("> msg - end : %j", messageText);
-                                var mailparser = new MailParser();
-                                mailparser.on("end", function(mailMessage) {
-                                    //console.log("mailparser: on(end): %j", mailMessage);
-                                    processNewMessage(msg, mailMessage);
-                                });
-                                mailparser.write(messageText);
-                                mailparser.end();
-                            }); // End of msg->end
                         }); // End of fetch->message
 
                         // When we have fetched all the messages, we don't need the imap connection any more.
@@ -410,8 +398,10 @@ module.exports = function(RED) {
                 authTimeout: node.repeat
             });
             imap.on('error', function(err) {
-                node.log(err);
-                node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+                if (err.errno !== "ECONNRESET") {
+                    node.log(err);
+                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+                }
             });
         }
 

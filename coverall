@@ -1,0 +1,3 @@
+# check coverage of tests... and browse report
+istanbul cover ./node_modules/.bin/grunt --report lcovonly && istanbul report html
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome coverage/index.html

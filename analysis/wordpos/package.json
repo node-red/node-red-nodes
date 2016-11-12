@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-wordpos",
-    "version"       : "0.0.3",
+    "version"       : "0.0.4",
     "description"   : "A Node-RED node that breaks a sentence into the various parts of (English) speech.",
     "dependencies"  : {
         "wordpos"   : "0.1.*"

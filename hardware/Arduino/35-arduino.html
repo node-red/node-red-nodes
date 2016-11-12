@@ -1,18 +1,4 @@
-<!--
-  Copyright 2013,2016 IBM Corp.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <script type="text/x-red" data-template-name="arduino in">
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
@@ -42,7 +28,6 @@
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
     <p>You can select either Digital or Analogue input. Outputs the value read as <code>msg.payload</code> and the pin number as <code>msg.topic</code>.</p>
     <p>It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.</p>
-    <p>You can set the sample rate from 20 to 65535 mS.</p>
 </script>
 
 <script type="text/javascript">
@@ -52,9 +37,9 @@
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-                var ct = $("#node-input-state").val() || this.state;
-                return ct === 'STRING' || (v !== '');
-            }},
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"INPUT",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -107,15 +92,15 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('arduino out',{
+    RED.nodes.registerType('arduino out', {
         category: 'Arduino',
         color:"#3fadb5",
         defaults: {
             name: {value:""},
             pin: {value:"",validate: function(v) {
-                var ct = $("#node-input-state").val() || this.state;
-                return ct === 'STRING' || (v !== '');
-            }},
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -167,7 +152,7 @@
                     $("#node-config-lookup-serial").removeClass('disabled');
                     var ports = [];
                     $.each(data, function(i, port) {
-                        ports.push(port);
+                        ports.push(port.comName);
                     });
                     $("#node-config-input-device").autocomplete({
                         source:ports,

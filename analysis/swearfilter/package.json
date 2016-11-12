@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-badwords",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "description"   : "A Node-RED node that attempts to filter out messages containing swearwords.",
     "dependencies"  : {
         "badwords"   : "0.0.3"
