@@ -7,14 +7,17 @@ module.exports = function(RED) {
     function WOLnode(n) {
         RED.nodes.createNode(this,n);
         this.mac = n.mac.trim();
+        this.host = n.host;
         var node = this;
 
         this.on("input", function(msg) {
             var mac = this.mac || msg.mac || null;
+            var host = this.host || msg.host || '255.255.255.255';
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
-                        wol.wake(mac, function(error) {
+                        node.warn(mac + ' ' + host);
+                        wol.wake(mac, {address: host}, function(error) {
                             if (error) { node.warn(error); }
                             else if (RED.settings.verbose) {
                                 node.log("sent WOL magic packet");
