@@ -16,7 +16,6 @@ module.exports = function(RED) {
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
-                        node.warn(mac + ' ' + host);
                         wol.wake(mac, {address: host}, function(error) {
                             if (error) { node.warn(error); }
                             else if (RED.settings.verbose) {
