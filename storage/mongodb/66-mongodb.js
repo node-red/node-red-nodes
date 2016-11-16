@@ -35,7 +35,6 @@ module.exports = function(RED) {
         return selector;
     }
 
-
     function MongoOutNode(n) {
         RED.nodes.createNode(this,n);
         this.collection = n.collection;
@@ -47,16 +46,19 @@ module.exports = function(RED) {
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
         this.status({fill:"grey",shape:"ring",text:RED._("mongodbstatus.connecting")});
         var node = this;
+        var noerror = true;
 
         var connectToDB = function() {
             MongoClient.connect(node.mongoConfig.url, function(err, db) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
-                    node.error(err);
+                    if (noerror) { node.error(err); }
+                    noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
                 } else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
+                    noerror = true;
                     var coll;
                     if (node.collection) {
                         coll = db.collection(node.collection);
@@ -162,16 +164,19 @@ module.exports = function(RED) {
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
         this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
+        var noerror = true;
 
         var connectToDB = function() {
             MongoClient.connect(node.mongoConfig.url, function(err,db) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
-                    node.error(err);
+                    if (noerror) { node.error(err); }
+                    noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
                 } else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
+                    noerror = true;
                     var coll;
                     if (node.collection) {
                         coll = db.collection(node.collection);
