@@ -13,7 +13,7 @@ module.exports = function(RED) {
         this.pollIntervalRef = undefined;
         var hmoutnode = this;
 
-        this.hm = new Heatmiser(this.ip, this.pin);
+        this.hm = new Heatmiser.Wifi(this.ip, this.pin);
 
         this.hm.on('success', function(data) {
             if (DEBUG) {
@@ -84,7 +84,7 @@ module.exports = function(RED) {
         var hminnode = this;
         this.pollIntervalRef = undefined;
 
-        this.hm = new Heatmiser(this.ip, this.pin);
+        this.hm = new Heatmiser.Wifi(this.ip, this.pin);
 
         this.hm.on('success', function(data) {
             if (DEBUG) {
