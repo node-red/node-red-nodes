@@ -9,7 +9,7 @@ Install
 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-        npm i node-red-node-arduino
+        npm i --unsafe-perm node-red-node-arduino
 
 Usage
 -----
