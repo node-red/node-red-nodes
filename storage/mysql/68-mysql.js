@@ -56,9 +56,9 @@ module.exports = function(RED) {
         }
 
         this.connect = function() {
-            if (!this.connected && !this.connecting) {
-                doConnect();
-            }
+            if (!this.connected && !this.connecting) { doConnect(); }
+            if (this.connected) { node.emit("state","connected"); }
+            else { node.emit("state","connecting"); }
         }
 
         this.on('close', function (done) {
@@ -126,6 +126,11 @@ module.exports = function(RED) {
                     node.error("Database not connected",msg);
                     node.status({fill:"red",shape:"ring",text:"not yet connected"});
                 }
+            });
+
+            node.on('close', function () {
+                node.mydbConfig.removeAllListeners();
+                node.status({});
             });
         }
         else {
