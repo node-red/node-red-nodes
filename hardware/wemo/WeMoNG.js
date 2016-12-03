@@ -69,7 +69,7 @@ module.exports = function(RED) {
 
     };
 
-    setInterval(resubscribe, 200000);
+    setInterval(resubscribe, 100000);
 
     var subscribe = function(node) {
         var dev = node.dev;
