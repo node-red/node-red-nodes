@@ -14,10 +14,12 @@ module.exports = function(RED) {
         this.connecting = false;
 
         this.dbname = n.db;
+        this.setMaxListeners(0);
         var node = this;
 
         function doConnect() {
             node.connecting = true;
+            node.emit("state","connecting");
             node.connection = mysqldb.createConnection({
                 host : node.host,
                 port : node.port,
@@ -33,14 +35,17 @@ module.exports = function(RED) {
                 node.connecting = false;
                 if (err) {
                     node.error(err);
+                    node.emit("state",err.code);
                     node.tick = setTimeout(doConnect, reconnect);
                 } else {
                     node.connected = true;
+                    node.emit("state","connected");
                 }
             });
 
             node.connection.on('error', function(err) {
                 node.connected = false;
+                node.emit("state",err.code);
                 if (err.code === 'PROTOCOL_CONNECTION_LOST') {
                     doConnect(); // silently reconnect...
                 } else {
@@ -51,14 +56,15 @@ module.exports = function(RED) {
         }
 
         this.connect = function() {
-            if (!this.connected && !this.connecting) {
-                doConnect();
-            }
+            if (!this.connected && !this.connecting) { doConnect(); }
+            if (this.connected) { node.emit("state","connected"); }
+            else { node.emit("state","connecting"); }
         }
 
         this.on('close', function (done) {
             if (this.tick) { clearTimeout(this.tick); }
             node.connected = false;
+            node.emit("state"," ");
             if (this.connection) {
                 node.connection.end(function(err) {
                     if (err) { node.error(err); }
@@ -87,6 +93,16 @@ module.exports = function(RED) {
         if (this.mydbConfig) {
             this.mydbConfig.connect();
             var node = this;
+            node.mydbConfig.on("state", function(info) {
+                if (info === "connecting") { node.status({fill:"grey",shape:"ring",text:info}); }
+                else if (info === "connected") { node.status({fill:"green",shape:"dot",text:info}); }
+                else {
+                    if (info === "ECONNREFUSED") { info = "connection refused"; }
+                    if (info === "PROTOCOL_CONNECTION_LOST") { info = "connection lost"; }
+                    node.status({fill:"red",shape:"ring",text:info});
+                }
+            });
+
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     node.status({fill:"green",shape:"dot",text:"connected"});
@@ -146,8 +162,13 @@ module.exports = function(RED) {
                 }
                 else {
                     node.error("Database not connected",msg);
-                    node.status({fill:"grey",shape:"ring",text:"Not connected"});
+                    node.status({fill:"red",shape:"ring",text:"not yet connected"});
                 }
+            });
+
+            node.on('close', function () {
+                node.mydbConfig.removeAllListeners();
+                node.status({});
             });
         }
         else {
