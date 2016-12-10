@@ -120,8 +120,10 @@ module.exports = function(RED) {
                         var sourceObject = msg;
 
                         // Defaults to top level
-                        for(var key; key = parameterSourcePath.shift();){
-                            sourceObject = msg[key];
+                        var parameterSourceKey = parameterSourcePath.shift();
+                        while(parameterSourceKey){
+                            sourceObject = msg[parameterSourceKey];
+                            parameterSourceKey = parameterSourcePath.shift();
                         }
 
                         // Loop matched parameters in query
@@ -135,10 +137,10 @@ module.exports = function(RED) {
 
                             // Default to key
                             var value = sourceObject;
-                            var key = parameterPath.shift();
-                            while(key){
-                                value = value[key];
-                                key = parameterPath.shift();
+                            var parameterPathKey = parameterPath.shift();
+                            while(parameterPathKey){
+                                value = value[parameterPathKey];
+                                parameterPathKey = parameterPath.shift();
                             }
 
                             // Add to our parameter array for query execution
