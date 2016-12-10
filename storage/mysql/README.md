@@ -17,13 +17,13 @@ Allows basic access to a MySQL database.
 
 This node uses the query operation against the configured database. This does allow both INSERTS and DELETES.
 
-Using legacy method of queries set in `msg.topic` allows SQL injection... so be careful out there...
+Using legacy method where queries are set in `msg.topic` allows SQL injection... so be careful out there...
 
-###Query
+###Direct Inserted Queries
 
-Enter SQL queries and escapes input values that are located at a set path in the msg object.
+With SQL queries that are directly added on the node, variables are escaped.
 
-SQL queries can use template literal style variable insertion. If our msg.payload has a property key, we would write a query as following:
+SQL queries can use template literal style variable insertion. If our `msg.payload` has a property `key`, we would write a query as following:
 
 ```
     SELECT *
@@ -31,7 +31,7 @@ SQL queries can use template literal style variable insertion. If our msg.payloa
     WHERE column = ${key};
 ```
 
-For escaped input clarification, you can refer to the documentation for mysqljs/mysql.
+For more escaped input information, you can refer to the documentation for [mysqljs/mysql](https://github.com/mysqljs/mysql).
 
 ###Results
 
