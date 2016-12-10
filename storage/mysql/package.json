@@ -20,5 +20,11 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
+    },
+    "contributor":[
+    {
+        "name": "RyanSH100",
+        "url": "https://github.com/ryansh100"
     }
+    ]
 }

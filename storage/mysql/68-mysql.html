@@ -54,40 +54,84 @@
         <input type="text" id="node-input-mydb">
     </div>
     <div class="form-row">
+        <label for="node-input-parameterSource"><i class="fa fa-edit"></i> Input Source </label>
+        <input type="text" id="node-input-parameterSource" placeholder="payload" style="width:250px;">
+        <input type="hidden" id="node-input-fieldType">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" style="position: relative; margin-bottom: 0px;">
+      <label for="node-input-query"><i class="fa fa-file-code-o"></i> Query</label>
+      <input type="hidden" id="node-input-query" autofocus="autofocus">
+    </div>
+    <div class="form-row node-text-editor-row">
+      <div style="min-height:150px;" class="node-text-editor" id="node-input-mysql-query-editor" ></div>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="mysql">
     <p>Allows basic access to a MySQL database.</p>
-    <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
-    By its very nature it allows SQL injection... so <i>be careful out there...</i></p>
-    <p><code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
-    <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
+    <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.</i></p>
+    <p>Using legacy method of queries set in `msg.topic` allows SQL injection... so <i>be careful out there...</i>
+    <h3>Query</h3>
+    <p>Enter SQL queries and escapes input values that are located at a set path in the <code>msg</code> object.</p>
+    <p>SQL queries can use template literal style variable insertion. If our <code>msg.payload</code> has a property <code>key</code>, we would write a query as following:</p>
+    <pre>
+       SELECT *
+       FROM table
+       WHERE column = ${key};
+    </pre>
+    <p>For escaped input clarification, you can refer to the documentation for <a href="https://github.com/mysqljs/mysql#escaping-query-values">mysqljs/mysql</a>.
+    <h3>Results</h3>
     <p>Typically the returned payload will be an array of the result rows.</p>
     <p>If nothing is found for the key then <i>null</i> is returned,</p>
+    <h3>Misc.</h3>
     <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>mysqlReconnectTime: 30000,</pre></p>
+    <h3>Legacy</h3>
+    <p><code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
+    <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('mysql',{
         category: 'storage-input',
-        color:"#e97b00",
+        color:"rgb(233, 143, 20)",
         defaults: {
             mydb: {type:"MySQLdatabase",required:true},
-            name: {value:""}
+            name: {value:""},
+            parameterSource: {value: 'payload' },
+            fieldType: {value:"msg"},
+            query: {value: ""}
         },
         inputs:1,
         outputs:1,
-        icon: "db.png",
+        icon: "sql.png",
         label: function() {
             var levelNode = RED.nodes.node(this.mydb);
             return this.name||(levelNode?levelNode.label():"mysql");
         },
-            labelStyle: function() {
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function(){
+          $("#node-input-parameterSource").typedInput({
+              default: 'msg',
+              types: ['msg'],
+              typeField: $("#node-input-fieldType")
+          });
+          this.editor = RED.editor.createEditor({
+              id: 'node-input-mysql-query-editor',
+              mode: 'ace/mode/sql',
+              value: $("#node-input-query").val()
+          });
+
+        },
+        oneditsave: function() {
+            $("#node-input-query").val(this.editor.getValue())
+            delete this.editor;
         }
     });
 </script>

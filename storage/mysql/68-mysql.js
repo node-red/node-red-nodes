@@ -81,6 +81,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+        this.query = n.query;
+        this.parameterSource = n.parameterSource || 'payload';
 
         if (this.mydbConfig) {
             this.mydbConfig.connect();
@@ -88,24 +90,59 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     node.status({fill:"green",shape:"dot",text:"connected"});
-                    if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                            if (err) {
-                                node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"Error"});
+
+                    // Query to be executed
+                    var query = node.query;
+
+                    // Array of input parameters
+                    var parameters = [];
+
+                    if(query.length){
+                        // Search for all paramters in a query
+                        var parametersUsed = node.query.match(/\$\{[A-z\.0-9]*?\}/g);
+                        var parameterSourcePath = node.parameterSource.split('.');
+                        var sourceObject = msg;
+
+                        // Defaults to top level
+                        for(var key; key = parameterSourcePath.shift();){
+                            sourceObject = msg[key];
+                        }
+
+                        // Loop matched parameters in query
+                        for(var i=0; i < parametersUsed.length; i++){
+                            var parameter = parametersUsed[i];
+                            query = query.replace(parameter,'?');
+
+                            // Clean out ${} characters and create a dot deliminated array of keys to traverse.
+                            var parameterPath = parameter.replace(/[^A-z\.0-9]/g,'')
+                                .split('.');
+
+                            // Default to key
+                            var value = sourceObject;
+                            for(var key; key = parameterPath.shift();){
+                                value = value[key];
                             }
-                            else {
-                                msg.payload = rows;
-                                node.send(msg);
-                                node.status({fill:"green",shape:"dot",text:"OK"});
-                            }
-                        });
+
+                            // Add to our parameter array for query execution
+                            parameters.push(value);
+                        }
                     }
-                    else {
-                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    else if (typeof msg.topic === 'string') {
+                        parameters = Array.isArray(msg.payload) ? msg.payload : [];
+                        query = msg.topic;
                     }
+
+                    node.mydbConfig.connection.query(query, parameters, function(err, rows) {
+                        if (err) {
+                            node.error(err,msg);
+                            node.status({fill:"red",shape:"ring",text:"Error"});
+                        }
+                        else {
+                            msg.payload = rows;
+                            node.send(msg);
+                            node.status({fill:"green",shape:"dot",text:"OK"});
+                        }
+                    });
                 }
                 else {
                     node.error("Database not connected",msg);

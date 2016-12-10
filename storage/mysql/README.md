@@ -15,15 +15,38 @@ Usage
 
 Allows basic access to a MySQL database.
 
-This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
+This node uses the query operation against the configured database. This does allow both INSERTS and DELETES.
 
-By it's very nature it allows SQL injection... so <i>be careful out there...</i>
+Using legacy method of queries set in `msg.topic` allows SQL injection... so be careful out there...
 
-The `msg.topic` must hold the <i>query</i> for the database, and the result is returned in `msg.payload`.
+###Query
+
+Enter SQL queries and escapes input values that are located at a set path in the msg object.
+
+SQL queries can use template literal style variable insertion. If our msg.payload has a property key, we would write a query as following:
+
+```
+    SELECT *
+    FROM table
+    WHERE column = ${key};
+```
+
+For escaped input clarification, you can refer to the documentation for mysqljs/mysql.
+
+###Results
 
 Typically the returned payload will be an array of the result rows.
 
-If nothing is found for the key then <i>null</i> is returned.
+If nothing is found for the key then null is returned,
 
-The reconnect retry timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
-    <pre>mysqlReconnectTime: 30000,</pre></p>
+###Misc.
+
+The reconnect timeout in milliseconds can be changed by adding a line to settings.js
+
+`mysqlReconnectTime: 30000,`
+
+###Legacy
+
+`msg.topic` must hold the query for the database, and the result is returned in `msg.payload`.
+
+`msg.payload` can contain an array of values to bind to the topic.
