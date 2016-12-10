@@ -135,8 +135,10 @@ module.exports = function(RED) {
 
                             // Default to key
                             var value = sourceObject;
-                            for(var key; key = parameterPath.shift();){
+                            var key = parameterPath.shift();
+                            while(key){
                                 value = value[key];
+                                key = parameterPath.shift();
                             }
 
                             // Add to our parameter array for query execution
