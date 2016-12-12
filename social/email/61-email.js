@@ -183,17 +183,13 @@ module.exports = function(RED) {
             msg.payload = mailMessage.text;
             msg.topic = mailMessage.subject;
             msg.date = mailMessage.date;
-            if (mailMessage.html) {
-                msg.html = mailMessage.html;
-            }
-            if (mailMessage.from && mailMessage.from.length > 0) {
-                msg.from = mailMessage.from[0].address;
-            }
-            if (mailMessage.attachments) {
-                msg.attachments = mailMessage.attachments;
-            } else {
-                msg.attachments = [];
-            }
+            if (mailMessage.html) { msg.html = mailMessage.html; }
+            if (mailMessage.to && mailMessage.from.to > 0) { msg.to = mailMessage.to; }
+            if (mailMessage.cc && mailMessage.from.cc > 0) { msg.cc = mailMessage.cc; }
+            if (mailMessage.bcc && mailMessage.from.bcc > 0) { msg.bcc = mailMessage.bcc; }
+            if (mailMessage.from && mailMessage.from.length > 0) { msg.from = mailMessage.from[0].address; }
+            if (mailMessage.attachments) { msg.attachments = mailMessage.attachments; }
+            else { msg.attachments = []; }
             node.send(msg); // Propagate the message down the flow
         } // End of processNewMessage
 
@@ -322,11 +318,13 @@ module.exports = function(RED) {
                             return;
                         }
 
+                        var marks = false;
+                        if (this.disposition === "Read") { marks = true; }
                         // We have the search results that contain the list of unseen messages and can now fetch those messages.
                         var fetch = imap.fetch(results, {
                             bodies: '',
                             struct: true,
-                            markSeen : true
+                            markSeen: marks
                         });
 
                         // For each fetched message returned ...
@@ -357,10 +355,10 @@ module.exports = function(RED) {
                                 node.status({});
                                 imap.end();
                             };
-                            if (this.disposition == "Delete") {
+                            if (this.disposition === "Delete") {
                                 imap.addFlags(results, "\Deleted", cleanup);
-                            } else if (this.disposition == "Read") {
-                                imap.addFlags(results, "\Answered", cleanup);
+                            } else if (this.disposition === "Read") {
+                                imap.addFlags(results, "\Seen", cleanup);
                             } else {
                                 cleanup();
                             }
