@@ -36,17 +36,29 @@ module.exports = function(RED) {
             node.on("input", inputlistener);
 
             node.child.stdout.on('data', function (data) {
-                if (node.op === "string") { data = data.toString(); }
-                if (node.op === "number") { data = Number(data); }
                 if (RED.settings.verbose) { node.log("out: "+data); }
-                if (node.op === "lines") {
+                if (typeof data === "object") {
+                        var json_data = JSON.parse(data)
+                        if (typeof json_data === "object") {
+                                node.send({
+                                        'payload': json_data
+                                });
+                        } else {
+                                node.send({
+                                        'payload': data
+                                });
+                        }
+		}
+                else if (node.op === "string") { data = data.toString(); }
+                else if (node.op === "number") { data = Number(data); }
+                if ((node.op === "lines") && (typeof data !== "object")) {
                     line += data.toString();
                     var bits = line.split("\n");
                     while (bits.length > 1) {
                         node.send([{payload:bits.shift()},null,null]);
                     }
                     line = bits[0];
-                } else {
+                } else if (typeof data !== "object") {
                     if (data && (data.length !== 0)) {
                         node.send([{payload:data},null,null]);
                     }
