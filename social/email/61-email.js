@@ -319,7 +319,7 @@ module.exports = function(RED) {
                         }
 
                         var marks = false;
-                        if (this.disposition === "Read") { marks = true; }
+                        if (node.disposition === "Read") { marks = true; }
                         // We have the search results that contain the list of unseen messages and can now fetch those messages.
                         var fetch = imap.fetch(results, {
                             bodies: '',
@@ -351,8 +351,8 @@ module.exports = function(RED) {
 
                         // When we have fetched all the messages, we don't need the imap connection any more.
                         fetch.on('end', function() {
+                            node.status({});
                             var cleanup = function() {
-                                node.status({});
                                 imap.end();
                             };
                             if (this.disposition === "Delete") {
@@ -370,8 +370,8 @@ module.exports = function(RED) {
                     }); // End of imap->search
                 }); // End of imap->openInbox
             }); // End of imap->ready
-            imap.connect();
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            imap.connect();
         } // End of checkIMAP
 
 
