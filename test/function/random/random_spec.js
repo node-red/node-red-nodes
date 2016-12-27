@@ -20,6 +20,7 @@ describe('random node', function() {
         var flow = [{"id":"n1", "type":"random", "name":"random1", "wires":[[]]}];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
+            console.log(n1);
             n1.should.have.property("low", 1);
             n1.should.have.property("high", 10);
             n1.should.have.property("inte", false);
@@ -28,7 +29,7 @@ describe('random node', function() {
     });
 
     it('should output an integer between -3 and 3', function(done) {
-        var flow = [{"id":"n1", "type":"random", low:3, high:3, inte:true, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"random", low:-3, high:3, inte:true, wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
