@@ -86,11 +86,12 @@ module.exports = function(RED) {
             }, 10000);  // Restart after 10 secs if required
         }
 
-        node.on("close", function() {
+        node.on("close", function(done) {
+            clearInterval(loop);
             if (node.child != null) { node.child.kill('SIGKILL'); }
             if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
-            clearInterval(loop);
             node.status({});
+            setTimeout(function() { done(); }, 100);
         });
 
         runit();
