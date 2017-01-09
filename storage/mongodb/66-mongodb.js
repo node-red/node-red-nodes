@@ -178,17 +178,18 @@ module.exports = function(RED) {
                     node.clientDb = db;
                     noerror = true;
                     var coll;
-                    if (node.collection) {
-                        coll = db.collection(node.collection);
-                    }
                     node.on("input", function(msg) {
                         if (!node.collection) {
                             if (msg.collection) {
                                 coll = db.collection(msg.collection);
-                            } else {
+                            }
+                            else {
                                 node.error(RED._("mongodb.errors.nocollection"));
                                 return;
                             }
+                        }
+                        else {
+                            coll = db.collection(node.collection);
                         }
                         var selector;
                         if (node.operation === "find") {
@@ -206,7 +207,8 @@ module.exports = function(RED) {
                             coll.find(selector,msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
                                 if (err) {
                                     node.error(err);
-                                } else {
+                                }
+                                else {
                                     msg.payload = items;
                                     delete msg.projection;
                                     delete msg.sort;
@@ -220,12 +222,14 @@ module.exports = function(RED) {
                             coll.count(selector, function(err, count) {
                                 if (err) {
                                     node.error(err);
-                                } else {
+                                }
+                                else {
                                     msg.payload = count;
                                     node.send(msg);
                                 }
                             });
-                        } else if (node.operation === "aggregate") {
+                        }
+                        else if (node.operation === "aggregate") {
                             msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
                             coll.aggregate(msg.payload, function(err, result) {
                                 if (err) {
