@@ -115,43 +115,46 @@ module.exports = function(RED) {
 
                     if(query.length){
                         // Search for all paramters in a query
-                        var parametersUsed = node.query.match(/\$\{[A-z\.0-9]*?\}/g);
+                        var parametersUsed = node.query.match(/\{\{[A-z\.0-9]*?\}\}/g);
                         var parameterSourcePath = node.parameterSource.split('.');
+
                         var sourceObject = msg;
 
                         // Defaults to top level
                         var parameterSourceKey = parameterSourcePath.shift();
                         while(parameterSourceKey){
-                            sourceObject = msg[parameterSourceKey];
+                            sourceObject = sourceObject[parameterSourceKey];
+
                             parameterSourceKey = parameterSourcePath.shift();
                         }
-
                         // Loop matched parameters in query
-                        for(var i=0; i < parametersUsed.length; i++){
-                            var parameter = parametersUsed[i];
-                            query = query.replace(parameter,'?');
+                        if(parametersUsed) {
+                          for(var i=0; i < parametersUsed.length; i++){
+                              var parameter = parametersUsed[i];
+                              query = query.replace(parameter,'?');
 
-                            // Clean out ${} characters and create a dot deliminated array of keys to traverse.
-                            var parameterPath = parameter.replace(/[^A-z\.0-9]/g,'')
-                                .split('.');
+                              // Clean out ${} characters and create a dot deliminated array of keys to traverse.
+                              var parameterPath = parameter.replace(/[^A-z\.0-9]/g,'')
+                                  .split('.');
 
-                            // Default to key
-                            var value = sourceObject;
-                            var parameterPathKey = parameterPath.shift();
-                            while(parameterPathKey){
-                                value = value[parameterPathKey];
-                                parameterPathKey = parameterPath.shift();
-                            }
+                              // Default to key
+                              var value = sourceObject;
+                              var parameterPathKey = parameterPath.shift();
+                              while(parameterPathKey){
+                                  value = value[parameterPathKey];
+                                  parameterPathKey = parameterPath.shift();
+                              }
 
-                            // Add to our parameter array for query execution
-                            parameters.push(value);
+                              // Add to our parameter array for query execution
+                              parameters.push(value);
+                          }
                         }
                     }
                     else if (typeof msg.topic === 'string') {
                         parameters = Array.isArray(msg.payload) ? msg.payload : [];
                         query = msg.topic;
                     }
-
+                    
                     node.mydbConfig.connection.query(query, parameters, function(err, rows) {
                         if (err) {
                             node.error(err,msg);
