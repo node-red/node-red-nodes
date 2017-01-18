@@ -77,11 +77,11 @@
     <p>Using legacy method of queries set in `msg.topic` allows SQL injection... so <i>be careful out there...</i>
     <h3>Query</h3>
     <p>Enter SQL queries and escapes input values that are located at a set path in the <code>msg</code> object.</p>
-    <p>SQL queries can use template literal style variable insertion. If our <code>msg.payload</code> has a property <code>key</code>, we would write a query as following:</p>
+    <p>SQL queries can use mustache style variable insertion. If our <code>msg.payload</code> has a property <code>key</code>, we would write a query as following:</p>
     <pre>
        SELECT *
        FROM table
-       WHERE column = ${key};
+       WHERE column = {{key}};
     </pre>
     <p>For escaped input clarification, you can refer to the documentation for <a href="https://github.com/mysqljs/mysql#escaping-query-values">mysqljs/mysql</a>.
     <h3>Results</h3>
