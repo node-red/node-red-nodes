@@ -133,7 +133,7 @@ module.exports = function(RED) {
                               var parameter = parametersUsed[i];
                               query = query.replace(parameter,'?');
 
-                              // Clean out ${} characters and create a dot deliminated array of keys to traverse.
+                              // Clean out {{}} characters and create a dot deliminated array of keys to traverse.
                               var parameterPath = parameter.replace(/[^A-z\.0-9]/g,'')
                                   .split('.');
 
@@ -154,7 +154,7 @@ module.exports = function(RED) {
                         parameters = Array.isArray(msg.payload) ? msg.payload : [];
                         query = msg.topic;
                     }
-                    
+
                     node.mydbConfig.connection.query(query, parameters, function(err, rows) {
                         if (err) {
                             node.error(err,msg);
