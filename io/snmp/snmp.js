@@ -61,7 +61,7 @@ module.exports = function(RED) {
 
         function responseCb(error, table) {
             if (error) {
-                le.error(error.toString());
+                console.error(error.toString());
             } else {
                 var indexes = [];
                 for (var index in table) {
