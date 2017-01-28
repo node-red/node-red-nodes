@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
 
     var Board = require('firmata');
-    var SP = require('firmata/node_modules/serialport');
+    var SP = require('serialport');
 
     // The Board Definition - this opens (and closes) the connection
     function ArduinoNode(n) {
