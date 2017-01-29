@@ -46,7 +46,8 @@ module.exports = function(RED) {
                         node.send([{payload:bits.shift()},null,null]);
                     }
                     line = bits[0];
-                } else {
+                }
+                else {
                     if (data && (data.length !== 0)) {
                         node.send([{payload:data},null,null]);
                     }
