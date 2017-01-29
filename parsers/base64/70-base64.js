@@ -28,7 +28,8 @@ module.exports = function(RED) {
                 else {
                     node.warn("This node only handles strings or buffers.");
                 }
-            } else { node.warn("No payload found to process"); }
+            }
+            else { node.warn("No payload found to process"); }
         });
     }
     RED.nodes.registerType("base64",Base64Node);

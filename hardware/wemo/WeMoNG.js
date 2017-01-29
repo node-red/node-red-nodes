@@ -48,7 +48,8 @@ module.exports = function(RED) {
                         delete subscriptions[dev];
                         delete sub2dev[sub.sid];
                         subscribe({dev: subs[s]});
-                    } else {
+                    }
+                    else {
                         // console.log("resubscription good %s", res.statusCode);
                         // console.log("dev - %s", util.inspect(dev));
                     }
@@ -78,7 +79,8 @@ module.exports = function(RED) {
             if (subscriptions[dev]) {
                 //exists
                 subscriptions[dev].count++;
-            } else {
+            }
+            else {
                 //new
 
                 var ipAddr;
@@ -97,7 +99,8 @@ module.exports = function(RED) {
                                         break;
                                     }
                                 }
-                            } else {
+                            }
+                            else {
                                 //node 0.10 not great but best we can do
                                 if (!addrs[add].internal && addrs[add].family == 'IPv4') {
                                     ipAddr = addrs[add].address;
@@ -143,7 +146,8 @@ module.exports = function(RED) {
                     if (res.statusCode == 200) {
                         subscriptions[dev] = {'count': 1, 'sid': res.headers.sid};
                         sub2dev[res.headers.sid] = dev;
-                    } else {
+                    }
+                    else {
                         console.log('failed to subsrcibe');
                     }
                 });
@@ -181,10 +185,12 @@ module.exports = function(RED) {
 
                 unSubreq.end();
 
-            } else {
+            }
+            else {
                 subscriptions[dev].count--;
             }
-        } else {
+        }
+        else {
             //shouldn't ever get here
         }
     }
@@ -210,7 +216,8 @@ module.exports = function(RED) {
                     node.status({fill: 'green',shape: 'dot',text: 'found'});
                 }
             });
-        } else {
+        }
+        else {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
@@ -227,27 +234,32 @@ module.exports = function(RED) {
             if (typeof msg.payload === 'string') {
                 if (msg.payload == 'on' || msg.payload == '1' || msg.payload == 'true') {
                     on = 1;
-                } else if (msg.payload === 'toggle') {
+                }
+                else if (msg.payload === 'toggle') {
                     on = 2;
                 }
-            } else if (typeof msg.payload === 'number') {
+            }
+            else if (typeof msg.payload === 'number') {
                 if (msg.payload >= 0 && msg.payload < 3) {
                     on = msg.payload;
                 }
-            } else if (typeof msg.payload === 'object') {
+            }
+            else if (typeof msg.payload === 'object') {
                 //object need to get complicated here
                 if (msg.payload.state && typeof msg.payload.state === 'number') {
                     if (dev.type === 'socket') {
                         if (msg.payload >= 0 && msg.payload < 2) {
                             on = msg.payload.state;
                         }
-                    } else if (dev.type === 'light' || dev.type === 'group') {
+                    }
+                    else if (dev.type === 'light' || dev.type === 'group') {
                         if (msg.payload >= 0 && msg.payload < 3) {
                             on = msg.payload.state;
                         }
                     }
                 }
-            } else if (typeof msg.payload === 'boolean') {
+            }
+            else if (typeof msg.payload === 'boolean') {
                 if (msg.payload) {
                     on = 1;
                 }
@@ -256,10 +268,12 @@ module.exports = function(RED) {
             if (dev.type === 'socket') {
                 //console.log("socket");
                 wemo.toggleSocket(dev, on);
-            } else if (dev.type === 'light`') {
+            }
+            else if (dev.type === 'light`') {
                 //console.log("light");
                 wemo.setStatus(dev,'10006', on);
-            } else {
+            }
+            else {
                 console.log('group');
                 wemo.setStatus(dev, '10006', on);
             }
@@ -295,17 +309,18 @@ module.exports = function(RED) {
 
                 switch (notification.type){
                     case 'light':
-                    case 'group':
+                    case 'group': {
                         if (dd.id === notification.id) {
                             node.send(msg);
                         }
                         break;
-                    case 'socket':
+                    }
+                    case 'socket': {
                         node.send(msg);
                         break;
-                    default:
+                    }
+                    default: {}
                 }
-
             }
         };
 
@@ -316,7 +331,8 @@ module.exports = function(RED) {
             if (wemo.get(node.dev)) {
                 node.status({fill: 'green',shape: 'dot',text: 'found'});
                 subscribe(node);
-            } else {
+            }
+            else {
                 wemo.on('discovered', function(d) {
                     if (node.dev === d) {
                         node.status({fill: 'green',shape: 'dot',text: 'found'});
@@ -324,7 +340,8 @@ module.exports = function(RED) {
                     }
                 });
             }
-        } else if (node.ipaddr) {
+        }
+        else if (node.ipaddr) {
             //legacy
             var devices = Object.keys(wemo.devices);
             for (var d in devices) {

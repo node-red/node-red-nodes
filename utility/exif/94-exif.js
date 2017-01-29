@@ -50,13 +50,16 @@ module.exports = function(RED) {
                         msg.location.lat = latitude;
                         msg.location.lon = longitude;
                         return;
-                    } else {
+                    }
+                    else {
                         node.log("Invalid longitude data, no location information has been added to the message.");
                     }
-                } else {
+                }
+                else {
                     node.log("Invalid latitude data, no location information has been added to the message.");
                 }
-            } else {
+            }
+            else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
         }
@@ -68,26 +71,31 @@ module.exports = function(RED) {
                         new ExifImage({ image : msg.payload }, function (error, exifData) {
                             if (error) {
                                 node.log(error.toString());
-                            } else {
+                            }
+                            else {
                                 //msg.payload remains the same buffer
                                 if ((exifData) && (exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
                                     msg.exif = exifData;
                                     addMsgLocationDataFromExifGPSData(msg);
-                                } else {
+                                }
+                                else {
                                     node.warn("The incoming image did not contain Exif GPS data, nothing to do. ");
                                 }
                             }
                             node.send(msg);
                         });
-                    } else {
+                    }
+                    else {
                         node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.");
                         return;
                     }
-                } else {
+                }
+                else {
                     node.error("No payload received, the Exif node cannot proceed, no messages sent.");
                     return;
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 node.error("An error occurred while extracting Exif information. Please check the log for details.");
                 node.log('Error: '+error.message);
                 return;

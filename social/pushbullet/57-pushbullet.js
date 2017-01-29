@@ -62,7 +62,8 @@ module.exports = function(RED) {
                     pusher.me(function(err, me) {
                         if (err) {
                             reject(err);
-                        } else {
+                        }
+                        else {
                             resolve(me);
                         }
                     });
@@ -74,7 +75,8 @@ module.exports = function(RED) {
                     pusher.history({limit:1}, function(err, res) {
                         if (err) {
                             resolve(0);
-                        } else {
+                        }
+                        else {
                             try {
                                 resolve(res.pushes[0].modified);
                             }
@@ -144,7 +146,8 @@ module.exports = function(RED) {
                 closing = true;
                 try {
                     this.stream.close();
-                } catch(err) {
+                }
+                catch(err) {
                     // Ignore error if not connected
                 }
             });
@@ -167,7 +170,8 @@ module.exports = function(RED) {
                         }
                         try {
                             resolve(res.pushes[0].modified);
-                        } catch(ex) {
+                        }
+                        catch(ex) {
                             resolve(last);
                         }
                     });
@@ -360,7 +364,8 @@ module.exports = function(RED) {
                             if (me) {
                                 deviceid = me.email;
                                 self.pushMsg(pushtype, deviceid, title, msg);
-                            } else {
+                            }
+                            else {
                                 self.error("Unable to push",msg);
                             }
                         });

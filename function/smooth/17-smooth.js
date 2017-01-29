@@ -42,7 +42,7 @@ module.exports = function(RED) {
                             tot = tot + n - pop;
                             tot2 = tot2 + (n*n) - (pop * pop);
                             if (a.length > 1) {
-                               msg.payload = Math.sqrt((a.length * tot2 - tot * tot)/(a.length * (a.length - 1)));
+                                msg.payload = Math.sqrt((a.length * tot2 - tot * tot)/(a.length * (a.length - 1)));
                             }
                             else { msg.payload = 0; }
                         }

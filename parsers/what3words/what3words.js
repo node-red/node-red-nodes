@@ -7,7 +7,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         this.lang = n.lang || "en";
         var credentials = RED.nodes.getCredentials(n.id);
-        if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; } else { this.error("No what3words API key set"); }
+        if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
+        else { this.error("No what3words API key set"); }
         this.w3w = new What3Words(this.pushkey);
         var node = this;
         var w1 = /^\*\w{6,31}$/;
@@ -25,7 +26,8 @@ module.exports = function(RED) {
                     .catch(function(err) {
                         node.warn(err)
                     });
-            } else if (typeof (msg.payload) === "string") {
+            }
+            else if (typeof (msg.payload) === "string") {
                 if (msg.payload.split(",").length === 2) { // see if it's 2 comma separated words
                     node.w3w.positionToWords({ position:msg.payload, lang:node.lang })
                         .then(function(response) {
@@ -36,7 +38,8 @@ module.exports = function(RED) {
                         .catch(function(err) {
                             node.warn(err);
                         });
-                } else if (msg.payload.match(w3)) { // see if it's 3 dot separated words
+                }
+                else if (msg.payload.match(w3)) { // see if it's 3 dot separated words
                     node.w3w.wordsToPosition({ words:msg.payload })
                         .then(function(response) {
                             if (!msg.hasOwnProperty("location")) { msg.location = {}; }
@@ -47,7 +50,8 @@ module.exports = function(RED) {
                         .catch(function(err) {
                             node.warn(err)
                         });
-                } else if (msg.payload.match(w1)) { // see if it's a *Oneword
+                }
+                else if (msg.payload.match(w1)) { // see if it's a *Oneword
                     node.w3w.wordsToPosition({ words:msg.payload })
                         .then(function(response) {
                             if (!msg.hasOwnProperty("location")) { msg.location = {}; }
@@ -59,8 +63,10 @@ module.exports = function(RED) {
                         .catch(function(err) {
                             node.warn(err);
                         });
-                } else { node.warn("No useable data found. See info."); }
-            } else { node.warn("No useable data found. See info."); }
+                }
+                else { node.warn("No useable data found. See info."); }
+            }
+            else { node.warn("No useable data found. See info."); }
         });
     }
     RED.nodes.registerType("what3words", what3wordsNode);
@@ -71,7 +77,8 @@ module.exports = function(RED) {
         var credentials = RED.nodes.getCredentials(req.params.id);
         if (credentials) {
             res.send(JSON.stringify({hasPassword:(credentials.pushkey && credentials.pushkey !== "")}));
-        } else {
+        }
+        else {
             res.send(JSON.stringify({}));
         }
     });
@@ -91,7 +98,8 @@ module.exports = function(RED) {
             var credentials = RED.nodes.getCredentials(req.params.id) || {};
             if (newCreds.pushkey === "") {
                 delete credentials.pushkey;
-            } else {
+            }
+            else {
                 credentials.pushkey = newCreds.pushkey || credentials.pushkey;
             }
             RED.nodes.addCredentials(req.params.id, credentials);

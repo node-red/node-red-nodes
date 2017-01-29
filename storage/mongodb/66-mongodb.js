@@ -55,7 +55,8 @@ module.exports = function(RED) {
                     if (noerror) { node.error(err); }
                     noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
-                } else {
+                }
+                else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
                     noerror = true;
@@ -67,7 +68,8 @@ module.exports = function(RED) {
                         if (!node.collection) {
                             if (msg.collection) {
                                 coll = db.collection(msg.collection);
-                            } else {
+                            }
+                            else {
                                 node.error(RED._("mongodb.errors.nocollection"),msg);
                                 return;
                             }
@@ -87,14 +89,16 @@ module.exports = function(RED) {
                                         node.error(err,msg);
                                     }
                                 });
-                            } else {
+                            }
+                            else {
                                 coll.save(msg,function(err, item) {
                                     if (err) {
                                         node.error(err,msg);
                                     }
                                 });
                             }
-                        } else if (node.operation === "insert") {
+                        }
+                        else if (node.operation === "insert") {
                             if (node.payonly) {
                                 if (typeof msg.payload !== "object") {
                                     msg.payload = {"payload": msg.payload};
@@ -107,14 +111,16 @@ module.exports = function(RED) {
                                         node.error(err,msg);
                                     }
                                 });
-                            } else {
+                            }
+                            else {
                                 coll.insert(msg, function(err,item) {
                                     if (err) {
                                         node.error(err,msg);
                                     }
                                 });
                             }
-                        } else if (node.operation === "update") {
+                        }
+                        else if (node.operation === "update") {
                             if (typeof msg.payload !== "object") {
                                 msg.payload = {"payload": msg.payload};
                             }
@@ -132,7 +138,8 @@ module.exports = function(RED) {
                                     node.error(err,msg);
                                 }
                             });
-                        } else if (node.operation === "delete") {
+                        }
+                        else if (node.operation === "delete") {
                             coll.remove(msg.payload, function(err, items) {
                                 if (err) {
                                     node.error(err,msg);
@@ -173,7 +180,8 @@ module.exports = function(RED) {
                     if (noerror) { node.error(err); }
                     noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
-                } else {
+                }
+                else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = db;
                     noerror = true;
@@ -217,7 +225,8 @@ module.exports = function(RED) {
                                     node.send(msg);
                                 }
                             });
-                        } else if (node.operation === "count") {
+                        }
+                        else if (node.operation === "count") {
                             selector = ensureValidSelectorObject(msg.payload);
                             coll.count(selector, function(err, count) {
                                 if (err) {
@@ -234,7 +243,8 @@ module.exports = function(RED) {
                             coll.aggregate(msg.payload, function(err, result) {
                                 if (err) {
                                     node.error(err);
-                                } else {
+                                }
+                                else {
                                     msg.payload = result;
                                     node.send(msg);
                                 }

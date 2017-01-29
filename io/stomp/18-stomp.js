@@ -41,7 +41,7 @@ module.exports = function(RED) {
             }
         };
         if (this.serverConfig.vhost) {
-          this.stompClientOpts.vhost = this.serverConfig.vhost;
+            this.stompClientOpts.vhost = this.serverConfig.vhost;
         }
 
         var node = this;
@@ -49,7 +49,7 @@ module.exports = function(RED) {
         node.client = new StompClient(node.stompClientOpts);
 
         node.client.on("connect", function() {
-          node.status({fill:"green",shape:"dot",text:"connected"});
+            node.status({fill:"green",shape:"dot",text:"connected"});
         });
 
         node.client.on("reconnecting", function() {
@@ -110,14 +110,14 @@ module.exports = function(RED) {
             }
         };
         if (this.serverConfig.vhost) {
-          this.stompClientOpts.vhost = this.serverConfig.vhost;
+            this.stompClientOpts.vhost = this.serverConfig.vhost;
         }
 
         var node = this;
         node.client = new StompClient(node.stompClientOpts);
 
         node.client.on("connect", function() {
-          node.status({fill:"green",shape:"dot",text:"connected"});
+            node.status({fill:"green",shape:"dot",text:"connected"});
         });
 
         node.client.on("reconnecting", function() {

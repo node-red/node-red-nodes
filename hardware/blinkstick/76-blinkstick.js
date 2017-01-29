@@ -32,7 +32,7 @@ module.exports = function(RED) {
         return typeof (value) === "undefined" || value === null ? value = defaultValue : value;
     }
 
-    function validateArray(value, defaultValue){
+    function validateArray(value, defaultValue) {
         return typeof (value) === "undefined" || Array.isArray(value) ? value : defaultValue;
     }
 
@@ -66,7 +66,7 @@ module.exports = function(RED) {
 
         this.name = n.name;
         this.serial = n.serial;
-	    this.mode = n.mode || "normal";
+        this.mode = n.mode || "normal";
         this.task = n.task || "set_color";
         this.delay = n.delay || 500;
         this.repeats = n.repeats || 1;
@@ -95,25 +95,28 @@ module.exports = function(RED) {
                     if (Object.size(node.led) === 0) {
                         node.status({fill:"red",shape:"ring",text:"not found"});
                         node.error("BlinkStick with serial number " + node.serial + " not found");
-                    } else {
+                    }
+                    else {
                         node.status({fill:"green",shape:"dot",text:"connected"});
-                        if(node.mode == "normal"){node.led.setMode(0);}
-                        else if(node.mode == "inverted"){node.led.setMode(1);}
-                        else if(node.mode == "neopixel"){node.led.setMode(2);}
+                        if (node.mode == "normal") {node.led.setMode(0);}
+                        else if (node.mode == "inverted") {node.led.setMode(1);}
+                        else if (node.mode == "neopixel") {node.led.setMode(2);}
                         if (callback) { callback(); }
                     }
                 });
-            } else {
+            }
+            else {
                 node.led = blinkstick.findFirst();
 
                 if (Object.size(node.led) === 0) {
                     node.status({fill:"red",shape:"ring",text:"not found"});
                     node.error("No BlinkStick found");
-                } else {
+                }
+                else {
                     node.status({fill:"green",shape:"dot",text:"connected"});
-                    if(node.mode == "normal"){node.led.setMode(0);}
-                    else if(node.mode == "inverted"){node.led.setMode(1);}
-                    else if(node.mode == "neopixel"){node.led.setMode(2);}
+                    if (node.mode == "normal") {node.led.setMode(0);}
+                    else if (node.mode == "inverted") {node.led.setMode(1);}
+                    else if (node.mode == "neopixel") {node.led.setMode(2);}
                     if (callback) { callback(); }
                 }
             }
@@ -159,12 +162,15 @@ module.exports = function(RED) {
                 //Select animation to perform
                 if (node.task == "pulse") {
                     node.led.pulse(node.color, {'duration': node.duration, 'steps': node.steps, 'channel': node.channel, 'index': node.index }, blinkstickAnimationComplete);
-                } else if (node.task == "morph") {
+                }
+                else if (node.task == "morph") {
                     node.led.morph(node.color, {'duration': node.duration, 'steps': node.steps, 'channel': node.channel, 'index': node.index }, blinkstickAnimationComplete);
-                } else if (node.task == "blink") {
+                }
+                else if (node.task == "blink") {
                     node.led.blink(node.color,{'repeats': node.repeats, 'delay': node.delay, 'channel': node.channel, 'index': node.index }, blinkstickAnimationComplete);
-                } else {
-                    if(node.row.length > 0){
+                }
+                else {
+                    if (node.row.length > 0) {
                         var dat = [];
                         for (var i = 0; i < node.row.length; i++) {
                             if (typeof node.row[i] === "string") { // if string then assume must be colour names
@@ -187,14 +193,15 @@ module.exports = function(RED) {
                             node.led.setColors(node.channel, dat, blinkstickAnimationComplete);
                         }
                         else {
-                          node.warn("Colour array length not / 3");
+                            node.warn("Colour array length not / 3");
                         }
                     }
                     else {
                         node.led.setColor(node.color, {'channel': node.channel, 'index': node.index}, blinkstickAnimationComplete);
                     }
                 }
-            } catch (err) {
+            }
+            catch (err) {
                 if (err.toString().indexOf("setColor") !== -1) {
                     node.led.setColour(node.color, blinkstickAnimationComplete);
                     node.warn("Old version - please upgrade Blinkstick npm");
@@ -269,19 +276,22 @@ module.exports = function(RED) {
                             node.channel = typeof(data.channel) !== 'undefined' ? data.channel : node.channel;
                             node.index = data.index ? data.index : node.index;
                             node.row = data.row ? data.row : node.row;
-                        } else {
+                        }
+                        else {
                             node.error(data);
                             return;
                         }
                     }
-                } else if (p1.test(msg.payload)) {
+                }
+                else if (p1.test(msg.payload)) {
                     //Color value is represented as "red,green,blue" string of bytes
                     var rgb = msg.payload.split(",");
 
                     //Convert color value back to HEX string for easier implementation
                     node.color = "#" + decimalToHex(parseInt(rgb[0])&255) +
                         decimalToHex(parseInt(rgb[1])&255) + decimalToHex(parseInt(rgb[2])&255);
-                } else {
+                }
+                else {
                     //Sanitize color value
                     node.color = msg.payload.toLowerCase().replace(/\s+/g,'');
                     if (node.color === "amber") { node.color = "#FFBF00"; }
@@ -293,7 +303,8 @@ module.exports = function(RED) {
                     if (animationComplete) {
                         applyColor();
                     }
-                } else {
+                }
+                else {
                     //Attempt to find BlinkStick and start animation if it's found
                     findBlinkStick(function() {
                         if (animationComplete) {

@@ -164,10 +164,12 @@ module.exports = function(RED) {
         if (node.pin !== undefined) {
             if (node.pin === "12") {
                 node.child = spawn(gpioCommand, ["buzz",node.pin]);
-            } else {
+            }
+            else {
                 if (node.set && (node.out === "out")) {
                     node.child = spawn(gpioCommand, [node.out,node.pin,node.level]);
-                } else {
+                }
+                else {
                     node.child = spawn(gpioCommand, [node.out,node.pin]);
                 }
             }

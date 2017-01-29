@@ -39,10 +39,12 @@ module.exports = function(RED) {
         if (this.api) {
             this.twilioClient = twilio(this.api.sid,this.api.token);
             this.fromNumber = this.api.from;
-        } else if (twiliokey) {
+        }
+        else if (twiliokey) {
             this.twilioClient = twilio(twiliokey.account, twiliokey.authtoken);
             this.fromNumber = twiliokey.from;
-        } else {
+        }
+        else {
             this.error("missing twilio credentials");
             return;
         }
@@ -66,7 +68,8 @@ module.exports = function(RED) {
                         }
                         //console.log(response);
                     });
-                } else {
+                }
+                else {
                     // Send SMS
                     node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
                         if (err) {
@@ -76,7 +79,8 @@ module.exports = function(RED) {
                     });
                 }
 
-            } catch (err) {
+            }
+            catch (err) {
                 node.error(err);
             }
         });

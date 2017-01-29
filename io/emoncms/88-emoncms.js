@@ -34,7 +34,8 @@ module.exports = function(RED) {
             else {
                 if (msg.payload.indexOf(':') > -1) {
                     this.url += 'json={' + msg.payload + '}';
-                } else {
+                }
+                else {
                     this.url += 'csv='+msg.payload;
                 }
             }
@@ -96,7 +97,8 @@ module.exports = function(RED) {
                     if (msg.rc === 200) {
                         try {
                             msg.payload = JSON.parse(msg.payload);
-                        } catch(err) {
+                        }
+                        catch(err) {
                             // Failed to parse, pass it on
                         }
                         node.send(msg);

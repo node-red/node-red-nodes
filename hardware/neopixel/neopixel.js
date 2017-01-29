@@ -10,7 +10,8 @@ module.exports = function(RED) {
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
-    } catch(err) {
+    }
+    catch(err) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
@@ -57,7 +58,8 @@ module.exports = function(RED) {
                             if (node.mode.indexOf("need") >= 0) {
                                 needle = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 node.fgnd = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
@@ -78,7 +80,8 @@ module.exports = function(RED) {
                             ll = ll - 1;
                             if (node.mode.indexOf("need") >= 0) {
                                 pay = "0,"+(ll-1)+","+node.fgnd+"\n"+ll+","+needle+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 pay = "0,"+ll+","+node.fgnd+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
                         }

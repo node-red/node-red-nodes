@@ -33,10 +33,10 @@ module.exports = function(RED) {
 
     }
     RED.nodes.registerType("irc-server",IRCServerNode, {
-          credentials: {
-               username: {type:"text"},
-               password: {type:"password"}
-           }
+        credentials: {
+            username: {type:"text"},
+            password: {type:"password"}
+        }
     });
 
 

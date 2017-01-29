@@ -12,7 +12,8 @@ module.exports = function(RED) {
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
-    } catch(err) {
+    }
+    catch(err) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 

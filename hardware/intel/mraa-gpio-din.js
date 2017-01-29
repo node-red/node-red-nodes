@@ -16,31 +16,37 @@ module.exports = function(RED) {
             var g = node.x.read();
             var msg = { payload:g, topic:node.board+"/D"+node.pin };
             switch (g) {
-                case 0:
+                case 0: {
                     node.status({fill:"green",shape:"ring",text:"low"});
                     if (node.interrupt=== "f" || node.interrupt === "b") {
                         node.send(msg);
                     }
                     break;
-                case 1:
+                }
+                case 1: {
                     node.status({fill:"green",shape:"dot",text:"high"});
                     if (node.interrupt=== "r" || node.interrupt === "b") {
                         node.send(msg);
                     }
                     break;
-                default:
+                }
+                default: {
                     node.status({fill:"grey",shape:"ring",text:"unknown"});
+                }
             }
         });
         switch (node.x.read()) {
-            case 0:
+            case 0: {
                 node.status({fill:"green",shape:"ring",text:"low"});
                 break;
-            case 1:
+            }
+            case 1: {
                 node.status({fill:"green",shape:"dot",text:"high"});
                 break;
-            default:
+            }
+            default: {
                 node.status({});
+            }
         }
         this.on('close', function() {
             node.x.isr(m.EDGE_BOTH, null);

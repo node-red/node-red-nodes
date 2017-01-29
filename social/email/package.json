@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-email",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Node-RED nodes to send and receive simple emails",
   "dependencies": {
     "nodemailer": "^1.11.0",

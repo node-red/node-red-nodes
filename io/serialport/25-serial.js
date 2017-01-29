@@ -45,11 +45,13 @@ module.exports = function(RED) {
                     if (!Buffer.isBuffer(payload)) {
                         if (typeof payload === "object") {
                             payload = JSON.stringify(payload);
-                        } else {
+                        }
+                        else {
                             payload = payload.toString();
                         }
                         payload += node.addCh;
-                    } else if (node.addCh !== "") {
+                    }
+                    else if (node.addCh !== "") {
                         payload = Buffer.concat([payload,new Buffer(node.addCh)]);
                     }
                     node.port.write(payload,function(err,res) {
@@ -66,14 +68,16 @@ module.exports = function(RED) {
             node.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
-        } else {
+        }
+        else {
             this.error(RED._("serial.errors.missing-conf"));
         }
 
         this.on("close", function(done) {
             if (this.serialConfig) {
                 serialPool.close(this.serialConfig.serialport,done);
-            } else {
+            }
+            else {
                 done();
             }
         });
@@ -105,7 +109,8 @@ module.exports = function(RED) {
             var splitc;
             if (node.serialConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.serialConfig.newline)]);
-            } else {
+            }
+            else {
                 splitc = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
             }
 
@@ -169,14 +174,16 @@ module.exports = function(RED) {
             this.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
-        } else {
+        }
+        else {
             this.error(RED._("serial.errors.missing-conf"));
         }
 
         this.on("close", function(done) {
             if (this.serialConfig) {
                 serialPool.close(this.serialConfig.serialport,done);
-            } else {
+            }
+            else {
                 done();
             }
         });
@@ -273,7 +280,8 @@ module.exports = function(RED) {
                     }
                     catch(err) { }
                     delete connections[port];
-                } else {
+                }
+                else {
                     done();
                 }
             }

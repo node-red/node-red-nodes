@@ -29,7 +29,8 @@ module.exports = function(RED) {
                     if (lt && ln) {
                         msg.location.geohash = geohash.encode(lt, ln, le);
                         node.send(msg);
-                    } else {
+                    }
+                    else {
                         node.warn("lat or lon missing from msg.location");
                     }
                 }
@@ -62,7 +63,8 @@ module.exports = function(RED) {
                         if (!isNaN(la) && !isNaN(lo)) {
                             msg.payload = geohash.encode(la, lo, li);
                             node.send(msg);
-                        } else {
+                        }
+                        else {
                             node.warn("Incorrect string format - should be lat,lon");
                         }
                     }
@@ -79,7 +81,8 @@ module.exports = function(RED) {
                 if (lat && lon) {
                     msg.payload.geohash = geohash.encode(lat, lon, len);
                     node.send(msg);
-                } else {
+                }
+                else {
                     node.warn("lat or lon missing from msg.payload");
                 }
             }

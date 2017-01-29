@@ -18,7 +18,8 @@ module.exports = function(RED) {
                 node.session.get(oids.split(","), function(error, varbinds) {
                     if (error) {
                         node.error(error.toString(),msg);
-                    } else {
+                    }
+                    else {
                         for (var i = 0; i < varbinds.length; i++) {
                             if (snmp.isVarbindError(varbinds[i])) {
                                 node.error(snmp.varbindError(varbinds[i]),msg);
@@ -62,7 +63,8 @@ module.exports = function(RED) {
         function responseCb(error, table) {
             if (error) {
                 console.error(error.toString());
-            } else {
+            }
+            else {
                 var indexes = [];
                 for (var index in table) {
                     if (table.hasOwnProperty(index)) {

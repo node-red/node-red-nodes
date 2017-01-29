@@ -19,7 +19,8 @@ module.exports = function(RED) {
 
     try {
         var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
-    } catch(err) {
+    }
+    catch(err) {
     }
 
     function EmailNode(n) {
@@ -57,7 +58,7 @@ module.exports = function(RED) {
         var smtpTransport = nodemailer.createTransport({
             host: node.outserver,
             port: node.outport,
-            secure: true,
+            secure: node.useSSL,
             auth: {
                 user: node.userid,
                 pass: node.password

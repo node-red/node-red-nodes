@@ -22,7 +22,8 @@ module.exports = function(RED) {
                                 node.log("sent WOL magic packet");
                             }
                         });
-                    } catch(e) {
+                    }
+                    catch(e) {
                         if (RED.settings.verbose) { node.log("WOL: socket error"); }
                     }
                 }
