@@ -36,8 +36,10 @@ module.exports = function(RED) {
                         done();
                         if (RED.settings.verbose) { node.log(RED._("arduino.status.portclosed")); }
                     });
-                } catch(e) { done(); }
-            } else { done(); }
+                }
+                catch(e) { done(); }
+            }
+            else { done(); }
         });
     }
     RED.nodes.registerType("arduino-board",ArduinoNode);
