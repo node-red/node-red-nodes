@@ -239,7 +239,7 @@ module.exports = function(RED) {
 
             pop3Client.on("connect", function() {
                 //node.log("We are now connected");
-                pop3Client.login("kolban@test.com", "password");
+                pop3Client.login(node.userid, node.password);
             });
 
             pop3Client.on("login", function(status, rawData) {
@@ -253,7 +253,7 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("retr", function(status, msgNumber, data, rawData) {
-                node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
+                // node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
                 if (status) {
 
                     // We have now received a new email message.  Create an instance of a mail parser
