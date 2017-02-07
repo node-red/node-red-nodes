@@ -16,6 +16,13 @@ module.exports = function(RED) {
         var old = null;
 
         this.on('input', function (msg) {
+            if (msg.hasOwnProperty("reset")) {
+                a = [];
+                tot = 0;
+                tot2 = 0;
+                pop = 0;
+                old = null;
+            }
             if (msg.hasOwnProperty("payload")) {
                 var n = Number(msg.payload);
                 if (!isNaN(n)) {

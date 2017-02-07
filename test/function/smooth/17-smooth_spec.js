@@ -48,6 +48,27 @@ describe('smooth node', function() {
         });
     });
 
+    it('should be able to be reset', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 3) { msg.should.have.a.property("payload", 2); }
+                if (c === 6) { msg.should.have.a.property("payload", 5); done(); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:3});
+            n1.emit("input", {reset:true, payload:4});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:6});
+        });
+    });
+
     it('should output max over a number of inputs', function(done) {
         var flow = [{"id":"n1", "type":"smooth", action:"max", count:"5", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
