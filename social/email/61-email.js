@@ -29,6 +29,7 @@ module.exports = function(RED) {
         this.name = n.name;
         this.outserver = n.server;
         this.outport = n.port;
+        this.secure = n.secure;
         var flag = false;
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
@@ -58,7 +59,7 @@ module.exports = function(RED) {
         var smtpTransport = nodemailer.createTransport({
             host: node.outserver,
             port: node.outport,
-            secure: node.useSSL,
+            secure: node.secure,
             auth: {
                 user: node.userid,
                 pass: node.password

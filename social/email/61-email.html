@@ -35,7 +35,10 @@
     </div>
     <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
-        <input type="text" id="node-input-port" placeholder="465">
+        <input type="text" id="node-input-port" placeholder="465" style="width:100px">
+        <label style="width:40px"> </label>
+        <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
+        Use secure connection.
     </div>
     <div class="form-row">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
@@ -77,6 +80,7 @@
         defaults: {
             server: {value:"smtp.gmail.com",required:true},
             port: {value:"465",required:true},
+            secure: {value: true},
             name: {value:""},
             dname: {value:""}
         },
