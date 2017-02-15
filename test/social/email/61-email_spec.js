@@ -54,6 +54,43 @@ describe('email Node', function () {
             });
         });
 
+        it('should fail with no payload', function (done) {
+            var flow = [{
+                id: "n1",
+                type: "e-mail",
+                name: "emailout",
+                wires: [
+                    []
+                ]
+            }];
+            helper.load(emailNode, flow, function () {
+                var n1 = helper.getNode("n1");
+                n1.credentials = {
+                    userid: "test",
+                    password: "test",
+                };
+                n1.emit("input", {});
+                //done();
+            });
+            setTimeout(function () {
+                try {
+                    var logEvents = helper.log().args.filter(function (evt) {
+                        //console.log(evt[0].msg);
+                        return evt[0].type == "e-mail";
+                    });
+                    //console.log(helper.log().args);
+                    //console.log(helper.log());
+                    //logEvents.should.have.length(3);
+                    logEvents[0][0].should.have.a.property('msg');
+                    logEvents[0][0].msg.toString().should.startWith("email.errors.nopayload");
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+                //finally { smtpTransport.sendMail.restore(); }
+            }, 1000);
+        });
+
         it('should fail to send an email (invalid creds)', function (done) {
             //var smtpTransport = require("nodemailer").createTransport();
             //var spy = sinon.stub(smtpTransport, 'sendMail', function(arg1,arg2,arg3,arg4) {
@@ -68,14 +105,16 @@ describe('email Node', function () {
                 server: "smtp.gmail.com",
                 secure: true,
                 port: "465",
-                userid: "test",
-                password: "test",
                 wires: [
                     []
                 ]
             }];
             helper.load(emailNode, flow, function () {
                 var n1 = helper.getNode("n1");
+                n1.credentials = {
+                    userid: "test",
+                    password: "test",
+                };
                 n1.should.have.property('name', "test@gmail.com");
                 n1.emit("input", {
                     payload: "Hello World",
