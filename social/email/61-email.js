@@ -37,8 +37,6 @@ module.exports = function(RED) {
             if (globalkeys) {
                 this.userid = globalkeys.user;
                 flag = true;
-            } else {
-                this.error(RED._("email.errors.nouserid"));
             }
         }
         if (this.credentials && this.credentials.hasOwnProperty("password")) {
@@ -47,8 +45,6 @@ module.exports = function(RED) {
             if (globalkeys) {
                 this.password = globalkeys.pass;
                 flag = true;
-            } else {
-                this.error(RED._("email.errors.nopassword"));
             }
         }
         if (flag) {
@@ -59,12 +55,15 @@ module.exports = function(RED) {
         var smtpTransport = nodemailer.createTransport({
             host: node.outserver,
             port: node.outport,
-            secure: node.secure,
-            auth: {
+            secure: node.secure
+        });
+
+        if(this.userid && this.password) {
+            smtpTransport.auth = {
                 user: node.userid,
                 pass: node.password
-            }
-        });
+            };
+        }
 
         this.on("input", function(msg) {
             if (msg.hasOwnProperty("payload")) {
@@ -113,7 +112,7 @@ module.exports = function(RED) {
                         }
                     });
                 }
-                else { node.warn(RED._("email.errors.nocredentials")); }
+                else { node.warn(RED._("email.errors.nosmtptransport")); }
             }
             else { node.warn(RED._("email.errors.nopayload")); }
         });
