@@ -38,6 +38,7 @@
             "nouserid": "No e-mail userid set",
             "nopassword": "No e-mail password set",
             "nocredentials": "No Email credentials found. See info panel.",
+            "nosmtptransport": "No SMTP transport. See info panel.",
             "nopayload": "No payload to send",            
             "fetchfail": "Failed to fetch folder: __folder__",
             "messageerror": "Fetch message error: __error__"
