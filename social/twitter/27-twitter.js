@@ -472,13 +472,18 @@ module.exports = function(RED) {
             else {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
-                res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
+
+				// Send the authorization URL in the body, not as a 302 redirect.
+                // The client will pass the URL to a new window. A full AJAX request and 200 response
+                // is required to get through the authorization check in this endpoint.
+                res.send('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
+
                 RED.nodes.addCredentials(req.params.id,credentials);
             }
         });
     });
 
-    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', RED.auth.needsPermission('twitter.read'), function(req, res, next) {
+    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
         var credentials = RED.nodes.getCredentials(req.params.id);
         credentials.oauth_verifier = req.query.oauth_verifier;
 
