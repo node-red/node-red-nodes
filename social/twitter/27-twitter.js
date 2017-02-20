@@ -484,6 +484,9 @@ module.exports = function(RED) {
     });
 
     RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
+		// This endpoint doesn't have the RED.auth.needsPermission() middleware, because it's 
+        // being called from the Twitter authorization page, and can't add the user's 
+        // Node-RED authorization bearer token in the request header.
         var credentials = RED.nodes.getCredentials(req.params.id);
         credentials.oauth_verifier = req.query.oauth_verifier;
 
