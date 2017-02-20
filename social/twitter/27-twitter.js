@@ -473,7 +473,7 @@ module.exports = function(RED) {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
 
-				// Send the authorization URL in the body, not as a 302 redirect.
+                // Send the authorization URL in the body, not as a 302 redirect.
                 // The client will pass the URL to a new window. A full AJAX request and 200 response
                 // is required to get through the authorization check in this endpoint.
                 res.send('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
@@ -484,7 +484,7 @@ module.exports = function(RED) {
     });
 
     RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
-		// This endpoint doesn't have the RED.auth.needsPermission() middleware, because it's 
+        // This endpoint doesn't have the RED.auth.needsPermission() middleware, because it's 
         // being called from the Twitter authorization page, and can't add the user's 
         // Node-RED authorization bearer token in the request header.
         var credentials = RED.nodes.getCredentials(req.params.id);
