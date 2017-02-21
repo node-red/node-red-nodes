@@ -52,22 +52,19 @@ module.exports = function(RED) {
         }
         var node = this;
 
-        var smtpTransport = nodemailer.createTransport({
+        var smtpOptions = {
             host: node.outserver,
             port: node.outport,
-            secure: node.secure,
-            auth: {
-                user: node.userid,
-                pass: node.password
-            }
-        });
+            secure: node.secure
+        }
 
         if(this.userid && this.password) {
-            smtpTransport.auth = {
+            smtpOptions.auth = {
                 user: node.userid,
                 pass: node.password
             };
         }
+        var smtpTransport = nodemailer.createTransport(smtpOptions);
 
         this.on("input", function(msg) {
             if (msg.hasOwnProperty("payload")) {
