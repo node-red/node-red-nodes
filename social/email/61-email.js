@@ -57,6 +57,7 @@ module.exports = function(RED) {
             port: node.outport,
             secure: node.secure
         }
+
         if(this.userid && this.password) {
             smtpOptions.auth = {
                 user: node.userid,
