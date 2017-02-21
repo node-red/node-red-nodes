@@ -55,7 +55,11 @@ module.exports = function(RED) {
         var smtpTransport = nodemailer.createTransport({
             host: node.outserver,
             port: node.outport,
-            secure: node.secure
+            secure: node.secure,
+            auth: {
+                user: node.userid,
+                pass: node.password
+            }
         });
 
         if(this.userid && this.password) {
