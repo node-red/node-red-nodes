@@ -185,6 +185,7 @@ module.exports = function(RED) {
             msg.payload = mailMessage.text;
             msg.topic = mailMessage.subject;
             msg.date = mailMessage.date;
+            msg.header = mailMessage.headers;
             if (mailMessage.html) { msg.html = mailMessage.html; }
             if (mailMessage.to && mailMessage.from.to > 0) { msg.to = mailMessage.to; }
             if (mailMessage.cc && mailMessage.from.cc > 0) { msg.cc = mailMessage.cc; }
