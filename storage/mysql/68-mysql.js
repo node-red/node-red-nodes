@@ -17,62 +17,77 @@ module.exports = function(RED) {
         this.setMaxListeners(0);
         var node = this;
 
-        function doConnect() {
-            node.connecting = true;
-            node.emit("state","connecting");
-            node.connection = mysqldb.createConnection({
-                host : node.host,
-                port : node.port,
-                user : node.credentials.user,
-                password : node.credentials.password,
-                database : node.dbname,
-                timezone : node.tz,
-                insecureAuth: true,
-                multipleStatements: true
-            });
-
-            node.connection.connect(function(err) {
-                node.connecting = false;
+        function checkVer() {
+            node.connection.query("SELECT version();", [], function(err, rows) {
                 if (err) {
-                    node.error(err);
-                    node.emit("state",err.code);
-                    node.tick = setTimeout(doConnect, reconnect);
-                } else {
-                    node.connected = true;
-                    node.emit("state","connected");
-                }
-            });
-
-            node.connection.on('error', function(err) {
-                node.connected = false;
-                node.emit("state",err.code);
-                if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-                    doConnect(); // silently reconnect...
-                } else {
-                    node.error(err);
+                    node.connection.release();
+                    node.error(err,msg);
+                    node.status({fill:"red",shape:"ring",text:"Bad Ping"});
                     doConnect();
                 }
             });
         }
 
+        function doConnect() {
+            node.connecting = true;
+            node.emit("state","connecting");
+            if (!node.pool) {
+                node.pool = mysqldb.createPool({
+                    host : node.host,
+                    port : node.port,
+                    user : node.credentials.user,
+                    password : node.credentials.password,
+                    database : node.dbname,
+                    timezone : node.tz,
+                    insecureAuth: true,
+                    multipleStatements: true,
+                    connectionLimit: 25
+                });
+            }
+
+            node.pool.getConnection(function(err, connection) {
+                node.connecting = false;
+                if (err) {
+                    node.emit("state",err.code);
+                    node.error(err);
+                    node.tick = setTimeout(doConnect, reconnect);
+                }
+                else {
+                    node.connection = connection;
+                    node.connected = true;
+                    node.emit("state","connected");
+                    node.connection.on('error', function(err) {
+                        node.connected = false;
+                        node.connection.release();
+                        node.emit("state",err.code);
+                        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                            doConnect(); // silently reconnect...
+                        }
+                        else if (err.code === 'ECONNRESET') {
+                            doConnect(); // silently reconnect...
+                        }
+                        else {
+                            node.error(err);
+                            doConnect();
+                        }
+                    });
+                    if (!node.check) { node.check = setInterval(checkVer, 290000); }
+                }
+            });
+        }
+
         this.connect = function() {
-            if (!this.connected && !this.connecting) { doConnect(); }
-            if (this.connected) { node.emit("state","connected"); }
-            else { node.emit("state","connecting"); }
+            if (!this.connected && !this.connecting) {
+                doConnect();
+            }
         }
 
         this.on('close', function (done) {
             if (this.tick) { clearTimeout(this.tick); }
+            if (this.check) { clearInterval(this.check); }
             node.connected = false;
             node.emit("state"," ");
-            if (this.connection) {
-                node.connection.end(function(err) {
-                    if (err) { node.error(err); }
-                    done();
-                });
-            } else {
-                done();
-            }
+            node.pool.end(function (err) { done(); });
         });
     }
     RED.nodes.registerType("MySQLdatabase",MySQLNode, {
