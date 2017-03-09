@@ -6,11 +6,9 @@ module.exports = function(RED) {
     var what3wordsNode = function(n) {
         RED.nodes.createNode(this, n);
         this.lang = n.lang || "en";
-        var credentials = RED.nodes.getCredentials(n.id);
-        if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
-        else { this.error("No what3words API key set"); }
-        this.w3w = new What3Words(this.pushkey);
         var node = this;
+        //if ( !node.credentials.apikey ) { this.error("No what3words API key set"); }
+        this.w3w = new What3Words(node.credentials.apikey);
         var w1 = /^\*\w{6,31}$/;
         var w3 = /^\w+\.\w+\.\w+$/;
         this.on("input", function(msg) {
@@ -69,41 +67,7 @@ module.exports = function(RED) {
             else { node.warn("No useable data found. See info."); }
         });
     }
-    RED.nodes.registerType("what3words", what3wordsNode);
-
-    var querystring = require('querystring');
-
-    RED.httpAdmin.get('/what3words/:id', RED.auth.needsPermission('what3words.read'), function(req, res) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        if (credentials) {
-            res.send(JSON.stringify({hasPassword:(credentials.pushkey && credentials.pushkey !== "")}));
-        }
-        else {
-            res.send(JSON.stringify({}));
-        }
-    });
-
-    RED.httpAdmin.delete('/what3words/:id', RED.auth.needsPermission('what3words.write'), function(req, res) {
-        RED.nodes.deleteCredentials(req.params.id);
-        res.send(200);
-    });
-
-    RED.httpAdmin.post('/what3words/:id', RED.auth.needsPermission('what3words.write'), function(req, res) {
-        var body = "";
-        req.on('data', function(chunk) {
-            body += chunk;
-        });
-        req.on('end', function() {
-            var newCreds = querystring.parse(body);
-            var credentials = RED.nodes.getCredentials(req.params.id) || {};
-            if (newCreds.pushkey === "") {
-                delete credentials.pushkey;
-            }
-            else {
-                credentials.pushkey = newCreds.pushkey || credentials.pushkey;
-            }
-            RED.nodes.addCredentials(req.params.id, credentials);
-            res.send(200);
-        });
+    RED.nodes.registerType("what3words", what3wordsNode, {
+        credentials: { apikey: {type: "password"} }
     });
 }
