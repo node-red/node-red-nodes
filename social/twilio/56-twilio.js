@@ -10,7 +10,7 @@ module.exports = function(RED) {
     }
 
     RED.httpAdmin.get('/twilio-api/global', RED.auth.needsPermission("twilio.read"), function(req,res) {
-        res.json({hasToken:!(twiliokey && twiliokey.account && twiliokey.authtoken)});
+        res.json({hasToken:!!(twiliokey && twiliokey.account && twiliokey.authtoken)});
     });
 
     function TwilioAPINode(n) {
