@@ -33,5 +33,7 @@ the more the smoothing. E.g. a value of 10 is similar to an &alpha; of 0.1.
 It is analogous to an RC time constant - but there is no time component to
 this as the code is based on events arriving.
 
+If `msg.reset` is received (with any value), all the counters and intermediate values are reset to an initial state.
+
 **Note:** This node only operates on **numbers**. Anything else will try to be
 made into a number and rejected if that fails.

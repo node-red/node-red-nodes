@@ -1,18 +1,3 @@
-/**
- * Copyright 2015,2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 var should = require("should");
 var helper = require('../../../test/helper.js');
@@ -60,6 +45,27 @@ describe('smooth node', function() {
             n1.emit("input", {payload:3});
             n1.emit("input", {payload:4});
             n1.emit("input", {payload:4.786});
+        });
+    });
+
+    it('should be able to be reset', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 3) { msg.should.have.a.property("payload", 2); }
+                if (c === 6) { msg.should.have.a.property("payload", 5); done(); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:3});
+            n1.emit("input", {reset:true, payload:4});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:6});
         });
     });
 

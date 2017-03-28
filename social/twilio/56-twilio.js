@@ -1,19 +1,3 @@
-/**
- * Copyright 2014, 2015 Andrew D Lindsay @AndrewDLindsay
- * http://blog.thiseldo.co.uk
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -55,10 +39,12 @@ module.exports = function(RED) {
         if (this.api) {
             this.twilioClient = twilio(this.api.sid,this.api.token);
             this.fromNumber = this.api.from;
-        } else if (twiliokey) {
+        }
+        else if (twiliokey) {
             this.twilioClient = twilio(twiliokey.account, twiliokey.authtoken);
             this.fromNumber = twiliokey.from;
-        } else {
+        }
+        else {
             this.error("missing twilio credentials");
             return;
         }
@@ -82,7 +68,8 @@ module.exports = function(RED) {
                         }
                         //console.log(response);
                     });
-                } else {
+                }
+                else {
                     // Send SMS
                     node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
                         if (err) {
@@ -92,7 +79,8 @@ module.exports = function(RED) {
                     });
                 }
 
-            } catch (err) {
+            }
+            catch (err) {
                 node.error(err);
             }
         });

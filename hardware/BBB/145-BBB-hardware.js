@@ -1,18 +1,3 @@
-/**
- * Copyright 2014 Maxwell R Hadley
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function (RED) {
     "use strict";
@@ -29,9 +14,11 @@ module.exports = function (RED) {
     adjustName = function (pin) {
         if (pin === "P8_7") {
             pin = "P8_07";
-        } else if (pin === "P8_8") {
+        }
+        else if (pin === "P8_8") {
             pin = "P8_08";
-        } else if (pin === "P8_9") {
+        }
+        else if (pin === "P8_9") {
             pin = "P8_09";
         }
         return pin;
@@ -53,7 +40,8 @@ module.exports = function (RED) {
         this.averaging = n.averaging;
         if (this.averaging) {
             this.averages = 10;
-        } else {
+        }
+        else {
             this.averages = 1;
         }
 
@@ -69,7 +57,8 @@ module.exports = function (RED) {
             count = count - 1;
             if (count > 0) {
                 bonescript.analogRead(node._pin, analogReadCallback);
-            } else {
+            }
+            else {
                 var msg = {};
                 msg.topic = node.topic;
                 sum = sum/node.averages;
@@ -91,7 +80,8 @@ module.exports = function (RED) {
                 count = node.averages;
                 bonescript.analogRead(node._pin, analogReadCallback);
             });
-        } else {
+        }
+        else {
             node.error("Unconfigured input pin");
         }
     }
@@ -107,18 +97,22 @@ module.exports = function (RED) {
         this._pin = adjustName(this.pin);               // Adjusted for Octal if necessary
         if (n.activeLow) {                              // Set the 'active' state 0 or 1 as appropriate
             this.activeState = 0;
-        } else {
+        }
+        else {
             this.activeState = 1;
         }
         this.updateInterval = n.updateInterval*1000;    // How often to send totalActiveTime messages
         this.debounce = n.debounce || null;             // Enable switch contact debouncing algorithm
         if (n.outputOn === "rising") {
             this.activeEdges = [false, true];
-        } else if (n.outputOn === "falling") {
+        }
+        else if (n.outputOn === "falling") {
             this.activeEdges = [true, false];
-        } else if (n.outputOn === "both") {
+        }
+        else if (n.outputOn === "both") {
             this.activeEdges = [true, true];
-        } else {
+        }
+        else {
             node.error("Invalid edge type: " + n.outputOn);
         }
 
@@ -145,10 +139,12 @@ module.exports = function (RED) {
                     node.interruptAttached = true;
                     node.on("input", inputCallback);
                     node.intervalId = setInterval(timerCallback, node.updateInterval);
-                } else {
+                }
+                else {
                     node.error("Failed to attach interrupt");
                 }
-            } else if (node.currentState !== Number(x)) {
+            }
+            else if (node.currentState !== Number(x)) {
                 if (node.debounce) {
                     if (node.debouncing === false) {
                         node.debouncing = true;
@@ -156,7 +152,8 @@ module.exports = function (RED) {
                             bonescript.digitalRead(node._pin, debounceCallback);
                         }, Number(node.debounce));
                     }
-                } else {
+                }
+                else {
                     sendStateMessage(x);
                 }
             }
@@ -181,7 +178,8 @@ module.exports = function (RED) {
             var now = Date.now();
             if (node.currentState === node.activeState) {
                 node.lastActiveTime = now;
-            } else if (!isNaN(node.lastActiveTime)) {
+            }
+            else if (!isNaN(node.lastActiveTime)) {
                 node.totalActiveTime += now - node.lastActiveTime;
             }
             if (node.activeEdges[node.currentState]) {
@@ -218,7 +216,8 @@ module.exports = function (RED) {
         var inputCallback = function (ipMsg) {
             if (String(ipMsg.topic).search(/load/i) < 0 || isFinite(ipMsg.payload) === false) {
                 node.totalActiveTime = 0;
-            } else {
+            }
+            else {
                 node.totalActiveTime = Number(ipMsg.payload);
             }
             if (node.currentState === node.activeState) {
@@ -232,7 +231,8 @@ module.exports = function (RED) {
                 if (node.activeEdges[0] && node.activeEdges[1]) {
                     msg = [{topic: node.topic}, {topic: node.topic}];
                     msg[0].payload = node.currentState;
-                } else {
+                }
+                else {
                     msg = [null, {topic: node.topic}];
                 }
                 msg[1].payload = node.totalActiveTime;
@@ -261,12 +261,14 @@ module.exports = function (RED) {
                                 node.emit("input", {});
                             }, 50);
                         });
-                    } else {
+                    }
+                    else {
                         node.error("Unable to set " + pin + " as input: " + response);
                     }
                 });
             });
-        } else {
+        }
+        else {
             node.error("Unconfigured input pin");
         }
     }
@@ -301,10 +303,12 @@ module.exports = function (RED) {
                     node.interruptAttached = true;
                     node.on("input", inputCallback);
                     node.intervalId = setInterval(timerCallback, node.updateInterval);
-                } else {
+                }
+                else {
                     node.error("Failed to attach interrupt");
                 }
-            } else {
+            }
+            else {
                 node.pulseTime = [node.pulseTime[1], process.hrtime()];
                 node.pulseCount = node.pulseCount + 1;
             }
@@ -316,7 +320,8 @@ module.exports = function (RED) {
         var inputCallback = function (msg) {
             if (String(msg.topic).search(/load/i) < 0 || isFinite(msg.payload) === false) {
                 node.pulseCount = 0;
-            } else {
+            }
+            else {
                 node.pulseCount = Number(msg.payload);
             }
         };
@@ -352,19 +357,22 @@ module.exports = function (RED) {
                             if (node.countType === "pulse") {
                                 // interruptType = bonescript.FALLING; <- doesn't work in v0.2.4
                                 interruptType = bonescript.RISING;
-                            } else {
+                            }
+                            else {
                                 interruptType = bonescript.CHANGE;
                             }
                             // Attempt to attach the required interrupt handler to the pin. If we succeed,
                             // the input event and interval handlers will be installed by interruptCallback
                             bonescript.attachInterrupt(node._pin, interruptType, interruptCallback)
                         });
-                    } else {
+                    }
+                    else {
                         node.error("Unable to set " + pin + " as input: " + response);
                     }
                 });
             });
-        } else {
+        }
+        else {
             node.error("Unconfigured input pin");
         }
     }
@@ -391,12 +399,15 @@ module.exports = function (RED) {
             var newState;
             if (node.toggle) {
                 newState = node.currentState === 0 ? 1 : 0;
-            } else {
+            }
+            else {
                 if (isFinite(Number(msg.payload))) {
                     newState = Number(msg.payload) > 0.5;
-                } else if (msg.payload) {
+                }
+                else if (msg.payload) {
                     newState = true;
-                } else {
+                }
+                else {
                     newState = false;
                 }
                 if (node.inverting) {
@@ -417,7 +428,8 @@ module.exports = function (RED) {
                 setPinMode(node._pin, bonescript.OUTPUT, function (response, pin) {
                     if (response) {
                         node.error("Unable to set " + pin + " as output: " + response.err);
-                    } else {
+                    }
+                    else {
                         node.on("input", inputCallback);
                         setTimeout(function () {
                             bonescript.digitalWrite(node._pin, node.defaultState, function() {});
@@ -425,7 +437,8 @@ module.exports = function (RED) {
                     }
                 });
             });
-        } else {
+        }
+        else {
             node.error("Unconfigured output pin");
         }
     }
@@ -468,10 +481,12 @@ module.exports = function (RED) {
                             node.send({topic: node.topic, payload: node.pulseState});
                         });
                     }
-                } else {
+                }
+                else {
                     if (node.pulseTimer !== null) {
                         clearTimeout(node.pulseTimer);
-                    } else {
+                    }
+                    else {
                         bonescript.digitalWrite(node._pin, node.pulseState, function() {
                             node.send({topic: node.topic, payload: node.pulseState});
                         });
@@ -499,12 +514,14 @@ module.exports = function (RED) {
                         node.on("input", inputCallback);
                         // Set the pin to the default state once the dust settles
                         setTimeout(endPulseCallback, 50);
-                    } else {
+                    }
+                    else {
                         node.error("Unable to set " + pin + " as output: " + response.err);
                     }
                 });
             });
-        } else {
+        }
+        else {
             node.error("Unconfigured output pin");
         }
     }

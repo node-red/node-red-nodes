@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-node-hbgpio",
-    "version"      : "0.0.4",
+    "version"      : "0.0.5",
     "description"  : "A Node-RED node for the GPIO of the Hummingboard",
     "dependencies": {
     },

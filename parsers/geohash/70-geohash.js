@@ -1,18 +1,3 @@
-/**
- * Copyright 2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -44,7 +29,8 @@ module.exports = function(RED) {
                     if (lt && ln) {
                         msg.location.geohash = geohash.encode(lt, ln, le);
                         node.send(msg);
-                    } else {
+                    }
+                    else {
                         node.warn("lat or lon missing from msg.location");
                     }
                 }
@@ -77,7 +63,8 @@ module.exports = function(RED) {
                         if (!isNaN(la) && !isNaN(lo)) {
                             msg.payload = geohash.encode(la, lo, li);
                             node.send(msg);
-                        } else {
+                        }
+                        else {
                             node.warn("Incorrect string format - should be lat,lon");
                         }
                     }
@@ -94,7 +81,8 @@ module.exports = function(RED) {
                 if (lat && lon) {
                     msg.payload.geohash = geohash.encode(lat, lon, len);
                     node.send(msg);
-                } else {
+                }
+                else {
                     node.warn("lat or lon missing from msg.payload");
                 }
             }

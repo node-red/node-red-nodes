@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pisrf",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "A Node-RED node for a Raspberry Pi to use a SRF04 or SRF05 range finder",
     "dependencies"  : {
     },

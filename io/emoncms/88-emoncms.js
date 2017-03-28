@@ -1,18 +1,3 @@
-/**
- * Copyright 2013, 2015 Henrik Olsson henols@gmail.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 
 module.exports = function(RED) {
     "use strict";
@@ -49,7 +34,8 @@ module.exports = function(RED) {
             else {
                 if (msg.payload.indexOf(':') > -1) {
                     this.url += 'json={' + msg.payload + '}';
-                } else {
+                }
+                else {
                     this.url += 'csv='+msg.payload;
                 }
             }
@@ -111,7 +97,8 @@ module.exports = function(RED) {
                     if (msg.rc === 200) {
                         try {
                             msg.payload = JSON.parse(msg.payload);
-                        } catch(err) {
+                        }
+                        catch(err) {
                             // Failed to parse, pass it on
                         }
                         node.send(msg);

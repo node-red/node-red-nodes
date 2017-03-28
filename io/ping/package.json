@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-ping",
-    "version"       : "0.0.12",
+    "version"       : "0.0.13",
     "description"   : "A Node-RED node to ping a remote server, for use as a keep-alive check.",
     "dependencies"  : {
     },

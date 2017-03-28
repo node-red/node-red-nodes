@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-prowl",
-    "version"       : "0.0.7",
+    "version"       : "0.0.9",
     "description"   : "A Node-RED node to send alerts via Prowl",
     "dependencies"  : {
         "node-prowl"   : "0.1.7"

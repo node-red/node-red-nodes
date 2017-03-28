@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-piface",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "Node-RED nodes to read from and write to a PiFace Digital Raspberry Pi add-on board",
     "dependencies"  : {
     },

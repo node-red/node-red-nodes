@@ -1,18 +1,3 @@
-/**
- * Copyright 2013, 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
@@ -34,7 +19,8 @@ module.exports = function(RED) {
 
     try {
         var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
-    } catch(err) {
+    }
+    catch(err) {
     }
 
     function EmailNode(n) {
@@ -43,6 +29,7 @@ module.exports = function(RED) {
         this.name = n.name;
         this.outserver = n.server;
         this.outport = n.port;
+        this.secure = n.secure;
         var flag = false;
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
@@ -50,8 +37,6 @@ module.exports = function(RED) {
             if (globalkeys) {
                 this.userid = globalkeys.user;
                 flag = true;
-            } else {
-                this.error(RED._("email.errors.nouserid"));
             }
         }
         if (this.credentials && this.credentials.hasOwnProperty("password")) {
@@ -60,8 +45,6 @@ module.exports = function(RED) {
             if (globalkeys) {
                 this.password = globalkeys.pass;
                 flag = true;
-            } else {
-                this.error(RED._("email.errors.nopassword"));
             }
         }
         if (flag) {
@@ -69,15 +52,19 @@ module.exports = function(RED) {
         }
         var node = this;
 
-        var smtpTransport = nodemailer.createTransport({
+        var smtpOptions = {
             host: node.outserver,
             port: node.outport,
-            secure: true,
-            auth: {
+            secure: node.secure
+        }
+
+        if (this.userid && this.password) {
+            smtpOptions.auth = {
                 user: node.userid,
                 pass: node.password
-            }
-        });
+            };
+        }
+        var smtpTransport = nodemailer.createTransport(smtpOptions);
 
         this.on("input", function(msg) {
             if (msg.hasOwnProperty("payload")) {
@@ -126,7 +113,7 @@ module.exports = function(RED) {
                         }
                     });
                 }
-                else { node.warn(RED._("email.errors.nocredentials")); }
+                else { node.warn(RED._("email.errors.nosmtptransport")); }
             }
             else { node.warn(RED._("email.errors.nopayload")); }
         });
@@ -198,17 +185,14 @@ module.exports = function(RED) {
             msg.payload = mailMessage.text;
             msg.topic = mailMessage.subject;
             msg.date = mailMessage.date;
-            if (mailMessage.html) {
-                msg.html = mailMessage.html;
-            }
-            if (mailMessage.from && mailMessage.from.length > 0) {
-                msg.from = mailMessage.from[0].address;
-            }
-            if (mailMessage.attachments) {
-                msg.attachments = mailMessage.attachments;
-            } else {
-                msg.attachments = [];
-            }
+            msg.header = mailMessage.headers;
+            if (mailMessage.html) { msg.html = mailMessage.html; }
+            if (mailMessage.to && mailMessage.from.to > 0) { msg.to = mailMessage.to; }
+            if (mailMessage.cc && mailMessage.from.cc > 0) { msg.cc = mailMessage.cc; }
+            if (mailMessage.bcc && mailMessage.from.bcc > 0) { msg.bcc = mailMessage.bcc; }
+            if (mailMessage.from && mailMessage.from.length > 0) { msg.from = mailMessage.from[0].address; }
+            if (mailMessage.attachments) { msg.attachments = mailMessage.attachments; }
+            else { msg.attachments = []; }
             node.send(msg); // Propagate the message down the flow
         } // End of processNewMessage
 
@@ -257,7 +241,7 @@ module.exports = function(RED) {
 
             pop3Client.on("connect", function() {
                 //node.log("We are now connected");
-                pop3Client.login("kolban@test.com", "password");
+                pop3Client.login(node.userid, node.password);
             });
 
             pop3Client.on("login", function(status, rawData) {
@@ -271,7 +255,7 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("retr", function(status, msgNumber, data, rawData) {
-                node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
+                // node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
                 if (status) {
 
                     // We have now received a new email message.  Create an instance of a mail parser
@@ -337,11 +321,13 @@ module.exports = function(RED) {
                             return;
                         }
 
+                        var marks = false;
+                        if (node.disposition === "Read") { marks = true; }
                         // We have the search results that contain the list of unseen messages and can now fetch those messages.
                         var fetch = imap.fetch(results, {
                             bodies: '',
                             struct: true,
-                            markSeen : true
+                            markSeen: marks
                         });
 
                         // For each fetched message returned ...
@@ -368,14 +354,14 @@ module.exports = function(RED) {
 
                         // When we have fetched all the messages, we don't need the imap connection any more.
                         fetch.on('end', function() {
+                            node.status({});
                             var cleanup = function() {
-                                node.status({});
                                 imap.end();
                             };
-                            if (this.disposition == "Delete") {
+                            if (this.disposition === "Delete") {
                                 imap.addFlags(results, "\Deleted", cleanup);
-                            } else if (this.disposition == "Read") {
-                                imap.addFlags(results, "\Answered", cleanup);
+                            } else if (this.disposition === "Read") {
+                                imap.addFlags(results, "\Seen", cleanup);
                             } else {
                                 cleanup();
                             }
@@ -387,8 +373,8 @@ module.exports = function(RED) {
                     }); // End of imap->search
                 }); // End of imap->openInbox
             }); // End of imap->ready
-            imap.connect();
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            imap.connect();
         } // End of checkIMAP
 
 

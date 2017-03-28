@@ -1,18 +1,3 @@
-/**
- * Copyright 2013,2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -77,7 +62,8 @@ module.exports = function(RED) {
                     pusher.me(function(err, me) {
                         if (err) {
                             reject(err);
-                        } else {
+                        }
+                        else {
                             resolve(me);
                         }
                     });
@@ -89,7 +75,8 @@ module.exports = function(RED) {
                     pusher.history({limit:1}, function(err, res) {
                         if (err) {
                             resolve(0);
-                        } else {
+                        }
+                        else {
                             try {
                                 resolve(res.pushes[0].modified);
                             }
@@ -159,7 +146,8 @@ module.exports = function(RED) {
                 closing = true;
                 try {
                     this.stream.close();
-                } catch(err) {
+                }
+                catch(err) {
                     // Ignore error if not connected
                 }
             });
@@ -182,7 +170,8 @@ module.exports = function(RED) {
                         }
                         try {
                             resolve(res.pushes[0].modified);
-                        } catch(ex) {
+                        }
+                        catch(ex) {
                             resolve(last);
                         }
                     });
@@ -375,7 +364,8 @@ module.exports = function(RED) {
                             if (me) {
                                 deviceid = me.email;
                                 self.pushMsg(pushtype, deviceid, title, msg);
-                            } else {
+                            }
+                            else {
                                 self.error("Unable to push",msg);
                             }
                         });
@@ -472,7 +462,7 @@ module.exports = function(RED) {
         }
     };
 
-    RED.httpAdmin.get('/pushbullet/:id/migrate', function(req, res) {
+    RED.httpAdmin.get('/pushbullet/:id/migrate', RED.auth.needsPermission('pushbullet.read'), function(req, res) {
         var node = RED.nodes.getNode(req.params.id);
         if (node && node.migrated) {
             if (req.query.save) {
@@ -493,7 +483,7 @@ module.exports = function(RED) {
         }
     });
 
-    RED.httpAdmin.get('/pushbullet/:id/devices', function(req, res) {
+    RED.httpAdmin.get('/pushbullet/:id/devices', RED.auth.needsPermission('pushbullet.read'), function(req, res) {
         var config = RED.nodes.getNode(req.params.id);
         var cred = RED.nodes.getCredentials(req.params.id);
         var pb;

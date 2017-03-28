@@ -1,18 +1,3 @@
-/**
- * Copyright 2014,2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -115,7 +100,8 @@ module.exports = function(RED) {
                     },node.uuid);
                 }
             },15000);
-        } else {
+        }
+        else {
             console.log("reconfig",node.uuid);
             enable(node);
         }
@@ -129,46 +115,54 @@ module.exports = function(RED) {
     var enable = function(node) {
         if (node.temperature) {
             node.stag.notifyIrTemperature(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyIrTemperature(function() {});
         }
         if (node.pressure) {
             node.stag.notifyBarometricPressure(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyBarometricPressure(function() {});
         }
         if (node.humidity) {
             node.stag.notifyHumidity(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyHumidity(function() {});
         }
         if (node.accelerometer) {
             node.stag.notifyAccelerometer(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyAccelerometer(function() {});
         }
         if (node.magnetometer) {
             node.stag.notifyMagnetometer(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyMagnetometer(function() {});
         }
         if (node.gyroscope) {
             node.stag.notifyGyroscope(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifyGyroscope(function() {});
         }
         if (node.stag.type === "cc2650") {
             if (node.luxometer) {
                 node.stag.enableLuxometer(function() {});
                 node.stag.notifyLuxometer(function() {});
-            } else {
+            }
+            else {
                 node.stag.unnotifyLuxometer(function() {});
                 node.stag.disableLuxometer(function() {});
             }
         }
         if (node.keys) {
             node.stag.notifySimpleKey(function() {});
-        } else {
+        }
+        else {
             node.stag.unnotifySimpleKey(function() {});
         }
     }

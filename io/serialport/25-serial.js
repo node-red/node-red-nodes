@@ -1,18 +1,3 @@
-/**
-* Copyright 2013,2015 IBM Corp.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
 
 module.exports = function(RED) {
     "use strict";
@@ -60,11 +45,13 @@ module.exports = function(RED) {
                     if (!Buffer.isBuffer(payload)) {
                         if (typeof payload === "object") {
                             payload = JSON.stringify(payload);
-                        } else {
+                        }
+                        else {
                             payload = payload.toString();
                         }
                         payload += node.addCh;
-                    } else if (node.addCh !== "") {
+                    }
+                    else if (node.addCh !== "") {
                         payload = Buffer.concat([payload,new Buffer(node.addCh)]);
                     }
                     node.port.write(payload,function(err,res) {
@@ -81,14 +68,16 @@ module.exports = function(RED) {
             node.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
-        } else {
+        }
+        else {
             this.error(RED._("serial.errors.missing-conf"));
         }
 
         this.on("close", function(done) {
             if (this.serialConfig) {
                 serialPool.close(this.serialConfig.serialport,done);
-            } else {
+            }
+            else {
                 done();
             }
         });
@@ -120,7 +109,8 @@ module.exports = function(RED) {
             var splitc;
             if (node.serialConfig.newline.substr(0,2) == "0x") {
                 splitc = new Buffer([parseInt(node.serialConfig.newline)]);
-            } else {
+            }
+            else {
                 splitc = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
             }
 
@@ -184,14 +174,16 @@ module.exports = function(RED) {
             this.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
-        } else {
+        }
+        else {
             this.error(RED._("serial.errors.missing-conf"));
         }
 
         this.on("close", function(done) {
             if (this.serialConfig) {
                 serialPool.close(this.serialConfig.serialport,done);
-            } else {
+            }
+            else {
                 done();
             }
         });
@@ -288,7 +280,8 @@ module.exports = function(RED) {
                     }
                     catch(err) { }
                     delete connections[port];
-                } else {
+                }
+                else {
                     done();
                 }
             }

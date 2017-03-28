@@ -1,18 +1,3 @@
-/**
- * Copyright 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -22,8 +7,11 @@ module.exports = function(RED) {
 
     var piCommand = __dirname+'/neopix';
 
-    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //RED.log.info(RED._("rpi-gpio.errors.ignorenode"));
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+    }
+    catch(err) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
@@ -70,7 +58,8 @@ module.exports = function(RED) {
                             if (node.mode.indexOf("need") >= 0) {
                                 needle = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 node.fgnd = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
@@ -91,7 +80,8 @@ module.exports = function(RED) {
                             ll = ll - 1;
                             if (node.mode.indexOf("need") >= 0) {
                                 pay = "0,"+(ll-1)+","+node.fgnd+"\n"+ll+","+needle+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 pay = "0,"+ll+","+node.fgnd+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
                         }

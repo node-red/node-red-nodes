@@ -1,18 +1,3 @@
-/**
- * Copyright 2013, 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -47,7 +32,8 @@ module.exports = function(RED) {
                     msg.location.lon = msg.tweet.geo.coordinates[1];
                     msg.location.icon = "twitter";
                 }
-            } else if (msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
+            }
+            else if (msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
                 if (msg.tweet.coordinates.coordinates && msg.tweet.coordinates.coordinates.length === 2) {
                     if (!msg.location) { msg.location = {}; }
                     // WARNING! coordinates[1] is lat, coordinates[0] is lon!!!
@@ -109,7 +95,8 @@ module.exports = function(RED) {
                                 }
                                 if (cb[0]) {
                                     node.since_ids[u] = cb[0].id_str;
-                                } else {
+                                }
+                                else {
                                     node.since_ids[u] = '0';
                                 }
                                 node.poll_ids.push(setInterval(function() {
@@ -158,7 +145,8 @@ module.exports = function(RED) {
                     }
                     if (cb[0]) {
                         node.since_id = cb[0].id_str;
-                    } else {
+                    }
+                    else {
                         node.since_id = '0';
                     }
                     node.poll_ids.push(setInterval(function() {
@@ -189,6 +177,62 @@ module.exports = function(RED) {
                             });
                     },120000));
                 });
+            }
+            else if (this.user === "event") {
+                try {
+                    var thingu = 'user';
+                    var setupEvStream = function() {
+                        if (node.active) {
+                            twit.stream(thingu, st, function(stream) {
+                                node.status({fill:"green", shape:"dot", text:" "});
+                                node.stream = stream;
+                                stream.on('data', function(tweet) {
+                                    if (tweet.event !== undefined) {
+                                        var where = tweet.source.location;
+                                        var la = tweet.source.lang;
+                                        var msg = { topic:node.topic+"/"+tweet.source.screen_name, payload:tweet.event, lang:la, tweet:tweet };
+                                        if (where) {
+                                            msg.location = {place:where};
+                                            addLocationToTweet(msg);
+                                        }
+                                        node.send(msg);
+                                    }
+                                });
+                                stream.on('limit', function(tweet) {
+                                    node.status({fill:"grey", shape:"dot", text:" "});
+                                    node.tout2 = setTimeout(function() { node.status({fill:"green", shape:"dot", text:" "}); },10000);
+                                });
+                                stream.on('error', function(tweet,rc) {
+                                    //console.log("ERRO",rc,tweet);
+                                    if (rc == 420) {
+                                        node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
+                                    }
+                                    else {
+                                        node.status({fill:"red", shape:"ring", text:" "});
+                                        node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
+                                    }
+                                    twitterRateTimeout = Date.now() + retry;
+                                    if (node.restart) {
+                                        node.tout = setTimeout(function() { setupEvStream() },retry);
+                                    }
+                                });
+                                stream.on('destroy', function (response) {
+                                    //console.log("DEST",response)
+                                    twitterRateTimeout = Date.now() + 15000;
+                                    if (node.restart) {
+                                        node.status({fill:"red", shape:"dot", text:" "});
+                                        node.warn(RED._("twitter.errors.unexpectedend"));
+                                        node.tout = setTimeout(function() { setupEvStream() },15000);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                    setupEvStream();
+                }
+                catch (err) {
+                    node.error(err);
+                }
             }
             else {
                 try {
@@ -225,7 +269,8 @@ module.exports = function(RED) {
                                     //console.log("ERRO",rc,tweet);
                                     if (rc == 420) {
                                         node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
-                                    } else {
+                                    }
+                                    else {
                                         node.status({fill:"red", shape:"ring", text:tweet.toString()});
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
@@ -369,13 +414,15 @@ module.exports = function(RED) {
                             if (err) {
                                 node.error(err,msg);
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                            } else {
+                            }
+                            else {
                                 var response = JSON.parse(body);
                                 if (response.errors) {
                                     var errorList = response.errors.map(function(er) { return er.code+": "+er.message }).join(", ");
                                     node.error(RED._("twitter.errors.sendfail",{error:errorList}),msg);
                                     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                } else {
+                                }
+                                else {
                                     node.status({});
                                 }
                             }
@@ -384,7 +431,8 @@ module.exports = function(RED) {
                         form.append("status",msg.payload);
                         form.append("media[]",msg.media,{filename:"image"});
 
-                    } else {
+                    }
+                    else {
                         if (typeof msg.params === 'undefined') { msg.params = {}; }
                         twit.updateStatus(msg.payload, msg.params, function (err, data) {
                             if (err) {
@@ -420,7 +468,8 @@ module.exports = function(RED) {
                 var err = {statusCode: 401, data: "dummy error"};
                 var resp = RED._("twitter.errors.oautherror",{statusCode: err.statusCode, errorData: err.data});
                 res.send(resp)
-            } else {
+            }
+            else {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
                 res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
@@ -441,7 +490,8 @@ module.exports = function(RED) {
                 if (error) {
                     RED.log.error(error);
                     res.send(RED._("twitter.errors.oauthbroke"));
-                } else {
+                }
+                else {
                     credentials = {};
                     credentials.access_token = oauth_access_token;
                     credentials.access_token_secret = oauth_access_token_secret;

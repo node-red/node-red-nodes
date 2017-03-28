@@ -1,18 +1,4 @@
-/**
- * Copyright 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
+
 "use strict"
 
 var events = require('events');
@@ -40,9 +26,9 @@ var getenddevs = {};
 getenddevs.path = '/upnp/control/bridge1';
 getenddevs.action = '"urn:Belkin:service:bridge:1#GetEndDevices"';
 getenddevs.body = [
-  postbodyheader, 
-  '<u:GetEndDevices xmlns:u="urn:Belkin:service:bridge:1">', 
-  '<DevUDN>%s</DevUDN>', 
+  postbodyheader,
+  '<u:GetEndDevices xmlns:u="urn:Belkin:service:bridge:1">',
+  '<DevUDN>%s</DevUDN>',
   '<ReqListType>PAIRED_LIST</ReqListType>',
   '</u:GetEndDevices>',
   postbodyfooter
@@ -52,9 +38,9 @@ var getcapabilities = {};
 getcapabilities.path = '/upnp/control/bridge1';
 getcapabilities.action = '"urn:Belkin:service:bridge:1#GetCapabilityProfileIDList"';
 getcapabilities.body = [
-  postbodyheader, 
-  '<u:GetCapabilityProfileIDList xmlns:u="urn:Belkin:service:bridge:1">', 
-  '<DevUDN>%s</DevUDN>', 
+  postbodyheader,
+  '<u:GetCapabilityProfileIDList xmlns:u="urn:Belkin:service:bridge:1">',
+  '<DevUDN>%s</DevUDN>',
   '</u:GetCapabilityProfileIDList>',
   postbodyfooter
 ].join('\n');
@@ -114,59 +100,61 @@ WeMoNG.prototype.start = function start() {
                 res.on('end',function() {
                   xml2js.parseString(data, function(err, result) {
                     if(!err) {
-                      var list = result["s:Envelope"]["s:Body"][0]["u:GetEndDevicesResponse"][0].DeviceLists[0];
-                      xml2js.parseString(list, function(err, result2) {
-                        if (!err) {
-                          var devinfo = result2.DeviceLists.DeviceList[0].DeviceInfos[0].DeviceInfo;
-                          for (var i=0; i<devinfo.length; i++) {
-                            var light = {
-                              "ip": ip,
-                              "port": port,
-                              "udn": device.UDN,
-                              "name": devinfo[i].FriendlyName[0],
-                              "id": devinfo[i].DeviceID[0],
-                              "capabilities": devinfo[i].CapabilityIDs[0],
-                              "state": devinfo[i].CurrentState[0],
-                              "type": "light",
-                              "device": device
-                            };
-                            var key = device.serialNumber + "-" + light.id;
-                            if (!_wemo.devices[key]){
-                              _wemo.devices[key] = light;
-                              _wemo.emit('discovered', key);
-                            } else {
-                              _wemo.devices[key] = light;
-                            }
-                          }
-                          var groupinfo = result2.DeviceLists.DeviceList[0].GroupInfos;
-                          if (groupinfo) {
-                            for(var i=0; i<groupinfo.length; i++) {
-                              var group = {
+                      if (result["s:Envelope"]) {
+                        var list = result["s:Envelope"]["s:Body"][0]["u:GetEndDevicesResponse"][0].DeviceLists[0];
+                        xml2js.parseString(list, function(err, result2) {
+                          if (!err) {
+                            var devinfo = result2.DeviceLists.DeviceList[0].DeviceInfos[0].DeviceInfo;
+                            for (var i=0; i<devinfo.length; i++) {
+                              var light = {
                                 "ip": ip,
                                 "port": port,
                                 "udn": device.UDN,
-                                "name": groupinfo[i].GroupInfo[0].GroupName[0],
-                                "id": groupinfo[i].GroupInfo[0].GroupID[0],
-                                "capabilities": groupinfo[i].GroupInfo[0].GroupCapabilityIDs[0],
-                                "state": groupinfo[i].GroupInfo[0].GroupCapabilityValues[0],
-                                "type": "light group",
-                                "lights": [],
+                                "name": devinfo[i].FriendlyName[0],
+                                "id": devinfo[i].DeviceID[0],
+                                "capabilities": devinfo[i].CapabilityIDs[0],
+                                "state": devinfo[i].CurrentState[0],
+                                "type": "light",
                                 "device": device
-                              }
-                              for(var j=0; j<groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo.length; j++) {
-                                group.lights.push(groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo[j].DeviceID[0]);
+                              };
+                              var key = device.serialNumber + "-" + light.id;
+                              if (!_wemo.devices[key]){
+                                _wemo.devices[key] = light;
+                                _wemo.emit('discovered', key);
+                              } else {
+                                _wemo.devices[key] = light;
                               }
                             }
-                            var key = device.serialNumber + "-" + group.id;
-                            if (!_wemo.devices[key]) {
-                              _wemo.devices[key] = group;
-                              _wemo.emit('discovered', key);
-                            } else {
-                              _wemo.devices[key] = group;
+                            var groupinfo = result2.DeviceLists.DeviceList[0].GroupInfos;
+                            if (groupinfo) {
+                              for(var i=0; i<groupinfo.length; i++) {
+                                var group = {
+                                  "ip": ip,
+                                  "port": port,
+                                  "udn": device.UDN,
+                                  "name": groupinfo[i].GroupInfo[0].GroupName[0],
+                                  "id": groupinfo[i].GroupInfo[0].GroupID[0],
+                                  "capabilities": groupinfo[i].GroupInfo[0].GroupCapabilityIDs[0],
+                                  "state": groupinfo[i].GroupInfo[0].GroupCapabilityValues[0],
+                                  "type": "light group",
+                                  "lights": [],
+                                  "device": device
+                                }
+                                for(var j=0; j<groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo.length; j++) {
+                                  group.lights.push(groupinfo[i].GroupInfo[0].DeviceInfos[0].DeviceInfo[j].DeviceID[0]);
+                                }
+                              }
+                              var key = device.serialNumber + "-" + group.id;
+                              if (!_wemo.devices[key]) {
+                                _wemo.devices[key] = group;
+                                _wemo.emit('discovered', key);
+                              } else {
+                                _wemo.devices[key] = group;
+                              }
                             }
                           }
-                        }
-                      });
+                        });
+                      }
                     }
                   });
                 });
@@ -343,7 +331,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
     } else {
       //error
     }
-  }); 
+  });
 
   return def.promise;
 }

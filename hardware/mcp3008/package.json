@@ -1,16 +1,16 @@
 {
     "name"          : "node-red-node-pi-mcp3008",
-    "version"       : "0.0.2",
+    "version"       : "0.0.7",
     "description"   : "A Node-RED node to read from the MCP3008 Analogue to Digital Converter",
     "dependencies"  : {
-        "mcp-spi-adc": "^0.0.1"
+        "mcp-spi-adc": "^0.3.1"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "pi", "adc", "mcp3008" ],
+    "keywords": [ "node-red", "pi", "adc", "mcp3008", "a/d converter" ],
     "node-red"      : {
         "nodes"     : {
             "pimcp3008": "pimcp3008.js"

@@ -1,23 +1,8 @@
-<!--
-  Copyright 2014 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="what3words">
     <div class="form-row">
-        <label for="node-config-input-pushkey"><i class="fa fa-key"></i> API Key</label>
-        <input type="password" id="node-config-input-pushkey">
+        <label for="node-input-apikey"><i class="fa fa-key"></i> API Key</label>
+        <input type="password" id="node-input-apikey">
     </div>
     <div class="form-row">
         <label for="node-input-lang"><i class="fa fa-language"></i> Language</label>
@@ -45,7 +30,7 @@
         <li><code>msg.location.lat</code> and <code>msg.location.lon</code>, or </li>
         <li><code>msg.payload</code> to contain a <i>lat,lon</i> string,</li>
     </ul> and produces a msg.payload of unique.three.words .</p>
-    <p>Also does the reverse by accepting a <b>dot (.)</b> separated three.word.string in <code>msg.payload</code>, 
+    <p>Also does the reverse by accepting a <b>dot (.)</b> separated three.word.string in <code>msg.payload</code>,
     and adds the corresponding <code>msg.location</code> property.</p>
     <p><b>Note:</b> This is an online service and requires a live internet connection.</p>
     <p>The API-key is stored in a separate credentials file.</p>
@@ -60,6 +45,9 @@
             lang: {value:"en"},
             name: {value:""}
         },
+        credentials: {
+            apikey: {type: "password"}
+        },
         color:"#DEBD5C",
         inputs:1,
         outputs:1,
@@ -69,35 +57,6 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            $.getJSON('nma/'+this.id,function(data) {
-                if (data.hasPassword) {
-                    $('#node-config-input-pushkey').val('__PWRD__');
-                } else {
-                    $('#node-config-input-pushkey').val('');
-                }
-            });
-        },
-        oneditsave: function() {
-            var credentials = {};
-            var newPass = $('#node-config-input-pushkey').val();
-            if (newPass != '__PWRD__') {
-                credentials.pushkey = newPass;
-                $.ajax({
-                    url: 'nma/'+this.id,
-                    type: 'POST',
-                    data: credentials,
-                    success: function(result){}
-                });
-            }
-        },
-        ondelete: function() {
-            $.ajax({
-                url: 'nma/'+this.id,
-                type: 'DELETE',
-                success: function(result) {}
-            });
         }
     });
 </script>

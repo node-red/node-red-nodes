@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013, 2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="e-mail">
     <div class="form-row">
@@ -50,7 +35,10 @@
     </div>
     <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
-        <input type="text" id="node-input-port" placeholder="465">
+        <input type="text" id="node-input-port" placeholder="465" style="width:100px">
+        <label style="width:40px"> </label>
+        <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
+        Use secure connection.
     </div>
     <div class="form-row">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
@@ -92,6 +80,7 @@
         defaults: {
             server: {value:"smtp.gmail.com",required:true},
             port: {value:"465",required:true},
+            secure: {value: true},
             name: {value:""},
             dname: {value:""}
         },
@@ -162,7 +151,7 @@
             <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
         <select type="text" id="node-input-disposition">
             <option value="None" selected="selected">None</option>
-            <option value="Read">Mark Read/Answered</option>
+            <option value="Read">Mark Read</option>
             <option value="Delete">Delete</option>
         </select>
     </div>
@@ -245,7 +234,7 @@
             useSSL: {value: true},
             port: {value:"993",required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
-            disposition: { value: "None" }, // For IMAP, the disposition of the read email
+            disposition: { value: "Read" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },
         credentials: {

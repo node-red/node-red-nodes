@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-notify",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "description"   : "A Node-RED node to send local popup Notify alerts",
     "dependencies"  : {
         "growl"   : "1.8.1"

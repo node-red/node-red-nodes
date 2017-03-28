@@ -1,18 +1,3 @@
-/**
- * Copyright 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -22,42 +7,49 @@ module.exports = function(RED) {
 
     var checkLength = function(text) {
         var l = text.length;
-        switch(true) {
-            case /^http:\/\/www./.test(text):
-            l -= 10;
-            break;
-            case /^https:\/\/www./.test(text):
-            l -= 11;
-            break;
-            case /^http:\/\//.test(text):
-            l -= 6;
-            break;
-            case /^https:\/\//.test(text):
-            l -= 7;
-            break;
+        switch (true) {
+            case /^http:\/\/www./.test(text): {
+                l -= 10;
+                break;
+            }
+            case /^https:\/\/www./.test(text): {
+                l -= 11;
+                break;
+            }
+            case /^http:\/\//.test(text): {
+                l -= 6;
+                break;
+            }
+            case /^https:\/\//.test(text): {
+                l -= 7;
+                break;
+            }
         }
 
-        switch(true) {
-            case /.*\.info\/.*/.test(text):
-            l -= 5;
-            break;
+        switch (true) {
+            case /.*\.info\/.*/.test(text): {
+                l -= 5;
+                break;
+            }
             case /.*\.com\/.*/.test(text):
             case /.*\.net\/.*/.test(text):
             case /.*\.org\/.*/.test(text):
             case /.*\.edu\/.*/.test(text):
             case /.*\.biz\/.*/.test(text):
             case /.*\.gov\/.*/.test(text):
-            case /.*\.info.*/.test(text):
-            l -= 4;
-            break;
+            case /.*\.info.*/.test(text): {
+                l -= 4;
+                break;
+            }
             case /.*\.com.*/.test(text):
             case /.*\.net.*/.test(text):
             case /.*\.org.*/.test(text):
             case /.*\.edu.*/.test(text):
             case /.*\.biz.*/.test(text):
-            case /.*\.gov.*/.test(text):
-            l -= 3;
-            break;
+            case /.*\.gov.*/.test(text): {
+                l -= 3;
+                break;
+            }
         }
         return l;
     }
@@ -85,7 +77,8 @@ module.exports = function(RED) {
                 try {
                     eddystoneBeacon.advertiseUrl(node.url, node.options);
                     node.status({fill:"green",shape:"dot",text:node.url});
-                } catch(e) {
+                }
+                catch(e) {
                     node.error('Error setting beacon URL', e);
                 }
             }
@@ -98,7 +91,8 @@ module.exports = function(RED) {
                 try {
                     eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
                     node.status({fill:"green",shape:"dot",text:node.namespace});
-                } catch(e) {
+                }
+                catch(e) {
                     node.error('Error setting beacon information', e);
                 }
             }
@@ -111,7 +105,8 @@ module.exports = function(RED) {
                     try {
                         eddystoneBeacon.stop();
                         node.status({fill:"red",shape:"dot",text:"Stopped"});
-                    } catch(e) {
+                    }
+                    catch(e) {
                         node.error('error shutting down beacon', e);
                     }
                     return;
@@ -122,7 +117,8 @@ module.exports = function(RED) {
                     try {
                         eddystoneBeacon.advertiseUrl(node.url, node.options);
                         node.status({fill:"green",shape:"dot",text:node.url});
-                    } catch(e) {
+                    }
+                    catch(e) {
                         node.error('Error setting beacon URL', e);
                     }
                     return;
@@ -131,7 +127,8 @@ module.exports = function(RED) {
                     try {
                         eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
                         node.status({fill:"green",shape:"dot",text:node.namespace});
-                    } catch(e) {
+                    }
+                    catch(e) {
                         node.error('Error setting beacon information', e);
                     }
                     return;
@@ -139,30 +136,33 @@ module.exports = function(RED) {
             }
             // url mode
             if (node.mode === "url") {
-              if (checkLength(msg.payload) <= 18) {
-                  try {
-                      node.url = msg.payload;
-                      eddystoneBeacon.advertiseUrl(node.url, node.options);
-                      node.status({fill:"green",shape:"dot",text:node.url});
-                  } catch(e) {
-                      node.status({fill:"red",shape:"dot",text:"Error setting URL"});
-                      node.error('error updating beacon URL', e);
-                  }
-              } else {
-                  node.status({fill:"red",shape:"dot",text:"URL too long"});
-              }
+                if (checkLength(msg.payload) <= 18) {
+                    try {
+                        node.url = msg.payload;
+                        eddystoneBeacon.advertiseUrl(node.url, node.options);
+                        node.status({fill:"green",shape:"dot",text:node.url});
+                    }
+                    catch(e) {
+                        node.status({fill:"red",shape:"dot",text:"Error setting URL"});
+                        node.error('error updating beacon URL', e);
+                    }
+                }
+                else {
+                    node.status({fill:"red",shape:"dot",text:"URL too long"});
+                }
             }
             // uid mode
             else {
-              try {
-                  node.namespace = msg.payload;
-                  node.instance = msg.topic;
-                  eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
-                  node.status({fill:"green",shape:"dot",text:msg.payload});
-              } catch(e) {
-                  node.status({fill:"red",shape:"dot",text:"Error setting beacon information"});
-                  node.error('Error setting beacon information', e);
-              }
+                try {
+                    node.namespace = msg.payload;
+                    node.instance = msg.topic;
+                    eddystoneBeacon.advertiseUid(node.namespace, node.instance, node.options);
+                    node.status({fill:"green",shape:"dot",text:msg.payload});
+                }
+                catch(e) {
+                    node.status({fill:"red",shape:"dot",text:"Error setting beacon information"});
+                    node.error('Error setting beacon information', e);
+                }
             }
         });
 
@@ -172,7 +172,8 @@ module.exports = function(RED) {
                 node.status({});
                 eddystoneBeacon.stop();
                 done();
-            } catch(e) {
+            }
+            catch(e) {
                 node.error('error shutting down beacon', e);
             }
         });
