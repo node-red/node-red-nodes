@@ -11,16 +11,15 @@ var url = require('url');
 var Q = require('q');
 
 var urn = 'urn:Belkin:service:basicevent:1';
+
 var postbodyheader = [
   '<?xml version="1.0" encoding="utf-8"?>',
   '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">',
     '<s:Body>'].join('\n');
 
-
 var postbodyfooter = ['</s:Body>',
   '</s:Envelope>'
 ].join('\n');
-
 
 var getenddevs = {};
 getenddevs.path = '/upnp/control/bridge1';
@@ -45,12 +44,68 @@ getcapabilities.body = [
   postbodyfooter
 ].join('\n');
 
+var getDevStatus = {
+  method: 'POST',
+  path: '/upnp/control/bridge1',
+  action: '"urn:Belkin:service:bridge:1#GetDeviceStatus"',
+  body: [
+    postbodyheader,
+    '<u:GetDeviceStatus xmlns:u="urn:Belkin:service:bridge:1">',
+    '<DeviceIDs>%s</DeviceIDs>',
+    '</u:GetDeviceStatus>',
+    postbodyfooter
+  ].join('\n')
+};
+
+var getSocketState = {
+  method: 'POST',
+  path: '/upnp/control/basicevent1',
+  action: '"urn:Belkin:service:basicevent:1#GetBinaryState"',
+  body: [
+    postbodyheader,
+    '<u:GetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">',
+    '</u:GetBinaryState>',
+    postbodyfooter
+  ].join('\n')
+}
+
+
+var setdevstatus = {};
+setdevstatus.path = '/upnp/control/bridge1';
+setdevstatus.action = '"urn:Belkin:service:bridge:1#SetDeviceStatus"';
+setdevstatus.body = [
+  postbodyheader,
+  '<u:SetDeviceStatus xmlns:u="urn:Belkin:service:bridge:1">',
+  '<DeviceStatusList>',
+  '&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;DeviceID available=&quot;YES&quot;&gt;%s&lt;/DeviceID&gt;&lt;CapabilityID&gt;%s&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;%s&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;',
+  '</DeviceStatusList>',
+  '</u:SetDeviceStatus>',
+  postbodyfooter
+].join('\n');
+
+var capabilityMap = {
+    '10006': 'state',
+    '10008': 'dim',
+    '10300': 'color',
+    '30301': 'temperature'
+  };
+
+var reverseCapabilityMap = {
+    'state': '10006',
+    'dim': '10008',
+    'color': '10300',
+    'temperature': '30301'
+  };
 
 var WeMoNG = function () {
   this.devices = {};
   this._client;
   this._interval;
   events.EventEmitter.call(this);
+
+  this.capabilityMap = capabilityMap;
+
+  this.reverseCapabilityMap = reverseCapabilityMap;
 
 }
 
@@ -68,7 +123,7 @@ WeMoNG.prototype.start = function start() {
     request.get(location.href, function(err, res, xml) {
       if (!err) {
         xml2js.parseString(xml, function(err, json) {
-          if (!err) {
+          if (!err && json) {
             var device = { ip: location.hostname, port: location.port };
             for (var key in json.root.device[0]) {
               device[key] = json.root.device[0][key][0];
@@ -248,20 +303,114 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
     post_request.end();
 }
 
-WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
-  var setdevstatus = {};
-  setdevstatus.path = '/upnp/control/bridge1';
-  setdevstatus.action = '"urn:Belkin:service:bridge:1#SetDeviceStatus"';
-  setdevstatus.body = [
-    postbodyheader,
-    '<u:SetDeviceStatus xmlns:u="urn:Belkin:service:bridge:1">',
-    '<DeviceStatusList>',
-    '&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;DeviceID available=&quot;YES&quot;&gt;%s&lt;/DeviceID&gt;&lt;CapabilityID&gt;%s&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;%s&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;',
-    '</DeviceStatusList>',
-    '</u:SetDeviceStatus>',
-    postbodyfooter
-  ].join('\n');
+WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
+  var postoptions = {
+    host: socket.ip,
+    port: socket.port,
+    path: getSocketState.path,
+    method: getSocketState.method,
+    headers: {
+      'SOAPACTION': getSocketState.action,
+      'Content-Type': 'text/xml; charset="utf-8"',
+      'Accept': ''
+    }
+  }
 
+  var def = Q.defer();
+
+  var post_request = http.request(postoptions, function(res){
+    var data = "";
+    res.setEncoding('utf8');
+    res.on('data', function(chunk){
+      data += chunk;
+    });
+
+    res.on('end', function(){
+      xml2js.parseString(data, function(err, result){
+        if (!err) {
+          var status = result["s:Envelope"]["s:Body"][0]["u:GetBinaryStateResponse"][0]["BinaryState"][0];
+          status = parseInt(status);
+          def.resolve(status);
+        }
+      });
+    });
+  });
+
+  post_request.on('error', function (e) {
+    console.log(e);
+    console.log("%j", postoptions);
+    def.reject();
+  });
+
+  post_request.write(getSocketState.body);
+  post_request.end();
+
+  return def.promise;
+};
+
+WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
+  var postoptions = {
+    host: light.ip,
+    port: light.port,
+    path: getDevStatus.path,
+    method: getDevStatus.method,
+    headers: {
+      'SOAPACTION': getDevStatus.action,
+      'Content-Type': 'text/xml; charset="utf-8"',
+      'Accept': ''
+    }
+  };
+
+  var def = Q.defer();
+
+  var post_request = http.request(postoptions, function(res){
+    var data = "";
+    res.setEncoding('utf8');
+    res.on('data', function(chunk) {
+      data += chunk;
+    });
+
+    res.on('end', function() {
+      xml2js.parseString(data, function(err, result){
+        if(!err) {
+          if (result["s:Envelope"]) {
+            var status = result["s:Envelope"]["s:Body"][0]["u:GetDeviceStatusResponse"][0].DeviceStatusList[0];
+            xml2js.parseString(status, function(err,result2){
+              if (!err) {
+                var available = result2['DeviceStatusList']['DeviceStatus'][0]['DeviceID'][0]['$'].available === 'YES';
+                var state = result2['DeviceStatusList']['DeviceStatus'][0]['CapabilityValue'][0];
+                var capabilities = result2['DeviceStatusList']['DeviceStatus'][0]['CapabilityID'][0];
+                var obj = {
+                  available: available,
+                  state: state,
+                  capabilities: capabilities
+                };
+                def.resolve(obj);
+              } else {
+                console.log("err");
+              }
+            });
+          }
+        } else {
+          console.log("err");
+        }
+      });
+    });
+  });
+
+  post_request.on('error', function (e) {
+    console.log(e);
+    console.log("%j", postoptions);
+    def.reject();
+  });
+
+  post_request.write(util.format(getDevStatus.body, light.id));
+  post_request.end();
+
+  return def.promise;
+}
+
+WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
   var postoptions = {
     host: light.ip,
     port: light.port,
@@ -269,7 +418,7 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
     method: 'POST',
     headers: {
       'SOAPACTION': setdevstatus.action,
-       'Content-Type': 'text/xml; charset="utf-8"',
+      'Content-Type': 'text/xml; charset="utf-8"',
       'Accept': ''
     }
   };
@@ -293,7 +442,7 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
 
   //console.log(util.format(setdevstatus.body, light.id, capability, value));
 
-  post_request.write(util.format(setdevstatus.body, light.id, capability, value));
+  post_request.write(util.format(setdevstatus.body, light.type === 'light'?'NO':'YES',light.id, capability, value));
   post_request.end();
 }
 
@@ -312,6 +461,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
           if (!err && res != null) {
             msg.id = res['StateEvent']['DeviceID'][0]['_'];
             msg.capability = res['StateEvent']['CapabilityId'][0];
+            msg.capabilityName = capabilityMap[msg.capability];
             msg.value = res['StateEvent']['Value'][0];
             def.resolve(msg);
           }
@@ -362,6 +512,29 @@ WeMoNG.prototype.rgb2xy = function rgb2xy(red, green, blue) {
     xyz[0] / (xyz[0] + xyz[1] + xyz[2]) * 65535,
     xyz[1] / (xyz[0] + xyz[1] + xyz[2]) * 65535
   ];
+};
+
+//http://stackoverflow.com/questions/22894498/philips-hue-convert-xy-from-api-to-hex-or-rgb
+WeMoNG.prototype.xy2rgb = function xy2rgb(x,y,bri) {
+  z = 1.0 - x - y;
+  Y = bri / 255.0; // Brightness of lamp
+  X = (Y / y) * x;
+  Z = (Y / y) * z;
+  r = X * 1.612 - Y * 0.203 - Z * 0.302;
+  g = -X * 0.509 + Y * 1.412 + Z * 0.066;
+  b = X * 0.026 - Y * 0.072 + Z * 0.962;
+  r = r <= 0.0031308 ? 12.92 * r : (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055;
+  g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
+  b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
+  maxValue = Math.max(r,g,b);
+  r /= maxValue;
+  g /= maxValue;
+  b /= maxValue;
+  r = r * 255;   if (r < 0) { r = 255 };
+  g = g * 255;   if (g < 0) { g = 255 };
+  b = b * 255;   if (b < 0) { b = 255 };
+
+  return [r,g,b];
 };
 
 module.exports  = WeMoNG;
