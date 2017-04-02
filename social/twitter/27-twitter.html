@@ -34,7 +34,7 @@
                 }
                 var callback = encodeURIComponent(location.protocol+"//"+location.hostname+":"+location.port+pathname+"twitter-credentials/"+twitterConfigNodeId+"/auth/callback");
                 $("#node-config-dialog-ok").button("disable");
-                $("#node-config-twitter-row").html('<div style="text-align: center; margin-top: 20px; "><a class="btn" id="node-config-twitter-start" href="twitter-credentials/'+twitterConfigNodeId+'/auth?callback='+callback+'" target="_blank">'+clickhere+'</a></div>');
+                $("#node-config-twitter-row").html('<div style="text-align: center; margin-top: 20px; "><a class="editor-button" id="node-config-twitter-start" href="twitter-credentials/'+twitterConfigNodeId+'/auth?callback='+callback+'" target="_blank">'+clickhere+'</a></div>');
                 $("#node-config-twitter-start").click(function() {
                     twitterConfigNodeIntervalId = window.setTimeout(pollTwitterCredentials,2000);
                 });

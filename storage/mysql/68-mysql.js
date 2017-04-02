@@ -21,7 +21,7 @@ module.exports = function(RED) {
             node.connection.query("SELECT version();", [], function(err, rows) {
                 if (err) {
                     node.connection.release();
-                    node.error(err,msg);
+                    node.error(err);
                     node.status({fill:"red",shape:"ring",text:"Bad Ping"});
                     doConnect();
                 }
