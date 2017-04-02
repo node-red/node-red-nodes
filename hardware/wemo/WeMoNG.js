@@ -283,10 +283,10 @@ module.exports = function(RED) {
                 wemo.toggleSocket(dev, on);
             } else if (dev.type === 'light') {
                 wemo.setStatus(dev,capability, on);
-            } //else { 
-            //     console.log('group');
-            //     wemo.setStatus(dev, capability, on);
-            // }
+            } else { 
+                //console.log('group');
+                wemo.setStatus(dev, capability, on);
+            }
         });
     };
     RED.nodes.registerType('wemo out', wemoNGNode);
@@ -406,7 +406,7 @@ module.exports = function(RED) {
 
             //console.log(dev.type);
             if (dev.type === 'light' || dev.type === 'group') {
-                console.log("light");
+                //console.log("light");
                 wemo.getLightStatus(dev)
                 .then(function(status){
                     // if (status.available) {
