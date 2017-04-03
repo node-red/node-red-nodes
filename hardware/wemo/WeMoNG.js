@@ -414,7 +414,7 @@ module.exports = function(RED) {
                     var vals = status.state.split(',');
                     for (var i=0; i<caps.length; i++) {
                         if (wemo.capabilityMap.hasOwnProperty(caps[i])) {
-                            if (vals[i] != '' && vals[i].indexOf(':') == -1) {
+                            if (vals[i] !== '' && vals[i].indexOf(':') == -1) {
                                 status[wemo.capabilityMap[caps[i]]] = parseInt(vals[i]);
                             } else {
                                 status[wemo.capabilityMap[caps[i]]] = parseInt(vals[i].substring(0,vals[i].indexOf(':')));
