@@ -1,5 +1,5 @@
-node-red-node-discover
-======================
+node-red-node-discovery
+=======================
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node that uses Bonjour
  / Avahi to discover local network services such as iTunes libraries, printers, etc.

@@ -109,7 +109,7 @@ Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **node-red-node-ping** - *[88-ping](io/ping)* - Pings a machine and returns the trip time in mS. Returns false if no response received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
 
-**node-red-node-mdns** - *[mdns](io/mdns)* - discovers other Avahi/Bonjour services on the network.
+**node-red-node-discovery** - *[mdns](io/mdns)* - discovers other Avahi/Bonjour services on the network.
 
 **node-red-node-mqlight** - *[mqlight](io/mqlight)* - Adds nodes to send and receive using MQlight.
 
