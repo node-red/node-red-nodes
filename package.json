@@ -35,7 +35,8 @@
         "poplib" : "^0.1.7",
         "mailparser" : "^0.6.1",
         "imap" : "^0.8.18",
-        "msgpack-js": "^0.3.0"
+        "msgpack-js": "^0.3.0",
+        "mysql": "^2.13.0"
     },
     "engines": {
         "node": ">=0.10"
