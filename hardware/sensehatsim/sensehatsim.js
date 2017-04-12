@@ -42,9 +42,9 @@ module.exports = function(RED) {
                 currentFlipV = false;
                 currentRotation = "R0";
                 currentDisplay = [];
-                for (var y=0;y<8;y++) {
+                for (var y=0; y<8; y++) {
                     currentDisplay.push([]);
-                    for (var x=0;x<8;x++) {
+                    for (var x=0; x<8; x++) {
                         currentDisplay[y].push('0,0,0');
                     }
                 }
@@ -80,8 +80,8 @@ module.exports = function(RED) {
                         socket.send("FH");
                     }
                     var cmd = "";
-                    for (var y=0;y<8;y++) {
-                        for (var x=0;x<8;x++) {
+                    for (var y=0; y<8; y++) {
+                        for (var x=0; x<8; x++) {
                             cmd += ","+x+","+y+","+currentDisplay[y][x];
                         }
                     }
@@ -110,7 +110,7 @@ module.exports = function(RED) {
                                 topic: "joystick",
                                 payload: {key: KEY_MAP[m[1]], state: Number(m[2])}
                             }
-                            for (var j=0;j<users.length;j++) {
+                            for (var j=0; j<users.length; j++) {
                                 var node = users[j];
                                 if (node.stick) {
                                     node.send(RED.util.cloneMessage(msg));
@@ -168,7 +168,7 @@ module.exports = function(RED) {
                             topic: "environment",
                             payload: {temperature: currentEnvironment.temperature, humidity: currentEnvironment.humidity, pressure: currentEnvironment.pressure}
                         };
-                        for (var j=0;j<users.length;j++) {
+                        for (var j=0; j<users.length; j++) {
                             var node = users[j];
                             if (node.env) {
                                 node.send(RED.util.cloneMessage(msg));
@@ -332,7 +332,7 @@ module.exports = function(RED) {
                         if (expanded.length > 0) {
                             var pixels = {};
                             var rules = [];
-                            for (i=expanded.length-1;i>=0;i--) {
+                            for (i=expanded.length-1; i>=0; i--) {
                                 var rule = expanded[i];
                                 if (!pixels[rule[0]+","+rule[1]]) {
                                     rules.unshift(rule.join(","));

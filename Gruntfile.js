@@ -29,7 +29,7 @@ module.exports = function(grunt) {
             },
         },
         inlinelint: {
-            html: ['*/*/*.html'],
+            html: ['*/*/*.html', '!node_modules/*'],
             options: {
                 jshintrc: ".jshintrc"
                 //,reporter: require('jshint-stylish')
