@@ -4,14 +4,16 @@
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="rbe.label.func"></span></label>
         <select type="text" id="node-input-func" style="width:74%;">
             <option value="rbe" data-i18n="rbe.opts.rbe"></option>
+            <option value="deadbandEq" data-i18n="rbe.opts.deadbandEq"></option>
             <option value="deadband" data-i18n="rbe.opts.deadband"></option>
+            <option value="narrowbandEq" data-i18n="rbe.opts.narrowbandEq"></option>
             <option value="narrowband" data-i18n="rbe.opts.narrowband"></option>
         </select>
     </div>
     <div class="form-row" id="node-bandgap">
         <label for="node-input-gap">&nbsp;</label>
-        <input type="text" id="node-input-gap" data-i18n="[placeholder]rbe.placeholder.bandgap" style="width:70px;">
-        <select type="text" id="node-input-inout" style="width:55%;">
+        <input type="text" id="node-input-gap" data-i18n="[placeholder]rbe.placeholder.bandgap" style="width:95px;">
+        <select type="text" id="node-input-inout" style="width:54%;">
             <option value="out" data-i18n="rbe.opts.out"></option>
             <option value="in" data-i18n="rbe.opts.in"></option>
         </select>
@@ -27,21 +29,38 @@
 </script>
 
 <script type="text/x-red" data-help-name="rbe">
-    <p>Report by Exception node - only passes on data if it has changed.</p>
-    <p>The node can either block until the <code>msg.payload</code> is
-    different to the previous one - <b>rbe</b> mode. This works on numbers, strings, and simple objects.</p>
-    <p>Or it can block until the value changes by a specified amount - <b>deadband</b> mode.</p>
-    <p>In deadband mode the incoming payload must contain a parseable <i>number</i> and is
-    output only if greater than + or - the <i>band gap</i> away from a previous value.</p>
+    <p>Report by Exception node - only passes on data if the payload has changed.</p>
+    <p>It can also block until the value changes by a specified amount - deadband modes.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">number | string | (object)</span>
+        </dt>
+        <dd>RBE mode will accept numbers, strings, and simple objects. Other modes must provide a parseable number.</dd>
+        <dt class="optional">topic <span class="property-type">string</span>
+        </dt>
+        <dd>if specified the function will work on a per topic basis.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">as per input</span>
+        </dt>
+        <dd>If triggered the output will be the same as the input.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>In RBE mode this node will block until the <code>msg.payload</code> is
+    different to the previous one. </p>
+    <p>In Deadband modes the incoming payload must contain a parseable number and is
+    output only if greater than + or - the band gap away from a previous value.</p>
     <p>Deadband also supports % - only sends if the input differs by more than x% of the original value.</p>
-    <p>It can also ignore outlier values - <b>narrowband</b> mode.</p>
-    <p>In narrowband mode the incoming payload is blocked if it is more than + or - the band gap
+    <p>In Narrowband mode the incoming payload is blocked if it is more than + or - the band gap
     away from the previous value. Useful for ignoring outliers from a faulty sensor for example.</p>
-    <p>Both Deadband and Narrowband allow comparison against either the <i>previous valid output value</i>, thus
-    ignoring any values out of range; or the <i>previous input value</i>, which resets the set point, thus allowing
+    <p>Both Deadband and Narrowband allow comparison against either the previous valid output value, thus
+    ignoring any values out of range; or the previous input value, which resets the set point, thus allowing
     gradual drift (deadband), or a step change (narrowband).</p>
     <p><b>Note:</b> This works on a per <code>msg.topic</code> basis. This means that a single rbe node can
-    handle multiple topics at the same time.</p>
+    handle multiple different topics at the same time.</p>
 </script>
 
 <script type="text/javascript">
@@ -59,7 +78,8 @@
         outputs:1,
         icon: "rbe.png",
         label: function() {
-            return this.name||this.func||"rbe";
+            var ll = (this.func||"").replace("Eq","")||"rbe";
+            return this.name||ll||"rbe";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

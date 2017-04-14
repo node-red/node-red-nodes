@@ -62,6 +62,37 @@ describe('rbe node', function() {
         });
     });
 
+    it('should only send output if x away from original value (deadbandEq)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadbandEq", gap:"10", inout:"out", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c = c + 1;
+                if (c === 1) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 10);
+                }
+                else if (c == 3) {
+                    msg.should.have.a.property("payload", 20);
+                    done();
+                }
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:4});
+            n1.emit("input", {payload:6});
+            n1.emit("input", {payload:8});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:15});
+            n1.emit("input", {payload:20});
+        });
+    });
+
     it('should only send output if more than x away from original value (deadband)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
@@ -70,17 +101,18 @@ describe('rbe node', function() {
             var n2 = helper.getNode("n2");
             var c = 0;
             n2.on("input", function(msg) {
-                if (c === 0) {
+                c = c + 1;
+                //console.log(c,msg);
+                if (c === 1) {
                     msg.should.have.a.property("payload", 0);
                 }
-                else if (c === 1) {
+                else if (c === 2) {
                     msg.should.have.a.property("payload", 20);
                 }
                 else {
                     msg.should.have.a.property("payload", "5 deg");
                     done();
                 }
-                c += 1;
             });
             n1.emit("input", {payload:0});
             n1.emit("input", {payload:2});
@@ -101,24 +133,21 @@ describe('rbe node', function() {
             var n2 = helper.getNode("n2");
             var c = 0;
             n2.on("input", function(msg) {
-                if (c === 0) {
-                    msg.should.have.a.property("payload", 100);
-                }
-                else if (c === 1) {
+                c = c + 1;
+                if (c === 1) {
                     msg.should.have.a.property("payload", 120);
                 }
-                else {
-                    msg.should.have.a.property("payload", 132);
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 135);
                     done();
                 }
-                c += 1;
             });
             n1.emit("input", {payload:100});
             n1.emit("input", {payload:95});
             n1.emit("input", {payload:105});
             n1.emit("input", {payload:120});
             n1.emit("input", {payload:130});
-            n1.emit("input", {payload:132});
+            n1.emit("input", {payload:135});
         });
     });
 
@@ -150,6 +179,36 @@ describe('rbe node', function() {
         });
     });
 
+    it('should not send output if x away or greater from original value (narrowbandEq)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowbandEq", gap:"10", inout:"out", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c = c + 1;
+                //console.log(c,msg);
+                if (c === 1) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 5);
+                }
+                else if (c === 3) {
+                    msg.should.have.a.property("payload", 10);
+                    done();
+                }
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:15});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:25});
+        });
+    });
 
     it('should not send output if more than x away from original value (narrowband)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", wires:[["n2"]] },
@@ -182,7 +241,7 @@ describe('rbe node', function() {
         });
     });
 
-        it('should not send output if more than x away from original value (narrowband in step mode)', function(done) {
+    it('should not send output if more than x away from original value (narrowband in step mode)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", inout:"in", start:"500", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -205,5 +264,4 @@ describe('rbe node', function() {
             n1.emit("input", {payload:205});
         });
     });
-
 });
