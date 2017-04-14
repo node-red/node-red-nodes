@@ -1,0 +1,293 @@
+
+<script type="text/x-red" data-template-name="pi-gpiod in">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="pi-gpiod.label.gpiopin"></span></label>
+        <select type="text" id="node-input-pin" style="width:250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="pi-gpiod.label.selectpin"></span></option>
+            <option value="2">Pin 3 - GPIO2 - SDA1*</option>
+            <option value="3">Pin 5 - GPIO3 - SCL1*</option>
+            <option value="4">Pin 7 - GPIO4</option>
+            <option value="14">Pin 8 - GPIO14 - TxD*</option>
+            <option value="15">Pin 10 - GPIO15 - RxD*</option>
+            <option value="17">Pin 11 - GPIO17</option>
+            <option value="18">Pin 12 - GPIO18</option>
+            <option value="27">Pin 13 - GPIO27</option>
+            <option value="22">Pin 15 - GPIO22</option>
+            <option value="23">Pin 16 - GPIO23</option>
+            <option value="24">Pin 18 - GPIO24</option>
+            <option value="10">Pin 19 - GPIO10 - MOSI*</option>
+            <option value="9">Pin 21 - GPIO9 - MISO*</option>
+            <option value="25">Pin 22 - GPIO25</option>
+            <option value="11">Pin 23 - GPIO11 - SCLK*</option>
+            <option value="8">Pin 24 - GPIO8 - CE0*</option>
+            <option value="7">Pin 26 - GPIO7 - CE1*</option>
+            <option value="5">Pin 29 - GPIO05</option>
+            <option value="6">Pin 31 - GPIO06</option>
+            <option value="12">Pin 32 - GPIO12</option>
+            <option value="13">Pin 33 - GPIO13</option>
+            <option value="19">Pin 35 - GPIO19</option>
+            <option value="16">Pin 36 - GPIO16</option>
+            <option value="26">Pin 37 - GPIO26</option>
+            <option value="20">Pin 38 - GPIO20</option>
+            <option value="21">Pin 40 - GPIO21</option>
+         </select>
+         &nbsp;<span id="pitype"></span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-intype"><i class="fa fa-level-up"></i> <span data-i18n="pi-gpiod.label.resistor"></span></label>
+        <select type="text" id="node-input-intype" style="width:100px;">
+        <option value="PUD_OFF" data-i18n="pi-gpiod.resistor.none"></option>
+        <option value="PUD_UP" data-i18n="pi-gpiod.resistor.pullup"></option>
+        <option value="PUD_DOWN" data-i18n="pi-gpiod.resistor.pulldown"></option>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.debounce"></span>
+        <input type="text" id="node-input-debounce" style="width:47px; text-align:right"/>&nbsp;mS
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-read" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-read" style="width:70%;"><span data-i18n="pi-gpiod.label.readinitial"></span></label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="fa fa-globe"></i> <span data-i18n="pi-gpiod.label.host"></label>
+        <input type="text" id="node-input-host" data-i18n="[placeholder]pi-gpiod.place.host" style="width:250px;">
+        <input type="number" id="node-input-port" data-i18n="[placeholder]pi-gpiod.place.port"  style="width:65px;">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" id="pin-tip">Pins marked with <b>*</b> are dual use. Make sure they are not enabled for
+    their other use before using as GPIO.</div>
+    <div class="form-tips"><span data-i18n="[html]pi-gpiod.tip.in"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="pi-gpiod in">
+    <p>Raspberry Pi input node. Generates a <code>msg.payload</code> with either a
+    0 or 1 depending on the state of the input pin.
+    Requires the <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a>
+    daemon to be running on the host computer in order to work.</p>
+    <p><b>Outputs</b>
+    <ul>
+        <li><code>msg.payload</code> - <i>number</i> - the level of the pin (0 or 1).</li>
+        <li><code>msg.topic</code> - <i>string</i> - pi/{the pin number}</li>
+    </ul>
+    <p><b>Details</b></p>
+    <p>You may also enable the input pullup resistor &uarr; or the pulldown resistor &darr;.</p>
+    <p><b>Note:</b> the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
+    </script>
+
+<script type="text/javascript">
+    var bcm2pin = {
+        "2":"3", "3":"5", "4":"7", "14":"8", "15":"10", "17":"11", "18":"12", "27":"13", "22":"15",
+        "23":"16", "24":"18", "10":"19", "9":"21", "25":"22", "11":"23", "8":"24", "7":"26",
+        "5":"29", "6":"31", "12":"32", "13":"33", "19":"35", "16":"36", "26":"37", "20":"38", "21":"40"
+    };
+    RED.nodes.registerType('pi-gpiod in',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            host: { value:"localhost" },
+            port: { value:8888 },
+            pin: { value:"", required:true, validate:RED.validators.number() },
+            intype: { value:"PUD_OFF" },
+            debounce: { value:"25" },
+            read: { value:false }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rpi.png",
+        label: function() {
+            var suf = "";
+            if (this.intype === "PUD_UP") { suf = "↑ "}
+            if (this.intype === "PUD_DOWN") { suf = "↓ "}
+            return this.name || "GPIO: "+suf+bcm2pin[this.pin] ;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        palettelabel: "pi gpiod",
+        oneditprepare: function() {
+            var pinnow = this.pin;
+            var pintip = this._("pi-gpiod.tip.pin");
+            var pinname = this._("pi-gpiod.pinname");
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="pi-gpiod out">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="pi-gpiod.label.gpiopin"></span></label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="pi-gpiod.label.selectpin"></span></option>
+            <option value="2">Pin 3 - GPIO2 - SDA1*</option>
+            <option value="3">Pin 5 - GPIO3 - SCL1*</option>
+            <option value="4">Pin 7 - GPIO4</option>
+            <option value="14">Pin 8 - GPIO14 - TxD*</option>
+            <option value="15">Pin 10 - GPIO15 - RxD*</option>
+            <option value="17">Pin 11 - GPIO17</option>
+            <option value="18">Pin 12 - GPIO18</option>
+            <option value="27">Pin 13 - GPIO27</option>
+            <option value="22">Pin 15 - GPIO22</option>
+            <option value="23">Pin 16 - GPIO23</option>
+            <option value="24">Pin 18 - GPIO24</option>
+            <option value="10">Pin 19 - GPIO10 - MOSI*</option>
+            <option value="9">Pin 21 - GPIO9 - MISO*</option>
+            <option value="25">Pin 22 - GPIO25</option>
+            <option value="11">Pin 23 - GPIO11 - SCLK*</option>
+            <option value="8">Pin 24 - GPIO8 - CE0*</option>
+            <option value="7">Pin 26 - GPIO7 - CE1*</option>
+            <option value="5">Pin 29 - GPIO05</option>
+            <option value="6">Pin 31 - GPIO06</option>
+            <option value="12">Pin 32 - GPIO12</option>
+            <option value="13">Pin 33 - GPIO13</option>
+            <option value="19">Pin 35 - GPIO19</option>
+            <option value="16">Pin 36 - GPIO16</option>
+            <option value="26">Pin 37 - GPIO26</option>
+            <option value="20">Pin 38 - GPIO20</option>
+            <option value="21">Pin 40 - GPIO21</option>
+        </select>
+        &nbsp;<span id="pitype"></span>
+    </div>
+    <div class="form-row" id="node-set-pwm">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.type"></span></label>
+        <select id="node-input-out" style="width: 250px;">
+            <option value="out" data-i18n="pi-gpiod.digout"></option>
+            <option value="pwm" data-i18n="pi-gpiod.pwmout"></option>
+            <option value="ser" data-i18n="pi-gpiod.servo"></option>
+        </select>
+    </div>
+    <div class="form-row" id="node-set-minimax">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.limits"></label>
+        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> mS
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> mS
+    </div>
+    <div class="form-row" id="node-set-tick">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-set" style="width:70%;"><span data-i18n="pi-gpiod.label.initpin"></span></label>
+    </div>
+    <div class="form-row" id="node-set-state">
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width:250px;">
+            <option value="0" data-i18n="pi-gpiod.initpin0"></option>
+            <option value="1" data-i18n="pi-gpiod.initpin1"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="fa fa-globe"></i> <span data-i18n="pi-gpiod.label.host"></label>
+        <input type="text" id="node-input-host" placeholder="localhost" style="width:250px;">
+        <input type="number" id="node-input-port" placeholder="port" style="width:65px;">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" id="pin-tip">Pins marked with <b>*</b> are dual use. Make sure they are not enabled for
+    their other use before using as GPIO.</div>
+    <div class="form-tips" id="dig-tip"><span data-i18n="[html]pi-gpiod.tip.dig"></span></div>
+    <div class="form-tips" id="pwm-tip"><span data-i18n="[html]pi-gpiod.tip.pwm"></span></div>
+    <div class="form-tips" id="ser-tip"><span data-i18n="[html]pi-gpiod.tip.ser"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="pi-gpiod out">
+    <p>Raspberry Pi output node. Can be used in Digital, PWM or Servo modes. Requires the
+    <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
+    <p><b>Inputs</b>
+    <ul>
+        <li><code>msg.payload</code> - <i>number | string</i> - 0,1 (Digital), 0-100 (PWM, Servo)</li>
+    </ul>
+    <p><b>Details</b></p>
+    <p>Digital mode expects a <code>msg.payload</code> with either a 0 or 1 (or true or false),
+    and will set the selected physical pin high or low depending on the value passed in.</p>
+    <p>The initial value of the pin at deploy time can also be set to 0 or 1.</p>
+    <p>When using PWM and Servo modes, the input value should be a number 0 - 100, and can be floating point.</p>
+    <p><b>Note</b>: the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>
+
+<script type="text/javascript">
+    var bcm2pin = {
+        "2":"3", "3":"5", "4":"7", "14":"8", "15":"10", "17":"11", "18":"12", "27":"13", "22":"15",
+        "23":"16", "24":"18", "10":"19", "9":"21", "25":"22", "11":"23", "8":"24", "7":"26",
+        "5":"29", "6":"31", "12":"32", "13":"33", "19":"35", "16":"36", "26":"37", "20":"38", "21":"40"
+    };
+    RED.nodes.registerType('pi-gpiod out',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            host: { value:"localhost" },
+            port: { value:8888 },
+            pin: { value:"", required:true, validate:RED.validators.number() },
+            set: { value:"" },
+            level: { value:"0" },
+            out: { value:"out" },
+            sermin: { value:"10" },
+            sermax: { value:"20" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            if (this.out === "pwm") { return this.name || "PWM: "+bcm2pin[this.pin]; }
+            if (this.out === "ser") { return this.name || "Servo: "+bcm2pin[this.pin]; }
+            else { return this.name||"GPIO: "+bcm2pin[this.pin] ; }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        palettelabel: "pi gpiod",
+        oneditprepare: function() {
+            var pinnow = bcm2pin[this.pin];
+            console.log("NOW",pinnow);
+            var pintip = this._("pi-gpiod.tip.pin");
+            var pinname = this._("pi-gpiod.pinname");
+            if (!$("#node-input-out").val()) { $("#node-input-out").val("out"); }
+
+            var hidestate = function () {
+                if ($("#node-input-out").val() === "pwm") {
+                    $('#node-set-tick').hide();
+                    $('#node-set-state').hide();
+                    $('#node-set-minimax').hide();
+                    $('#node-input-set').prop('checked', false);
+                    $("#dig-tip").hide();
+                    $("#pwm-tip").show();
+                    $("#ser-tip").hide();
+                }
+                if ($("#node-input-out").val() === "ser") {
+                    $('#node-set-tick').hide();
+                    $('#node-set-state').hide();
+                    $('#node-set-minimax').show();
+                    $('#node-input-set').prop('checked', false);
+                    $("#dig-tip").hide();
+                    $("#pwm-tip").hide();
+                    $("#ser-tip").show();
+                }
+                else {
+                    $('#node-set-tick').show();
+                    $('#node-set-minimax').hide();
+                    $("#dig-tip").show();
+                    $("#pwm-tip").hide();
+                    $("#ser-tip").hide();
+                }
+            };
+            $("#node-input-out").change(function () { hidestate(); });
+            hidestate();
+
+            var setstate = function () {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            };
+            $("#node-input-set").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>
