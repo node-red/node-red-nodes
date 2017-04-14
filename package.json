@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-nodes",
-    "version"      : "0.0.8",
+    "version"      : "0.0.9",
     "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage"     : "http://nodered.org",
     "license"      : "Apache-2.0",
@@ -19,25 +19,22 @@
     "devDependencies": {
         "grunt": "^1.0.1",
         "grunt-contrib-jshint": "^1.1.0",
-        "grunt-jscs": "^2.8.0",
+        "grunt-jscs": "^3.0.1",
         "grunt-lint-inline": "^1.0.0",
         "grunt-simple-mocha": "^0.4.1",
-        "mocha": "^2.4.5",
-        "should": "^8.4.0",
+        "mocha": "^3.2.0",
+        "should": "^11.2.1",
         "sinon": "^1.17.7",
-        "supertest": "^1.2.0",
+        "supertest": "^3.0.0",
         "proxyquire": "^1.7.11",
         "pushbullet": "^2.0.0",
         "when": "^3.7.8",
         "exif": "^0.6.0",
         "ngeohash": "^0.6.0",
-        "nodemailer": "^1.11.0",
+        "nodemailer": "^4.0.1",
         "poplib": "^0.1.7",
-        "mailparser": "^0.6.2",
+        "mailparser": "^2.0.3",
         "imap": "^0.8.19",
         "msgpack-js": "^0.3.0"
-    },
-    "engines": {
-        "node": ">=0.10"
     }
 }
