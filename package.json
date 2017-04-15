@@ -31,9 +31,9 @@
         "when": "^3.7.8",
         "exif": "^0.6.0",
         "ngeohash": "^0.6.0",
-        "nodemailer": "^4.0.1",
+        "nodemailer": "^1.11.0",
         "poplib": "^0.1.7",
-        "mailparser": "^2.0.3",
+        "mailparser": "^0.6.1",
         "imap": "^0.8.19",
         "msgpack-js": "^0.3.0"
     }

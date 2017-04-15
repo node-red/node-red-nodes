@@ -40,24 +40,20 @@ Generates a `msg.payload` with either a 0 or 1 depending on the state of the inp
  - `msg.payload` - *number* - the level of the pin (0 or 1)
  - `msg.topic` - *string* - pi/{the pin number}
 
-##### Details
-
 You may also enable the input pullup resistor &uarr; or the pulldown resistor &darr;.
 
 ### Output node
 
 Can be used in Digital, PWM or Servo modes.
 
-###### Input
+##### Input
 
  - `msg.payload` - *number | string*
   - Digital - 0, 1 - set pin low or high
   - PWM - 0 to 100 - level from 0 to 100%
   - Servo - 0 to 100, 50 is centred.
 
-*Hint*: The `range` node can be used to scale inputs to the correct range.
-
-##### Details
+*Hint*: The `range` node can be used to scale inputs to the correct values.
 
 Digital mode expects a `msg.payload` with either a 0 or 1 (or true or false),
 and will set the selected physical pin high or low depending on the value passed in.
