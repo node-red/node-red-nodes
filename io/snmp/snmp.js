@@ -81,7 +81,7 @@ module.exports = function(RED) {
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.table(oids, maxRepetitions, function(error, table) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         var indexes = [];
@@ -135,7 +135,7 @@ module.exports = function(RED) {
         function feedCb(varbinds) {
             for (var i = 0; i < varbinds.length; i++) {
                 if (snmp.isVarbindError(varbinds[i])) {
-                    node.error(snmp.varbindError(varbinds[i]));
+                    node.error(snmp.varbindError(varbinds[i]), msg);
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
@@ -156,7 +156,7 @@ module.exports = function(RED) {
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.subtree(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         msg.payload = response;
@@ -192,7 +192,7 @@ module.exports = function(RED) {
         function feedCb(varbinds) {
             for (var i = 0; i < varbinds.length; i++) {
                 if (snmp.isVarbindError(varbinds[i])) {
-                    node.error(snmp.varbindError(varbinds[i]));
+                    node.error(snmp.varbindError(varbinds[i]), msg);
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
@@ -214,7 +214,7 @@ module.exports = function(RED) {
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.walk(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         msg.payload = response;
