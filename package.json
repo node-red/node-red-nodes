@@ -1,6 +1,6 @@
 {
     "name"         : "node-red-nodes",
-    "version"      : "0.0.8",
+    "version"      : "0.0.9",
     "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage"     : "http://nodered.org",
     "license"      : "Apache-2.0",
@@ -17,27 +17,24 @@
         "Node-RED", "nodes", "iot", "ibm", "flow"
     ],
     "devDependencies": {
-        "grunt": "^0.4.5",
+        "grunt": "^1.0.1",
+        "grunt-contrib-jshint": "^1.1.0",
+        "grunt-jscs": "^3.0.1",
+        "grunt-lint-inline": "^1.0.0",
         "grunt-simple-mocha": "^0.4.1",
-        "grunt-contrib-jshint": "^1.0.0",
-        "grunt-lint-inline": "^0.4.4",
-        "grunt-jscs": "^2.8.0",
-        "mocha": "^2.4.5",
-        "should": "^8.3.1",
-        "sinon": "^1.17.3",
-        "supertest": "^1.2.0",
-        "proxyquire": "^1.7.10",
-        "pushbullet": "^1.4.3",
-        "when": "^3.7.7",
+        "mocha": "^3.2.0",
+        "should": "^11.2.1",
+        "sinon": "^1.17.7",
+        "supertest": "^3.0.0",
+        "proxyquire": "^1.7.11",
+        "pushbullet": "^2.0.0",
+        "when": "^3.7.8",
         "exif": "^0.6.0",
         "ngeohash": "^0.6.0",
-        "nodemailer"   : "^1.11.0",
-        "poplib" : "^0.1.7",
-        "mailparser" : "^0.6.1",
-        "imap" : "^0.8.18",
+        "nodemailer": "^1.11.0",
+        "poplib": "^0.1.7",
+        "mailparser": "^0.6.1",
+        "imap": "^0.8.19",
         "msgpack-js": "^0.3.0"
-    },
-    "engines": {
-        "node": ">=0.10"
     }
 }

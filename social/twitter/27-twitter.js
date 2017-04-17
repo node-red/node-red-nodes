@@ -156,7 +156,7 @@ module.exports = function(RED) {
                             since_id:node.since_id
                         },function(err,cb) {
                                 if (cb) {
-                                    for (var t=cb.length-1;t>=0;t-=1) {
+                                    for (var t=cb.length-1; t>=0; t-=1) {
                                         var tweet = cb[t];
                                         var where = tweet.sender.location;
                                         var la = tweet.lang || tweet.sender.lang;
@@ -370,7 +370,7 @@ module.exports = function(RED) {
                 this.stream.destroy();
             }
             if (this.poll_ids) {
-                for (var i=0;i<this.poll_ids.length;i++) {
+                for (var i=0; i<this.poll_ids.length; i++) {
                     clearInterval(this.poll_ids[i]);
                 }
             }

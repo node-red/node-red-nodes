@@ -42,15 +42,23 @@ module.exports = function(RED) {
                             else { node.previous[t] = node.start; }
                         }
                         if (node.pc) { node.gap = (node.previous[t] * node.g / 100) || 0; }
-                        if (!node.previous.hasOwnProperty(t)) { node.previous[t] = n - node.gap; }
-                        if (Math.abs(n - node.previous[t]) >= node.gap) {
+                        else { node.gap = Number(node.gap); }
+                        if ((node.previous[t] === undefined) && (node.func === "narrowbandEq")) { node.previous[t] = n; }
+                        if (node.previous[t] === undefined) { node.previous[t] = n - node.gap; }
+                        if (Math.abs(n - node.previous[t]) === node.gap) {
+                            if (this.func === "deadbandEq") {
+                                if (node.inout === "out") { node.previous[t] = n; }
+                                node.send(msg);
+                            }
+                        }
+                        else if (Math.abs(n - node.previous[t]) > node.gap) {
                             if (this.func === "deadband") {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }
                         }
-                        else {
-                            if (this.func === "narrowband") {
+                        else if (Math.abs(n - node.previous[t]) < node.gap) {
+                            if ((this.func === "narrowband")||(this.func === "narrowbandEq")) {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }

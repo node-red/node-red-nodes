@@ -165,7 +165,7 @@ module.exports = function(RED) {
                             resolve(last);
                             return onError(err);
                         }
-                        for (var i=0;i<res.pushes.length; i++) {
+                        for (var i=0; i<res.pushes.length; i++) {
                             self.pushMsg(res.pushes[i]);
                         }
                         try {

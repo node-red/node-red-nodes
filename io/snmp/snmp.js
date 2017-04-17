@@ -46,8 +46,8 @@ module.exports = function(RED) {
             }
         });
         
-        this.on("close", function(){
-            if (node.session){
+        this.on("close", function() {
+            if (node.session) {
                 node.session.close();
             }
         });
@@ -113,9 +113,9 @@ module.exports = function(RED) {
                 node.warn("No oid to search for");
             }
         });
-        
-        this.on("close", function(){
-            if (node.session){
+
+        this.on("close", function() {
+            if (node.session) {
                 node.session.close();
             }
         });
@@ -170,9 +170,9 @@ module.exports = function(RED) {
                 node.warn("No oid to search for");
             }
         });
-        
-        this.on("close", function(){
-            if (node.session){
+
+        this.on("close", function() {
+            if (node.session) {
                 node.session.close();
             }
         });
@@ -228,9 +228,9 @@ module.exports = function(RED) {
                 node.warn("No oid to search for");
             }
         });
-        
-        this.on("close", function(){
-            if (node.session){
+
+        this.on("close", function() {
+            if (node.session) {
                 node.session.close();
             }
         });

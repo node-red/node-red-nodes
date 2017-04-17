@@ -10,7 +10,7 @@ module.exports = function(grunt) {
                 ui: 'bdd',
                 reporter: 'spec'
             },
-            all: { src: ['test/*/*/*_spec.js'] },
+            all: { src: ['test/*/*/*_spec.js'] }
         },
         jshint: {
             options: {
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
             },
         },
         inlinelint: {
-            html: ['*/*/*.html'],
+            html: ['*/*/*.html', '!node_modules/*/*.html', '!*/node_modules/*.html'],
             options: {
                 jshintrc: ".jshintrc"
                 //,reporter: require('jshint-stylish')
