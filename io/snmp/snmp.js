@@ -45,7 +45,7 @@ module.exports = function(RED) {
                 node.warn("No oid(s) to search for");
             }
         });
-        
+
         this.on("close", function() {
             if (node.session) {
                 node.session.close();
