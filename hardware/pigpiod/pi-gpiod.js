@@ -86,8 +86,8 @@ module.exports = function(RED) {
         this.set = n.set || false;
         this.level = parseInt(n.level || 0);
         this.out = n.out || "out";
-        this.sermin = Number(n.sermin);
-        this.sermax = Number(n.sermax);
+        this.sermin = Number(n.sermin)/100;
+        this.sermax = Number(n.sermax)/100;
         if (this.sermin > this.sermax) {
             var tmp = this.sermin;
             this.sermin = this.sermax;
