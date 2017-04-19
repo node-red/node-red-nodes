@@ -123,7 +123,7 @@ WeMoNG.prototype.start = function start() {
     request.get(location.href, function(err, res, xml) {
       if (!err) {
         xml2js.parseString(xml, function(err, json) {
-          if (!err && json) {
+          if (!err && json && json.root) {
             var device = { ip: location.hostname, port: location.port };
             for (var key in json.root.device[0]) {
               device[key] = json.root.device[0][key][0];
