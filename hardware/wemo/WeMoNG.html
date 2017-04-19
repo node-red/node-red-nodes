@@ -29,8 +29,9 @@
     <li>Light Groups</li>
     <li>Motion Detector</li>
   </ul>
-  <p>Sockets will generate msg.payload with values of 0/1 for off or on, all other
-  types will return an object like this:</p>
+  <p>Sockets will generate msg.payload with values of 0/1/8 for off or on 
+  (8 is on but at standby load for insight sockets), lightswill return an
+  object like this:</p>
   <pre>
   {
     name: 'Bedroom light',
@@ -44,6 +45,8 @@
   <ul>
     <li>10006 - on/off</li>
     <li>10008 - brightness</li>
+    <li>10300 - color</li>
+    <li>30301 - color temperature</li>
   </ul>
 </script>
 
@@ -53,7 +56,8 @@
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
             topic: {value:"wemo", required: true},
-            device: {value:"", type: "wemo-dev"}
+            device: {value:"", type: "wemo-dev"},
+            label: {value:""}
         },
         color: "LawnGreen",
         inputs:0,               // set the number of inputs - only 0 or 1
@@ -61,10 +65,17 @@
         // set the icon (held in icons dir below where you save the node)
         icon: "belkin.png",     // saved in  icons/myicon.png
         label: function() {     // sets the default label contents
-            return this.name||"wemo";
+            if (this.name){
+                return this.name;
+            } else {
+                return this.label||"wemo";
+            }
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditsave: function(){
+            this.label = $('#node-input-device option:selected').text();
         }
     });
 </script>
@@ -106,6 +117,7 @@
     temperature: 25000
   }
   </pre>
+  <p>color control is still a work in progress, but the rest should work</p>
 </script>
 
 <script type="text/javascript">
@@ -113,17 +125,80 @@
         category: 'output',      // the palette category
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
-            device: {type: "wemo-dev", required: true}
+            device: {type: "wemo-dev", required: true},
+            label: {value: ""}
         },
         color: "LawnGreen",
         inputs: 1,               // set the number of inputs - only 0 or 1
         // set the icon (held in icons dir below where you save the node)
         icon: "belkin.png",     // saved in  icons/myicon.png
         label: function() {     // sets the default label contents
-            return this.name||"wemo";
+            if (this.name){
+                return this.name;
+            } else {
+                return this.label||"wemo";
+            }
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditsave: function(){
+            this.label = $('#node-input-device option:selected').text();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wemo lookup">
+    <div class="form-row">
+        <label for="node-input-device"><i class="fa fa-tasks"></i> Device</label>
+        <input type="text" id="node-input-device" placeholder="Device">
+    </div>
+    <br/>
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field. Should always be the last option      -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="wemo lookup">
+    <p>This node queries the current state of a device</p>
+    <p>For lights it return a msg.payload that looks like this:</p>
+<pre>{
+  available: true,
+  state: 0,
+  dim: 13
+}</pre>
+    <p>Where <em>available</em> is if the blub is actually turned on
+    at the wall switch<p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('wemo lookup',{
+        category: 'function',      // the palette category
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            device: {type: "wemo-dev", required: true},
+            label: {value:""}
+        },
+        color: "LawnGreen",
+        inputs: 1,               // set the number of inputs - only 0 or 1
+        outputs: 1,
+        // set the icon (held in icons dir below where you save the node)
+        icon: "belkin.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            if (this.name){
+                return this.name;
+            } else {
+                return this.label||"wemo";
+            }
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+        oneditsave: function(){
+            this.label = $('#node-input-device option:selected').text();
         }
     });
 </script>

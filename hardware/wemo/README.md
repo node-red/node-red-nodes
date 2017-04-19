@@ -24,7 +24,7 @@ The node accecpts the following inputs
  * Strings on/off
  * integers 1/0
  * boolean true/false
- * an Object like this (lights only, coming soon) 
+ * an Object like this (lights only & color control is still work in the progress) 
  ```
     {
       state: 1,
