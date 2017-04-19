@@ -34,7 +34,7 @@ The thing id should be globally unique as they are all public - you are recommen
 The Thing ID is set into `msg.dweet`, and the timesamp into `msg.created`.
 
 
-For further info see the <a href="https://dweetio.io/" target="_new">Dweet.io website</a>
+For further info see the <a href="https://dweet.io/" target="_new">Dweet.io website</a>
 
 
 ### Sample Flow

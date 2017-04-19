@@ -52,7 +52,7 @@ module.exports = function(RED) {
                 }
                 buffer = lines.pop();
                 var m,msg;
-                for (var i=0;i<lines.length;i++) {
+                for (var i=0; i<lines.length; i++) {
                     var line = lines[i];
                     msg = null;
                     if ((m = KEY_RE.exec(line)) !== null) {
@@ -90,7 +90,7 @@ module.exports = function(RED) {
                         }
                     }
                     if (msg && !onclose) {
-                        for (var j=0;j<users.length;j++) {
+                        for (var j=0; j<users.length; j++) {
                             var node = users[j];
                             if (node.motion && msg.topic === "motion") {
                                 node.send(RED.util.cloneMessage(msg));
@@ -322,9 +322,9 @@ module.exports = function(RED) {
                                 }
                             }
                             x = x0;
-                            while(x<=x1) {
+                            while (x<=x1) {
                                 y = y0;
-                                while(y<=y1) {
+                                while (y<=y1) {
                                     expanded.push([x,y,col]);
                                     y++;
                                 }
@@ -334,7 +334,7 @@ module.exports = function(RED) {
                         if (expanded.length > 0) {
                             var pixels = {};
                             var rules = [];
-                            for (i=expanded.length-1;i>=0;i--) {
+                            for (i=expanded.length-1; i>=0; i--) {
                                 var rule = expanded[i];
                                 if (!pixels[rule[0]+","+rule[1]]) {
                                     rules.unshift(rule.join(","));

@@ -90,12 +90,13 @@ module.exports = function(RED) {
                             if ((msg.payload[0] === 0x89)&&(msg.payload[1] === 0x50)) { fe = "png"; } //4E
                             msg.filename = "attachment."+fe;
                         }
-                        sendopts.attachments = [ { content: msg.payload, filename:(msg.filename.replace(/^.*[\\\/]/, '') || "file.bin") } ];
+                        var fname = msg.filename.replace(/^.*[\\\/]/, '') || "file.bin";
+                        sendopts.attachments = [ { content:msg.payload, filename:fname } ];
                         if (msg.hasOwnProperty("headers") && msg.headers.hasOwnProperty("content-type")) {
                             sendopts.attachments[0].contentType = msg.headers["content-type"];
                         }
                         // Create some body text..
-                        sendopts.text = RED._("email.default-message",{filename:(msg.filename.replace(/^.*[\\\/]/, '') || "file.bin"),description:(msg.hasOwnProperty("description") ? "\n\n"+msg.description : "")});
+                        sendopts.text = RED._("email.default-message",{filename:fname, description:(msg.description||"")});
                     }
                     else {
                         var payload = RED.util.ensureString(msg.payload);

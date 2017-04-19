@@ -71,6 +71,8 @@ Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **node-red-node-intel-galileo** - *[mraa-spio](hardware/intel)* - A collection of analogue & digital input & output nodes for the Intel Galileo and Edison.
 
+**node-red-node-pi-gpiod** - *[pigpiod](hardware/pigpiod)* - An alternative to the default PI GPIO nodes that allows remote access - so a host machine can access a remote Pi (via network) and is better for driving multiple servos.
+
 **node-red-node-pi-mcp3008** - *[pimcp3008](hardware/mcp3008)* - Allows A Raspberry Pi to node to read from an MCP3008 Analogue to Digital Converter chip via the SPI bus.
 
 **node-red-node-pi-neopixel** - *[neopixel](hardware/neopixel)* - Allows A Raspberry Pi to drive a strip of NeoPixels directly.
@@ -109,7 +111,7 @@ Copyright 2013, 2016 IBM Corp. under [the Apache 2.0 license](LICENSE).
 
 **node-red-node-ping** - *[88-ping](io/ping)* - Pings a machine and returns the trip time in mS. Returns false if no response received within 3 seconds, or if the host is unresolveable. Default ping is every 20 seconds but can be configured.
 
-**node-red-node-mdns** - *[mdns](io/mdns)* - discovers other Avahi/Bonjour services on the network.
+**node-red-node-discovery** - *[mdns](io/mdns)* - discovers other Avahi/Bonjour services on the network.
 
 **node-red-node-mqlight** - *[mqlight](io/mqlight)* - Adds nodes to send and receive using MQlight.
 

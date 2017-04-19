@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-leveldb",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "A Node-RED node to read and write to a LevelDB database",
     "dependencies"  : {
-        "level"   : "1.0.0"
+        "level"   : "^1.6.0"
     },
     "repository" : {
         "type":"git",
