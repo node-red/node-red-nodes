@@ -206,10 +206,14 @@ module.exports = function(RED) {
                             var limit = msg.limit;
                             if (typeof limit === "string" && !isNaN(limit)) {
                                 limit = Number(limit);
+                            } else if (typeof limit === "undefined") {
+                                limit = 0;
                             }
                             var skip = msg.skip;
                             if (typeof skip === "string" && !isNaN(skip)) {
                                 skip = Number(skip);
+                            } else if (typeof skip === "undefined") {
+                                skip = 0;
                             }
 
                             coll.find(selector,msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
