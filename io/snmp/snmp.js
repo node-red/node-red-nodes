@@ -12,13 +12,10 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.get(oids.split(","), function(error, varbinds) {
                     if (error) {
@@ -70,14 +67,11 @@ module.exports = function(RED) {
         }
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.table(oids, maxRepetitions, function(error, table) {
                     if (error) {
@@ -145,14 +139,11 @@ module.exports = function(RED) {
         }
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.subtree(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
@@ -204,13 +195,10 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             node.msg = msg;
             var oids = node.oids || msg.oid;
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.walk(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
