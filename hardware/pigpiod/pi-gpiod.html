@@ -161,9 +161,9 @@
     </div>
     <div class="form-row" id="node-set-minimax">
         <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.limits"></label>
-        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> mS
+        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> uS
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> mS
+        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> uS
     </div>
     <div class="form-row" id="node-set-tick">
         <label>&nbsp;</label>
@@ -226,8 +226,8 @@
             set: { value:"" },
             level: { value:"0" },
             out: { value:"out" },
-            sermin: { value:"10" },
-            sermax: { value:"20" }
+            sermin: { value:"1000" },
+            sermax: { value:"2000" }
         },
         inputs:1,
         outputs:0,
