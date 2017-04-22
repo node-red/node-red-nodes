@@ -12,13 +12,10 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.get(oids.split(","), function(error, varbinds) {
                     if (error) {
@@ -70,18 +67,15 @@ module.exports = function(RED) {
         }
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.table(oids, maxRepetitions, function(error, table) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         var indexes = [];
@@ -135,7 +129,7 @@ module.exports = function(RED) {
         function feedCb(varbinds) {
             for (var i = 0; i < varbinds.length; i++) {
                 if (snmp.isVarbindError(varbinds[i])) {
-                    node.error(snmp.varbindError(varbinds[i]));
+                    node.error(snmp.varbindError(varbinds[i]), msg);
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
@@ -145,18 +139,15 @@ module.exports = function(RED) {
         }
 
         this.on("input",function(msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.subtree(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         msg.payload = response;
@@ -192,7 +183,7 @@ module.exports = function(RED) {
         function feedCb(varbinds) {
             for (var i = 0; i < varbinds.length; i++) {
                 if (snmp.isVarbindError(varbinds[i])) {
-                    node.error(snmp.varbindError(varbinds[i]));
+                    node.error(snmp.varbindError(varbinds[i]), msg);
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
@@ -204,17 +195,14 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             node.msg = msg;
             var oids = node.oids || msg.oid;
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
             if (oids) {
                 msg.oid = oids;
-                if (msg.host && node.host || msg.community && node.community) {
-                    node.warn(RED._("common.errors.nooverride"));
-                }
-                var host = node.host || msg.host;
-                var community = node.community || msg.community;
                 node.session = snmp.createSession(host, community, {version: node.version});
                 node.session.walk(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
-                        node.error(error.toString());
+                        node.error(error.toString(), msg);
                     }
                     else {
                         msg.payload = response;

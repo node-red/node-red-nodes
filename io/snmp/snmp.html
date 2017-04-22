@@ -28,6 +28,8 @@
 
 <script type="text/x-red" data-help-name="snmp">
     <p>Simple SNMP oid or oid list fetcher. Triggered by any input.</p>
+    <p><code>msg.host</code> may contain the host.</p>
+    <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain a comma separated list of oids to request. (no spaces)</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
@@ -85,6 +87,8 @@
 
 <script type="text/x-red" data-help-name="snmp table">
     <p>Simple SNMP oid table fetcher. Triggered by any input.</p>
+    <p><code>msg.host</code> may contain the host.</p>
+    <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
@@ -141,6 +145,8 @@
 
 <script type="text/x-red" data-help-name="snmp subtree">
     <p>Simple SNMP oid subtree fetcher. Triggered by any input.</p>
+    <p><code>msg.host</code> may contain the host.</p>
+    <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
@@ -199,6 +205,8 @@
 
 <script type="text/x-red" data-help-name="snmp walker">
     <p>Simple SNMP oid walker fetcher. Triggered by any input.</p>
+    <p><code>msg.host</code> may contain the host.</p>
+    <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
