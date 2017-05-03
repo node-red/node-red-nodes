@@ -31,8 +31,13 @@ The command provides 3 outputs... stdout, stderr, and return code, from the runn
 If the called program stops (i.e. a return code is produced), this node can attempt
 to restart the command automatically.
 
-**Note :** when you stop Node-RED running we may not get a chance to kill the
-called program so it may remain running. You <i>may</i> have to kill it manually.
+Setting `msg.kill` to a signal name (e.g. SIGINT, SIGHUP) will stop the process - but if the restart flag is set it will then auto restart.
+
+Sending `msg.start` will also re-start the process.
+
+**Note:** Some applications will automatically buffer lines of output. It is advisable to turn off this behaviour.
+For example, if running a Python app, the `-u` parameter will stop the output being buffered.
+
 
 For example it can be used to run and then monitor the
 <a href="https://github.com/antirez/dump1090" target="_new">dump1090</a> plane
