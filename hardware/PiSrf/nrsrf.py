@@ -66,20 +66,12 @@ if len(sys.argv) > 1:
     while len(select.select([sys.stdin.fileno()], [], [], 0.0)[0])>0:
         os.read(sys.stdin.fileno(), 4096)
 
-    counter = 0
     while True:
         try:
             distance = int( Measure() + 0.5 )
             if distance != OLD:
                 print(distance)
-                OLD = distance
-                counter = 0
-            else:
-                counter += 1
-
-            if counter == 20:
-               raise Exception("Timeout reading ultrasonic sensor")
-                
+                OLD = distance                
             time.sleep(0.5)
         except:                     # try to clean up on exit
             print("0.0");
