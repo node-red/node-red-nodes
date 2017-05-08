@@ -34,9 +34,9 @@ def Measure():
     while GPIO.input(ECHO)==1:
         stop = time.time()
         Dif = time.time() - realstart
-        if Dif > 5:
+        if Dif > 0.4:
             print("Ultrasonic Sensor Timed out, Restarting.")
-            time.sleep(0.4)
+            time.sleep(0.2)
             Main()
 
     elapsed = stop-start
@@ -71,7 +71,7 @@ if len(sys.argv) > 1:
             distance = int( Measure() + 0.5 )
             if distance != OLD:
                 print(distance)
-                OLD = distance                
+                OLD = distance
             time.sleep(0.5)
         except:                     # try to clean up on exit
             print("0.0");
