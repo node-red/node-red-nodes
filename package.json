@@ -11,7 +11,8 @@
     "contributors": [
         {"name": "Dave Conway-Jones"},
         {"name": "Nick O'Leary"},
-        {"name": "Ben Hardill"}
+        {"name": "Ben Hardill"},
+	{"name": "Martin Schlienger}
     ],
     "keywords": [
         "Node-RED", "nodes", "iot", "ibm", "flow"
