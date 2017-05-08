@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "0.0.11",
+    "version"       : "0.0.12",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
         "net-snmp"  : "^1.1.19"
@@ -23,6 +23,7 @@
     },
     "contributors": [
         { "name": "Mika Karalia" },
-        { "name": "Bryan Malyn" }
+        { "name": "Bryan Malyn" },
+        { "name": "Martin Schlienger"}
     ]
 }
