@@ -17,6 +17,16 @@ module.exports = function(RED) {
         this.setMaxListeners(0);
         var node = this;
 
+        node.on("input", function (msg) {
+            if(msg.mysqlhost !== undefined) {
+                node.host = msg.mysqlhost;
+                node.port = msg.mysqlport;
+                node.credentials.user = msg.mysqluser;
+                node.credentials.password = msg.mysqlpassword;
+                node.dbname = msg.mysqldbname;
+            }
+        });
+        
         function checkVer() {
             node.connection.query("SELECT version();", [], function(err, rows) {
                 if (err) {
