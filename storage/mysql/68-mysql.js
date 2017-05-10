@@ -16,16 +16,6 @@ module.exports = function(RED) {
         this.dbname = n.db;
         this.setMaxListeners(0);
         var node = this;
-
-        node.on("input", function (msg) {
-            if(msg.mysqlhost !== undefined) {
-                node.host = msg.mysqlhost;
-                node.port = msg.mysqlport;
-                node.credentials.user = msg.mysqluser;
-                node.credentials.password = msg.mysqlpassword;
-                node.dbname = msg.mysqldbname;
-            }
-        });
         
         function checkVer() {
             node.connection.query("SELECT version();", [], function(err, rows) {
@@ -129,19 +119,59 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                            if (err) {
-                                node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"Error"});
-                            }
-                            else {
-                                msg.payload = rows;
-                                node.send(msg);
-                                node.status({fill:"green",shape:"dot",text:"OK"});
-                            }
-                        });
+                        msg.incgmysql = true;
+                        if((msg.mysqlpoolname !== undefined && node.mydbConfig.mysqlpoolname === undefined) || (msg.mysqlpoolname !== undefined && (msg.mysqlpoolname !== node.mydbConfig.mysqlpoolname))) {
+                            /// Shutdown the existing pool because the msg wants us to connect somwhere else
+                            if (node.mydbConfig.tick) { clearTimeout(node.mydbConfig.tick); }
+                            if (node.mydbConfig.check) { clearInterval(node.mydbConfig.check); }
+                            node.mydbConfig.connected = false;
+                            node.mydbConfig.emit("state"," ");
+                            node.mydbConfig.pool.end(function (err) { 
+                                msg.mysqlmodifiedhost = true;
+                                node.mydbConfig.mysqlpoolname = msg.mysqlpoolname;
+                                if(msg.mysqlhost) {
+                                    node.mydbConfig.host = msg.mysqlhost;
+                                }
+                                if(msg.mysqlport) {
+                                    node.mydbConfig.port = msg.mysqlport;
+                                }
+                                if(msg.mysqluser) {
+                                    node.mydbConfig.credentials.user = msg.mysqluser;
+                                }
+                                if(msg.mysqlpassword) {
+                                    node.mydbConfig.credentials.password = msg.mysqlpassword;
+                                }
+                                if(msg.mysqldbname) {
+                                    node.mydbConfig.dbname = msg.mysqldbname;
+                                }
+                                node.mydbConfig.pool = null;
+                                node.mydbConfig.connect();
+                                node.mydbConfig.on("state", function(info) {
+                                    if(info === "connected") {
+                                        finishQuery();
+                                    } else {
+                                        node.error("Error : " + info);
+                                    }
+                                });     
+                             });                       
+                        } else {
+                            finishQuery();
+                        }
+                        function finishQuery() {
+                            //console.log("query:",msg.topic);
+                            var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                            node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                                if (err) {
+                                    node.error(err,msg);
+                                    node.status({fill:"red",shape:"ring",text:"Error"});
+                                }
+                                else {
+                                    msg.payload = rows;
+                                    node.send(msg);
+                                    node.status({fill:"green",shape:"dot",text:"OK"});
+                                }
+                            });
+                        }
                     }
                     else {
                         if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
