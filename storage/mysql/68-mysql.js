@@ -119,29 +119,35 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        if((msg.mysqlpoolname !== undefined && node.mydbConfig.mysqlpoolname === undefined) || (msg.mysqlpoolname !== undefined && (msg.mysqlpoolname !== node.mydbConfig.mysqlpoolname))) {
+                        var connectionChanged = false;
+                        if(msg.mysqlhost && node.mydbConfig.host !== msg.mysqlhost) {
+                            node.mydbConfig.host = msg.mysqlhost;
+                            connectionChanged = true;
+                        }
+                        if(msg.mysqlport && node.mydbConfig.port !== msg.mysqlport) {
+                            node.mydbConfig.port = msg.mysqlport;
+                            connectionChanged = true;
+                        }
+                        if(msg.mysqluser && node.mydbConfig.credentials.user !== msg.mysqluser) {
+                            node.mydbConfig.credentials.user = msg.mysqluser;
+                            connectionChanged = true;
+                        }
+                        if(msg.mysqlpassword && node.mydbConfig.credentials.password !== msg.mysqluser) {
+                            node.mydbConfig.credentials.password = msg.mysqlpassword;
+                            connectionChanged = true;
+                        }
+                        if(msg.mysqldbname && node.mydbConfig.dbname !== msg.mysqldbname) {
+                            node.mydbConfig.dbname = msg.mysqldbname;
+                            connectionChanged = true;
+                        }
+
+                        if(connectionChanged) {
                             /// Shutdown the existing pool because the msg wants us to connect somwhere else
                             if (node.mydbConfig.tick) { clearTimeout(node.mydbConfig.tick); }
                             if (node.mydbConfig.check) { clearInterval(node.mydbConfig.check); }
                             node.mydbConfig.connected = false;
                             node.mydbConfig.emit("state"," ");
                             node.mydbConfig.pool.end(function (err) { 
-                                node.mydbConfig.mysqlpoolname = msg.mysqlpoolname;
-                                if(msg.mysqlhost) {
-                                    node.mydbConfig.host = msg.mysqlhost;
-                                }
-                                if(msg.mysqlport) {
-                                    node.mydbConfig.port = msg.mysqlport;
-                                }
-                                if(msg.mysqluser) {
-                                    node.mydbConfig.credentials.user = msg.mysqluser;
-                                }
-                                if(msg.mysqlpassword) {
-                                    node.mydbConfig.credentials.password = msg.mysqlpassword;
-                                }
-                                if(msg.mysqldbname) {
-                                    node.mydbConfig.dbname = msg.mysqldbname;
-                                }
                                 node.mydbConfig.pool = null;
                                 node.mydbConfig.connect();
                                 node.mydbConfig.on("state", function(info) {
