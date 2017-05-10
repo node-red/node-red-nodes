@@ -119,7 +119,6 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        msg.incgmysql = true;
                         if((msg.mysqlpoolname !== undefined && node.mydbConfig.mysqlpoolname === undefined) || (msg.mysqlpoolname !== undefined && (msg.mysqlpoolname !== node.mydbConfig.mysqlpoolname))) {
                             /// Shutdown the existing pool because the msg wants us to connect somwhere else
                             if (node.mydbConfig.tick) { clearTimeout(node.mydbConfig.tick); }
@@ -127,7 +126,6 @@ module.exports = function(RED) {
                             node.mydbConfig.connected = false;
                             node.mydbConfig.emit("state"," ");
                             node.mydbConfig.pool.end(function (err) { 
-                                msg.mysqlmodifiedhost = true;
                                 node.mydbConfig.mysqlpoolname = msg.mysqlpoolname;
                                 if(msg.mysqlhost) {
                                     node.mydbConfig.host = msg.mysqlhost;
