@@ -124,7 +124,7 @@ module.exports = function(RED) {
             /// Overide the connection pool options if they are passed in
             if(mysqloptions === undefined || mysqloptions == null) { return false; }
 
-            var node = this, haschange = fase;
+            var node = this, haschange = false;
             var originalOptions = JSON.stringify(node.mydbConfig.pooloptions);
             var updatedOpptions = JSON.stringify(mysqloptions);
             if(originalOptions !== updatedOpptions) {
