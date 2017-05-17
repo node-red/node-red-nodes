@@ -244,16 +244,31 @@ module.exports = function(RED) {
                         }
                         else if (node.operation === "aggregate") {
                             msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
-                            coll.aggregate(msg.payload, function(err, result) {
-                                if (err) {
-                                    node.error(err);
+                            if(msg.allowDiskUse == true){
+                                var cursor = coll.aggregate(msg.payload, {allowDiskUse: true});
+                                cursor.each(processCursor);
+
+                                function processCursor(err, result){
+                                    if(err){
+                                        err = "custom error: " +err;
+                                        node.error(err);
+                                    } else{
+                                        msg.payload = result;
+                                        node.send(msg);
+                                    }
+
                                 }
-                                else {
-                                    msg.payload = result;
-                                    node.send(msg);
+                            } else{
+                                coll.aggregate(msg.payload,function(err,result)){
+                                    if(err){
+                                        node.error(err);
+                                    } else {
+                                        msg.payload = result;
+                                        msg.send(msg);
+                                    }
+                                });
                                 }
-                            });
-                        }
+                            }
                     });
                 }
             });
