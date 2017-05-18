@@ -36,6 +36,10 @@ module.exports = function(RED) {
                         msg.payload = varbinds;
                         node.send(msg);
                     }
+                    if (node.session) {
+                        node.session.close();
+                        delete node.session;
+                    }
                 });
             }
             else {
@@ -46,6 +50,7 @@ module.exports = function(RED) {
         this.on("close", function() {
             if (node.session) {
                 node.session.close();
+                delete node.session;
             }
         });
     }
@@ -101,6 +106,10 @@ module.exports = function(RED) {
                         msg.payload = table;
                         node.send(msg);
                     }
+                    if (node.session) {
+                        node.session.close();
+                        delete node.session;
+                    }
                 });
             }
             else {
@@ -111,6 +120,7 @@ module.exports = function(RED) {
         this.on("close", function() {
             if (node.session) {
                 node.session.close();
+                delete node.session;
             }
         });
     }
@@ -155,6 +165,10 @@ module.exports = function(RED) {
                         //Clears response
                         response.length = 0;
                     }
+                    if (node.session) {
+                        node.session.close();
+                        delete node.session;
+                    }
                 });
             }
             else {
@@ -165,6 +179,7 @@ module.exports = function(RED) {
         this.on("close", function() {
             if (node.session) {
                 node.session.close();
+                delete node.session;
             }
         });
     }
@@ -210,6 +225,10 @@ module.exports = function(RED) {
                         //Clears response
                         response.length = 0;
                     }
+                    if (node.session) {
+                        node.session.close();
+                        delete node.session;
+                    }
                 });
             }
             else {
@@ -220,6 +239,7 @@ module.exports = function(RED) {
         this.on("close", function() {
             if (node.session) {
                 node.session.close();
+                delete node.session;
             }
         });
     }
