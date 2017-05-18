@@ -3,6 +3,16 @@ module.exports = function(RED) {
     "use strict";
     var snmp = require("net-snmp");
 
+    var sessions = {};
+
+    function getSession(host, community, version){
+        var sessionKey = host + ":" + community + ":" + version;
+        if (!(sessionKey in sessions)){
+            sessions[sessionKey] = snmp.createSession(host, community, {version: version});
+        }
+        return sessions[sessionKey];
+    }
+
     function SnmpNode(n) {
         RED.nodes.createNode(this,n);
         this.community = n.community;
@@ -16,8 +26,7 @@ module.exports = function(RED) {
             var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
-                node.session = snmp.createSession(host, community, {version: node.version});
-                node.session.get(oids.split(","), function(error, varbinds) {
+                getSession(host, community, node.version).get(oids.split(","), function(error, varbinds) {
                     if (error) {
                         node.error(error.toString(),msg);
                     }
@@ -36,21 +45,10 @@ module.exports = function(RED) {
                         msg.payload = varbinds;
                         node.send(msg);
                     }
-                    if (node.session) {
-                        node.session.close();
-                        delete node.session;
-                    }
                 });
             }
             else {
                 node.warn("No oid(s) to search for");
-            }
-        });
-
-        this.on("close", function() {
-            if (node.session) {
-                node.session.close();
-                delete node.session;
             }
         });
     }
@@ -77,8 +75,7 @@ module.exports = function(RED) {
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                node.session = snmp.createSession(host, community, {version: node.version});
-                node.session.table(oids, maxRepetitions, function(error, table) {
+                getSession(host, community, node.version).table(oids, maxRepetitions, function(error, table) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -106,21 +103,10 @@ module.exports = function(RED) {
                         msg.payload = table;
                         node.send(msg);
                     }
-                    if (node.session) {
-                        node.session.close();
-                        delete node.session;
-                    }
                 });
             }
             else {
                 node.warn("No oid to search for");
-            }
-        });
-
-        this.on("close", function() {
-            if (node.session) {
-                node.session.close();
-                delete node.session;
             }
         });
     }
@@ -154,8 +140,7 @@ module.exports = function(RED) {
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                node.session = snmp.createSession(host, community, {version: node.version});
-                node.session.subtree(msg.oid, maxRepetitions, feedCb, function(error) {
+                getSession(host, community, node.version).subtree(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -165,21 +150,10 @@ module.exports = function(RED) {
                         //Clears response
                         response.length = 0;
                     }
-                    if (node.session) {
-                        node.session.close();
-                        delete node.session;
-                    }
                 });
             }
             else {
                 node.warn("No oid to search for");
-            }
-        });
-
-        this.on("close", function() {
-            if (node.session) {
-                node.session.close();
-                delete node.session;
             }
         });
     }
@@ -214,8 +188,7 @@ module.exports = function(RED) {
             var community = node.community || msg.community;
             if (oids) {
                 msg.oid = oids;
-                node.session = snmp.createSession(host, community, {version: node.version});
-                node.session.walk(msg.oid, maxRepetitions, feedCb, function(error) {
+                getSession(host, community, node.version).walk(msg.oid, maxRepetitions, feedCb, function(error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -225,21 +198,10 @@ module.exports = function(RED) {
                         //Clears response
                         response.length = 0;
                     }
-                    if (node.session) {
-                        node.session.close();
-                        delete node.session;
-                    }
                 });
             }
             else {
                 node.warn("No oid to search for");
-            }
-        });
-
-        this.on("close", function() {
-            if (node.session) {
-                node.session.close();
-                delete node.session;
             }
         });
     }
