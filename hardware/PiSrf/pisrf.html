@@ -4,6 +4,10 @@
         <label for="node-input-pins"><i class="fa fa-circle"></i> Pins</label>
         <input type="text" id="node-input-pins" placeholder="Trigger,Echo">
     </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-bars"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="optional topic">
+    </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -26,6 +30,7 @@
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
+            topic: { value:"SRF" },
             pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) }
         },
         inputs:0,

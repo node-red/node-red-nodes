@@ -24,6 +24,7 @@ module.exports = function(RED) {
 
     function PiSrfNode(n) {
         RED.nodes.createNode(this, n);
+        this.topic = n.topic;
         this.pins = n.pins;
         var node = this;
 
@@ -36,7 +37,7 @@ module.exports = function(RED) {
                 if (RED.settings.verbose) { node.log("out: " + data + " :"); }
                 data = data.toString().trim();
                 if (data.length > 0) {
-                    node.send({topic:"SRF",payload:data});
+                    node.send({topic:node.topic, payload:data});
                 }
             });
 

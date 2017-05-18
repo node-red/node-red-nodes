@@ -33,6 +33,12 @@ def Measure():
             Main()
     while GPIO.input(ECHO)==1:
         stop = time.time()
+        Dif = time.time() - realstart
+        if Dif > 0.4:
+            print("Ultrasonic Sensor Timed out, Restarting.")
+            time.sleep(0.2)
+            Main()
+
     elapsed = stop-start
     distance = (elapsed * 36000)/2
 
