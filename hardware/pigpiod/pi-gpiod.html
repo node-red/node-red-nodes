@@ -458,7 +458,7 @@
             else if (this.out === "ser") { return this.name || "Servo: "+bcm2pin[this.pin]; }
             else {
                 var suf = "";
-                if (this.set == true) { suf = (this.level === "1") ? "¹ " : "₀ "; }
+                if (this.set === true) { suf = (this.level === "1") ? "¹ " : "₀ "; }
                 return this.name || "PIN: " + bcm2pin[this.pin] + suf ;
             }
         },
