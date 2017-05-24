@@ -62,6 +62,46 @@ describe('rbe node', function() {
         });
     });
 
+    it('should only send output if payload changes - ignoring first value (rbei)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"rbei", gap:"0", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", "b");
+                    msg.should.have.a.property("topic", "a");
+                    c+=1;
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", "b");
+                    msg.should.have.a.property("topic", "b");
+                    c+=1;
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", "c");
+                    msg.should.have.a.property("topic", "a");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload", "c");
+                    msg.should.have.a.property("topic", "b");
+                    done();
+                }
+
+            });
+            n1.emit("input", {payload:"a", topic:"a"});
+            n1.emit("input", {payload:"a", topic:"b"});
+            n1.emit("input", {payload:"a", topic:"a"});
+            n1.emit("input", {payload:"b", topic:"a"});
+            n1.emit("input", {payload:"b", topic:"b"});
+            n1.emit("input", {payload:"c", topic:"a"});
+            n1.emit("input", {payload:"c", topic:"b"});
+        });
+    });
+
     it('should only send output if x away from original value (deadbandEq)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"deadbandEq", gap:"10", inout:"out", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
