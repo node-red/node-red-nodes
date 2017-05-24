@@ -455,8 +455,12 @@
         align: "right",
         label: function() {
             if (this.out === "pwm") { return this.name || "PWM: "+bcm2pin[this.pin]; }
-            if (this.out === "ser") { return this.name || "Servo: "+bcm2pin[this.pin]; }
-            else { return this.name||"PIN: "+bcm2pin[this.pin] ; }
+            else if (this.out === "ser") { return this.name || "Servo: "+bcm2pin[this.pin]; }
+            else {
+                var suf = "";
+                if (this.set == true) { suf = (this.level === "1") ? "¹ " : "₀ "; }
+                return this.name || "PIN: " + bcm2pin[this.pin] + suf ;
+            }
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -465,7 +469,6 @@
         palettelabel: "pi gpiod",
         oneditprepare: function() {
             var pinnow = bcm2pin[this.pin];
-            console.log("NOW",pinnow);
             var pintip = this._("pi-gpiod.tip.pin");
             var pinname = this._("pi-gpiod.pinname");
             if (!$("#node-input-out").val()) { $("#node-input-out").val("out"); }
