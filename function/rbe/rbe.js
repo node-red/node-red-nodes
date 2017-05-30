@@ -13,24 +13,26 @@ module.exports = function(RED) {
             this.gap = parseFloat(this.gap);
         }
         this.g = this.gap;
+
         var node = this;
 
         node.previous = {};
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("payload")) {
                 var t = msg.topic || "_no_topic";
-                if (this.func === "rbe") {
+                if ((this.func === "rbe") || (this.func === "rbei")) {
+                    var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
                     if (typeof(msg.payload) === "object") {
                         if (typeof(node.previous[t]) !== "object") { node.previous[t] = {}; }
                         if (!RED.util.compareObjects(msg.payload, node.previous[t])) {
                             node.previous[t] = msg.payload;
-                            node.send(msg);
+                            if (doSend) { node.send(msg); }
                         }
                     }
                     else {
                         if (msg.payload !== node.previous[t]) {
                             node.previous[t] = msg.payload;
-                            node.send(msg);
+                            if (doSend) { node.send(msg); }
                         }
                     }
                 }

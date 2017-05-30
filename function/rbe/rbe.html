@@ -4,6 +4,7 @@
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="rbe.label.func"></span></label>
         <select type="text" id="node-input-func" style="width:74%;">
             <option value="rbe" data-i18n="rbe.opts.rbe"></option>
+            <option value="rbei" data-i18n="rbe.opts.rbei"></option>
             <option value="deadbandEq" data-i18n="rbe.opts.deadbandEq"></option>
             <option value="deadband" data-i18n="rbe.opts.deadband"></option>
             <option value="narrowbandEq" data-i18n="rbe.opts.narrowbandEq"></option>
@@ -78,7 +79,7 @@
         outputs:1,
         icon: "rbe.png",
         label: function() {
-            var ll = (this.func||"").replace("Eq","")||"rbe";
+            var ll = (this.func||"").replace("Eq","").replace("rbei","rbe")||"rbe";
             return this.name||ll||"rbe";
         },
         labelStyle: function() {
@@ -90,7 +91,7 @@
                 $("#node-input-inout").val("out");
             }
             $("#node-input-func").on("change",function() {
-                if ($("#node-input-func").val() === "rbe") {
+                if (($("#node-input-func").val() === "rbe")||($("#node-input-func").val() === "rbei")) {
                     $("#node-bandgap").hide();
                 } else {
                     $("#node-bandgap").show();
