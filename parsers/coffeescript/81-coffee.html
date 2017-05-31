@@ -1,0 +1,110 @@
+<!--
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="coffee">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-func"><i class="icon-wrench"></i> Coffeescript</label>
+        <input type="hidden" id="node-input-func" autofocus="autofocus">
+        <div style="height: 250px;" class="node-text-editor" id="node-input-func-editor" ></div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputs"><i class="icon-random"></i> Outputs</label>
+        <input id="node-input-outputs" style="width: 60px; height: 1.7em;" value="1">
+    </div>
+    <div class="form-tips">See the Info tab for help writing functions.</div>
+</script>
+
+<script type="text/x-red" data-help-name="coffee">
+	<p>A coffeescript function block where you can write code to do more interesting things.</p>
+	<p>The message is passed in as a JavaScript object called <code>msg</code>.</p>
+	<p>By convention it will have a <code>msg.payload</code> property containing
+	   the body of the message.</p>
+	<p>The function should return the messages it wants to pass on to the next nodes
+	in the flow. It can return:</p>
+	<ul>
+	  <li>a single message object - passed to nodes connected to the first output</li>
+	  <li>an array of message objects - passed to nodes connected to the corresponding outputs</li>
+    </ul>
+    <p>If any element of the array is itself an array of messages, multiple
+	      messages are sent to the corresponding output.</p>
+	<p>If null is returned, either by itself or as an element of the array, no
+	      message is passed on.</p>
+	<p>See the <a target="_new" href="http://nodered.org/docs/writing-functions.html">online documentation</a> for more help.</p>
+	      
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('coffee',{
+        color:"#cccccc",
+        category: 'function',
+        defaults: {
+            name: {value:""},
+            func: {value:"\nreturn msg;"},
+            outputs: {value:1}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "function.png",
+        label: function() {
+            return this.name;
+        },
+        oneditprepare: function() {
+            $( "#node-input-outputs" ).spinner({
+                min:1
+            });
+
+            function functionDialogResize(ev,ui) {
+                $("#node-input-func-editor").css("height",(ui.size.height-275)+"px");
+            };
+
+            $( "#dialog" ).on("dialogresize", functionDialogResize);
+            $( "#dialog" ).one("dialogopen", function(ev) {
+                var size = $( "#dialog" ).dialog('option','sizeCache-function');
+                if (size) {
+                    functionDialogResize(null,{size:size});
+                }
+            });
+            $( "#dialog" ).one("dialogclose", function(ev,ui) {
+                var height = $( "#dialog" ).dialog('option','height');
+                $( "#dialog" ).off("dialogresize",functionDialogResize);
+            });
+            var that = this;
+            require(["orion/editor/edit"], function(edit) {
+                that.editor = edit({
+                    parent:document.getElementById('node-input-func-editor'),
+                    lang:"js",
+                    contents: $("#node-input-func").val()
+                });
+                RED.library.create({
+                    url:"functions", // where to get the data from
+                    type:"coffee", // the type of object the library is for
+                    editor:that.editor, // the field name the main text body goes to
+                    fields:['name','outputs']
+                });
+                $("#node-input-name").focus();
+
+            });
+        },
+        oneditsave: function() {
+            $("#node-input-func").val(this.editor.getText())
+            delete this.editor;
+        }
+    });
+</script>
