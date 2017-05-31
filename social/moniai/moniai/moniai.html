@@ -1,0 +1,232 @@
+<!--
+  Copyright 2013,2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="Moni.ai in">
+    <div class="form-row">
+        <label for="node-input-username">Moni.ai username</label>
+        <input type="text" id="node-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password">password</label>
+        <input type="password" id="node-input-password" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-trigger">Trigger pattern for Voice Channel</label>
+        <input type="text" id="node-input-trigger"  placeholder="e.g. 'turn on the light'">
+    </div>
+ 
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">You must signup for a new user on <a href="https://moni.ai">https://moni.ai</a> in order to add a voice channel.<br/>
+    After you added the channel you'll be able to see it on the developers page and you'll be able to trigger it after you logged in to Moni.ai.</div>
+</script>
+
+<script type="text/x-red" data-help-name="Moni.ai in">
+    <p>Creates a new Voice Channel on Moni.ai</p>
+    <p>You need to signup as a user on <a href="https://moni.ai">https://moni.ai</a> in order to use the functionality.</p>
+    <p>After creating the node you can trigger the Voice Channel by saying the trigger pattern. You must be logged in to trigger the pattern (unless your Channel has been published).</p>
+    <p>When the Voice Channel gets triggered the node is sending <code>msg.payload</code> containing the userinput.,
+    while <code>msg.latitude</code> and <code>msg.longitude</code> will contain the gps coordinates of the user (if available).</p>
+</script>
+
+<script type="text/x-red" data-template-name="Moni.ai out">
+    <div class="form-row">
+        <label for="node-input-trigger">Output</label>
+        <input type="text" id="node-input-trigger"  placeholder="Output to tell the user">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips">The messages sent to this node <b>must</b> originate from an <i>Moni.ai in</i> node. If output is empty <code>msg.payload</code> will be used as output.</div>
+</script>
+
+<script type="text/x-red" data-help-name="Moni.ai out">
+    <p>Sends responses back to requests received from a Moni.ai in node.</p>
+    <p>The response can be customised using the following message properties:</p>
+    <ul>
+        <li><code>msg.payload</code> is sent as response to Moni.ai</li>
+        <li><code>msg.picture</code> an additional picture (https url) to display within the answer</li>
+        <li><code>msg.link</code> an additional link to show</li>
+    </ul>
+</script>
+
+<script type="text/x-red" data-template-name="Moni.ai ask">
+    
+    <div class="form-row">
+        <label for="node-input-trigger">Question</label>
+        <input type="text" id="node-input-trigger"  placeholder="Question to ask the user">
+    </div>
+ 
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips" id="tip-json" hidden>Tip: If question is empty <code>msg.payload</code> will be used as question.</div>
+</script>
+
+<script type="text/x-red" data-help-name="Moni.ai ask">
+    <p>Asks a question to the Moni.ai user who triggered a Voice Channel using the Moni.ai in node.</p>
+    <p>Only works as response to an Moni.ai node. A question/output can be entered on the Node. By default <code>msg.payload</code> will contain the question to be asked.</p>
+    <p>You can also provide a <code>msg.link</code> and a <code>msg.picture</code></p>
+    <p>The node will output the userinput received as <code>msg.payload</code></p>
+    
+</script>
+
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('Moni.ai in',{
+        category: 'social',
+        defaults: {
+            name: {value:""},
+            trigger: {value:"", required:true},
+            username: {value:"",required:true},
+	     password: {value:"",required:true}
+        },
+        color:"#ED202D",
+        inputs:0,
+        outputs:1,
+        icon: "bridge-dash.png",
+        label: function() {
+            var trigger = RED.nodes.node(this.trigger);
+            return this.trigger || (trigger ? trigger.label() : "Moni.ai Listener");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if ((this.trigger !== undefined) && (this.trigger !== "")) {
+                this.trigger = this.trigger || RED.nodes.node(this.trigger).trigger;
+                $("#node-input-trigger").val(this.trigger);
+            }
+            else { this.trigger = this.trigger; }
+            $("#node-input-trigger").val(this.trigger);
+        },
+	 oneditsave: function() {
+		
+	     var url = "https://api.moni.ai";
+	     
+	     
+            var credentials = {};
+            credentials.userid = $("#node-input-username").val();
+	     credentials.password = $("#node-input-password").val();
+		var self = this;
+                    $.ajax({
+                        url: 'https://api.moni.ai',
+                        type: 'POST',
+                        data: credentials,
+			   crossDomain: true,
+			   
+                        success:function(xml){
+				
+				if ($(xml).find('action').text() == "Error") {
+					console.log($(xml).find('value').text());
+					return(0);
+				}
+				var token = $(xml).find('authtoken').text();
+				var root = location.protocol + '//' + location.host + RED.settings.httpNodeRoot;
+            			if (root.slice(-1) != "/") {
+                    			root = root+"/";
+		              }
+		              root += self.id;
+            
+				var postdata = {};
+				postdata.authtoken = token;
+				postdata.mode = 1;
+				postdata.question = $("#node-input-trigger").val();
+				postdata.answer = "OK";
+				postdata.actiontype = 26;
+				postdata.actionvalue = '{"bluemixurl":"' + root + '"}';
+				postdata.actionIsPrivate = 1;
+				$.ajax({
+                        		url: 'https://api.moni.ai',
+                        		type: 'POST',
+                        		data: postdata,
+			   		crossDomain: true,
+			   
+                        		success:function(xml){
+				
+					if ($(xml).find('action').text() == "Error") {
+						console.log($(xml).find('value').text());
+						return(0);
+					} /*else {
+						self.status({fill:"green",shape:"dot",text:"listening"});
+					}*/
+					
+                        		}
+                    		});
+                        }
+                    });
+
+		
+	 } 
+    });
+
+
+    RED.nodes.registerType('Moni.ai out',{
+        category: 'social',
+        color:"#ED202D",
+        defaults: {
+	     trigger: {value:""},
+            name: {value:""}
+
+        },
+        inputs:1,
+        outputs:0,
+        align: "right",
+        icon: "bridge-dash.png",
+        label: function() {
+            var trigger = RED.nodes.node(this.trigger);
+            return this.trigger || (trigger ? trigger.label() : "Moni.ai Response");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+
+    RED.nodes.registerType('Moni.ai ask',{
+        category: 'social',
+        color:"#ED202D",
+        defaults: {
+            name: {value:""},
+            trigger: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "bridge-dash.png",
+        label: function() {
+            var trigger = RED.nodes.node(this.trigger);
+            return this.trigger || (trigger ? trigger.label() : "Moni.ai ask");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if ((this.trigger !== undefined) && (this.trigger !== "")) {
+                this.trigger = this.trigger || RED.nodes.node(this.trigger).trigger;
+                $("#node-input-trigger").val(this.trigger);
+            }
+            else { this.trigger = this.trigger; }
+            $("#node-input-trigger").val(this.trigger);
+        }
+	  
+    });
+
+
+</script>

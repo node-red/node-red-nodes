@@ -1,0 +1,13 @@
+{
+    "name"         : "moni.ai",
+    "version"      : "1.0.2",
+    "description"  : "Listen to trigger patterns on Moni.ai, your virtual assistant",
+    "dependencies": {
+    },
+    "keywords": [ "artificial intelligence, ai, assistant, chat" ],
+    "node-red"     : {
+        "nodes": {
+            "sample": "moniai/moniai.js"
+        }
+    }
+}
