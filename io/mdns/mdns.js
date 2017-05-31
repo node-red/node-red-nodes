@@ -35,6 +35,9 @@ module.exports = function(RED) {
             var msg = {topic:node.topic, payload:service};
             node.send(msg);
         });
+        browser.on('error', function(exception) {
+            node.error(exception.toString());
+        });
         browser.start();
 
         node.on("close", function() {
