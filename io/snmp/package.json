@@ -3,7 +3,7 @@
     "version"       : "0.0.12",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
-        "net-snmp"  : "^1.1.19"
+        "net-snmp"  : "^1.1.20"
     },
     "repository" : {
         "type":"git",
@@ -22,7 +22,7 @@
         "url": "http://nodered.org"
     },
     "contributors": [
-        { "name": "Mika Karalia" },
+        { "name": "Mika Karaila" },
         { "name": "Bryan Malyn" }
     ]
 }
