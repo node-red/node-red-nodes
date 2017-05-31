@@ -54,6 +54,53 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("snmp",SnmpNode);
 
+ function SnmpSNode(n) {
+        RED.nodes.createNode(this, n);
+        this.community = n.community;
+        this.host = n.host;
+        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        var node = this;
+
+        this.on("input", function (msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
+            var oids = msg.oids;
+            node.log(oids + ' ' + host + ' ' + msg.host+ community + msg.community);
+            if (oids) {
+                node.session = snmp.createSession(host, community, { version: node.version });
+                node.session.set(oids, function (error, varbinds) {
+                    if (error) {
+                        node.error(error.toString(), msg);
+                    }
+                    else {
+                        for (var i = 0; i < varbinds.length; i++) {
+                            if (snmp.isVarbindError(varbinds[i])) {
+                                node.error(snmp.varbindError(varbinds[i]), msg);
+                            }
+                            else {
+                                if (varbinds[i].type == 4) { varbinds[i].value = varbinds[i].value.toString(); }
+                                varbinds[i].tstr = snmp.ObjectType[varbinds[i].type];
+                                //node.log(varbinds[i].oid + "|" + varbinds[i].tstr + "|" + varbinds[i].value);
+                            }
+                        }
+                        msg.oid = oids;
+                        msg.payload = varbinds;
+                        node.send(msg);
+                    }
+                });
+            }
+            else {
+                node.warn("No oid(s) to set");
+            }
+        });
+
+        this.on("close", function () {
+            if (node.session) {
+                node.session.close();
+            }
+        });
+    }
+
     function SnmpTNode(n) {
         RED.nodes.createNode(this,n);
         this.community = n.community;
