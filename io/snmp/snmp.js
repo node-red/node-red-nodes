@@ -94,8 +94,9 @@ module.exports = function (RED) {
                     else {
                         for (var i = 0; i < varbinds.length; i++) {
                             // for version 2c we must check each OID for an error condition
-                            if (snmp.isVarbindError(varbinds[i]))
+                            if (snmp.isVarbindError(varbinds[i])) {
                                 node.error(snmp.varbindError(varbinds[i]), msg);
+                            }
                         }
                     }
                 });
