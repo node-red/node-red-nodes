@@ -42,13 +42,7 @@ SNMP sets the value of one or more OIDs.
 
 `msg.community` may contain the community.
 
-`msg.varbinds` may contain an array of varbind objects. 
-
-The host configured in the edit config will override `msg.host`. Leave blank if you want to use `msg.host` to provide input.
-
-The community configured in the edit config will override `msg.community`. Leave blank if you want to use `msg.community` to provide input.
-
-`msg.varbinds` example:
+`msg.varbinds` may contain an array of varbind objects e.g.:
    msg.varbinds = [
         {
             oid: "1.3.6.1.2.1.1.5.0",
@@ -81,6 +75,10 @@ Types can be:
  * `NoSuchObject`
  * `NoSuchInstance`
  * `EndOfMibView`
+
+The host configured in the edit config will override `msg.host`. Leave blank if you want to use `msg.host` to provide input.
+
+The community configured in the edit config will override `msg.community`. Leave blank if you want to use `msg.community` to provide input.
 
 
  
