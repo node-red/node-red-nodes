@@ -43,7 +43,8 @@ SNMP sets the value of one or more OIDs.
 `msg.community` may contain the community.
 
 `msg.varbinds` may contain an array of varbind objects e.g.:
-   msg.varbinds = [
+```
+    msg.varbinds = [
         {
             oid: "1.3.6.1.2.1.1.5.0",
             type: "OctetString",
@@ -54,7 +55,7 @@ SNMP sets the value of one or more OIDs.
             value: "somewhere"
         }
     ];
-
+```
 Types can be:
 
  * `Boolean`
