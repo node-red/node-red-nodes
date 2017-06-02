@@ -57,6 +57,58 @@
     });
 </script>
 
+<script type="text/x-red" data-template-name="snmp set">
+    <div class="form-row">
+         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+         <input type="text" id="node-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+    <div class="form-row">
+        <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
+        <select type="text" id="node-input-version" style="width: 150px;">
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="snmp set">
+    <p>Simple snmp Set node. Trigger by any input</p>
+    <p><code>msg.host</code> may contain the host.</p>
+    <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.varbinds</code> must contain varbinds as an Array  [ { oid: "1.3.6.1.2.1.1.5.0", type: "OctetString", value: "host1"} , { oid: ...} ]</p>
+    <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('snmp set',{
+        category: 'network-input',
+        color:"YellowGreen",
+        defaults: {
+            host: {value:"127.0.0.1"},
+            community: {value:"public"},
+            version: {value:"1",required:true},
+            oids: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "snmp.png",
+        label: function() {
+            return this.name||"snmp set "+this.host;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
 
 <script type="text/x-red" data-template-name="snmp table">
     <div class="form-row">
