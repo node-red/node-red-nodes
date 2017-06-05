@@ -64,7 +64,7 @@ module.exports = function(RED) {
                     var twimlurl = node.url || msg.payload;
                     node.twilioClient.makeCall( {to: tonum, from: node.fromNumber, url: twimlurl}, function(err, response) {
                         if (err) {
-                            node.error(err.message);
+                            node.error(err.message,msg);
                         }
                         //console.log(response);
                     });
@@ -73,7 +73,7 @@ module.exports = function(RED) {
                     // Send SMS
                     node.twilioClient.sendMessage( {to: tonum, from: node.fromNumber, body: msg.payload}, function(err, response) {
                         if (err) {
-                            node.error(err.message);
+                            node.error(err.message,msg);
                         }
                         //console.log(response);
                     });
@@ -81,7 +81,7 @@ module.exports = function(RED) {
 
             }
             catch (err) {
-                node.error(err);
+                node.error(err,msg);
             }
         });
     }
