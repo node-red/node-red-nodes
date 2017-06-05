@@ -17,6 +17,18 @@ module.exports = function(RED) {
         this.setMaxListeners(0);
         var node = this;
 
+        node.pooloptions = {
+            host : node.host,
+            port : node.port,
+            user : node.credentials.user,
+            password : node.credentials.password,
+            database : node.dbname,
+            timezone : node.tz,
+            insecureAuth: true,
+            multipleStatements: true,
+            connectionLimit: 25
+        };
+        
         function checkVer() {
             node.connection.query("SELECT version();", [], function(err, rows) {
                 if (err) {
@@ -32,17 +44,7 @@ module.exports = function(RED) {
             node.connecting = true;
             node.emit("state","connecting");
             if (!node.pool) {
-                node.pool = mysqldb.createPool({
-                    host : node.host,
-                    port : node.port,
-                    user : node.credentials.user,
-                    password : node.credentials.password,
-                    database : node.dbname,
-                    timezone : node.tz,
-                    insecureAuth: true,
-                    multipleStatements: true,
-                    connectionLimit: 25
-                });
+                node.pool = mysqldb.createPool(node.pooloptions);
             }
 
             node.pool.getConnection(function(err, connection) {
@@ -102,6 +104,58 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+        this.performQuery = function(msg) {
+            var node = this;
+            //console.log("query:",msg.topic);
+            var bind = Array.isArray(msg.payload) ? msg.payload : [];
+            node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                if (err) {
+                    node.error(err,msg);
+                    node.status({fill:"red",shape:"ring",text:"Error"});
+                }
+                else {
+                    msg.payload = rows;
+                    node.send(msg);
+                    node.status({fill:"green",shape:"dot",text:"OK"});
+                }
+            });
+        }
+        this.overRideOptions = function(mysqloptions) {
+            /// Overide the connection pool options if they are passed in
+            if(mysqloptions === undefined || mysqloptions == null) { return false; }
+
+            var node = this, haschange = false;
+            var originalOptions = JSON.stringify(node.mydbConfig.pooloptions);
+            var updatedOpptions = JSON.stringify(mysqloptions);
+            if(originalOptions !== updatedOpptions) {
+                for(var prop in mysqloptions) {
+                    if(node.mydbConfig.pooloptions[prop] !== mysqloptions[prop]) {
+                        haschange = true;
+                        node.mydbConfig.pooloptions[prop] = mysqloptions[prop];
+                    }
+                }
+            }
+
+            return haschange;
+        }
+        this.reInitializeConnection = function(callBack) {
+            var node = this;
+            if (node.mydbConfig.tick) { clearTimeout(node.mydbConfig.tick); }
+            if (node.mydbConfig.check) { clearInterval(node.mydbConfig.check); }
+            node.mydbConfig.connected = false;
+            node.mydbConfig.emit("state"," ");
+            node.mydbConfig.pool.end(function (err) { 
+                node.mydbConfig.pool = null;
+                node.mydbConfig.connect();
+                node.mydbConfig.on("state", function(info) {
+                    if(info === "connected") {
+                        callBack();
+                    } else {
+                        node.error("Error : " + info);
+                    }
+                });     
+            });                       
+        }
 
         if (this.mydbConfig) {
             this.mydbConfig.connect();
@@ -119,19 +173,16 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                            if (err) {
-                                node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"Error"});
-                            }
-                            else {
-                                msg.payload = rows;
-                                node.send(msg);
-                                node.status({fill:"green",shape:"dot",text:"OK"});
-                            }
-                        });
+                        var changedConfig = node.overRideOptions(msg.mysqloptions);
+                        if(changedConfig) {
+                            /// Shutdown the existing pool because the options passed in wants us to connect somwhere else
+                            node.reInitializeConnection(function() {
+                                node.performQuery(msg);
+                            });   
+                        } else {
+                            node.performQuery(msg);     
+                        }
+
                     }
                     else {
                         if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }

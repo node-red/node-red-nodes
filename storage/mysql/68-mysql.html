@@ -67,6 +67,9 @@
     <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
     <p>Typically the returned payload will be an array of the result rows.</p>
     <p>If nothing is found for the key then <i>null</i> is returned,</p>
+    <p><code>msg.mysqloptions</code> can override the connection options for mysql. See the official mysql module's documentation for example of options you can override.</p>
+    <p><code>msg.mysqloptions = { "host" :"127.0.0.1" };</code> would change only the host mysql connects to.</p>
+    <p>If any properties are overridden, then the connection pool is ended and reinitialized</p>
     <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>mysqlReconnectTime: 30000,</pre></p>
 </script>
