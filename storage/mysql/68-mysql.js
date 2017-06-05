@@ -17,6 +17,18 @@ module.exports = function(RED) {
         this.setMaxListeners(0);
         var node = this;
 
+        node.pooloptions = {
+            host : node.host,
+            port : node.port,
+            user : node.credentials.user,
+            password : node.credentials.password,
+            database : node.dbname,
+            timezone : node.tz,
+            insecureAuth: true,
+            multipleStatements: true,
+            connectionLimit: 25
+        };
+        
         function checkVer() {
             node.connection.query("SELECT version();", [], function(err, rows) {
                 if (err) {
@@ -32,17 +44,7 @@ module.exports = function(RED) {
             node.connecting = true;
             node.emit("state","connecting");
             if (!node.pool) {
-                node.pool = mysqldb.createPool({
-                    host : node.host,
-                    port : node.port,
-                    user : node.credentials.user,
-                    password : node.credentials.password,
-                    database : node.dbname,
-                    timezone : node.tz,
-                    insecureAuth: true,
-                    multipleStatements: true,
-                    connectionLimit: 25
-                });
+                node.pool = mysqldb.createPool(node.pooloptions);
             }
 
             node.pool.getConnection(function(err, connection) {
@@ -119,19 +121,55 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                            if (err) {
-                                node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"Error"});
+                        var connectionChanged = false;
+                        if(msg.mysqloptions) {
+                            var originalOptions = JSON.stringify(node.mydbConfig.pooloptions);
+                            var updatedOpptions = JSON.stringify(msg.mysqloptions);
+                            if(originalOptions !== updatedOpptions) {
+                                for(var prop in msg.mysqloptions) {
+                                    if(node.mydbConfig.pooloptions[prop] !== msg.mysqloptions[prop]) {
+                                        connectionChanged = true;
+                                        node.mydbConfig.pooloptions[prop] = msg.mysqloptions[prop];
+                                    }
+                                }
                             }
-                            else {
-                                msg.payload = rows;
-                                node.send(msg);
-                                node.status({fill:"green",shape:"dot",text:"OK"});
-                            }
-                        });
+                        }
+
+                        if(connectionChanged) {
+                            /// Shutdown the existing pool because the msg wants us to connect somwhere else
+                            if (node.mydbConfig.tick) { clearTimeout(node.mydbConfig.tick); }
+                            if (node.mydbConfig.check) { clearInterval(node.mydbConfig.check); }
+                            node.mydbConfig.connected = false;
+                            node.mydbConfig.emit("state"," ");
+                            node.mydbConfig.pool.end(function (err) { 
+                                node.mydbConfig.pool = null;
+                                node.mydbConfig.connect();
+                                node.mydbConfig.on("state", function(info) {
+                                    if(info === "connected") {
+                                        finishQuery();
+                                    } else {
+                                        node.error("Error : " + info);
+                                    }
+                                });     
+                             });                       
+                        } else {
+                            finishQuery();
+                        }
+                        function finishQuery() {
+                            //console.log("query:",msg.topic);
+                            var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                            node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                                if (err) {
+                                    node.error(err,msg);
+                                    node.status({fill:"red",shape:"ring",text:"Error"});
+                                }
+                                else {
+                                    msg.payload = rows;
+                                    node.send(msg);
+                                    node.status({fill:"green",shape:"dot",text:"OK"});
+                                }
+                            });
+                        }
                     }
                     else {
                         if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
