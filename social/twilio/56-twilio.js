@@ -19,14 +19,10 @@ module.exports = function(RED) {
         this.from = n.from;
         this.name = n.name;
         var credentials = this.credentials;
-        if (credentials) {
-            this.token = credentials.token;
-        }
+        if (credentials) { this.token = credentials.token; }
     }
     RED.nodes.registerType("twilio-api",TwilioAPINode,{
-        credentials: {
-            token: "password"
-        }
+        credentials: { token: "password" }
     });
 
 
@@ -78,7 +74,6 @@ module.exports = function(RED) {
                         //console.log(response);
                     });
                 }
-
             }
             catch (err) {
                 node.error(err,msg);
