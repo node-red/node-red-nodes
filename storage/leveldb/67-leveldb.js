@@ -68,11 +68,11 @@ module.exports = function(RED) {
                     }
                     else {
                         node.levelConfig.db.put(msg.topic, msg.payload, function(err) {
-                            if (err) { node.error(err); }
+                            if (err) { node.error(err,msg); }
                         });
                     }
                 }
-                else { node.error("Cannot make key string from msg.topic"); }
+                else { node.error("Cannot make key string from msg.topic",msg); }
             }
             else { node.error("Database not ready",msg); }
         });
