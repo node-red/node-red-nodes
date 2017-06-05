@@ -48,7 +48,7 @@ module.exports = function (RED) {
                 });
             }
             else {
-                node.warn("No oid(s) to search for");
+                node.warn("No varbind(s) to search for");
             }
         });
     }
