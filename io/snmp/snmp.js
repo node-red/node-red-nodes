@@ -48,7 +48,7 @@ module.exports = function (RED) {
                 });
             }
             else {
-                node.warn("No varbind(s) to search for");
+                node.warn("No oid(s) to search for");
             }
         });
     }
@@ -61,23 +61,6 @@ module.exports = function (RED) {
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         var node = this;
-        var objectTypes = {
-            "Boolean": 1,
-            "Integer": 2,
-            "OctetString": 4,
-            "Null": 5,
-            "OID": 6,
-            "IpAddress": 7,
-            "Counter": 8,
-            "Gauge": 66,
-            "TimeTicks": 67,
-            "Opaque": 68,
-            "Counter64": 70,
-            "NoSuchObject": 128,
-            "NoSuchInstance": 129,
-            "EndOfMibView": 130
-        };
-
         this.on("input", function (msg) {
             var host = msg.host || node.host;
             var community = msg.community || node.community;
@@ -85,7 +68,7 @@ module.exports = function (RED) {
 
             if (varbinds) {
                 for (var i = 0; i < varbinds.length; i++) {
-                    varbinds[i].type = objectTypes[varbinds[i].type];
+                    varbinds[i].type = snmp.ObjectType[varbinds[i].type];
                 }
                 getSession(host, community, node.version).set(varbinds, function (error, varbinds) {
                     if (error) {
@@ -102,7 +85,7 @@ module.exports = function (RED) {
                 });
             }
             else {
-                node.warn("No oid(s) to set");
+                node.warn("No varbinds to set");
             }
         });
 
