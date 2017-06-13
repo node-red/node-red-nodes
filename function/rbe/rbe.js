@@ -54,7 +54,7 @@ module.exports = function(RED) {
                             }
                         }
                         else if (Math.abs(n - node.previous[t]) > node.gap) {
-                            if (this.func === "deadband") {
+                            if (this.func === "deadband" || this.func === "deadbandEq") {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }
