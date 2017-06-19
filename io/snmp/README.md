@@ -46,13 +46,13 @@ SNMP sets the value of one or more OIDs.
 ```
     msg.varbinds = [
         {
-            oid: "1.3.6.1.2.1.1.5.0",
-            type: "OctetString",
-            value: "host1"
+            "oid": "1.3.6.1.2.1.1.5.0",
+            "type": "OctetString",
+            "value": "host1"
         }, {
-            oid: "1.3.6.1.2.1.1.6.0",
-            type: "OctetString",
-            value: "somewhere"
+            "oid": "1.3.6.1.2.1.1.6.0",
+            "type": "OctetString",
+            "value": "somewhere"
         }
     ];
 ```
@@ -80,6 +80,8 @@ Types can be:
 The host configured in the edit config will override `msg.host`. Leave blank if you want to use `msg.host` to provide input.
 
 The community configured in the edit config will override `msg.community`. Leave blank if you want to use `msg.community` to provide input.
+
+The varbinds configured in the edit config will override `msg.varbinds`. Leave blank if you want to use `msg.varbinds` to provide input.
 
 
  
