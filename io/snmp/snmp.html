@@ -74,9 +74,8 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-version"><i class="fa fa-tags"></i> Varbinds</label>
-        <input type="text" id="node-input-varbinds" placeholder="">
-        </select>
+        <label for="node-input-varbids"><i class="fa fa-tags"></i> Varbinds</label>
+        <textarea rows="10" cols="60" id="node-input-varbinds" placeholder="e.g. [ { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.5.0&quot;,&quot;type&quot;: &quot;OctetString&quot;,&quot;value&quot;: &quot;host1&quot;},{&quot;oid&quot;: &quot;1.3.6.1.2.1.1.6.0&quot;,&quot;type&quot;: &quot;OctetString&quot;,value: &quot;somewhere&quot;}]" style="width:70%;"></textarea>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -88,8 +87,7 @@
     <p>Simple snmp Set node. Trigger by any input</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
-    <p><code>msg.varbinds</code> may contain varbinds as an Array [ { "oid": "1.3.6.1.2.1.1.5.0", "type": "OctetString", "value":
-        "host1"} , { "oid": ...} ]</p>
+    <p><code>msg.varbinds</code> may contain varbinds as an array containing multiple oids, types and values.<code>[ { "oid": "1.3.6.1.2.1.1.5.0","type": "OctetString", "value": "host1"} , { "oid": ...} ]</code></p>
 
 </script>
 

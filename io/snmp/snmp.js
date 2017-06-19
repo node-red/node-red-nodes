@@ -65,7 +65,18 @@ module.exports = function (RED) {
         this.on("input", function (msg) {
             var host = node.host || msg.host;
             var community = node.community || msg.community;
-            var varbinds = (node.varbinds) ? JSON.parse(node.varbinds) : msg.varbinds;
+            var varbinds;
+            if (node.varbinds) {
+                try { 
+                    varbinds=JSON.parse(node.varbinds);
+                }
+                catch (e) {
+                    node.error(e.toString);
+                }
+            }
+            else {
+                varbinds=msg.varbinds;
+            }
             if (varbinds) {
                 for (var i = 0; i < varbinds.length; i++) {
                     varbinds[i].type = snmp.ObjectType[varbinds[i].type];

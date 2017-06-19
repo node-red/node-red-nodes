@@ -42,7 +42,7 @@ SNMP sets the value of one or more OIDs.
 
 `msg.community` may contain the community.
 
-`msg.varbinds` may contain an array of varbind objects e.g.:
+`msg.varbinds` may contain an array of varbind JSON objects e.g.:
 ```
     msg.varbinds = [
         {
