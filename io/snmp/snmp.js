@@ -60,11 +60,12 @@ module.exports = function (RED) {
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.varbinds = n.varbinds;
         var node = this;
         this.on("input", function (msg) {
-            var host = msg.host || node.host;
-            var community = msg.community || node.community;
-            var varbinds = msg.varbinds;
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
+            var varbinds = node.varbinds || msg.varbinds;
 
             if (varbinds) {
                 for (var i = 0; i < varbinds.length; i++) {
