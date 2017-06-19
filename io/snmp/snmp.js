@@ -61,12 +61,11 @@ module.exports = function (RED) {
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.varbinds = n.varbinds;
-        var node = this;
+        var node = this;    
         this.on("input", function (msg) {
             var host = node.host || msg.host;
             var community = node.community || msg.community;
-            var varbinds = node.varbinds || msg.varbinds;
-
+            var varbinds = (node.varbinds) ? JSON.parse(node.varbinds) : msg.varbinds;
             if (varbinds) {
                 for (var i = 0; i < varbinds.length; i++) {
                     varbinds[i].type = snmp.ObjectType[varbinds[i].type];
