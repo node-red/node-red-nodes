@@ -71,7 +71,7 @@ module.exports = function (RED) {
                     varbinds=JSON.parse(node.varbinds);
                 }
                 catch (e) {
-                    node.error(e.toString);
+                    node.error("Error parsing varbinds ");
                 }
             }
             else {
