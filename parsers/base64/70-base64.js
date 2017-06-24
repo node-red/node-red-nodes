@@ -16,12 +16,12 @@ module.exports = function(RED) {
                     // Take base64 string and make into binary buffer
                     var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');
                     if ( regexp.test(msg.payload) && (msg.payload.length % 4 === 0) ) {
-                        msg.payload = new Buffer(msg.payload,'base64');
+                        msg.payload = new Buffer.from(msg.payload,'base64');
                         node.send(msg);
                     }
                     else {
                         //node.log("Not a Base64 string - maybe we should encode it...");
-                        msg.payload = (new Buffer(msg.payload,"binary")).toString('base64');
+                        msg.payload = (new Buffer.from(msg.payload,"binary")).toString('base64');
                         node.send(msg);
                     }
                 }

@@ -53,7 +53,7 @@ describe('exif node', function() {
                 done();
             });
 
-            exifNode1.receive({payload:new Buffer("hello")});
+            exifNode1.receive({payload:new Buffer.from("hello")});
         });
     });
 
@@ -90,7 +90,7 @@ describe('exif node', function() {
                 done();
             });
 
-            exifNode1.receive({payload:new Buffer("hello")});
+            exifNode1.receive({payload:new Buffer.from("hello")});
         });
     });
 
@@ -125,7 +125,7 @@ describe('exif node', function() {
                 done();
             },150);
 
-            exifNode1.receive({payload:new Buffer("hello")});
+            exifNode1.receive({payload:new Buffer.from("hello")});
         });
     });
 
@@ -133,7 +133,7 @@ describe('exif node', function() {
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
         // this time just use a buffer that isn't an jpeg image
-        var data = new Buffer("hello");
+        var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
                     {id:"helperNode1", type:"helper"}];
@@ -185,7 +185,7 @@ describe('exif node', function() {
     it('should report if no payload', function(done) {
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
-        var data = new Buffer("hello");
+        var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
                     {id:"helperNode1", type:"helper"}];
@@ -211,7 +211,7 @@ describe('exif node', function() {
     it('should report if bad latitude', function(done) {
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
-        var data = new Buffer("hello");
+        var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
                     {id:"helperNode1", type:"helper"}];
@@ -251,7 +251,7 @@ describe('exif node', function() {
     it('should report if bad longitude', function(done) {
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
-        var data = new Buffer("hello");
+        var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
                     {id:"helperNode1", type:"helper"}];
@@ -291,7 +291,7 @@ describe('exif node', function() {
     it('should report if unsure about location', function(done) {
         var exif = require('exif');
         var ExifImage = exif.ExifImage;
-        var data = new Buffer("hello");
+        var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
                     {id:"helperNode1", type:"helper"}];
