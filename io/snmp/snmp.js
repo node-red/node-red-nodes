@@ -1,39 +1,39 @@
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     "use strict";
     var snmp = require("net-snmp");
 
     var sessions = {};
 
-    function getSession(host, community, version){
+    function getSession(host, community, version) {
         var sessionKey = host + ":" + community + ":" + version;
-        if (!(sessionKey in sessions)){
-            sessions[sessionKey] = snmp.createSession(host, community, {version: version});
+        if (!(sessionKey in sessions)) {
+            sessions[sessionKey] = snmp.createSession(host, community, { version: version });
         }
         return sessions[sessionKey];
     }
 
     function SnmpNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
-        this.oids = n.oids.replace(/\s/g,"");
+        this.oids = n.oids.replace(/\s/g, "");
         var node = this;
 
-        this.on("input",function(msg) {
+        this.on("input", function (msg) {
             var host = node.host || msg.host;
             var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
-                getSession(host, community, node.version).get(oids.split(","), function(error, varbinds) {
+                getSession(host, community, node.version).get(oids.split(","), function (error, varbinds) {
                     if (error) {
-                        node.error(error.toString(),msg);
+                        node.error(error.toString(), msg);
                     }
                     else {
                         for (var i = 0; i < varbinds.length; i++) {
                             if (snmp.isVarbindError(varbinds[i])) {
-                                node.error(snmp.varbindError(varbinds[i]),msg);
+                                node.error(snmp.varbindError(varbinds[i]), msg);
                             }
                             else {
                                 if (varbinds[i].type == 4) { varbinds[i].value = varbinds[i].value.toString(); }
@@ -52,14 +52,55 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("snmp",SnmpNode);
+    RED.nodes.registerType("snmp", SnmpNode);
 
-    function SnmpTNode(n) {
-        RED.nodes.createNode(this,n);
+
+    function SnmpSNode(n) {
+        RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
-        this.oids = n.oids.replace(/\s/g,"");
+        this.varbinds = n.varbinds;
+        var node = this;
+        this.on("input", function (msg) {
+            var host = node.host || msg.host;
+            var community = node.community || msg.community;
+            var varbinds = (node.varbinds) ? JSON.parse(node.varbinds) : msg.varbinds;
+            if (varbinds) {
+                for (var i = 0; i < varbinds.length; i++) {
+                    varbinds[i].type = snmp.ObjectType[varbinds[i].type];
+                }
+                getSession(host, community, node.version).set(varbinds, function (error, varbinds) {
+                    if (error) {
+                        node.error(error.toString(), msg);
+                    }
+                    else {
+                        for (var i = 0; i < varbinds.length; i++) {
+                            // for version 2c we must check each OID for an error condition
+                            if (snmp.isVarbindError(varbinds[i])) {
+                                node.error(snmp.varbindError(varbinds[i]), msg);
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                node.warn("No varbinds to set");
+            }
+        });
+
+    }
+    RED.nodes.registerType("snmp set", SnmpSNode);
+
+
+
+
+    function SnmpTNode(n) {
+        RED.nodes.createNode(this, n);
+        this.community = n.community;
+        this.host = n.host;
+        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.oids = n.oids.replace(/\s/g, "");
         var node = this;
         var maxRepetitions = 20;
 
@@ -69,13 +110,13 @@ module.exports = function(RED) {
             else { return 0; }
         }
 
-        this.on("input",function(msg) {
+        this.on("input", function (msg) {
             var host = node.host || msg.host;
             var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).table(oids, maxRepetitions, function(error, table) {
+                getSession(host, community, node.version).table(oids, maxRepetitions, function (error, table) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -110,14 +151,14 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("snmp table",SnmpTNode);
+    RED.nodes.registerType("snmp table", SnmpTNode);
 
     function SnmpSubtreeNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
-        this.oids = n.oids.replace(/\s/g,"");
+        this.oids = n.oids.replace(/\s/g, "");
         var node = this;
         var maxRepetitions = 20;
         var response = [];
@@ -129,18 +170,18 @@ module.exports = function(RED) {
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
-                    response.push({oid: varbinds[i].oid, value: varbinds[i].value});
+                    response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
                 }
             }
         }
 
-        this.on("input",function(msg) {
+        this.on("input", function (msg) {
             var host = node.host || msg.host;
             var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).subtree(msg.oid, maxRepetitions, feedCb, function(error) {
+                getSession(host, community, node.version).subtree(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -157,14 +198,14 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("snmp subtree",SnmpSubtreeNode);
+    RED.nodes.registerType("snmp subtree", SnmpSubtreeNode);
 
     function SnmpWalkerNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
-        this.oids = n.oids.replace(/\s/g,"");
+        this.oids = n.oids.replace(/\s/g, "");
         var node = this;
         var maxRepetitions = 20;
         var response = [];
@@ -176,19 +217,19 @@ module.exports = function(RED) {
                 }
                 else {
                     //console.log(varbinds[i].oid + "|" + varbinds[i].value);
-                    response.push({oid: varbinds[i].oid, value: varbinds[i].value});
+                    response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
                 }
             }
         }
 
-        this.on("input",function(msg) {
+        this.on("input", function (msg) {
             node.msg = msg;
             var oids = node.oids || msg.oid;
             var host = node.host || msg.host;
             var community = node.community || msg.community;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).walk(msg.oid, maxRepetitions, feedCb, function(error) {
+                getSession(host, community, node.version).walk(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -205,5 +246,5 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("snmp walker",SnmpWalkerNode);
+    RED.nodes.registerType("snmp walker", SnmpWalkerNode);
 };
