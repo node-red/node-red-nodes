@@ -52,7 +52,7 @@ module.exports = function(RED) {
                         payload += node.addCh;
                     }
                     else if (node.addCh !== "") {
-                        payload = Buffer.concat([payload,new Buffer.from(node.addCh)]);
+                        payload = Buffer.concat([payload,new Buffer(node.addCh)]);
                     }
                     node.port.write(payload,function(err,res) {
                         if (err) {
@@ -94,8 +94,8 @@ module.exports = function(RED) {
             var node = this;
             node.tout = null;
             var buf;
-            if (node.serialConfig.out != "count") { buf = new Buffer.alloc(bufMaxSize); }
-            else { buf = new Buffer.alloc(Number(node.serialConfig.newline)); }
+            if (node.serialConfig.out != "count") { buf = new Buffer(bufMaxSize); }
+            else { buf = new Buffer(Number(node.serialConfig.newline)); }
             var i = 0;
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             node.port = serialPool.get(this.serialConfig.serialport,
@@ -108,17 +108,17 @@ module.exports = function(RED) {
 
             var splitc;
             if (node.serialConfig.newline.substr(0,2) == "0x") {
-                splitc = new Buffer.from([parseInt(node.serialConfig.newline)]);
+                splitc = new Buffer([parseInt(node.serialConfig.newline)]);
             }
             else {
-                splitc = new Buffer.from(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
+                splitc = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
             }
 
             this.port.on('data', function(msg) {
                 // single char buffer
                 if ((node.serialConfig.newline === 0)||(node.serialConfig.newline === "")) {
                     if (node.serialConfig.bin !== "bin") { node.send({"payload": String.fromCharCode(msg)}); }
-                    else { node.send({"payload": new Buffer.from([msg])}); }
+                    else { node.send({"payload": new Buffer([msg])}); }
                 }
                 else {
                     // do the timer thing
@@ -130,7 +130,7 @@ module.exports = function(RED) {
                         else {
                             node.tout = setTimeout(function () {
                                 node.tout = null;
-                                var m = new Buffer.alloc(i+1);
+                                var m = new Buffer(i+1);
                                 buf.copy(m,0,0,i+1);
                                 if (node.serialConfig.bin !== "bin") { m = m.toString(); }
                                 node.send({"payload": m});
@@ -145,7 +145,7 @@ module.exports = function(RED) {
                         buf[i] = msg;
                         i += 1;
                         if ( i >= parseInt(node.serialConfig.newline)) {
-                            var m = new Buffer.alloc(i);
+                            var m = new Buffer(i);
                             buf.copy(m,0,0,i);
                             if (node.serialConfig.bin !== "bin") { m = m.toString(); }
                             node.send({"payload":m});
@@ -158,7 +158,7 @@ module.exports = function(RED) {
                         buf[i] = msg;
                         i += 1;
                         if ((msg === splitc[0]) || (i === bufMaxSize)) {
-                            var n = new Buffer.alloc(i);
+                            var n = new Buffer(i);
                             buf.copy(n,0,0,i);
                             if (node.serialConfig.bin !== "bin") { n = n.toString(); }
                             node.send({"payload":n});
