@@ -4,6 +4,7 @@
             "to": "宛先",
             "server": "サーバ",
             "port": "ポート",
+            "useSecureConnection": "安全な接続を使用",
             "userid": "ユーザID",
             "password": "パスワード",
             "repeat": "更新",
@@ -11,7 +12,10 @@
             "folder": "フォルダ",
             "protocol": "プロトコル",
             "useSSL": "SSLを使用",
-            "disposition": "受信後の処理"
+            "disposition": "受信後の処理",
+            "none": "なし",
+            "read": "既読",
+            "delete": "削除"
         },
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
         "tip": {

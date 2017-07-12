@@ -4,6 +4,7 @@
             "to": "To",
             "server": "Server",
             "port": "Port",
+            "useSecureConnection": "Use secure connection.",
             "userid": "Userid",
             "password": "Password",
             "repeat": "Refresh",
@@ -11,7 +12,10 @@
             "folder": "Folder",
             "protocol": "Protocol",
             "useSSL": "Use SSL?",
-            "disposition": "Disposition"
+            "disposition": "Disposition",
+            "none": "None",
+            "read": "Mark Read",
+            "delete": "Delete"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {

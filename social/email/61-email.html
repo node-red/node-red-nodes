@@ -38,7 +38,7 @@
         <input type="text" id="node-input-port" placeholder="465" style="width:100px">
         <label style="width:40px"> </label>
         <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
-        Use secure connection.
+        <span data-i18n="email.label.useSecureConnection"></span>
     </div>
     <div class="form-row">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
@@ -150,9 +150,9 @@
     <div class="form-row node-input-disposition">
             <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
         <select type="text" id="node-input-disposition">
-            <option value="None" selected="selected">None</option>
-            <option value="Read">Mark Read</option>
-            <option value="Delete">Delete</option>
+            <option value="None" selected="selected" data-i18n="email.label.none"></option>
+            <option value="Read" data-i18n="email.label.read"></option>
+            <option value="Delete" data-i18n="email.label.delete"></option>
         </select>
     </div>
     <br/>
