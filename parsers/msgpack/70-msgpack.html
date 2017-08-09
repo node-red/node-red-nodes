@@ -7,9 +7,12 @@
 </script>
 
 <script type="text/x-red" data-help-name="msgpack">
-    <p>A function that converts the <code>msg.payload</code> to and from <a href = "https://github.com/msgpack/msgpack-node"><i>msgpack</i></a> format.</p>
+    <p>A function that converts the <code>msg.payload</code> to and from
+    <a href = "http://msgpack.org/"><i>msgpack</i></a> format.</p>
     <p>If the input is NOT a buffer it tries to convert it to a msgpack buffer.</p>
     <p>If the input is a msgpack buffer it tries to decode it back.</p>
+    <p><b>Note</b>: this node does not currently encode raw <code>buffer</code> types.
+    It will automatically try to <i>decode</i> any buffer received, and may not cause an error.</p>
 </script>
 
 <script type="text/javascript">

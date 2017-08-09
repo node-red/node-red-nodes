@@ -35,6 +35,6 @@
         "poplib": "^0.1.7",
         "mailparser": "^0.6.1",
         "imap": "^0.8.19",
-        "msgpack-js": "^0.3.0"
+        "msgpack-lite": "^0.1.26"
     }
 }
