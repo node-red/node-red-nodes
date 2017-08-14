@@ -15,6 +15,7 @@ GPIO.setwarnings(False)
 ECHO    = 0
 TRIGGER = 0
 OLD = 0
+SLEEP = 0.5
 
 def Measure():
     start = 0
@@ -48,13 +49,14 @@ def Measure():
 # Main program loop
 if len(sys.argv) > 1:
     pins = sys.argv[1].lower().split(',')
-    if len(pins) != 2:
-        print "Bad number of pins supplied"
+    if len(pins) != 3:
+        print "Bad parameters supplied"
         print pins
         sys.exit(0)
 
     TRIGGER = int(pins[0])
     ECHO    = int(pins[1])
+    SLEEP   = float(pins[2])
 
     GPIO.setmode(GPIO.BOARD)        # Use GPIO BOARD numbers
     GPIO.setup(TRIGGER, GPIO.OUT)   # Trigger
@@ -72,7 +74,7 @@ if len(sys.argv) > 1:
             if distance != OLD:
                 print(distance)
                 OLD = distance
-            time.sleep(0.5)
+            time.sleep(SLEEP)
         except:                     # try to clean up on exit
             print("0.0");
             GPIO.cleanup(TRIGGER)
@@ -81,5 +83,5 @@ if len(sys.argv) > 1:
 
 else:
     print "Bad params"
-    print "    sudo nrsrf.py trigger_pin,echo_pin"
+    print "    sudo nrsrf.py trigger_pin,echo_pin,rate_in_seconds"
     sys.exit(0)

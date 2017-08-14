@@ -23,8 +23,10 @@ These can be any spare valid Pi GPIO pins. e.g.
 
         7,11
 
+You can also set the repeat frequency of measurements - default 0.5 seconds.
+
 Outputs a `msg.payload` with a number representing the range in cm.
 
-Produces one measure every 0.5s - but only if the distance is different from the previous reading.
+Produces one measure every 0.5s (by default) - but only if the distance is different from the previous reading.
 
 **Note:** we are using the actual physical pin numbers on connector P1 as they are easier to locate.

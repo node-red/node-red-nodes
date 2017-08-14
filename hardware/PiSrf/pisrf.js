@@ -26,12 +26,13 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         this.topic = n.topic;
         this.pins = n.pins;
+        this.pins += ","+(n.pulse || 0.5);
         var node = this;
 
         if (node.pins !== undefined) {
             node.child = spawn(gpioCommand, [node.pins]);
             node.running = true;
-            if (RED.settings.verbose) { node.log("pin: " + node.pins + " :"); }
+            if (RED.settings.verbose) { node.log("parameters: " + node.pins + " :"); }
 
             node.child.stdout.on('data', function(data) {
                 if (RED.settings.verbose) { node.log("out: " + data + " :"); }
@@ -59,7 +60,7 @@ module.exports = function(RED) {
 
         }
         else {
-            node.error("Invalid GPIO pins: " + node.pin);
+            node.error("Invalid Parameters: " + node.pins);
         }
 
         var wfi = function(done) {
