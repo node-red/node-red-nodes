@@ -36,6 +36,10 @@ module.exports = function(RED) {
         }
 
         function runit() {
+            if (!node.cmd || (typeof node.cmd !== "string") || (node.cmd.length < 1)) {
+                node.status({fill:"grey",shape:"ring",text:"no command"});
+                return;
+            }
             node.child = spawn(node.cmd, node.args);
             if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
             node.status({fill:"green",shape:"dot",text:"running"});
