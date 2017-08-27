@@ -48,11 +48,10 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var recvClient;
+                var recvClient = node.serviceConfig.client;
                 recvClient.on("error", function(err) {
                     if (err) { node.error(err.toString()); }
                 });
-                recvClient = node.serviceConfig.client;
                 recvClient.on("started", function() {
                     recvClient.on("message", function(data, delivery) {
                         if (node.topic === delivery.destination.topicPattern) {
@@ -105,11 +104,10 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var sendClient;
+                var sendClient = node.serviceConfig.client;
                 sendClient.on("error", function(err) {
                     if (err) { node.error(err.toString()); }
                 });
-                sendClient = node.serviceConfig.client;
                 sendClient.on("started", function () {
                     node.on("input", function(msg) {
                         var topic = node.topic;
