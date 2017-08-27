@@ -9,8 +9,17 @@
      <input type="text" id="node-input-eventname" placeholder="test_event_name">
   </div>
   <div class="form-row">
-     <label for="node-input-appkey_sub"><i class="fa fa-lock"></i> App Key</label>
-     <input type="text" id="node-input-pusherappkey_sub" placeholder="key">
+     <label for="node-input-pusherappkeysub"><i class="fa fa-lock"></i> App Key</label>
+     <input type="text" id="node-input-pusherappkeysub" placeholder="key">
+  </div>
+  <div class="form-row">
+     <label for="node-input-cluster"><i class="fa fa-server"></i> Cluster</label>
+     <select type="text" id="node-input-cluster">
+        <option value="mt1">us-east-1 (US - default)</option>
+        <option value="eu">eu-west-1 (Europe)</option>
+        <option value="ap1">ap-southeast-1 (Singapore)</option>
+        <option value="ap2">ap-south-1 (Mumbai)</option>
+     </select>
   </div>
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -30,10 +39,11 @@
         defaults: {
             name: {value:""},
             channel: {value:"", required:true},
+            cluster: {value:"mt1"},
             eventname: {value:"", required:true}
         },
         credentials: {
-            pusherappkey_sub: "text"
+            pusherappkeysub: {type:"text"}
         },
         inputs:0,
         outputs:1,
@@ -60,18 +70,28 @@
   </div>
 
   <div class="form-row">
-     <label for="node-input-appid"><i class="fa fa-tag"></i> App ID</label>
+     <label for="node-input-pusherappid"><i class="fa fa-tag"></i> App ID</label>
      <input type="text" id="node-input-pusherappid" placeholder="app_id">
   </div>
 
   <div class="form-row">
-     <label for="node-input-appkey"><i class="fa fa-lock"></i> App Key</label>
+     <label for="node-input-pusherappkey"><i class="fa fa-lock"></i> App Key</label>
      <input type="text" id="node-input-pusherappkey" placeholder="key">
   </div>
 
   <div class="form-row">
-     <label for="node-input-topic"><i class="fa fa-asterisk"></i> App Secret</label>
+     <label for="node-input-pusherappsecret"><i class="fa fa-asterisk"></i> App Secret</label>
      <input type="password" id="node-input-pusherappsecret" placeholder="secret">
+  </div>
+
+  <div class="form-row">
+     <label for="node-input-cluster"><i class="fa fa-server"></i> Cluster</label>
+     <select type="text" id="node-input-cluster">
+        <option value="mt1">us-east-1 (US - default)</option>
+        <option value="eu">eu-west-1 (Europe)</option>
+        <option value="ap1">ap-southeast-1 (Singapore)</option>
+        <option value="ap2">ap-south-1 (Mumbai)</option>
+     </select>
   </div>
 
   <div class="form-row">
@@ -79,7 +99,6 @@
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
 </script>
-
 
 <script type="text/x-red" data-help-name="pusher out">
     <p>Pusher output node for sending messages to a specific channel/event.</p>
@@ -95,6 +114,7 @@
         defaults: {
             name: {value:""},
             channel: {value:"", required:true},
+            cluster: {value:"mt1"},
             eventname: {value:""}
         },
         credentials: {
