@@ -29,22 +29,25 @@ def Measure():
         start = time.time()
         Dif = time.time() - realstart
         if Dif > 0.2:
-            print("Ultrasonic Sensor Timed out (pre-echo), Restarting.")
+            print("Ultrasonic Sensor Timed out (pre-echo).")
             time.sleep(0.4)
-            Main()
+            restart()
     while GPIO.input(ECHO)==1:
         stop = time.time()
         Dif = time.time() - realstart
         if Dif > 0.4:
-            print("Ultrasonic Sensor Timed out (post-echo), Restarting.")
+            print("Ultrasonic Sensor Timed out (post-echo).")
             time.sleep(0.2)
-            Main()
+            restart()
 
     elapsed = stop-start
     distance = (elapsed * 36000)/2
 
     return distance
 
+def restart():
+    print("Restarting...")
+    os.execv(sys.executable, ['python'] + sys.argv)
 
 # Main program loop
 if len(sys.argv) > 1:
@@ -60,10 +63,10 @@ if len(sys.argv) > 1:
 
     GPIO.setmode(GPIO.BOARD)        # Use GPIO BOARD numbers
     GPIO.setup(TRIGGER, GPIO.OUT)   # Trigger
-    GPIO.output(TRIGGER, False)     # DF
+    GPIO.output(TRIGGER, False)     # Set low
     GPIO.setup(ECHO, GPIO.OUT)      # Echo
     GPIO.output(ECHO, False)
-    time.sleep(0.1)		    # DF
+    time.sleep(0.1)		    # Allow sensor to settle
     GPIO.setup(ECHO,GPIO.IN)
 
     # Flush stdin so we start clean
@@ -78,8 +81,7 @@ if len(sys.argv) > 1:
                 OLD = distance
             time.sleep(SLEEP)
         except Exception as e:		# try to clean up on exit
-            # print("0.0");
-            print(e)			# DF
+            print(e)			# Print error message on exception
             GPIO.cleanup(TRIGGER)
             GPIO.cleanup(ECHO)
             sys.exit(0)
