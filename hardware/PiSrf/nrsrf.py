@@ -47,6 +47,8 @@ def Measure():
 
 def restart():
     print("Restarting...")
+    GPIO.cleanup(TRIGGER)
+    GPIO.cleanup(ECHO)
     os.execv(sys.executable, ['python'] + sys.argv)
 
 # Main program loop
