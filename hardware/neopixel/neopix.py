@@ -3,7 +3,11 @@
 # Import library functions we need
 import sys
 import time
-from neopixel import *
+try:
+    from rpi_ws281x import __version__, PixelStrip, Adafruit_NeoPixel, Color
+except ImportError:
+    from neopixel import Adafruit_NeoPixel as PixelStrip, Color
+    __version__ = "legacy"
 
 # LED strip configuration:
 LED_COUNT      = 8      # Number of LED pixels.

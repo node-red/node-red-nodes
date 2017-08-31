@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var fs =  require('fs');
 
-if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel.py')) {
+if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel/')) {
     console.warn("WARNING : Can't find neopixel.py python library");
     console.warn("WARNING : Please install using the following command");
     console.warn("WARNING : Note: this uses root...");

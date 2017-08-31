@@ -15,7 +15,7 @@ module.exports = function(RED) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
-    if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel.py')) {
+    if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel/')) {
         RED.log.warn("Can't find neopixel.py python library");
         throw "Warning : Can't find neopixel.py python library";
     }
