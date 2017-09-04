@@ -19,37 +19,44 @@ SLEEP = 0.5
 
 def Measure():
     start = 0
-    realstart = 0
-    realstart = time.time()
     GPIO.output(TRIGGER, True)
     time.sleep(0.00001)
     GPIO.output(TRIGGER, False)
-    start = time.time()
-    while GPIO.input(ECHO)==0:
-        start = time.time()
-        Dif = time.time() - realstart
-        if Dif > 0.2:
-            print("Ultrasonic Sensor Timed out (pre-echo).")
-            time.sleep(0.4)
-            restart()
-    while GPIO.input(ECHO)==1:
-        stop = time.time()
-        Dif = time.time() - realstart
-        if Dif > 0.4:
-            print("Ultrasonic Sensor Timed out (post-echo).")
-            time.sleep(0.2)
-            restart()
 
+    channel = GPIO.wait_for_edge(ECHO, GPIO.BOTH, timeout=200)
+    if channel is None:
+        print("Ultrasonic sensor timed out (pre-echo).")
+        GPIO.remove_event_detect(ECHO)
+        restart()
+    # else:
+        # print("Echo start detected")
+    start = time.time()
+          
+    GPIO.wait_for_edge(ECHO, GPIO.BOTH,  timeout=400)
+    if channel is None:
+        print("Ultrasonic sensor timed out (post-echo).")
+        GPIO.remove_event_detect(ECHO)
+        restart()
+    # else:
+        # print("Echo finish detected")
+    stop = time.time()
+   
     elapsed = stop-start
-    distance = (elapsed * 36000)/2
+    distance = (elapsed * 34300)/2 # Using speed of sound at 20C (68F)
 
     return distance
 
 def restart():
-    print("Restarting...")
-    GPIO.cleanup(TRIGGER)
-    GPIO.cleanup(ECHO)
-    os.execv(sys.executable, ['python'] + sys.argv)
+    # print("Restarting...")
+    GPIO.setmode(GPIO.BOARD)        # Use GPIO BOARD numbers
+    GPIO.setup(TRIGGER, GPIO.OUT)   # Trigger
+    GPIO.output(TRIGGER, False)     # Set low
+    GPIO.setup(ECHO, GPIO.OUT)      # Echo
+    GPIO.output(ECHO, False)
+    time.sleep(0.1)
+    GPIO.setup(ECHO,GPIO.IN)
+    GPIO.add_event_detect(ECHO, GPIO.BOTH)
+    time.sleep(2.0)
 
 # Main program loop
 if len(sys.argv) > 1:
@@ -63,13 +70,7 @@ if len(sys.argv) > 1:
     ECHO    = int(pins[1])
     SLEEP   = float(pins[2])
 
-    GPIO.setmode(GPIO.BOARD)        # Use GPIO BOARD numbers
-    GPIO.setup(TRIGGER, GPIO.OUT)   # Trigger
-    GPIO.output(TRIGGER, False)     # Set low
-    GPIO.setup(ECHO, GPIO.OUT)      # Echo
-    GPIO.output(ECHO, False)
-    time.sleep(0.1)		    # Allow sensor to settle
-    GPIO.setup(ECHO,GPIO.IN)
+    restart()
 
     # Flush stdin so we start clean
     while len(select.select([sys.stdin.fileno()], [], [], 0.0)[0])>0:
@@ -78,12 +79,13 @@ if len(sys.argv) > 1:
     while True:
         try:
             distance = int( Measure() + 0.5 )
-            if distance != OLD:
+            if distance != OLD and distance > 2 and distance < 400:
                 print(distance)
                 OLD = distance
             time.sleep(SLEEP)
         except Exception as e:		# try to clean up on exit
             print(e)			# Print error message on exception
+            GPIO.remove_event_detect(ECHO)
             GPIO.cleanup(TRIGGER)
             GPIO.cleanup(ECHO)
             sys.exit(0)
