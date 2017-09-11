@@ -25,13 +25,13 @@ module.exports = function(RED) {
                     if (typeof(msg.payload) === "object") {
                         if (typeof(node.previous[t]) !== "object") { node.previous[t] = {}; }
                         if (!RED.util.compareObjects(msg.payload, node.previous[t])) {
-                            node.previous[t] = msg.payload;
+                            node.previous[t] = RED.util.cloneMessage(msg.payload);
                             if (doSend) { node.send(msg); }
                         }
                     }
                     else {
                         if (msg.payload !== node.previous[t]) {
-                            node.previous[t] = msg.payload;
+                            node.previous[t] = RED.util.cloneMessage(msg.payload);
                             if (doSend) { node.send(msg); }
                         }
                     }
@@ -54,7 +54,7 @@ module.exports = function(RED) {
                             }
                         }
                         else if (Math.abs(n - node.previous[t]) > node.gap) {
-                            if (this.func === "deadband" || this.func === "deadbandEq") {
+                            if (this.func === "deadband") {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }
