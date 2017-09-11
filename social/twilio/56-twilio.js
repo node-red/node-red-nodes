@@ -10,7 +10,7 @@ module.exports = function(RED) {
     }
 
     RED.httpAdmin.get('/twilio-api/global', RED.auth.needsPermission("twilio.read"), function(req,res) {
-        res.json({hasToken:!(twiliokey && twiliokey.account && twiliokey.authtoken)});
+        res.json({hasToken:!!(twiliokey && twiliokey.account && twiliokey.authtoken)});
     });
 
     function TwilioAPINode(n) {
@@ -22,7 +22,7 @@ module.exports = function(RED) {
         if (credentials) { this.token = credentials.token; }
     }
     RED.nodes.registerType("twilio-api",TwilioAPINode,{
-        credentials: { token: "password" }
+        credentials: { token:"password" }
     });
 
 

@@ -74,13 +74,12 @@
         RED.nodes.registerType('twilio-api',{
             category: 'config',
             defaults: {
+                name: {value:""},
                 sid: {value:"",required:true},
-                from: {value:"",required:true},
-                // token -> credentials
-                name: { value: ""}
+                from: {value:"",required:true}
             },
             credentials: {
-                token: "password"
+                token: {type: "password"}
             },
             label: function() {
                 return this.name||this.from;
@@ -91,8 +90,8 @@
             category: 'mobile-output',
             defaults: {
                 twilio:{
-                    type:"twilio-api",validate:function(v) {
-                        return hasGlobal || (v && v!="_ADD_");
+                    type:"twilio-api", validate:function(v) {
+                        return hasGlobal || (v && v != "_ADD_");
                     }
                 },
                 twilioType: {value:"sms"},
