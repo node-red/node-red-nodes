@@ -33,28 +33,79 @@ module.exports = function(RED) {
     function SqliteNodeIn(n) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
+        this.sqltype = n.sqltype;
+        this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
 
         if (this.mydbConfig) {
             this.mydbConfig.doConnect();
             var node = this;
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
-                    //console.log("query:",msg.topic);
-                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                    node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
-                        if (err) { node.error(err,msg); }
-                        else {
-                            msg.payload = row;
-                            node.send(msg);
+                if (this.sqltype == "msg.topic"){
+                    if (typeof msg.topic === 'string') {
+                        //console.log("query:",msg.topic);
+                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
+                            if (err) { node.error(err,msg); }
+                            else {
+                                msg.payload = row;
+                                node.send(msg);
+                            }
+                        });
+                    }
+                    else {
+                        if (typeof msg.topic !== 'string') {
+                            node.error("msg.topic : the query is not defined as a string",msg);
+                            node.status({fill:"red",shape:"dot",text:"msg.topic error"});
                         }
-                    });
-                }
-                else {
-                    if (typeof msg.topic !== 'string') {
-                        node.error("msg.topic : the query is not defined as a string",msg);
                     }
                 }
+                if (this.sqltype == "normal"){
+                    if (typeof this.sql === 'string'){
+                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        node.mydbConfig.db.all(this.sql, bind, function(err, row) {
+                            if (err) { node.error(err,msg); }
+                            else {
+                                msg.payload = row;
+                                node.send(msg);
+                            }
+                        });
+                    }
+                    else{
+                        if (this.sql == null || this.sql == ""){
+                            node.error("SQL statement config not set up",msg);
+                            node.status({fill:"red",shape:"dot",text:"SQL config not set up"});
+                        }
+                    }
+                }
+                if (this.sqltype == "prepared"){
+                    if (typeof this.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object"){
+                        node.mydbConfig.db.run(this.sql, msg.params, function(err, row) {
+                            if (err) { node.error(err,msg); }
+                            else {
+                                msg.payload = row;
+                                node.send(msg);
+                            }
+                        });
+                    }
+                    else{
+                        if (this.sql == null || this.sql == ""){
+                            node.error("Prepared statement config not set up",msg);
+                            node.status({fill:"red",shape:"dot",text:"Prepared statement not set up"});
+                        }
+                        if (typeof msg.params == "undefined"){
+                            node.error("msg.params not passed");
+                            node.status({fill:"red",shape:"dot",text:"msg.params not passed",msg});
+                        }
+                        else if (typeof msg.params != "object"){
+                            node.error("msg.params not an object");
+                            node.status({fill:"red",shape:"dot",text:"msg.params not an object",msg});
+                        }
+                    }
+                }
+            });
+            this.on('close',function(msg){
+                node.status({});
             });
         }
         else {
