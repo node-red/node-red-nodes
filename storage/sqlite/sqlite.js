@@ -36,15 +36,17 @@ module.exports = function(RED) {
         this.sqltype = n.sqltype;
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+		node.status({});
 
         if (this.mydbConfig) {
             this.mydbConfig.doConnect();
             var node = this;
+			var bind = [];
             node.on("input", function(msg) {
                 if (this.sqltype == "msg.topic"){
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
                             if (err) { node.error(err,msg); }
                             else {
@@ -62,7 +64,7 @@ module.exports = function(RED) {
                 }
                 if (this.sqltype == "normal"){
                     if (typeof this.sql === 'string'){
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.db.all(this.sql, bind, function(err, row) {
                             if (err) { node.error(err,msg); }
                             else {
@@ -104,9 +106,9 @@ module.exports = function(RED) {
                     }
                 }
             });
-            this.on('close',function(msg){
+            /*this.on('close',function(msg){
                 node.status({});
-            });
+            });*/
         }
         else {
             this.error("Sqlite database not configured");

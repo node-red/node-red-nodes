@@ -90,7 +90,7 @@
         },
         oneditprepare: function() {
             var ace = this;
-			this.editor = RED.editor.createEditor({
+            this.editor = RED.editor.createEditor({
                 id: 'node-input-sql-editor',
                 mode: 'ace/mode/sql',
                 value: $("#node-input-sql").val(),
@@ -124,7 +124,7 @@
             $("#node-input-sqltype").change();
         },
         oneditsave: function() {			
-			$("#node-input-sql").val(this.editor.getValue());
+            $("#node-input-sql").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
         },
