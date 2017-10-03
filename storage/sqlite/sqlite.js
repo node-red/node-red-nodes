@@ -36,11 +36,11 @@ module.exports = function(RED) {
         this.sqltype = n.sqltype;
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+		var node = this;
 		node.status({});
 
         if (this.mydbConfig) {
             this.mydbConfig.doConnect();
-            var node = this;
 			var bind = [];
             node.on("input", function(msg) {
                 if (this.sqltype == "msg.topic"){
