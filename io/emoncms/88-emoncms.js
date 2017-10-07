@@ -36,7 +36,7 @@ module.exports = function(RED) {
                     this.url += 'json={' + msg.payload + '}';
                 }
                 else {
-                    this.url += 'csv='+msg.payload;
+                    this.url += 'csv=' + msg.payload;
                 }
             }
             this.url += '&apikey='+this.apikey;
