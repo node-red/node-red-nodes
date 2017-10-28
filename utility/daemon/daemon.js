@@ -46,8 +46,6 @@ module.exports = function(RED) {
             node.running = true;
             var line = "";
 
-            node.on("input", inputlistener);
-
             node.child.stdout.on('data', function (data) {
                 if (node.op === "string") { data = data.toString(); }
                 if (node.op === "number") { data = Number(data); }
@@ -111,6 +109,8 @@ module.exports = function(RED) {
         });
 
         runit();
+
+        node.on("input", inputlistener);
     }
     RED.nodes.registerType("daemon",DaemonNode);
 }
