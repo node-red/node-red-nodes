@@ -93,7 +93,6 @@ module.exports = function(RED) {
         if (node.redo === true) {
             var loop = setInterval( function() {
                 if (!node.running) {
-                    node.removeListener('input', inputlistener);
                     node.warn("Restarting : " + node.cmd);
                     runit();
                 }
