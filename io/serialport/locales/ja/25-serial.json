@@ -1,42 +1,42 @@
 {
     "serial": {
         "label": {
-            "serialport": "Serial Port",
-            "settings": "Settings",
-            "baudrate": "Baud Rate",
-            "databits": "Data Bits",
-            "parity": "Parity",
-            "stopbits": "Stop Bits",
-            "input": "Input",
-            "split": "Split input",
-            "deliver": "and deliver",
-            "output": "Output",
-            "serial": "serial",
-            "none": "none"
+            "serialport": "シリアルポート",
+            "settings": "設定",
+            "baudrate": "ボーレート",
+            "databits": "データビット",
+            "parity": "パリティ",
+            "stopbits": "終了ビット",
+            "input": "入力",
+            "split": "入力の分割方法",
+            "deliver": "分割後の配信データ",
+            "output": "出力",
+            "serial": "シリアル",
+            "none": "なし"
         },
         "placeholder": {
-            "serialport": "for example: /dev/ttyUSB0/"
+            "serialport": "例: /dev/ttyUSB0/"
         },
         "parity": {
-            "none": "None",
-            "even": "Even",
-            "mark": "Mark",
-            "odd": "Odd",
-            "space": "Space"
+            "none": "なし",
+            "even": "偶数",
+            "mark": "マーク",
+            "odd": "奇数",
+            "space": "スペース"
         },
         "split": {
-            "character": "on the character",
-            "timeout": "after a timeout of",
-            "lengths": "into fixed lengths of"
+            "character": "文字列で区切る",
+            "timeout": "タイムアウト後で区切る",
+            "lengths": "一定の文字数で区切る"
         },
         "output": {
-            "ascii": "ascii strings",
-            "binary": "binary buffers"
+            "ascii": "文字列",
+            "binary": "バイナリバッファ"
         },
-        "addsplit": "add split character to output messages",
+        "addsplit": "出力メッセージに分割文字を追加する",
         "tip": {
-            "split": "Tip: the \"Split on\" character is used to split the input into separate messages. It can also be added to every message sent out to the serial port.",
-            "timeout": "Tip: In timeout mode timeout starts from arrival of first character."
+            "split": "Tip: \"Split on\" 文字は、入力を別々のメッセージに分割するために使用され、シリアルポートに送信されるすべてのメッセージに追加することもできます。",
+            "timeout": "Tip: タイムアウトモードでのタイムアウトは最初の文字が到着したときから始まります。"
         },
         "onopen": "serial port __port__ opened at __baud__ baud __config__",
         "errors": {
