@@ -4,15 +4,10 @@ node-red-node-serialport
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to
 hardware Serial ports.
 
-**Note** : The version 0.1.x of this package requires underlying serialport
-v2.0.x
-
-Earlier versions of node.js, as found on default Debian install on a Raspberry Pi, require an
-updated version of npm. See below. Or you can install the older version of
-this node - node-red-node-serialport@0.0.5
-
 Install
 -------
+
+This node is usually installed by default in Node-RED so should not need to be installed manually.
 
 Run the following command in your Node-RED user directory (typically `~/.node-red`):
 
