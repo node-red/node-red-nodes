@@ -1,6 +1,6 @@
 {
     "name": "node-red-nodes",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage": "http://nodered.org",
     "license": "Apache-2.0",
@@ -20,7 +20,7 @@
         }
     ],
     "keywords": [
-        "Node-RED",
+        "node-red",
         "nodes",
         "iot",
         "ibm",
