@@ -1,7 +1,10 @@
 
 // Configuration for Node-RED-nodes project
 module.exports = function(grunt) {
+
+    // Project configuration.
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         simplemocha: {
             options: {
                 globals: ['expect'],
@@ -50,6 +53,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-lint-inline');
     grunt.loadNpmTasks('grunt-jscs');
 
-    grunt.registerTask('default', ['jshint:all', 'inlinelint', 'simplemocha:all']);
+    grunt.registerTask('default', ['jshint:all', 'inlinelint:html', 'simplemocha:all']);
     grunt.registerTask('style', ['jscs']);
 };

@@ -1,40 +1,50 @@
 {
-    "name"         : "node-red-nodes",
-    "version"      : "0.0.9",
-    "description"  : "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
-    "homepage"     : "http://nodered.org",
-    "license"      : "Apache-2.0",
-    "repository"   : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes.git"
+    "name": "node-red-nodes",
+    "version": "0.0.9",
+    "description": "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
+    "homepage": "http://nodered.org",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes.git"
     },
     "contributors": [
-        {"name": "Dave Conway-Jones"},
-        {"name": "Nick O'Leary"},
-        {"name": "Ben Hardill"}
+        {
+            "name": "Dave Conway-Jones"
+        },
+        {
+            "name": "Nick O'Leary"
+        },
+        {
+            "name": "Ben Hardill"
+        }
     ],
     "keywords": [
-        "Node-RED", "nodes", "iot", "ibm", "flow"
+        "Node-RED",
+        "nodes",
+        "iot",
+        "ibm",
+        "flow"
     ],
     "devDependencies": {
+        "exif": "^0.6.0",
         "grunt": "^1.0.1",
         "grunt-contrib-jshint": "^1.1.0",
         "grunt-jscs": "^3.0.1",
         "grunt-lint-inline": "^1.0.0",
         "grunt-simple-mocha": "^0.4.1",
-        "mocha": "^3.2.0",
-        "should": "^11.2.1",
-        "sinon": "^1.17.7",
-        "supertest": "^3.0.0",
-        "proxyquire": "^1.7.11",
-        "pushbullet": "^2.0.0",
-        "when": "^3.7.8",
-        "exif": "^0.6.0",
+        "imap": "^0.8.19",
+        "mailparser": "^0.6.1",
+        "mocha": "~3.5.3",
+        "msgpack-lite": "^0.1.26",
         "ngeohash": "^0.6.0",
         "nodemailer": "^1.11.0",
         "poplib": "^0.1.7",
-        "mailparser": "^0.6.1",
-        "imap": "^0.8.19",
-        "msgpack-lite": "^0.1.26"
+        "proxyquire": "^1.7.11",
+        "pushbullet": "~2.1.0",
+        "should": "^11.2.1",
+        "sinon": "^1.17.7",
+        "supertest": "^3.0.0",
+        "when": "^3.7.8"
     }
 }
