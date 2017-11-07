@@ -18,7 +18,8 @@ node_js:
   - "6"
   - "4"
 before_script:
-  - npm install -g istanbul grunt-cli
+  - npm install istanbul
+  - npm install grunt-cli
   - npm install coveralls
   - npm install git+https://github.com/node-red/node-red.git
   - export NODE_RED_HOME=`pwd`/node_modules/node-red
