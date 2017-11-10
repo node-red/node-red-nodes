@@ -376,7 +376,6 @@ module.exports = function(RED) {
     };
     RED.nodes.registerType('wemo in', wemoNGEvent);
 
-
     var wemoNGLookup = function(n) {
         RED.nodes.createNode(this,n);
         var node = this;
