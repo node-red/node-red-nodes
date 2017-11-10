@@ -398,8 +398,8 @@ module.exports = function(RED) {
                 if (msg.hasOwnProperty("payload")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
-                    if (msg.payload.length > 140) {
-                        msg.payload = msg.payload.slice(0,139);
+                    if (msg.payload.length > 280) {
+                        msg.payload = msg.payload.slice(0,279);
                         node.warn(RED._("twitter.errors.truncated"));
                     }
 
