@@ -66,6 +66,7 @@ describe('msgpack node', function() {
     });
 
     it('should error if the buffer fails to decode', function(done) {
+        buf[0] = 0x87;
         var flow = [{"id":"n1", "type":"msgpack", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -77,7 +78,7 @@ describe('msgpack node', function() {
             setTimeout(function() {
                 done();
             }, 25);
-            n1.emit("input", {payload:Buffer("12345")});
+            n1.emit("input", {payload:buf});
         });
     });
 

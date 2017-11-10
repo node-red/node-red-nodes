@@ -110,6 +110,7 @@ module.exports = function(RED) {
         var self = this;
         if (this.pusher) {
             var stream = this.pusher.stream();
+            stream.setMaxListeners(100);
             var closing = false;
             var tout;
             stream.on('message', function(res) {
@@ -144,12 +145,8 @@ module.exports = function(RED) {
             this.on("close",function() {
                 if (tout) { clearTimeout(tout); }
                 closing = true;
-                try {
-                    this.stream.close();
-                }
-                catch(err) {
-                    // Ignore error if not connected
-                }
+                try { this.stream.close(); }
+                catch(err) { } // Ignore error if not connected
             });
         }
     };
@@ -165,7 +162,7 @@ module.exports = function(RED) {
                             resolve(last);
                             return onError(err);
                         }
-                        for (var i=0;i<res.pushes.length; i++) {
+                        for (var i=0; i<res.pushes.length; i++) {
                             self.pushMsg(res.pushes[i]);
                         }
                         try {

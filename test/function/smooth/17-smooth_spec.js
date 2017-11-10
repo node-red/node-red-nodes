@@ -219,4 +219,56 @@ describe('smooth node', function() {
         });
     });
 
+    it('should average over a number of inputs on different topics', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 3) { msg.should.have.a.property("payload", 1); }
+                if (c === 5) { msg.should.have.a.property("payload", 2); }
+                if (c === 6) { msg.should.have.a.property("payload", 3); }
+                if (c === 7) { msg.should.have.a.property("payload", 3); done(); }
+            });
+            n1.emit("input", {payload:2, topic:"A"});
+            n1.emit("input", {payload:1, topic:"A"});
+            n1.emit("input", {payload:0, topic:"A"});
+            n1.emit("input", {payload:3, topic:"B"});
+            n1.emit("input", {payload:4, topic:"B"});
+            n1.emit("input", {payload:7, topic:"A"});
+            n1.emit("input", {payload:1, topic:"B"});
+        });
+    });
+
+    it('should average over different topics if asked', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", mult:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 3) { msg.should.have.a.property("payload", 1); }
+                if (c === 5) { msg.should.have.a.property("payload", 4); }
+                if (c === 9) { msg.should.have.a.property("payload", 4); }
+                if (c === 11) { msg.should.have.a.property("payload", 5); done(); }
+            });
+            n1.emit("input", {payload:2, topic:"A"});
+            n1.emit("input", {payload:1, topic:"A"});
+            n1.emit("input", {payload:0, topic:"A"});
+            n1.emit("input", {payload:3, topic:"B"});
+            n1.emit("input", {payload:5, topic:"B"});
+            n1.emit("input", {payload:5, topic:"A"});
+            n1.emit("input", {payload:2, topic:"B"});
+            n1.emit("input", {payload:7, topic:"A"});
+            n1.emit("input", {payload:3, topic:"A"});
+            n1.emit("input", {payload:6, topic:"B"});
+            n1.emit("input", {payload:9, topic:"B"});
+        });
+    });
+
 });

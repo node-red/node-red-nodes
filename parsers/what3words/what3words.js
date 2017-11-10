@@ -12,10 +12,19 @@ module.exports = function(RED) {
         var w1 = /^\*\w{6,31}$/;
         var w3 = /^\w+\.\w+\.\w+$/;
         this.on("input", function(msg) {
-            if (msg.hasOwnProperty("location")) {
-                var lat = msg.location.lat;
-                var lon = msg.location.lon;
-                node.w3w.positionToWords({ position:lat + "," + lon, lang:node.lang })
+            if (msg.hasOwnProperty("location") && msg.location.hasOwnProperty("lat") && msg.location.hasOwnProperty("lon")) {
+                node.w3w.positionToWords({ position:msg.location.lat + "," + msg.location.lon, lang:node.lang })
+                    .then(function(response) {
+                        msg.payload = response; // prom.cape.pump
+                        if (!msg.hasOwnProperty("topic") || (msg.topic === "")) { msg.topic = "what3words"; }
+                        node.send(msg);
+                    })
+                    .catch(function(err) {
+                        node.warn(err)
+                    });
+            }
+            else if (msg.hasOwnProperty("payload") && msg.payload.hasOwnProperty("lat") && msg.payload.hasOwnProperty("lon")) {
+                node.w3w.positionToWords({ position:msg.payload.lat + "," + msg.payload.lon, lang:node.lang })
                     .then(function(response) {
                         msg.payload = response; // prom.cape.pump
                         if (!msg.hasOwnProperty("topic") || (msg.topic === "")) { msg.topic = "what3words"; }

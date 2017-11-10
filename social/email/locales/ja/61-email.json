@@ -1,0 +1,48 @@
+{
+    "email": {
+        "label": {
+            "to": "宛先",
+            "server": "サーバ",
+            "port": "ポート",
+            "useSecureConnection": "安全な接続を使用",
+            "userid": "ユーザID",
+            "password": "パスワード",
+            "repeat": "更新",
+            "seconds": "秒",
+            "folder": "フォルダ",
+            "protocol": "プロトコル",
+            "useSSL": "SSLを使用",
+            "disposition": "受信後の処理",
+            "none": "なし",
+            "read": "既読",
+            "delete": "削除"
+        },
+        "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
+        "tip": {
+            "cred": "<b>注釈:</b> emailkeys.jsファイルから認証情報をコピーしました。",
+            "recent": "注釈: 最新のメールを1件のみ取得します。"
+        },
+        "status": {
+            "messagesent": "メッセージを送信しました: __response__",
+            "fetching": "受信中",
+            "foldererror": "フォルダ受信エラー",
+            "messageerror": "メッセージ受信エラー",
+            "message": "メッセージ #__number__",
+            "newemail": "新しいe-mailを受信しました: __topic__",
+            "duplicate": "重複したメッセージは送信されません: __topic__",
+            "inboxzero": "受信トレイにメールがありません",
+            "sending": "送信中",
+            "sendfail": "送信が失敗しました",
+            "connecterror": "接続エラー"
+        },
+        "errors": {
+            "nouserid": "e-mailのユーザIDが設定されていません",
+            "nopassword": "e-mailのパスワードが設定されていません",
+            "nocredentials": "e-mailの認証情報がありません。「情報」タブを参照してください",
+            "nosmtptransport": "SMTP転送が設定されていません。「情報」タブを参照してください",
+            "nopayload": "送信するペイロードがありません",
+            "fetchfail": "フォルダの受信に失敗しました: __folder__",
+            "messageerror": "メッセージ受信エラー: __error__"
+        }
+    }
+}

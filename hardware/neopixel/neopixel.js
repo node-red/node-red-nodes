@@ -2,9 +2,9 @@
 module.exports = function(RED) {
     "use strict";
     var spawn = require('child_process').spawn;
+    var execSync = require('child_process').execSync;
     var fs = require('fs');
     var colors = require('./colours.js');
-
     var piCommand = __dirname+'/neopix';
 
     try {
@@ -15,9 +15,9 @@ module.exports = function(RED) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
-    if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel.py')) {
-        RED.log.warn("Can't find neopixel.py python library");
-        throw "Warning : Can't find neopixel.py python library";
+    if (execSync('python -c "import neopixel"').toString() !== "") {
+        RED.log.warn("Can't find neopixel python library");
+        throw "Warning : Can't find neopixel python library";
     }
 
     if ( !(1 & parseInt ((fs.statSync(piCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {

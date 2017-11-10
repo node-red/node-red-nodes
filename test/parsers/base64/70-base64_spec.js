@@ -35,7 +35,7 @@ describe('base64 node', function() {
                 msg.should.have.a.property("payload","QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo=");
                 done();
             });
-            n1.emit("input", {payload: Buffer("ABCDEFGHIJKLMNOPQRSTUVWXYZ")});
+            n1.emit("input", {payload: Buffer.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ")});
         });
     });
 

@@ -283,7 +283,7 @@ module.exports = function(RED) {
                 wemo.toggleSocket(dev, on);
             } else if (dev.type === 'light') {
                 wemo.setStatus(dev,capability, on);
-            } else { 
+            } else {
                 //console.log('group');
                 wemo.setStatus(dev, capability, on);
             }
@@ -376,7 +376,8 @@ module.exports = function(RED) {
     };
     RED.nodes.registerType('wemo in', wemoNGEvent);
 
-    var wemoNGLookup = function(n){
+
+    var wemoNGLookup = function(n) {
         RED.nodes.createNode(this,n);
         var node = this;
         node.device = n.device;
@@ -408,7 +409,7 @@ module.exports = function(RED) {
             if (dev.type === 'light' || dev.type === 'group') {
                 //console.log("light");
                 wemo.getLightStatus(dev)
-                .then(function(status){
+                .then(function(status) {
                     // if (status.available) {
                     var caps = status.capabilities.split(',');
                     var vals = status.state.split(',');
@@ -430,7 +431,7 @@ module.exports = function(RED) {
                 console.log("socket");
                 //socket
                 wemo.getSocketStatus(dev)
-                .then(function(status){
+                .then(function(status) {
                     msg.payload = {
                         state: status
                     };

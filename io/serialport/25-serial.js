@@ -211,11 +211,11 @@ module.exports = function(RED) {
                         var olderr = "";
                         var setupSerial = function() {
                             obj.serial = new serialp(port,{
-                                baudrate: baud,
-                                databits: databits,
+                                baudRate: baud,
+                                dataBits: databits,
                                 parity: parity,
-                                stopbits: stopbits,
-                                parser: serialp.parsers.raw,
+                                stopBits: stopbits,
+                                //parser: serialp.parsers.raw,
                                 autoOpen: true
                             }, function(err, results) {
                                 if (err) {
@@ -256,9 +256,9 @@ module.exports = function(RED) {
                                     obj._emitter.emit('data',d[z]);
                                 }
                             });
-                            obj.serial.on("disconnect",function() {
-                                RED.log.error(RED._("serial.errors.disconnected",{port:port}));
-                            });
+                            // obj.serial.on("disconnect",function() {
+                            //     RED.log.error(RED._("serial.errors.disconnected",{port:port}));
+                            // });
                         }
                         setupSerial();
                         return obj;

@@ -69,9 +69,8 @@ module.exports = function(RED) {
                     var l = Number(msg.payload.state);
                     if ((out >= 1) && (out <= 8)) {
                         out = (Math.pow(2, (out-1)));
-                        if (l === 0) { out = ~ out; }
-                        byte = byte & out & 255;
-                        console.log("NOW",byte);
+                        if (l === 0) { byte = (byte & (~out) & 255); }
+                        else { byte = (byte | out) & 255; }
                         if (node.child !== null) { node.child.stdin.write(byte+"\n"); }
                         else { node.warn("Command not running"); }
                     }

@@ -14,8 +14,8 @@ It will appear in the menu as ` A/D Converter `.
 You must ensure that SPI is enabled. For recent (2016) versions of Raspbian you can do this
 
  - Run `sudo raspi-config`
- - Select `9 - Advanced Options`
- - Select `A5 - SPI`
+ - Select `5 - Interfacing Options`
+ - Select `P4 - SPI`
  - Select `yes` to enable SPI
  - Select `OK` to confirm
  - Select the `Finish` button

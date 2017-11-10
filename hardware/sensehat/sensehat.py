@@ -151,7 +151,7 @@ def process_command(data):
       speed = 0.1
       s = data.split(':',1)
       if len(s) == 2:
-        data = s[1]
+        data = s[1][0:-1]
         if len(s[0]) > 0:
           c = s[0].split(",")
           if len(c) == 1:

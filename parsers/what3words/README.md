@@ -29,12 +29,19 @@ To convert position to words it requires
 
 or
 
+ - `msg.payload.lat`
+ - `msg.payload.lon`
+
+or
+
  - `msg.payload`  containing a string  lat,lon
 
 
 To convert words to position it requires
 
  - `msg.payload` containing a string of  _unique.three.words_
+
+ A 3 word string separated by dots.
 
 
 The API-key is stored in a separate credentials file.
