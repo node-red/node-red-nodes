@@ -1,0 +1,8 @@
+{
+    "ping": {
+        "label": {
+            "target": "対象",
+            "ping": "Ping (秒)"
+        }
+    }
+}
