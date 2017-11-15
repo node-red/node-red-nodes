@@ -18,15 +18,10 @@ node_js:
   - "6"
   - "4"
 before_script:
-  - npm install istanbul
+  - npm install -g istanbul grunt-cli
+  - npm install coveralls
   - npm install git+https://github.com/node-red/node-red.git
   - export NODE_RED_HOME=`pwd`/node_modules/node-red
-  - (cd $NODE_RED_HOME ; npm install nock@~0.48.0 coveralls)
-  - export
-  - which grunt
-  - grunt --version
-  - pwd
-  - ls -lart node_modules/
-  - ls -lart node_modules/.bin
+  - (cd $NODE_RED_HOME ; npm install nock@~0.48.0)
 script:
   - istanbul cover grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
