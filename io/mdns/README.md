@@ -32,7 +32,7 @@ service discovery capability.
 
 `msg.payload` contains the service object on both arrival and leaving.
 
-`msg.state` contains boolean true or false depending if the service has arrived (true) or gone away (false)..
+`msg.payload.state` contains boolean true or false depending if the service has arrived (true) or gone away (false)..
 
 Within the `msg.payload` object the most interesting things are:
 

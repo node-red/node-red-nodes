@@ -65,8 +65,8 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input", function(msg) {
-            if ((msg.payload === 0) || (msg.payload === "0")) {
-                node.ad.stop();
+            if (msg.payload == false) {
+                if (node.ad) { node.ad.stop(); }
             }
             else {
                 var service = node.service || msg.service;
@@ -76,6 +76,7 @@ module.exports = function(RED) {
                     options.name = (node.name || msg.name).replace(/\%h/g, os.hostname());
                 }
                 if (node.txt || msg.txtRecord) { options.txtRecord = node.txt || msg.txtRecord }
+                if (node.ad) { node.ad.stop(); }
                 node.ad = mdns.createAdvertisement(service, port, options);
                 node.ad.start();
             }
