@@ -6,35 +6,35 @@ module.exports = function(RED) {
 
     //node for subscribing to an event/channel
     function PusherNode(n) {
-        // Create a RED node
         RED.nodes.createNode(this,n);
-
+        this.channel = n.channel;
+        this.eventname = n.eventname;
+        this.cluster = n.cluster || "mt1";
         var node = this;
         var credentials = this.credentials;
 
-        if ((credentials) && (credentials.hasOwnProperty("pusherappkey_sub"))) { this.appkey = credentials.pusherappkey_sub; }
+        if ((credentials) && (credentials.hasOwnProperty("pusherappkeysub"))) {
+            node.appkey = credentials.pusherappkeysub;
+        }
         else { this.error("No Pusher app key set for input node"); }
 
-        //get parameters from user
-        this.channel = n.channel;
-        this.eventname = n.eventname;
-
         //create a subscription to the channel and event defined by user
-        var socket = new PusherClient(''+this.appkey);
-        node.channel = socket.subscribe(''+this.channel);
-        socket.bind(''+this.eventname,
+        var socket = new PusherClient(''+node.appkey, {cluster:node.cluster, encrypted:true});
+        var chan = socket.subscribe(''+node.channel);
+        chan.bind(''+node.eventname,
             function(data) {
-                var msg = {topic:this.eventname};
+                var msg = {topic:node.eventname, channel:node.channel};
                 if (data.hasOwnProperty("payload")) { msg.payload = data.payload; }
                 else { msg.payload = data; }
                 node.send(msg);
             }
         );
 
-        this.on("close", function() {
+        node.on("close", function() {
             socket.disconnect();
         });
     }
+
 
     //Node for sending Pusher events
     function PusherNodeSend(n) {
@@ -54,15 +54,17 @@ module.exports = function(RED) {
         //get parameters from user
         this.channel = n.channel;
         this.eventname = n.eventname;
+        this.cluster = n.cluster || "mt1";
 
-        var pusher = new Pusher({
+        var pusherd = new Pusher({
             appId: this.appid,
             key: this.appkey,
-            secret: this.appsecret
+            secret: this.appsecret,
+            cluster: this.cluster
         });
 
         node.on("input", function(msg) {
-            pusher.trigger(this.channel, this.eventname, {
+            pusherd.trigger(this.channel, this.eventname, {
                 "payload": msg.payload
             });
         });
@@ -73,7 +75,7 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("pusher in",PusherNode,{
         credentials: {
-            pusherappkey_sub: "text"
+            pusherappkeysub: "text"
         }
     });
     RED.nodes.registerType("pusher out",PusherNodeSend,{
@@ -81,6 +83,7 @@ module.exports = function(RED) {
             pusherappid: {type:"text"},
             pusherappkey: {type:"text"},
             pusherappsecret: {type:"password"}
-        }
+        },
+        encrypted: true
     });
 }

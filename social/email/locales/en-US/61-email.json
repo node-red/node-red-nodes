@@ -4,6 +4,7 @@
             "to": "To",
             "server": "Server",
             "port": "Port",
+            "useSecureConnection": "Use secure connection.",
             "userid": "Userid",
             "password": "Password",
             "repeat": "Refresh",
@@ -11,12 +12,12 @@
             "folder": "Folder",
             "protocol": "Protocol",
             "useSSL": "Use SSL?",
-            "disposition": "Disposition"
+            "disposition": "Disposition",
+            "none": "None",
+            "read": "Mark Read",
+            "delete": "Delete"
         },
-        
-        "default-message": "Your file from Node-RED is attached: __filename__ __description__",
-        
-        
+        "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {
             "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
             "recent": "Tip: Only retrieves the single most recent email."
@@ -38,7 +39,8 @@
             "nouserid": "No e-mail userid set",
             "nopassword": "No e-mail password set",
             "nocredentials": "No Email credentials found. See info panel.",
-            "nopayload": "No payload to send",            
+            "nosmtptransport": "No SMTP transport. See info panel.",
+            "nopayload": "No payload to send",
             "fetchfail": "Failed to fetch folder: __folder__",
             "messageerror": "Fetch message error: __error__"
         }

@@ -31,7 +31,7 @@
         defaults: {
             name: {value:"Emoncms"},
             emonServer: {type:"emoncms-server", required:true},
-            nodegroup: {value:"", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }}
+            nodegroup: {value:"", validate:function(v) {return ((v === "")||(/^[\d\w\s.-]*$/).test(v));} }
         },
         inputs:1,
         outputs:0,

@@ -14,9 +14,10 @@ module.exports = function(RED) {
                 }
                 else if (typeof msg.payload === "string") {
                     // Take base64 string and make into binary buffer
-                    var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');
-                    if ( regexp.test(msg.payload) && (msg.payload.length % 4 === 0) ) {
-                        msg.payload = new Buffer(msg.payload,'base64');
+                    var load = msg.payload.replace(/\s+/g,'');      // remove any whitespace
+                    var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');  // check it only contains valid characters
+                    if ( regexp.test(load) && (load.length % 4 === 0) ) {
+                        msg.payload = new Buffer(load,'base64');
                         node.send(msg);
                     }
                     else {
@@ -28,7 +29,8 @@ module.exports = function(RED) {
                 else {
                     node.warn("This node only handles strings or buffers.");
                 }
-            } else { node.warn("No payload found to process"); }
+            }
+            else { node.warn("No payload found to process"); }
         });
     }
     RED.nodes.registerType("base64",Base64Node);

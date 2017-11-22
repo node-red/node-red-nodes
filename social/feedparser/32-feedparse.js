@@ -15,7 +15,8 @@ module.exports = function(RED) {
         var parsedUrl = url.parse(this.url);
         if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
             this.error(RED._("feedparse.errors.invalidurl"));
-        } else {
+        }
+        else {
             var getFeed = function() {
                 var req = request(node.url, {timeout: 10000, pool: false});
                 //req.setMaxListeners(50);

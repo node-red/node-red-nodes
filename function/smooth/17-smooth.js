@@ -8,41 +8,50 @@ module.exports = function(RED) {
         this.round = n.round || false;
         if (this.round == "true") { this.round = 0; }
         this.count = Number(n.count);
+        this.mult = n.mult || "single";
         var node = this;
-        var a = [];
-        var tot = 0;
-        var tot2 = 0;
-        var pop = 0;
-        var old = null;
+        var v = {};
 
         this.on('input', function (msg) {
+            var top = msg.topic || "_my_default_topic";
+            if (this.mult === "single") { top = "a"; }
+
+            if ((v.hasOwnProperty(top) !== true) || msg.hasOwnProperty("reset")) {
+                v[top] = {};
+                v[top].a = [];
+                v[top].tot = 0;
+                v[top].tot2 = 0;
+                v[top].pop = 0;
+                v[top].old = null;
+                v[top].count = this.count;
+            }
             if (msg.hasOwnProperty("payload")) {
                 var n = Number(msg.payload);
                 if (!isNaN(n)) {
                     if ((node.action === "low") || (node.action === "high")) {
-                        if (old == null) { old = n; }
-                        old = old + (n - old) / node.count;
-                        if (node.action === "low") { msg.payload = old; }
-                        else { msg.payload = n - old; }
+                        if (v[top].old == null) { v[top].old = n; }
+                        v[top].old = v[top].old + (n - v[top].old) / v[top].count;
+                        if (node.action === "low") { msg.payload = v[top].old; }
+                        else { msg.payload = n - v[top].old; }
                     }
                     else {
-                        a.push(n);
-                        if (a.length > node.count) { pop = a.shift(); }
+                        v[top].a.push(n);
+                        if (v[top].a.length > v[top].count) { v[top].pop = v[top].a.shift(); }
                         if (node.action === "max") {
-                            msg.payload = Math.max.apply(Math, a);
+                            msg.payload = Math.max.apply(Math, v[top].a);
                         }
                         if (node.action === "min") {
-                            msg.payload = Math.min.apply(Math, a);
+                            msg.payload = Math.min.apply(Math, v[top].a);
                         }
                         if (node.action === "mean") {
-                            tot = tot + n - pop;
-                            msg.payload = tot / a.length;
+                            v[top].tot = v[top].tot + n - v[top].pop;
+                            msg.payload = v[top].tot / v[top].a.length;
                         }
                         if (node.action === "sd") {
-                            tot = tot + n - pop;
-                            tot2 = tot2 + (n*n) - (pop * pop);
-                            if (a.length > 1) {
-                               msg.payload = Math.sqrt((a.length * tot2 - tot * tot)/(a.length * (a.length - 1)));
+                            v[top].tot = v[top].tot + n - v[top].pop;
+                            v[top].tot2 = v[top].tot2 + (n*n) - (v[top].pop * v[top].pop);
+                            if (v[top].a.length > 1) {
+                                msg.payload = Math.sqrt((v[top].a.length * v[top].tot2 - v[top].tot * v[top].tot)/(v[top].a.length * (v[top].a.length - 1)));
                             }
                             else { msg.payload = 0; }
                         }

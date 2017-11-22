@@ -13,24 +13,26 @@ module.exports = function(RED) {
             this.gap = parseFloat(this.gap);
         }
         this.g = this.gap;
+
         var node = this;
 
         node.previous = {};
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("payload")) {
                 var t = msg.topic || "_no_topic";
-                if (this.func === "rbe") {
+                if ((this.func === "rbe") || (this.func === "rbei")) {
+                    var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
                     if (typeof(msg.payload) === "object") {
                         if (typeof(node.previous[t]) !== "object") { node.previous[t] = {}; }
                         if (!RED.util.compareObjects(msg.payload, node.previous[t])) {
-                            node.previous[t] = msg.payload;
-                            node.send(msg);
+                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                            if (doSend) { node.send(msg); }
                         }
                     }
                     else {
                         if (msg.payload !== node.previous[t]) {
-                            node.previous[t] = msg.payload;
-                            node.send(msg);
+                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                            if (doSend) { node.send(msg); }
                         }
                     }
                 }
@@ -42,15 +44,23 @@ module.exports = function(RED) {
                             else { node.previous[t] = node.start; }
                         }
                         if (node.pc) { node.gap = (node.previous[t] * node.g / 100) || 0; }
-                        if (!node.previous.hasOwnProperty(t)) { node.previous[t] = n - node.gap; }
-                        if (Math.abs(n - node.previous[t]) >= node.gap) {
-                            if (this.func === "deadband") {
+                        else { node.gap = Number(node.gap); }
+                        if ((node.previous[t] === undefined) && (node.func === "narrowbandEq")) { node.previous[t] = n; }
+                        if (node.previous[t] === undefined) { node.previous[t] = n - node.gap; }
+                        if (Math.abs(n - node.previous[t]) === node.gap) {
+                            if (this.func === "deadbandEq") {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }
                         }
-                        else {
-                            if (this.func === "narrowband") {
+                        else if (Math.abs(n - node.previous[t]) > node.gap) {
+                            if (this.func === "deadband" || this.func === "deadbandEq") {
+                                if (node.inout === "out") { node.previous[t] = n; }
+                                node.send(msg);
+                            }
+                        }
+                        else if (Math.abs(n - node.previous[t]) < node.gap) {
+                            if ((this.func === "narrowband")||(this.func === "narrowbandEq")) {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }

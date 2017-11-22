@@ -56,7 +56,8 @@ module.exports = function(RED) {
                     }
                     else { console.log(key); }
                 });
-            } catch(err) { node.warn("can't open MakeyMakey: Do you need root access ?"); }
+            }
+            catch(err) { node.warn("can't open MakeyMakey: Do you need root access ?"); }
         }
         else {
             findmakey();

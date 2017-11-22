@@ -15,25 +15,36 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             if (msg != null) {
-                if (!Buffer.isBuffer(msg.payload)) {
-                    if (typeof msg.payload === "object") { msg.payload = JSON.stringify(msg.payload); }
-                    if (typeof msg.payload !== "string") { msg.payload = msg.payload.toString(); }
-                    if (node.cr === true) { msg.payload += "\n"; }
+                if (msg.hasOwnProperty("kill") && node.running) {
+                    if (typeof msg.kill !== "string" || msg.kill.length === 0 || !msg.kill.toUpperCase().startsWith("SIG") ) { msg.kill = "SIGINT"; }
+                    node.child.kill(msg.kill.toUpperCase());
                 }
-                if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
-                if (node.child !== null) { node.child.stdin.write(msg.payload); }
-                else { node.warn("Command not running"); }
+                else if (msg.hasOwnProperty("start") && !node.running) {
+                    runit();
+                }
+                else {
+                    if (!Buffer.isBuffer(msg.payload)) {
+                        if (typeof msg.payload === "object") { msg.payload = JSON.stringify(msg.payload); }
+                        if (typeof msg.payload !== "string") { msg.payload = msg.payload.toString(); }
+                        if (node.cr === true) { msg.payload += "\n"; }
+                    }
+                    if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
+                    if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
+                    else { node.warn("Command not running"); }
+                }
             }
         }
 
         function runit() {
+            if (!node.cmd || (typeof node.cmd !== "string") || (node.cmd.length < 1)) {
+                node.status({fill:"grey",shape:"ring",text:"no command"});
+                return;
+            }
             node.child = spawn(node.cmd, node.args);
             if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
             node.status({fill:"green",shape:"dot",text:"running"});
             node.running = true;
             var line = "";
-
-            node.on("input", inputlistener);
 
             node.child.stdout.on('data', function (data) {
                 if (node.op === "string") { data = data.toString(); }
@@ -46,7 +57,8 @@ module.exports = function(RED) {
                         node.send([{payload:bits.shift()},null,null]);
                     }
                     line = bits[0];
-                } else {
+                }
+                else {
                     if (data && (data.length !== 0)) {
                         node.send([{payload:data},null,null]);
                     }
@@ -60,11 +72,13 @@ module.exports = function(RED) {
                 node.send([null,{payload:data},null]);
             });
 
-            node.child.on('close', function (code) {
-                if (RED.settings.verbose) { node.log("ret: "+code); }
-                node.send([null,null,{payload:code}]);
-                node.child = null;
+            node.child.on('close', function (code,signal) {
+                if (RED.settings.verbose) { node.log("ret: "+code+":"+signal); }
                 node.running = false;
+                node.child = null;
+                var rc = code;
+                if (code === null) { rc = signal; }
+                node.send([null,null,{payload:rc}]);
                 node.status({fill:"red",shape:"ring",text:"stopped"});
             });
 
@@ -79,21 +93,23 @@ module.exports = function(RED) {
         if (node.redo === true) {
             var loop = setInterval( function() {
                 if (!node.running) {
-                    node.removeListener('input', inputlistener);
                     node.warn("Restarting : " + node.cmd);
                     runit();
                 }
             }, 10000);  // Restart after 10 secs if required
         }
 
-        node.on("close", function() {
+        node.on("close", function(done) {
+            clearInterval(loop);
             if (node.child != null) { node.child.kill('SIGKILL'); }
             if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
-            clearInterval(loop);
             node.status({});
+            setTimeout(function() { done(); }, 100);
         });
 
         runit();
+
+        node.on("input", inputlistener);
     }
     RED.nodes.registerType("daemon",DaemonNode);
 }

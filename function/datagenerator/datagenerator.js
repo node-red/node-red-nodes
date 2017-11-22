@@ -20,14 +20,17 @@ module.exports = function(RED) {
                 }
                 if (node.fieldType === 'msg') {
                     RED.util.setMessageProperty(msg,node.field,value);
-                } else if (node.fieldType === 'flow') {
+                }
+                else if (node.fieldType === 'flow') {
                     node.context().flow.set(node.field,value);
-                } else if (node.fieldType === 'global') {
+                }
+                else if (node.fieldType === 'global') {
                     node.context().global.set(node.field,value);
                 }
                 node.send(msg);
-            } catch(err) {
-                node.error(err.message);
+            }
+            catch(e) {
+                node.error(e.message);
             }
         });
     }

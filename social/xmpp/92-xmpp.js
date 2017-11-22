@@ -104,7 +104,8 @@ module.exports = function(RED) {
                 skipPresence : true,
                 reconnect : false
             });
-        } catch(e) {
+        }
+        catch(e) {
             node.error("Bad xmpp configuration");
             node.status({fill:"red",shape:"ring",text:"not connected"});
         }
@@ -180,7 +181,8 @@ module.exports = function(RED) {
                 skipPresence : true,
                 reconnect : false
             });
-        } catch(e) {
+        }
+        catch(e) {
             node.error("Bad xmpp configuration");
             node.status({fill:"red",shape:"ring",text:"not connected"});
         }
@@ -201,7 +203,8 @@ module.exports = function(RED) {
                 else if (msg.payload) {
                     if (typeof(msg.payload) === "object") {
                         xmpp.send(to, JSON.stringify(msg.payload), node.join);
-                    } else {
+                    }
+                    else {
                         xmpp.send(to, msg.payload.toString(), node.join);
                     }
                 }

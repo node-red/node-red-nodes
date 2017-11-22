@@ -1,16 +1,16 @@
 {
     "name"          : "node-red-node-discovery",
-    "version"       : "0.0.13",
+    "version"       : "0.0.18",
     "description"   : "A Node-RED node that uses Bonjour / Avahi to discover nearby services.",
     "dependencies"  : {
-        "mdns"   : "2.2.*"
+        "mdns"   : "~2.3.3"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes/tree/master/io/mdns"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "mdns", "avahi", "bonjour" ],
+    "keywords": [ "node-red", "mdns", "avahi", "bonjour", "discovery" ],
     "node-red"      : {
         "nodes"     : {
             "discovery": "mdns.js"

@@ -2,21 +2,22 @@
 module.exports = function(RED) {
     "use strict";
     var spawn = require('child_process').spawn;
+    var execSync = require('child_process').execSync;
     var fs = require('fs');
     var colors = require('./colours.js');
-
     var piCommand = __dirname+'/neopix';
 
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
-    } catch(err) {
+    }
+    catch(err) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
-    if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/neopixel.py')) {
-        RED.log.warn("Can't find neopixel.py python library");
-        throw "Warning : Can't find neopixel.py python library";
+    if (execSync('python -c "import neopixel"').toString() !== "") {
+        RED.log.warn("Can't find neopixel python library");
+        throw "Warning : Can't find neopixel python library";
     }
 
     if ( !(1 & parseInt ((fs.statSync(piCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
@@ -57,7 +58,8 @@ module.exports = function(RED) {
                             if (node.mode.indexOf("need") >= 0) {
                                 needle = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+(l-1)+","+node.fgnd+"\n"+l+","+needle+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 node.fgnd = colors.getRGB(parts[0],node.rgb);
                                 pay = "0,"+l+","+node.fgnd+"\n"+(l+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
@@ -78,7 +80,8 @@ module.exports = function(RED) {
                             ll = ll - 1;
                             if (node.mode.indexOf("need") >= 0) {
                                 pay = "0,"+(ll-1)+","+node.fgnd+"\n"+ll+","+needle+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
-                            } else {
+                            }
+                            else {
                                 pay = "0,"+ll+","+node.fgnd+"\n"+(ll+1)+","+(node.pixels-1)+","+node.bgnd;
                             }
                         }

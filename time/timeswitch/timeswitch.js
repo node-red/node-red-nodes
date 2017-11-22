@@ -144,11 +144,13 @@ module.exports = function(RED) {
             try {
                 node.emit("input", {payload:"reset"});
                 res.sendStatus(200);
-            } catch (err) {
+            }
+            catch (err) {
                 res.sendStatus(500);
                 node.error("Inject failed:" + err);
             }
-        } else {
+        }
+        else {
             res.sendStatus(404);
         }
     });

@@ -62,7 +62,8 @@ module.exports = function(RED) {
                     pusher.me(function(err, me) {
                         if (err) {
                             reject(err);
-                        } else {
+                        }
+                        else {
                             resolve(me);
                         }
                     });
@@ -74,7 +75,8 @@ module.exports = function(RED) {
                     pusher.history({limit:1}, function(err, res) {
                         if (err) {
                             resolve(0);
-                        } else {
+                        }
+                        else {
                             try {
                                 resolve(res.pushes[0].modified);
                             }
@@ -108,6 +110,7 @@ module.exports = function(RED) {
         var self = this;
         if (this.pusher) {
             var stream = this.pusher.stream();
+            stream.setMaxListeners(100);
             var closing = false;
             var tout;
             stream.on('message', function(res) {
@@ -142,11 +145,8 @@ module.exports = function(RED) {
             this.on("close",function() {
                 if (tout) { clearTimeout(tout); }
                 closing = true;
-                try {
-                    this.stream.close();
-                } catch(err) {
-                    // Ignore error if not connected
-                }
+                try { this.stream.close(); }
+                catch(err) { } // Ignore error if not connected
             });
         }
     };
@@ -162,12 +162,13 @@ module.exports = function(RED) {
                             resolve(last);
                             return onError(err);
                         }
-                        for (var i=0;i<res.pushes.length; i++) {
+                        for (var i=0; i<res.pushes.length; i++) {
                             self.pushMsg(res.pushes[i]);
                         }
                         try {
                             resolve(res.pushes[0].modified);
-                        } catch(ex) {
+                        }
+                        catch(ex) {
                             resolve(last);
                         }
                     });
@@ -360,7 +361,8 @@ module.exports = function(RED) {
                             if (me) {
                                 deviceid = me.email;
                                 self.pushMsg(pushtype, deviceid, title, msg);
-                            } else {
+                            }
+                            else {
                                 self.error("Unable to push",msg);
                             }
                         });

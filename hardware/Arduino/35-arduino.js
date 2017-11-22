@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
 
     var Board = require('firmata');
-    var SP = require('firmata/node_modules/serialport');
+    var SP = require('serialport');
 
     // The Board Definition - this opens (and closes) the connection
     function ArduinoNode(n) {
@@ -36,8 +36,10 @@ module.exports = function(RED) {
                         done();
                         if (RED.settings.verbose) { node.log(RED._("arduino.status.portclosed")); }
                     });
-                } catch(e) { done(); }
-            } else { done(); }
+                }
+                catch(e) { done(); }
+            }
+            else { done(); }
         });
     }
     RED.nodes.registerType("arduino-board",ArduinoNode);

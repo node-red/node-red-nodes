@@ -2,6 +2,7 @@
     "rbe": {
         "label": {
             "func": "Mode",
+            "init": "Send initial value",
             "start": "Start value",
             "name": "Name"
         },
@@ -11,8 +12,11 @@
         },
         "opts": {
             "rbe": "block unless value changes",
-            "deadband": "block unless value changes by more than",
-            "narrowband": "block if value changes by more than",
+            "rbei": "block unless value changes (ignore initial value)",
+            "deadband": "block unless value change is greater than",
+            "deadbandEq": "block unless value change is greater or equal to",
+            "narrowband": "block if value change is greater than",
+            "narrowbandEq": "block if value change is greater or equal to",
             "in": "compared to last input value",
             "out": "compared to last valid output value"
         },

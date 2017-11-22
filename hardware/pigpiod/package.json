@@ -1,0 +1,29 @@
+{
+  "name": "node-red-node-pi-gpiod",
+  "version": "0.0.7",
+  "description": "A node-red node for PiGPIOd",
+  "dependencies"  : {
+      "js-pigpio": "*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/pigpiod"
+  },
+  "keywords": [
+    "node-red", "Pi", "GPIO", "PiGPIOd"
+  ],
+  "author": {
+      "name": "Dave Conway-Jones",
+      "email": "ceejay@vnet.ibm.com",
+      "url": "http://nodered.org"
+  },
+  "license": "Apache-2.0",
+  "node-red"     : {
+        "nodes": {
+            "pi-gpiod": "pi-gpiod.js"
+        }
+    }
+}

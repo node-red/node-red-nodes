@@ -4,6 +4,7 @@ module.exports = function(RED) {
     var fs = require('fs');
     var PNG = require('pngjs').PNG;
     var spawn = require('child_process').spawn;
+    var execSync = require('child_process').execSync;
 
     var hatCommand = __dirname+'/unihat';
 
@@ -12,9 +13,9 @@ module.exports = function(RED) {
         throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
     }
 
-    if (!fs.existsSync('/usr/local/lib/python2.7/dist-packages/unicornhat.py')) {
-        RED.log.warn("Can't find Unicorn HAT python libraries");
-        throw "Warning : Can't find Unicorn HAT python libraries";
+    if (execSync('python -c "import neopixel"').toString() !== "") {
+        RED.log.warn("Can't find neopixel python library");
+        throw "Warning : Can't find neopixel python library";
     }
 
     if ( !(1 & parseInt ((fs.statSync(hatCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {

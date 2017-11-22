@@ -16,7 +16,8 @@ module.exports = function(RED) {
                 try {
                     device = new HID.HID(devices[i].path);
                     break;
-                } catch (e) {
+                }
+                catch (e) {
                     node.log(e)
                 }
             }
@@ -32,16 +33,19 @@ module.exports = function(RED) {
                     var g = parseInt(msg.payload.slice(3,5),16);
                     var b = parseInt(msg.payload.slice(5),16);
                     device.sendFeatureReport([115,r,g,b]);
-                } else if (p2.test(msg.payload)) {
+                }
+                else if (p2.test(msg.payload)) {
                     var args = msg.payload.split(',');
                     if (args.length == 3) {
                         device.sendFeatureReport([115,parseInt(args[0]),parseInt(args[1]),parseInt(args[2])]);
                     }
-                } else {
+                }
+                else {
                     node.warn("incompatable input - " + msg.payload);
                 }
             });
-        } else {
+        }
+        else {
             node.warn("no digispark RGB found");
         }
 

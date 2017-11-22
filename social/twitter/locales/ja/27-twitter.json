@@ -1,0 +1,50 @@
+{
+    "twitter": {
+        "label": {
+            "twitter-id": "Twitter ID",
+            "search": "検索対象",
+            "for": "検索条件",
+            "user": "ユーザ",
+            "dmslabel": "DMs",
+            "followers": "followed by",
+            "tweetslabel": "tweets",
+            "eventslabel": "events",
+            "clickhere": "Twitterの認証を行うため、ここをクリックしてください"
+        },
+        "placeholder": {
+            "for": "@ids, #tagsはコンマ区切りで入力",
+            "user": "複数ユーザの場合、@twitterのハンドルネームをコンマ区切りで入力"
+        },
+        "search": {
+            "public": "全ての公開ツイート",
+            "follow": "フォローしているユーザの全てのツイート",
+            "user": "特定ユーザのツイート",
+            "direct": "ダイレクトメッセージ",
+            "events": "自身のイベント"
+        },
+        "tip": "注釈: 複数の検索条件を指定する場合は、空白のないコンマで区切り入力してください。コンマはOR条件、空白はAND条件となります。<br/>Twitter APIは全てのツイートを取得できないことがあります。<br/>「フォローしているユーザの全てのツイート」には、リツイートやいいねが含まれます。<br/><br/>msg.payloadに検索条件を指定する場合は <b>「検索条件」</b> を空欄にしてください。",
+        "status": {
+            "using-geo": "位置情報を使用中: __location__",
+            "tweeting": "ツイート中",
+            "failed": "失敗"
+        },
+        "warn": {
+            "nousers": "ユーザが設定されていません",
+            "waiting": "検索を待っています"
+        },
+        "errors": {
+            "ratelimit": "受信量の上限に達しました",
+            "limitrate": "受信量を制限中",
+            "streamerror": "ストリームエラー: __error__ (__rc__)",
+            "unexpectedend": "ストリームが予期せず終了しました",
+            "invalidtag": "無効なタグプロパティ",
+            "missingcredentials": "Twitterが認証されていません",
+            "truncated": "140文字を超えるツイートが切り捨てられました",
+            "sendfail": "ツイートの投稿が失敗: __error__",
+            "nopayload": "ツイートするペイロードがありません",
+            "oauthbroke": "something in twitter oauth broke.",
+            "oautherror": "<html><head></head><body><p>認証処理で問題が生じました。以下のエラーが返されました:</p><p><b>__statusCode__</b>: __errorData__</p><p>Node-REDが動いているシステムの時刻が正しく設定されていないことが、このエラーの原因の1つです。</p></body></html>",
+            "authorized": "<html><head></head><body><p>認証されました - このウィンドウを閉じて、Node-REDへ戻ることができます。</p></body></html>"
+        }
+    }
+}

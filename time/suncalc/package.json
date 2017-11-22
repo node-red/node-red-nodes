@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-suncalc",
-    "version"       : "0.0.9",
+    "version"       : "0.0.10",
     "description"   : "A Node-RED node to provide a signal at sunrise and sunset",
     "dependencies"  : {
-        "suncalc"   : "1.6.*"
+        "suncalc"   : "^1.8.0"
     },
     "repository" : {
         "type":"git",

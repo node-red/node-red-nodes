@@ -12,7 +12,7 @@
 
 <script type="text/x-red" data-help-name="serial in">
     <p>Reads data from a local serial port.</p>
-    <p>Can either <ul><li>wait for a "split" character (default \n). Also accepts hex notation (0x0a).</li>
+    <p>Can either <ul><li>wait for a "split" character (default \n). Also accepts hex notation (0x0d).</li>
     <li>Wait for a timeout in milliseconds for the first character received</li>
     <li>Wait to fill a fixed sized buffer</li></ul></p>
     <p>It then outputs <code>msg.payload</code> as either a UTF8 ascii string or a binary Buffer object.</p>
@@ -152,6 +152,14 @@
     </div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
     <div class="form-tips" id="tip-bin" hidden><span data-i18n="serial.tip.timeout"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="serial-port">
+    <p>Provides configuration options for a serial port.</p>
+    <p>The search button should return a list of available serial ports to choose from, or you
+    can type in the location if known.</p>
+    <p>The input can be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
+    <p>If using a character, it can be specified as either the character, the escaped shortcut (e.g. \n), or the hex code (e.g. 0x0d).</p>
 </script>
 
 <script type="text/javascript">

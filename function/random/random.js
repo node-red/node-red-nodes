@@ -10,7 +10,8 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             if (node.inte == "true" || node.inte === true) {
                 msg.payload = Math.round(Number(Math.random()) * (node.high - node.low + 1) + node.low - 0.5);
-            } else {
+            }
+            else {
                 msg.payload = Number(Math.random()) * (node.high - node.low) + node.low;
             }
             node.send(msg);

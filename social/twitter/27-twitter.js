@@ -32,7 +32,8 @@ module.exports = function(RED) {
                     msg.location.lon = msg.tweet.geo.coordinates[1];
                     msg.location.icon = "twitter";
                 }
-            } else if (msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
+            }
+            else if (msg.tweet.coordinates) { // otherwise attempt go get it from coordinates
                 if (msg.tweet.coordinates.coordinates && msg.tweet.coordinates.coordinates.length === 2) {
                     if (!msg.location) { msg.location = {}; }
                     // WARNING! coordinates[1] is lat, coordinates[0] is lon!!!
@@ -94,7 +95,8 @@ module.exports = function(RED) {
                                 }
                                 if (cb[0]) {
                                     node.since_ids[u] = cb[0].id_str;
-                                } else {
+                                }
+                                else {
                                     node.since_ids[u] = '0';
                                 }
                                 node.poll_ids.push(setInterval(function() {
@@ -143,7 +145,8 @@ module.exports = function(RED) {
                     }
                     if (cb[0]) {
                         node.since_id = cb[0].id_str;
-                    } else {
+                    }
+                    else {
                         node.since_id = '0';
                     }
                     node.poll_ids.push(setInterval(function() {
@@ -153,7 +156,7 @@ module.exports = function(RED) {
                             since_id:node.since_id
                         },function(err,cb) {
                                 if (cb) {
-                                    for (var t=cb.length-1;t>=0;t-=1) {
+                                    for (var t=cb.length-1; t>=0; t-=1) {
                                         var tweet = cb[t];
                                         var where = tweet.sender.location;
                                         var la = tweet.lang || tweet.sender.lang;
@@ -203,7 +206,8 @@ module.exports = function(RED) {
                                     //console.log("ERRO",rc,tweet);
                                     if (rc == 420) {
                                         node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
-                                    } else {
+                                    }
+                                    else {
                                         node.status({fill:"red", shape:"ring", text:" "});
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
@@ -265,7 +269,8 @@ module.exports = function(RED) {
                                     //console.log("ERRO",rc,tweet);
                                     if (rc == 420) {
                                         node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
-                                    } else {
+                                    }
+                                    else {
                                         node.status({fill:"red", shape:"ring", text:tweet.toString()});
                                         node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
                                     }
@@ -365,7 +370,7 @@ module.exports = function(RED) {
                 this.stream.destroy();
             }
             if (this.poll_ids) {
-                for (var i=0;i<this.poll_ids.length;i++) {
+                for (var i=0; i<this.poll_ids.length; i++) {
                     clearInterval(this.poll_ids[i]);
                 }
             }
@@ -393,8 +398,8 @@ module.exports = function(RED) {
                 if (msg.hasOwnProperty("payload")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
-                    if (msg.payload.length > 140) {
-                        msg.payload = msg.payload.slice(0,139);
+                    if (msg.payload.length > 280) {
+                        msg.payload = msg.payload.slice(0,279);
                         node.warn(RED._("twitter.errors.truncated"));
                     }
 
@@ -409,13 +414,15 @@ module.exports = function(RED) {
                             if (err) {
                                 node.error(err,msg);
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                            } else {
+                            }
+                            else {
                                 var response = JSON.parse(body);
                                 if (response.errors) {
                                     var errorList = response.errors.map(function(er) { return er.code+": "+er.message }).join(", ");
                                     node.error(RED._("twitter.errors.sendfail",{error:errorList}),msg);
                                     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                } else {
+                                }
+                                else {
                                     node.status({});
                                 }
                             }
@@ -424,7 +431,8 @@ module.exports = function(RED) {
                         form.append("status",msg.payload);
                         form.append("media[]",msg.media,{filename:"image"});
 
-                    } else {
+                    }
+                    else {
                         if (typeof msg.params === 'undefined') { msg.params = {}; }
                         twit.updateStatus(msg.payload, msg.params, function (err, data) {
                             if (err) {
@@ -451,7 +459,7 @@ module.exports = function(RED) {
         "HMAC-SHA1"
     );
 
-    RED.httpAdmin.get('/twitter-credentials/:id/auth', RED.auth.needsPermission('twitter.read'), function(req, res) {
+    RED.httpAdmin.get('/twitter-credentials/:id/auth', function(req, res) {
         var credentials = {};
         oa.getOAuthRequestToken({
             oauth_callback: req.query.callback
@@ -460,7 +468,8 @@ module.exports = function(RED) {
                 var err = {statusCode: 401, data: "dummy error"};
                 var resp = RED._("twitter.errors.oautherror",{statusCode: err.statusCode, errorData: err.data});
                 res.send(resp)
-            } else {
+            }
+            else {
                 credentials.oauth_token = oauth_token;
                 credentials.oauth_token_secret = oauth_token_secret;
                 res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
@@ -469,7 +478,7 @@ module.exports = function(RED) {
         });
     });
 
-    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', RED.auth.needsPermission('twitter.read'), function(req, res, next) {
+    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
         var credentials = RED.nodes.getCredentials(req.params.id);
         credentials.oauth_verifier = req.query.oauth_verifier;
 
@@ -481,7 +490,8 @@ module.exports = function(RED) {
                 if (error) {
                     RED.log.error(error);
                     res.send(RED._("twitter.errors.oauthbroke"));
-                } else {
+                }
+                else {
                     credentials = {};
                     credentials.access_token = oauth_access_token;
                     credentials.access_token_secret = oauth_access_token_secret;

@@ -45,7 +45,8 @@ module.exports = function(RED) {
             // This will be called anytime there is a new dweet for my-thing
             if (dweet.content.hasOwnProperty("payload")) {
                 dweet.payload = dweet.content.payload;
-            } else {
+            }
+            else {
                 dweet.payload = dweet.content;
             }
             delete dweet.content;

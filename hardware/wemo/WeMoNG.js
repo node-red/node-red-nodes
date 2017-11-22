@@ -45,10 +45,11 @@ module.exports = function(RED) {
                         console.log('problem with resubscription %s - %s', res.statusCode, res.statusMessage);
                         console.log('opts - %s', util.inspect(reSubOptions));
                         console.log('dev - %s', util.inspect(dev));
-                        delete subscriptions[dev];
+                        delete subscriptions[subs[s]];
                         delete sub2dev[sub.sid];
                         subscribe({dev: subs[s]});
-                    } else {
+                    }
+                    else {
                         // console.log("resubscription good %s", res.statusCode);
                         // console.log("dev - %s", util.inspect(dev));
                     }
@@ -57,7 +58,7 @@ module.exports = function(RED) {
                 resub_request.on('error', function() {
                     //console.log("failed to resubscribe to %s", dev.name );
                     //need to find a way to resubsribe
-                    delete subscriptions[dev];
+                    delete subscriptions[subs[s]];
                     delete sub2dev[sub.sid];
                     subscribe({dev: subs[s]});
                 });
@@ -69,7 +70,7 @@ module.exports = function(RED) {
 
     };
 
-    setInterval(resubscribe, 200000);
+    setInterval(resubscribe, 100000);
 
     var subscribe = function(node) {
         var dev = node.dev;
@@ -78,7 +79,8 @@ module.exports = function(RED) {
             if (subscriptions[dev]) {
                 //exists
                 subscriptions[dev].count++;
-            } else {
+            }
+            else {
                 //new
 
                 var ipAddr;
@@ -97,7 +99,8 @@ module.exports = function(RED) {
                                         break;
                                     }
                                 }
-                            } else {
+                            }
+                            else {
                                 //node 0.10 not great but best we can do
                                 if (!addrs[add].internal && addrs[add].family == 'IPv4') {
                                     ipAddr = addrs[add].address;
@@ -143,7 +146,8 @@ module.exports = function(RED) {
                     if (res.statusCode == 200) {
                         subscriptions[dev] = {'count': 1, 'sid': res.headers.sid};
                         sub2dev[res.headers.sid] = dev;
-                    } else {
+                    }
+                    else {
                         console.log('failed to subsrcibe');
                     }
                 });
@@ -181,10 +185,12 @@ module.exports = function(RED) {
 
                 unSubreq.end();
 
-            } else {
+            }
+            else {
                 subscriptions[dev].count--;
             }
-        } else {
+        }
+        else {
             //shouldn't ever get here
         }
     }
@@ -210,7 +216,8 @@ module.exports = function(RED) {
                     node.status({fill: 'green',shape: 'dot',text: 'found'});
                 }
             });
-        } else {
+        }
+        else {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
@@ -224,10 +231,12 @@ module.exports = function(RED) {
             }
 
             var on = 0;
+            var capability = '10006';
             if (typeof msg.payload === 'string') {
                 if (msg.payload == 'on' || msg.payload == '1' || msg.payload == 'true') {
                     on = 1;
-                } else if (msg.payload === 'toggle') {
+                }
+                else if (msg.payload === 'toggle') {
                     on = 2;
                 }
             } else if (typeof msg.payload === 'number') {
@@ -236,14 +245,30 @@ module.exports = function(RED) {
                 }
             } else if (typeof msg.payload === 'object') {
                 //object need to get complicated here
-                if (msg.payload.state && typeof msg.payload.state === 'number') {
+                if (msg.payload.hasOwnProperty('state') && typeof msg.payload.state === 'number') {
                     if (dev.type === 'socket') {
-                        if (msg.payload >= 0 && msg.payload < 2) {
+                        if (msg.payload.state >= 0 && msg.payload.state < 2) {
                             on = msg.payload.state;
                         }
-                    } else if (dev.type === 'light' || dev.type === 'group') {
-                        if (msg.payload >= 0 && msg.payload < 3) {
-                            on = msg.payload.state;
+                    }
+                    else if (dev.type === 'light' || dev.type === 'group') {
+                        // if (msg.payload.state >= 0 && msg.payload.state < 3) {
+                        //     on = msg.payload.state;
+                        // }
+                        var keys = Object.keys(msg.payload);
+                        var caps = [];
+                        var states = [];
+                        for (var i=0; i<keys.length; i++) {
+                            if (msg.payload.hasOwnProperty(keys[i])) {
+                                if (wemo.reverseCapabilityMap.hasOwnProperty(keys[i])) {
+                                    caps.push(wemo.reverseCapabilityMap[keys[i]]);
+                                    states.push(msg.payload[keys[i]]);
+                                }
+                            }
+                        }
+                        if (caps.length > 0) {
+                            capability = caps.join(',');
+                            on = states.join(',');
                         }
                     }
                 }
@@ -253,15 +278,14 @@ module.exports = function(RED) {
                 }
             }
 
-            if (dev.type === 'socket') {
+            if (dev.type == 'socket') {
                 //console.log("socket");
                 wemo.toggleSocket(dev, on);
-            } else if (dev.type === 'light`') {
-                //console.log("light");
-                wemo.setStatus(dev,'10006', on);
+            } else if (dev.type === 'light') {
+                wemo.setStatus(dev,capability, on);
             } else {
-                console.log('group');
-                wemo.setStatus(dev, '10006', on);
+                //console.log('group');
+                wemo.setStatus(dev, capability, on);
             }
         });
     };
@@ -295,17 +319,18 @@ module.exports = function(RED) {
 
                 switch (notification.type){
                     case 'light':
-                    case 'group':
+                    case 'group': {
                         if (dd.id === notification.id) {
                             node.send(msg);
                         }
                         break;
-                    case 'socket':
+                    }
+                    case 'socket': {
                         node.send(msg);
                         break;
-                    default:
+                    }
+                    default: {}
                 }
-
             }
         };
 
@@ -316,7 +341,8 @@ module.exports = function(RED) {
             if (wemo.get(node.dev)) {
                 node.status({fill: 'green',shape: 'dot',text: 'found'});
                 subscribe(node);
-            } else {
+            }
+            else {
                 wemo.on('discovered', function(d) {
                     if (node.dev === d) {
                         node.status({fill: 'green',shape: 'dot',text: 'found'});
@@ -324,7 +350,8 @@ module.exports = function(RED) {
                     }
                 });
             }
-        } else if (node.ipaddr) {
+        }
+        else if (node.ipaddr) {
             //legacy
             var devices = Object.keys(wemo.devices);
             for (var d in devices) {
@@ -348,6 +375,76 @@ module.exports = function(RED) {
         });
     };
     RED.nodes.registerType('wemo in', wemoNGEvent);
+
+    var wemoNGLookup = function(n) {
+        RED.nodes.createNode(this,n);
+        var node = this;
+        node.device = n.device;
+        node.name = n.name;
+        node.dev = RED.nodes.getNode(node.device).device;
+        node.status({fill: 'red',shape: 'dot',text: 'searching'});
+
+        if (!wemo.get(node.dev)) {
+            wemo.on('discovered', function(d) {
+                if (node.dev === d) {
+                    node.status({fill: 'green',shape: 'dot',text: 'found'});
+                }
+            });
+        }
+        else {
+            node.status({fill: 'green',shape: 'dot',text: 'found'});
+        }
+
+        node.on('input', function(msg) {
+            var dev = wemo.get(node.dev);
+
+            if (!dev) {
+                //need to show that dev not currently found
+                console.log('no device found');
+                return;
+            }
+
+            //console.log(dev.type);
+            if (dev.type === 'light' || dev.type === 'group') {
+                //console.log("light");
+                wemo.getLightStatus(dev)
+                .then(function(status) {
+                    // if (status.available) {
+                    var caps = status.capabilities.split(',');
+                    var vals = status.state.split(',');
+                    for (var i=0; i<caps.length; i++) {
+                        if (wemo.capabilityMap.hasOwnProperty(caps[i])) {
+                            if (vals[i] !== '' && vals[i].indexOf(':') == -1) {
+                                status[wemo.capabilityMap[caps[i]]] = parseInt(vals[i]);
+                            } else {
+                                status[wemo.capabilityMap[caps[i]]] = parseInt(vals[i].substring(0,vals[i].indexOf(':')));
+                            }
+                        }
+                    }
+                    delete status.capabilities;
+                    // }
+                    msg.payload = status;
+                    node.send(msg);
+                });
+            } else {
+                console.log("socket");
+                //socket
+                wemo.getSocketStatus(dev)
+                .then(function(status) {
+                    msg.payload = {
+                        state: status
+                    };
+                    node.send(msg);
+                });
+            }
+        });
+
+        node.on('close', function(done) {
+            done();
+        });
+
+    };
+    RED.nodes.registerType("wemo lookup", wemoNGLookup);
 
     RED.httpAdmin.get('/wemoNG/devices', function(req, res) {
         res.json(wemo.devices);

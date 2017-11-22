@@ -22,7 +22,8 @@ module.exports = function(RED) {
         this.client = mqlight.createClient(opts, function(err) {
             if (err) {
                 util.log('[mqlight] ['+id+'] not connected to service '+n.service);
-            } else {
+            }
+            else {
                 util.log('[mqlight] ['+id+'] connected to service '+n.service);
             }
         });
@@ -47,11 +48,10 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var recvClient;
+                var recvClient = node.serviceConfig.client;
                 recvClient.on("error", function(err) {
                     if (err) { node.error(err.toString()); }
                 });
-                recvClient = node.serviceConfig.client;
                 recvClient.on("started", function() {
                     recvClient.on("message", function(data, delivery) {
                         if (node.topic === delivery.destination.topicPattern) {
@@ -72,13 +72,15 @@ module.exports = function(RED) {
                     var subscribeCallback = function(err) {
                         if (err) {
                             node.error("Failed to subscribe: " + err);
-                        } else {
+                        }
+                        else {
                             node.log("Subscribed to "+node.topic+(node.share?" ["+node.share+"]":""));
                         }
                     };
                     if (node.share) {
                         recvClient.subscribe(node.topic, node.share, subscribeCallback);
-                    } else {
+                    }
+                    else {
                         recvClient.subscribe(node.topic, subscribeCallback);
                     }
                 });
@@ -102,18 +104,18 @@ module.exports = function(RED) {
 
         if (node.serviceConfig) {
             if (node.serviceConfig.client) {
-                var sendClient;
+                var sendClient = node.serviceConfig.client;
                 sendClient.on("error", function(err) {
                     if (err) { node.error(err.toString()); }
                 });
-                sendClient = node.serviceConfig.client;
                 sendClient.on("started", function () {
                     node.on("input", function(msg) {
                         var topic = node.topic;
                         if (topic === "") {
                             if (msg.topic) {
                                 topic = msg.topic;
-                            } else {
+                            }
+                            else {
                                 node.warn("No topic set in MQ Light out node");
                                 return;
                             }

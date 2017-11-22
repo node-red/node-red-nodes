@@ -47,7 +47,8 @@ module.exports = function(RED) {
 
         if (this.client.connected) {
             this.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-        } else {
+        }
+        else {
             this.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"},true);
         }
 
@@ -64,23 +65,29 @@ module.exports = function(RED) {
             if (k) {
                 if (this.structtype == "string") {
                     this.client.set(k,RED.util.ensureString(msg.payload));
-                } else if (this.structtype == "hash") {
+                }
+                else if (this.structtype == "hash") {
                     if (typeof msg.payload == "object") {
                         this.client.hmset(k,msg.payload);
-                    } else {
+                    }
+                    else {
                         var r = hashFieldRE.exec(msg.payload);
                         if (r) {
                             this.client.hset(k,r[1],r[2]);
-                        } else {
+                        }
+                        else {
                             this.warn(RED._("redisout.errors.invalidpayload"));
                         }
                     }
-                } else if (this.structtype == "set") {
+                }
+                else if (this.structtype == "set") {
                     this.client.sadd(k,msg.payload);
-                } else if (this.structtype == "list") {
+                }
+                else if (this.structtype == "list") {
                     this.client.rpush(k,msg.payload);
                 }
-            } else {
+            }
+            else {
                 this.warn(RED._("redisout.errors.nokey"));
             }
         });
