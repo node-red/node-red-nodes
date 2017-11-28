@@ -79,7 +79,7 @@ module.exports = function(RED) {
                 this.stop();
                 node.ad = mdns.createAdvertisement(service, port, options);
                 node.ad.start();
-                node.status({fill: "green", shape: "dot", text: "started"});
+                node.status({fill: "green", shape: "dot"});
             }
         });
 
@@ -94,7 +94,7 @@ module.exports = function(RED) {
         this.stop = function() {
             if (node.ad) {
                 node.ad.stop();
-                node.status({fill: "red", shape: "dot", text: "stopped"});
+                node.status({fill: "red", shape: "ring"});
             }
         }
 
