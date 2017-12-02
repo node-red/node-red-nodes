@@ -115,7 +115,7 @@ WeMoNG.prototype.start = function start() {
   //console.log("searching");
   var _wemo = this;
   _wemo.setMaxListeners(0);
-  _wemo._client = new Client();
+  _wemo._client = new Client({'explicitSocketBind': true});
   _wemo._client.setMaxListeners(0);
   _wemo._client.on('response', function (headers, statusCode, rinfo) {
     var location = url.parse(headers.LOCATION);

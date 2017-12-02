@@ -32,7 +32,7 @@ service discovery capability.
 
 `msg.payload` contains the service object on both arrival and leaving.
 
-`msg.state` contains boolean true or false depending if the service has arrived (true) or gone away (false)..
+`msg.payload.state` contains boolean true or false depending if the service has arrived (true) or gone away (false)..
 
 Within the `msg.payload` object the most interesting things are:
 
@@ -48,7 +48,7 @@ For a full list of official service types see [this list](http://www.dns-sd.org/
 
 Provides a Bonjour / Avahi / Zeroconf announcement node.
 
-If `msg.payload` is 0 - the announcement is stopped. Any other value starts the announcement process.
+If `msg.payload` is `false` - the announcement is stopped. Any other value starts the announcement process.
 
 The announcement can be customised by the msg if not configured in the edit panel.
 

@@ -65,8 +65,8 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input", function(msg) {
-            if ((msg.payload === 0) || (msg.payload === "0")) {
-                node.ad.stop();
+            if (msg.payload == false) {
+                this.stop();
             }
             else {
                 var service = node.service || msg.service;
@@ -76,8 +76,10 @@ module.exports = function(RED) {
                     options.name = (node.name || msg.name).replace(/\%h/g, os.hostname());
                 }
                 if (node.txt || msg.txtRecord) { options.txtRecord = node.txt || msg.txtRecord }
+                this.stop();
                 node.ad = mdns.createAdvertisement(service, port, options);
                 node.ad.start();
+                node.status({fill: "green", shape: "dot"});
             }
         });
 
@@ -86,8 +88,15 @@ module.exports = function(RED) {
         });
 
         this.on("close", function() {
-            if (node.ad) { node.ad.stop(); }
+            this.stop();
         });
+
+        this.stop = function() {
+            if (node.ad) {
+                node.ad.stop();
+                node.status({fill: "red", shape: "ring"});
+            }
+        }
 
     }
     RED.nodes.registerType("announce", MdnsAnnNode);
