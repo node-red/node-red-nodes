@@ -11,7 +11,7 @@
             "split": "入力の分割方法",
             "deliver": "分割後の配信データ",
             "output": "出力",
-            "serial": "シリアル",
+            "serial": "serial",
             "none": "なし"
         },
         "placeholder": {
