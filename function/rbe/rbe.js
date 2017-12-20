@@ -18,6 +18,12 @@ module.exports = function(RED) {
 
         node.previous = {};
         this.on("input",function(msg) {
+            if (msg.hasOwnProperty("reset")) {
+                if (msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
+                     delete node.previous[msg.topic];
+                }
+                else { node.previous = {}; }
+            }
             if (msg.hasOwnProperty("payload")) {
                 var t = msg.topic || "_no_topic";
                 if ((this.func === "rbe") || (this.func === "rbei")) {
