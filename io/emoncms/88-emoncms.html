@@ -6,20 +6,20 @@
     </div>
     <div class="form-row">
         <label for="node-input-nodegroup"><i class="fa fa-object-group"></i> Node</label>
-        <input type="text" id="node-input-nodegroup" placeholder="number eg: 3">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Emoncms">
+        <input type="text" id="node-input-nodegroup" placeholder="or set by msg.nodegroup">
     </div>
     <div class="form-row">
         <label for="node-input-datatype"><i class="fa fa-tag"></i> Data Type</label>
         <select id="node-input-datatype" style="width:180px;">
             <option value="legacy">Legacy Processing</option>
-            <option value="json">Simple JSON</option>
             <option value="fulljson">Valid JSON object</option>
+            <option value="json">Simple JSON</option>
             <option value="CSV">CSV</option>
         </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Emoncms">
     </div>
 
 </script>
@@ -28,8 +28,8 @@
     <p>Posts data to Emoncms.</p>
     <p>The <code>msg.payload</code> can contain either a comma separated list of name
     value pairs (legacy) e.g. <pre>name:value,...</pre> or a comma separated list of values (CSV) e.g. <pre>1,2,...</pre>
-    a simple javascript object e.g. <pre>msg.payload = {temp:12}</pre>
-    or a valid JSON object e.g. <pre>msg.payload = {"Total":3.273,"Yesterday":1.695}</pre>
+    an Emoncms simple data object e.g. <pre>{temp:12}</pre>
+    or a valid JSON object e.g. <pre>{"Total":3.273,"Yesterday":1.695}</pre>
     <p>The node must be specified either by the <i>Node</i> element or if left blank by <code>msg.nodegroup</code></p>
     <p>Data Type must be one of <pre>legacy, json, fulljson, CSV</pre></p>
     <p>Insertion time can be set by using <code>msg.time</code>.
@@ -46,20 +46,23 @@
             name: {value:"Emoncms Push"},
             emonServer: {type:"emoncms-server", required:true},
             nodegroup: {value:"", validate:function(v) {return ((v === "")||(/^[\d\w\s.-]*$/).test(v));} },
-            datatype: {value:"legacy"} // need to put a validate function here
+            datatype: {value:"legacy"}
         },
         inputs:1,
-        outputs:1,
+        outputs:0,
         icon: "emoncms.png",
         align: "right",
-        outputLabels: "Status Output",
         label: function() {
             return this.name||this.baseurl;
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.datatype === undefined) {
+                $("#node-input-datatype").val("legacy");
+            }
         }
-
     });
 </script>
 

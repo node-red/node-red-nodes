@@ -28,6 +28,7 @@ module.exports = function(RED) {
         if (this.baseurl.substring(0,5) === "https") { http = require("https"); }
         else { http = require("http"); }
         this.on("input", function(msg) {
+
             // setup the data for the URI
             if (this.datatype == "legacy"){
                 this.url = this.baseurl + '/input/post.json?';
@@ -56,35 +57,42 @@ module.exports = function(RED) {
                 this.url += 'csv=' + msg.payload;
             }
             else {
-                node.send("ERROR : No valid data type set - " + this.datatype);
+                node.error("ERROR : No valid data type set - " + this.datatype);
+                return;
+            }
+
+            // setup the node group for URI. Must have a node group or exit
+            var nodegroup = this.nodegroup || msg.nodegroup;
+            if (typeof nodegroup === "undefined") {
+                node.error("ERROR: A Node group must be specified - " + nodegroup);
+                node.status({fill:"red",shape:"ring",text:"No Nodegroup"});
+                return;
+            } else {
+                this.url += '&node=' + nodegroup;
             }
 
             // setup the API key for URI.
             this.url += '&apikey=' + this.apikey;
 
-            // setup the node group for URI
-            var nodegroup = this.nodegroup || msg.nodegroup;
-            if (nodegroup !== "") {
-                this.url += '&node=' + nodegroup;
-            }
-
             // check for a time object and setup URI if valid
-            if (typeof msg.time !== 'undefined') {
+            if (typeof msg.time === "undefined") {
+                node.warn("WARN: Time object undefined, no time set");
+            }
+            else {
                 if (!isNaN(msg.time)) { 
                     this.url += '&time=' + msg.time;
                 }
                 else {
                     if (isNaN(Date.parse(msg.time))) {
                         // error condition
-                        node.send("ERROR: Time object not valid - " + msg.time);
+                        node.warn("WARN: Time object not valid, no time set - " + msg.time);
                     } else {
-                        this.url += '&time=' + Date.parse(msg.time)/1000;
+                        this.url += '&time=' + Date.parse(msg.time)/1000; //seconds
                     }
                 }
                 delete msg.time; // clean it up for the error msg
             }
-            // debug info - uncomment if needed
-            // node.send("INFO: URI sent (decoded) - " + decodeURIComponent(this.url));
+            var URIsent = this.url;
 
             http.get(this.url, function(res) {
                 msg.topic = "http response";
@@ -94,14 +102,23 @@ module.exports = function(RED) {
                 res.on('data', function(chunk) {
                     msg.payload += chunk;
                 });
-                res.on('end', function() { //always send response from node as a 200 does not mean data input sucess
-                        try {
-                            msg.payload = JSON.parse(msg.payload);
+                res.on('end', function() { //A 200 StatusCode does not mean data input sucess
+                    try {
+                        msg.payload = JSON.parse(msg.payload);
+                        if (msg.payload.success) {
+                            node.status({fill:"green",shape:"dot",text:"Success"});
+                        } else {
+                            msg.warning = "ERROR: API Call Failed";
+                            msg.payload.urlsent = decodeURIComponent(URIsent);
+                            node.error(msg);
+                            node.status({fill:"red",shape:"ring",text:"Failed"});
                         }
-                        catch(err) {
-                            // Failed to parse, pass it on
-                        }
-                        node.send(msg);
+                    }
+                    catch(err) {
+                        msg.warning = "ERROR: Http response"
+                        node.warn(msg);
+                        node.status({fill:"red",shape:"ring",text:"http issue"});
+                    }
                 });
             }).on('error', function(e) {
                 node.error(e,msg);
