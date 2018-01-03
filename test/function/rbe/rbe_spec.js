@@ -102,6 +102,67 @@ describe('rbe node', function() {
         });
     });
 
+    it('should send output if queue is reset (rbe)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else if (c === 3) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 4) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 5) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 6) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload", "c");
+                    done();
+                }
+            });
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {reset:true});             // reset all
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"b", reset:""});    // reset b
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {reset:""}); // reset all
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"c"});              // don't reset a non topic
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"c", payload:"c"});
+        });
+    });
+
     it('should only send output if x away from original value (deadbandEq)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"deadbandEq", gap:"10", inout:"out", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];

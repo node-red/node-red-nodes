@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-wemo",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Input and Output nodes for Belkin WeMo devices",
   "repository": "https://github.com/node-red/node-red-nodes/tree/master/hardware",
   "main": "WeMoNG.js",
@@ -19,7 +19,7 @@
   },
   "license": "APACHE-2.0",
   "dependencies": {
-    "node-ssdp": "~2.9.1",
+    "node-ssdp": "~3.2.5",
     "request": "~2.74.0",
     "xml2js": "~0.4.13",
     "util": "~0.10.3",
