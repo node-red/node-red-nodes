@@ -73,13 +73,17 @@ module.exports = function(RED) {
                                 node.log(error.toString());
                             }
                             else {
-                                //msg.payload remains the same buffer
-                                if ((exifData) && (exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
+                                if (exifData) {
                                     msg.exif = exifData;
-                                    addMsgLocationDataFromExifGPSData(msg);
+                                    if((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
+                                        addMsgLocationDataFromExifGPSData(msg);
+                                    }
+                                    else {
+                                        node.log("The incoming image did not contain Exif GPS data.");
+                                    }
                                 }
                                 else {
-                                    node.warn("The incoming image did not contain Exif GPS data, nothing to do. ");
+                                    node.warn("The incoming image did not contain any Exif data, nothing to do. ");
                                 }
                             }
                             node.send(msg);
