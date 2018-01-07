@@ -78,29 +78,27 @@ module.exports = function(RED) {
                                     if((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
                                         addMsgLocationDataFromExifGPSData(msg);
                                     }
-                                    else {
-                                        node.log("The incoming image did not contain Exif GPS data.");
-                                    }
+                                    //else { node.log("The incoming image did not contain Exif GPS data."); }
                                 }
                                 else {
-                                    node.warn("The incoming image did not contain any Exif data, nothing to do. ");
+                                    node.warn("The incoming image did not contain any Exif data, nothing to do.");
                                 }
                             }
                             node.send(msg);
                         });
                     }
                     else {
-                        node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.");
+                        node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.",msg);
                         return;
                     }
                 }
                 else {
-                    node.error("No payload received, the Exif node cannot proceed, no messages sent.");
+                    node.error("No payload received, the Exif node cannot proceed, no messages sent.",msg);
                     return;
                 }
             }
             catch (error) {
-                node.error("An error occurred while extracting Exif information. Please check the log for details.");
+                node.error("An error occurred while extracting Exif information. Please check the log for details.",msg);
                 node.log('Error: '+error.message);
                 return;
             }
