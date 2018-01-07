@@ -6,22 +6,36 @@
     </div>
     <div class="form-row">
         <label for="node-input-nodegroup"><i class="fa fa-object-group"></i> Node</label>
-        <input type="text" id="node-input-nodegroup" placeholder="number eg: 3">
+        <input type="text" id="node-input-nodegroup" placeholder="or set by msg.nodegroup">
+    </div>
+    <div class="form-row">
+        <label for="node-input-datatype"><i class="fa fa-tag"></i> Data Type</label>
+        <select id="node-input-datatype" style="width:180px;">
+            <option value="legacy">Legacy Processing</option>
+            <option value="fulljson">Valid JSON object</option>
+            <option value="json">Simple JSON</option>
+            <option value="CSV">CSV</option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Emoncms">
     </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="emoncms">
     <p>Posts data to Emoncms.</p>
     <p>The <code>msg.payload</code> can contain either a comma separated list of name
-    value pairs e.g. <pre>name:value,...</pre> or a comma separated list of values e.g. <pre>1,2,...</pre>
-    or a simple javascript object e.g. <pre>msg.payload = {temp:12}</pre>
-    <p>If <i>Node</i> is left blank <code>msg.nodegroup</code> will used.</p>
-    <p>Insertion time can be manipulated by setting <code>msg.time</code>.
-    This must be in epoch format - seconds since 1970.</p>
+    value pairs (legacy) e.g. <pre>name:value,...</pre> or a comma separated list of values (CSV) e.g. <pre>1,2,...</pre>
+    an Emoncms simple data object e.g. <pre>{temp:12}</pre>
+    or a valid JSON object e.g. <pre>{"Total":3.273,"Yesterday":1.695}</pre>
+    <p>The node must be specified either by the <i>Node</i> element or if left blank by <code>msg.nodegroup</code></p>
+    <p>Data Type must be one of <pre>legacy, json, fulljson, CSV</pre></p>
+    <p>Insertion time can be set by using <code>msg.time</code>.
+    This can either be a valid ISO 8601 format or seconds since 1970. Not setting a time or setting an incorrect 
+    time format will result in data being pushed to Emoncms without the time element.</p>
+    <p>The output node contains the server response</p>
 </script>
 
 <script type="text/javascript">
@@ -29,9 +43,10 @@
         category: 'output',
         color:"rgb(91, 192, 222)",
         defaults: {
-            name: {value:"Emoncms"},
+            name: {value:"Emoncms Push"},
             emonServer: {type:"emoncms-server", required:true},
-            nodegroup: {value:"", validate:function(v) {return ((v === "")||(/^[\d\w\s.-]*$/).test(v));} }
+            nodegroup: {value:"", validate:function(v) {return ((v === "")||(/^[\d\w\s.-]*$/).test(v));} },
+            datatype: {value:"legacy"}
         },
         inputs:1,
         outputs:0,
@@ -42,13 +57,14 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.datatype === undefined) {
+                $("#node-input-datatype").val("legacy");
+            }
         }
     });
 </script>
-
-
-
-
 
 <script type="text/x-red" data-template-name="emoncms in">
     <div class="form-row">

@@ -1,7 +1,7 @@
 node-red-node-emoncms
 =====================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to send fetch/post data to/from <a href="http://emoncms.org" target="_new">emoncms.org</a> or any other emoncms server.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to send fetch/post data to/from <a href="http://emoncms.org" target="_new">emoncms.org</a>, local emoncms server or any other emoncms server.
 
 Install
 -------
@@ -10,30 +10,38 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
         npm install node-red-node-emoncms
 
-
 Usage
 -----
 
-### Emoncms post.
+### Emoncms post:
+#### Preferred Data Type
 
-The `msg.payload` can contain either a comma separated list of name
-value pairs, e.g.
+The API now accepts  a validated JSON object for the name value pairs.  This is the preferred data type.
 
-        name:value,...
+#### Legacy Data Type Support
 
-or a comma separated list of values, e.g.
+The original input API for emoncms used a URI in the format `post.json?`.  If the data type of legacy is selected, the `msg.payload` can contain:
 
-        1,2,..
+A comma separated list of name value pairs, e.g.
 
-or a simple javascript object e.g.
+    name:value,...
 
-        msg.payload = {temp:12, humidity:56};
+A comma separated list of values (CSV), e.g.
 
-If *Nodegroup* is left blank `msg.nodegroup` will used (if set).
-This should be a numeric value.
+    1,2,..
 
-Insertion time can be manipulated by setting `msg.time`. This **must** be in
-epoch format - i.e. seconds since 1970.
+A simple javascript object (note no quotes) e.g.
+
+    {temp:12, humidity:56};
+
+#### Node
+If *Node* is left blank `msg.nodegroup` will be used (if set).  A *Node* must be set or the flow will fail.
+
+#### msg.time
+Insertion time can be manipulated by setting `msg.time`. This can be an ISO format date/time or a number of seconds in epoch format - i.e. seconds since 1970.  If no time is set time now is set by emoncms.
+
+#### Status
+The flow will indicate if the node has successfully called the API.  This is not a guarantee the data has been inserted to emoncms.
 
 ### Emoncms In:
 
