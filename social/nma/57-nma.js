@@ -47,7 +47,7 @@
 				"content-type": msg.content_type || node.content_type
 			}, function (error, response, body) {
 				//node.warn(response);
-				node.warn(body);
+				//node.warn(body);
 				
 				var bodyObj;
 				msg.payload = {};
@@ -65,6 +65,7 @@
 					error = bodyObj.nma.error[0]._;
 					
 					node.error("NMA " + error);
+					
 					msg.payload.code = bodyObj.nma.error[0].$.code;
 					msg.payload.message = bodyObj.nma.error[0]._;
 					if (bodyObj.nma.error[0].$.remaining) msg.payload.remaining = bodyObj.nma.error[0].$.remaining;
