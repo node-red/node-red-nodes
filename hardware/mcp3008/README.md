@@ -2,7 +2,7 @@ node-red-node-pi-mcp3008
 ========================
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to read from
-the MCP3008 Analogue to Digital Converter,
+the MCP3xxx Series of Analogue to Digital Converters,
 such as the <a href="http://rasp.io/analogzero" target="_new">Rasp.io analogzero</a>, though it will work with breadboard versions also.
 
 It will appear in the menu as ` A/D Converter `.
@@ -28,9 +28,9 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
 **Note**: It will appear in the menu as ` A/D Converter `.
 
-### Usage
+### Usage
 
-Reads from an MCP3008 Analogue to Digital (ADC) chip on the Pi SPI connection.
+Reads from an MCP3xxx Analogue to Digital (ADC) chip on the Pi SPI connection.
 
 You can either set a channel in the edit dialogue, or you can set the `msg.payload` to
 select the channel dynamically. If so then the payload must be a value from 0 to 7.

@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <script type="text/x-red" data-template-name="pimcp3008">
     <div class="form-row">
-        <label for="node-input-mode"><i class="fa fa-map-pin"></i> Input pin</label>
+        <label for="node-input-dev"><i class="fa fa-server"></i> Device</label>
+        <select type="text" id="node-input-dev" style="width:150px;">
+            <option value="3008">mcp3008</option>
+            <option value="3002">mcp3002</option>
+            <option value="3004">mcp3004</option>
+            <option value="3202">mcp3202</option>
+            <option value="3204">mcp3204</option>
+            <option value="3208">mcp3208</option>
+            <option value="3304">mcp3304</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-map-pin"></i> Input pin</label>
         <select type="text" id="node-input-pin" style="width:150px;">
           <option value=0>A0</option>
           <option value=1>A1</option>
@@ -15,7 +27,7 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-mode"><i class="fa fa-toggle-on"></i> Device ID</label>
+        <label for="node-input-dnum"><i class="fa fa-toggle-on"></i> Device ID</label>
         <select type="text" id="node-input-dnum" style="width:150px;">
           <option value=0>CE0</option>
           <option value=1>CE1</option>
@@ -28,7 +40,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="pimcp3008">
-   <p>Reads from an MCP3008 Analogue to Digital Converter (ADC) chip on the Pi SPI CE0 or CE1 connection,
+   <p>Reads from an MCP3xxx Series Analogue to Digital Converter (ADC) chip on the Pi SPI CE0 or CE1 connection,
    such as the rasp.io/analogzero.</p>
    <p>You can either set a channel in the edit dialogue, or you can set the <code>msg.payload</code>
    to select the channel dynamically. If so then the expected payload must be a value from 0 to 7.</p>
@@ -47,6 +59,7 @@
         color: "#c6dbef",
         defaults: {
             name: {value:""},
+            dev: {value:"3008"},
             pin: {value:0, required:true},
             dnum: {value:0}
         },
@@ -54,7 +67,7 @@
         outputs: 1,
         icon: "rpi.png",
         label: function() {
-            return this.name || "ADC "+((this.pin==="M")?"":this.pin);
+            return this.name || "mcp"+this.dev+" "+((this.pin==="M")?"":this.pin);
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
