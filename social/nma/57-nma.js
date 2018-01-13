@@ -3,6 +3,9 @@
     var NMACredentialsNode, NMANotificationNode, mustache, nma;
     mustache = require("mustache");
 	nma = require('nma');
+	var xml2js = require('xml2js');
+	var parseString = xml2js.parseString;
+
     NMACredentialsNode = function(config) {
       var node;
       RED.nodes.createNode(this, config);
@@ -42,20 +45,57 @@
 				"priority": pri,
 				"url": msg.url || node.url,
 				"content-type": msg.content_type || node.content_type
-			}, function (error) {
+			}, function (error, response, body) {
+				//node.warn(response);
+				node.warn(body);
+				
+				var bodyObj;
+				msg.payload = {};
+				
+				parseString(body, function (err, result) {
+					if (err) { node.error(err, msg); }
+					else {
+						bodyObj = result;
+						//node.send(msg);
+					}
+				});
+				
 				if (error) {
-					return node.status({
+					
+					error = bodyObj.nma.error[0]._;
+					
+					node.error("NMA " + error);
+					msg.payload.code = bodyObj.nma.error[0].$.code;
+					msg.payload.message = bodyObj.nma.error[0]._;
+					if (bodyObj.nma.error[0].$.remaining) msg.payload.remaining = bodyObj.nma.error[0].$.remaining;
+					if (bodyObj.nma.error[0].$.resettimer) msg.payload.resettimer = bodyObj.nma.error[0].$.resettimer;
+					msg.payload.isError = true;
+					
+					node.status({
 					  shape: "dot",
 					  fill: "red",
-					  text: "error!"
+					  text : "Error: " + error 
 					});
-					node.error("NMA error: " + error,msg);
+					
 				} else {
-					return node.status({});
+					msg.payload.code = bodyObj.nma.success[0].$.code;
+					msg.payload.remaining = bodyObj.nma.success[0].$.remaining;
+					msg.payload.resettimer = bodyObj.nma.success[0].$.resettimer;
+					msg.payload.isError = false;
+					
+					node.status({
+					  shape: "dot",
+					  fill: "green",
+					  text : "Success: " + msg.payload.remaining + " messages remaining in the next " + msg.payload.resettimer + " minutes"
+					});
 				}
+				
+				//msg.payload = bodyObj;
+				node.send(msg);
+				
 			});
 
-          return node.send(msg);
+          //return node.send(msg);
         };
       })(this));
 	  
