@@ -28,7 +28,7 @@
     ],
     "devDependencies": {
         "exif": "^0.6.0",
-        "grunt": "^1.0.1",
+        "grunt": "^0.4.5",
         "grunt-contrib-jshint": "^1.1.0",
         "grunt-jscs": "^3.0.1",
         "grunt-lint-inline": "^1.0.0",
