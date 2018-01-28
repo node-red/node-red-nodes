@@ -5,10 +5,10 @@ module.exports = function (RED) {
 
     var sessions = {};
 
-    function getSession(host, community, version) {
+    function getSession(host, community, version, timeout) {
         var sessionKey = host + ":" + community + ":" + version;
         if (!(sessionKey in sessions)) {
-            sessions[sessionKey] = snmp.createSession(host, community, { version: version });
+            sessions[sessionKey] = snmp.createSession(host, community, { version:version, timeout:(timeout || 5000) });
         }
         return sessions[sessionKey];
     }
@@ -19,6 +19,7 @@ module.exports = function (RED) {
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g, "");
+        this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
 
         this.on("input", function (msg) {
@@ -26,7 +27,7 @@ module.exports = function (RED) {
             var community = node.community || msg.community;
             var oids = node.oids || msg.oid;
             if (oids) {
-                getSession(host, community, node.version).get(oids.split(","), function (error, varbinds) {
+                getSession(host, community, node.version, node.timeout).get(oids.split(","), function (error, varbinds) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -54,13 +55,13 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("snmp", SnmpNode);
 
-
     function SnmpSNode(n) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.varbinds = n.varbinds;
+        this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
         this.on("input", function (msg) {
             var host = node.host || msg.host;
@@ -70,7 +71,7 @@ module.exports = function (RED) {
                 for (var i = 0; i < varbinds.length; i++) {
                     varbinds[i].type = snmp.ObjectType[varbinds[i].type];
                 }
-                getSession(host, community, node.version).set(varbinds, function (error, varbinds) {
+                getSession(host, community, node.version, node.timeout).set(varbinds, function (error, varbinds) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -93,14 +94,13 @@ module.exports = function (RED) {
     RED.nodes.registerType("snmp set", SnmpSNode);
 
 
-
-
     function SnmpTNode(n) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g, "");
+        this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
         var maxRepetitions = 20;
 
@@ -116,7 +116,7 @@ module.exports = function (RED) {
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).table(oids, maxRepetitions, function (error, table) {
+                getSession(host, community, node.version, node.timeout).table(oids, maxRepetitions, function (error, table) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -153,12 +153,14 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("snmp table", SnmpTNode);
 
+
     function SnmpSubtreeNode(n) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g, "");
+        this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
         var maxRepetitions = 20;
         var response = [];
@@ -181,7 +183,7 @@ module.exports = function (RED) {
             var oids = node.oids || msg.oid;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).subtree(msg.oid, maxRepetitions, feedCb, function (error) {
+                getSession(host, community, node.version, node.timeout).subtree(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -200,12 +202,14 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("snmp subtree", SnmpSubtreeNode);
 
+
     function SnmpWalkerNode(n) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.oids = n.oids.replace(/\s/g, "");
+        this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
         var maxRepetitions = 20;
         var response = [];
@@ -229,7 +233,7 @@ module.exports = function (RED) {
             var community = node.community || msg.community;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version).walk(msg.oid, maxRepetitions, feedCb, function (error) {
+                getSession(host, community, node.version, node.timeout).walk(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }

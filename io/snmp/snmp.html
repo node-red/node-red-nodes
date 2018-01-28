@@ -9,10 +9,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OIDs</label>
@@ -42,6 +44,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -72,6 +75,8 @@
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-varbinds"><i class="fa fa-tags"></i> Varbinds</label>
@@ -140,6 +145,8 @@
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -169,6 +176,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -199,6 +207,8 @@
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -228,6 +238,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -260,6 +271,8 @@
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -289,6 +302,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
