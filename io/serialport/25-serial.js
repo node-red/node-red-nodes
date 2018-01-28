@@ -49,9 +49,9 @@ module.exports = function(RED) {
                         else {
                             payload = payload.toString();
                         }
-                        payload += node.addCh;
+                        if (node.out === "char") { payload += node.addCh; }
                     }
-                    else if (node.addCh !== "") {
+                    else if ((node.addCh !== "") && (node.out === "char")) {
                         payload = Buffer.concat([payload,new Buffer(node.addCh)]);
                     }
                     node.port.write(payload,function(err,res) {
