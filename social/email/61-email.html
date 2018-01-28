@@ -69,6 +69,7 @@
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
     more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
     <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
+    <p>The message is passed through to the output after the email has been sent. If an error is encountered then msg.error will be set to the error string. If no error then msg.error will not be present.</p>
     <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
@@ -90,7 +91,7 @@
             global: { type:"boolean"}
         },
         inputs:1,
-        outputs:0,
+        outputs:1,
         icon: "envelope.png",
         align: "right",
         label: function() {

@@ -57,4 +57,6 @@ The filename should be set using `msg.filename`. Optionally
 Alternatively you may provide `msg.attachments` which should contain an array of one or
 more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.
 
+The message is passed through to the output after the email has been sent. If an error is encountered then msg.error will be set to the error string. If no error then msg.error will not be present.
+
 Uses the *nodemailer* npm module.

@@ -108,10 +108,13 @@ module.exports = function(RED) {
                         if (error) {
                             node.error(error,msg);
                             node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
+                            msg.error = error;
                         } else {
                             node.log(RED._("email.status.messagesent",{response:info.response}));
                             node.status({});
+                            delete msg.error;
                         }
+                        node.send(msg);
                     });
                 }
                 else { node.warn(RED._("email.errors.nosmtptransport")); }
