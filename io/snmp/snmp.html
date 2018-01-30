@@ -57,7 +57,6 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
 <script type="text/x-red" data-template-name="snmp set">
@@ -71,7 +70,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
@@ -103,7 +102,6 @@
     {   "oid":   ... }
 ]</pre>
     </p>
-
 </script>
 
 <script type="text/javascript">
@@ -115,6 +113,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             varbinds: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -127,7 +126,6 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
 <script type="text/x-red" data-template-name="snmp table">
@@ -141,7 +139,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
@@ -189,7 +187,6 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
 <script type="text/x-red" data-template-name="snmp subtree">
@@ -203,7 +200,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
@@ -251,9 +248,7 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
-
 
 
 <script type="text/x-red" data-template-name="snmp walker">
@@ -267,7 +262,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
@@ -315,5 +310,4 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
