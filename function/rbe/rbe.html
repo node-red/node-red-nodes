@@ -2,7 +2,7 @@
 <script type="text/x-red" data-template-name="rbe">
     <div class="form-row">
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="rbe.label.func"></span></label>
-        <select type="text" id="node-input-func" style="width:74%;">
+        <select type="text" id="node-input-func" style="width:70%;">
             <option value="rbe" data-i18n="rbe.opts.rbe"></option>
             <option value="rbei" data-i18n="rbe.opts.rbei"></option>
             <option value="deadbandEq" data-i18n="rbe.opts.deadbandEq"></option>
@@ -21,11 +21,15 @@
     </div>
     <div class="form-row" id="node-startvalue">
         <label for="node-input-start"><i class="fa fa-thumb-tack"/> <span data-i18n="rbe.label.start"></span></label>
-        <input type="text" id="node-input-start" data-i18n="[placeholder]rbe.placeholder.start" style="width:71%;">
+        <input type="text" id="node-input-start" data-i18n="[placeholder]rbe.placeholder.start" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"/> <span data-i18n="rbe.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]rbe.label.name" style="width:71%;">
+        <input type="text" id="node-input-name" data-i18n="[placeholder]rbe.label.name" style="width:70%;">
     </div>
 </script>
 
@@ -43,7 +47,7 @@
         <dd>if specified the function will work on a per topic basis.</dd>
         <dt class="optional">reset<span class="property-type">any</span></dt>
         <dd>if set clears the stored value for the specified msg.topic, or
-        all topics if msg.topic is not specified.</dd> 
+        all topics if msg.topic is not specified.</dd>
     </dl>
     <h3>Outputs</h3>
     <dl class="message-properties">
@@ -76,7 +80,8 @@
             func: {value:"rbe"},
             gap: {value:"",validate:RED.validators.regex(/^(\d*[.]*\d*|)(%|)$/)},
             start: {value:""},
-            inout: {value:"out"}
+            inout: {value:"out"},
+            property: {value:"payload",required:true}
         },
         inputs:1,
         outputs:1,
@@ -89,6 +94,10 @@
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
+            if (this.property === undefined) {
+                $("#node-input-property").val("payload");
+            }
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
             //$( "#node-input-gap" ).spinner({min:0});
             if ($("#node-input-inout").val() === null) {
                 $("#node-input-inout").val("out");

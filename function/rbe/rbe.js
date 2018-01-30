@@ -13,6 +13,7 @@ module.exports = function(RED) {
             this.gap = parseFloat(this.gap);
         }
         this.g = this.gap;
+        this.property = n.property||"payload";
 
         var node = this;
 
@@ -24,26 +25,27 @@ module.exports = function(RED) {
                 }
                 else { node.previous = {}; }
             }
-            if (msg.hasOwnProperty("payload")) {
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
                 var t = msg.topic || "_no_topic";
                 if ((this.func === "rbe") || (this.func === "rbei")) {
                     var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
-                    if (typeof(msg.payload) === "object") {
+                    if (typeof(value) === "object") {
                         if (typeof(node.previous[t]) !== "object") { node.previous[t] = {}; }
-                        if (!RED.util.compareObjects(msg.payload, node.previous[t])) {
-                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                        if (!RED.util.compareObjects(value, node.previous[t])) {
+                            node.previous[t] = RED.util.cloneMessage(value);
                             if (doSend) { node.send(msg); }
                         }
                     }
                     else {
-                        if (msg.payload !== node.previous[t]) {
-                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                        if (value !== node.previous[t]) {
+                            node.previous[t] = RED.util.cloneMessage(value);
                             if (doSend) { node.send(msg); }
                         }
                     }
                 }
                 else {
-                    var n = parseFloat(msg.payload);
+                    var n = parseFloat(value);
                     if (!isNaN(n)) {
                         if ((typeof node.previous[t] === 'undefined') && (this.func === "narrowband")) {
                             if (node.start === '') { node.previous[t] = n; }

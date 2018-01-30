@@ -1,28 +1,32 @@
 
 module.exports = function(RED) {
     "use strict";
-
     function Base64Node(n) {
         RED.nodes.createNode(this,n);
+        this.property = n.property||"payload";
         var node = this;
         this.on("input", function(msg) {
-            if (msg.hasOwnProperty("payload")) {
-                if (Buffer.isBuffer(msg.payload)) {
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
+                if (Buffer.isBuffer(value)) {
                     // Take binary buffer and make into a base64 string
-                    msg.payload = msg.payload.toString('base64');
+                    value = value.toString('base64');
+                    RED.util.setMessageProperty(msg,node.property,value);
                     node.send(msg);
                 }
-                else if (typeof msg.payload === "string") {
+                else if (typeof value === "string") {
                     // Take base64 string and make into binary buffer
-                    var load = msg.payload.replace(/\s+/g,'');      // remove any whitespace
+                    var load = value.replace(/\s+/g,'');      // remove any whitespace
                     var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');  // check it only contains valid characters
                     if ( regexp.test(load) && (load.length % 4 === 0) ) {
-                        msg.payload = new Buffer(load,'base64');
+                        value = new Buffer(load,'base64');
+                        RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
                     }
                     else {
                         //node.log("Not a Base64 string - maybe we should encode it...");
-                        msg.payload = (new Buffer(msg.payload,"binary")).toString('base64');
+                        value = (new Buffer(value,"binary")).toString('base64');
+                        RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
                     }
                 }
@@ -30,7 +34,7 @@ module.exports = function(RED) {
                     node.warn("This node only handles strings or buffers.");
                 }
             }
-            else { node.warn("No payload found to process"); }
+            else { node.warn("No property found to process"); }
         });
     }
     RED.nodes.registerType("base64",Base64Node);

@@ -1,7 +1,11 @@
 
 <script type="text/x-red" data-template-name="smooth">
     <div class="form-row">
-    <label for="node-input-action"><i class="fa fa-bolt"></i> Action</label>
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-bolt"></i> Action</label>
         <select id="node-input-action" style="width:60%; margin-right:5px;">
             <option value="max">Return the maximum value seen</option>
             <option value="min">Return the minimum value seen</option>
@@ -53,6 +57,7 @@
         category: 'function',
         defaults: {
             name: {value:""},
+            property: {value:"payload",required:true},
             action: {value:"mean"},
             count: {value:"10",required:true,validate:RED.validators.number()},
             round: {value:""},
@@ -68,6 +73,10 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function() {
+            if (this.property === undefined) {
+                $("#node-input-property").val("payload");
+            }
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
             $("#node-input-count").spinner({
                 min:1
             });

@@ -39,6 +39,20 @@ describe('base64 node', function() {
         });
     });
 
+    it('should convert a Buffer to base64 using another property - foo', function(done) {
+        var flow = [{id:"n1", type:"base64", property:"foo", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("foo","QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo=");
+                done();
+            });
+            n1.emit("input", {foo: Buffer.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ")});
+        });
+    });
+
     it('should convert base64 to a Buffer', function(done) {
         var flow = [{"id":"n1", "type":"base64", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
@@ -51,6 +65,21 @@ describe('base64 node', function() {
                 done();
             });
             n1.emit("input", {payload:"QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo="});
+        });
+    });
+
+    it('should convert base64 to a Buffer using another property - foo', function(done) {
+        var flow = [{id:"n1", type:"base64", property:"foo", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("foo");
+                msg.foo.toString().should.equal("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+                done();
+            });
+            n1.emit("input", {foo:"QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo="});
         });
     });
 

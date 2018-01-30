@@ -1,13 +1,17 @@
 
 <script type="text/x-red" data-template-name="base64">
     <div class="form-row">
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="base64">
-    <p>A function that converts the <code>msg.payload</code> to and from base64 format.</p>
+    <p>A function that converts the chosen proerty (default <code>msg.payload</code>) to and from base64 format.</p>
     <p>If the input is a buffer it converts it to a Base64 encoded string.</p>
     <p>If the input is a Base64 string it converts it back to a binary buffer.</p>
 </script>
@@ -17,7 +21,8 @@
         category: 'function',
         color:"#DEBD5C",
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            property: {value:"payload",required:true}
         },
         inputs:1,
         outputs:1,
@@ -27,6 +32,12 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.property === undefined) {
+                $("#node-input-property").val("payload");
+            }
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
         }
     });
 </script>
