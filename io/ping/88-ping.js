@@ -12,7 +12,7 @@ module.exports = function(RED) {
 
         node.tout = setInterval(function() {
             var ex;
-            if (plat == "linux") { ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); }
+            if (plat == "linux" || plat == "android") { ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); }
             else if (plat.match(/^win/)) { ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); }
             else if (plat == "darwin" || plat == "freebsd") { ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); }
             else { node.error("Sorry - your platform - "+plat+" - is not recognised."); }
