@@ -51,7 +51,7 @@ module.exports = function(RED) {
                             if (node.start === '') { node.previous[t] = n; }
                             else { node.previous[t] = node.start; }
                         }
-                        if (node.pc) { node.gap = (node.previous[t] * node.g / 100) || 0; }
+                        if (node.pc) { node.gap = Math.abs(node.previous[t] * node.g / 100) || 0; }
                         else { node.gap = Number(node.gap); }
                         if ((node.previous[t] === undefined) && (node.func === "narrowbandEq")) { node.previous[t] = n; }
                         if (node.previous[t] === undefined) { node.previous[t] = n - node.gap; }
