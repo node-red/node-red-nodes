@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-pi-gpiod",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A node-red node for PiGPIOd",
   "dependencies"  : {
       "js-pigpio": "*"
