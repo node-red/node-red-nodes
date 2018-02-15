@@ -30,10 +30,10 @@
         "pinname": "Pin",
         "tip": {
             "pin": "<b>Pins in Use</b>: ",
-            "in": "<b>Tip</b>: Only Digital Input is supported - input must be 0 or 1.",
-            "dig": "<b>Tip</b>: For digital output - input must be 0 or 1.",
-            "pwm": "<b>Tip</b>: For PWM output - input must be between 0 to 100.",
-            "ser": "<b>Tip</b>: For Servo output - input must be between 0 to 100. 50 is centre.<br/>Min must be 500uS or more, Max must be 2500uS or less."
+            "in": "Only Digital Input is supported - input must be 0 or 1.",
+            "dig": "Digital output - input must be 0 or 1.",
+            "pwm": "PWM output - input must be between 0 to 100.",
+            "ser": "Servo output - input must be between 0 to 100. 50 is centre.<br/>Min must be 500uS or more, Max must be 2500uS or less."
         },
         "types": {
             "digout": "digital output",
