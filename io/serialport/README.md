@@ -45,7 +45,7 @@ the device, however you many need to manually specify it. COM1, /dev/ttyUSB0, et
 It can either
 
  - wait for a "split" character (default \n). Also accepts hex notation (0x0a).
- - wait for a timeout in milliseconds for the first character received
+ - wait for a timeout in milliseconds from the first character received
  - wait to fill a fixed sized buffer
 
 It then outputs `msg.payload` as either a UTF8 ascii string or a binary Buffer object.
