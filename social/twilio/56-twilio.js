@@ -58,13 +58,13 @@ module.exports = function(RED) {
                 if ( this.twilioType == "call" ) {
                     // Make a call
                     var twimlurl = node.url || msg.payload;
-                    node.twilioClient.calls.create( {to: tonum, from: node.fromNumber, url: twimlurl}).catch(function(err) {
+                    node.twilioClient.calls.create({to: tonum, from: node.fromNumber, url: twimlurl}).catch(function(err) {
                         node.error(err.message,msg);
                     });
                 }
                 else {
                     // Send SMS
-                    node.twilioClient.messages.create( {to: tonum, from: node.fromNumber, body: msg.payload}.catch(function(err) {
+                    node.twilioClient.messages.create({to: tonum, from: node.fromNumber, body: msg.payload}).catch( function(err) {
                         node.error(err.message,msg);
                     });
                 }
