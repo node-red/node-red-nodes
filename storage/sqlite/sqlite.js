@@ -1,4 +1,3 @@
-
 module.exports = function(RED) {
     "use strict";
     var reconnect = RED.settings.sqliteReconnectTime || 20000;
@@ -36,16 +35,19 @@ module.exports = function(RED) {
         this.sqltype = n.sqltype;
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
-		var node = this;
-		node.status({});
+        //default to msg.topic for backwards compatibility
+        if (this.sqltype === null or this.sqltype == ""){
+            this.sqltype = "msg.topic";
+        }
+        var node = this;
+        node.status({});
 
         if (this.mydbConfig) {
             this.mydbConfig.doConnect();
-			var bind = [];
+            var bind = [];
             node.on("input", function(msg) {
                 if (this.sqltype == "msg.topic"){
                     if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
                         bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
                             if (err) { node.error(err,msg); }
@@ -74,7 +76,7 @@ module.exports = function(RED) {
                         });
                     }
                     else{
-                        if (this.sql == null || this.sql == ""){
+                        if (this.sql === null || this.sql == ""){
                             node.error("SQL statement config not set up",msg);
                             node.status({fill:"red",shape:"dot",text:"SQL config not set up"});
                         }
@@ -82,7 +84,7 @@ module.exports = function(RED) {
                 }
                 if (this.sqltype == "prepared"){
                     if (typeof this.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object"){
-                        node.mydbConfig.db.run(this.sql, msg.params, function(err, row) {
+                        node.mydbConfig.db.all(this.sql, msg.params, function(err, row) {
                             if (err) { node.error(err,msg); }
                             else {
                                 msg.payload = row;
@@ -91,7 +93,7 @@ module.exports = function(RED) {
                         });
                     }
                     else{
-                        if (this.sql == null || this.sql == ""){
+                        if (this.sql === null || this.sql == ""){
                             node.error("Prepared statement config not set up",msg);
                             node.status({fill:"red",shape:"dot",text:"Prepared statement not set up"});
                         }
@@ -106,9 +108,6 @@ module.exports = function(RED) {
                     }
                 }
             });
-            /*this.on('close',function(msg){
-                node.status({});
-            });*/
         }
         else {
             this.error("Sqlite database not configured");
