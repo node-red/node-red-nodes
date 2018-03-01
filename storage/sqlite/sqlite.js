@@ -36,7 +36,7 @@ module.exports = function(RED) {
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
         //default to msg.topic for backwards compatibility
-        if (this.sqltype === null || this.sqltype == ""){
+        if (typeof this.sqltype == "undefined" || this.sqltype === null || this.sqltype == ""){
             this.sqltype = "msg.topic";
         }
         var node = this;
