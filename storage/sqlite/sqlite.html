@@ -39,7 +39,7 @@
     <div class="form-row" style="margin-bottom: 0px;">
         <label for="" style="width: unset;" id="node-input-sqllabel"><i class="fa fa-code"></i> SQL Statement</label>
     </div>
-	<div>
+    <div>
         <input type="hidden" id="node-input-sql" autofocus="autofocus">
     </div>
     <div class="form-row node-text-editor-row">
@@ -123,7 +123,7 @@
             });
             $("#node-input-sqltype").change();
         },
-        oneditsave: function() {			
+        oneditsave: function() {
             $("#node-input-sql").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
