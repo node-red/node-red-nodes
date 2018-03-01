@@ -16,6 +16,7 @@
     <li>Wait for a timeout in milliseconds from the first character received</li>
     <li>Wait to fill a fixed sized buffer</li></ul></p>
     <p>It then outputs <code>msg.payload</code> as either a UTF8 ascii string or a binary Buffer object.</p>
+    <p><code>msg.port</code> is set to the name of the port selected.</p>
     <p>If no split character is specified, or a timeout or buffer size of 0, then a stream of single characters
     is sent - again either as ascii chars or size 1 binary buffers.</p>
 </script>

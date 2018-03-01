@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "0.6.4",
+    "version"       : "0.6.5",
     "description"   : "Node-RED nodes to talk to serial ports",
     "dependencies"  : {
-        "serialport"   : "^6.0.5"
+        "serialport"   : "^6.1.1"
     },
     "repository" : {
         "type":"git",

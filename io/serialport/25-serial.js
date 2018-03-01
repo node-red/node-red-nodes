@@ -117,8 +117,8 @@ module.exports = function(RED) {
             this.port.on('data', function(msg) {
                 // single char buffer
                 if ((node.serialConfig.newline === 0)||(node.serialConfig.newline === "")) {
-                    if (node.serialConfig.bin !== "bin") { node.send({"payload": String.fromCharCode(msg)}); }
-                    else { node.send({"payload": new Buffer([msg])}); }
+                    if (node.serialConfig.bin !== "bin") { node.send({"payload": String.fromCharCode(msg), port:node.serialConfig.serialport}); }
+                    else { node.send({"payload": new Buffer([msg]), port:node.serialConfig.serialport}); }
                 }
                 else {
                     // do the timer thing
@@ -133,7 +133,7 @@ module.exports = function(RED) {
                                 var m = new Buffer(i+1);
                                 buf.copy(m,0,0,i+1);
                                 if (node.serialConfig.bin !== "bin") { m = m.toString(); }
-                                node.send({"payload": m});
+                                node.send({"payload": m, port:node.serialConfig.serialport});
                                 m = null;
                             }, node.serialConfig.newline);
                             i = 0;
@@ -148,7 +148,7 @@ module.exports = function(RED) {
                             var m = new Buffer(i);
                             buf.copy(m,0,0,i);
                             if (node.serialConfig.bin !== "bin") { m = m.toString(); }
-                            node.send({"payload":m});
+                            node.send({"payload":m, port:node.serialConfig.serialport});
                             m = null;
                             i = 0;
                         }
@@ -161,7 +161,7 @@ module.exports = function(RED) {
                             var n = new Buffer(i);
                             buf.copy(n,0,0,i);
                             if (node.serialConfig.bin !== "bin") { n = n.toString(); }
-                            node.send({"payload":n});
+                            node.send({"payload":n, port:node.serialConfig.serialport});
                             n = null;
                             i = 0;
                         }
