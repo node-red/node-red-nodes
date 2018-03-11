@@ -8,6 +8,7 @@ module.exports = function(RED) {
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
         this.url = n.url;
+        if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
         this.interval = (parseInt(n.interval)||15) * 60000;
         var node = this;
         this.interval_id = null;
