@@ -400,15 +400,14 @@ module.exports = function(RED) {
 
                     if (msg.payload.slice(0,2) == "D ") {
                             // split payload for legacy direct message support ("D user message")
-                            var dm=true;
-                            var dm_split=msg.payload.match(/D\s+(\S+)\s+(.*)/);
-                            var dm_dst=dm_split[1];
-                            msg.payload=dm_split[2];
+                            var dm=true, dm_dst;
+                            [dm_dst,msg.payload]=msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
                     }
                     if (msg.payload.length > 280) {
                         msg.payload = msg.payload.slice(0,279);
                         node.warn(RED._("twitter.errors.truncated"));
                     }
+
                     if (msg.media && Buffer.isBuffer(msg.media) || dm) {
                         var apiUrl = "https://api.twitter.com/1.1/statuses/update_with_media.json";
                         if (dm) {
