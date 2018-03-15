@@ -35,17 +35,18 @@ LCD_LINE_3 = 0xA0 # LCD RAM address for the 3rd line
 LCD_LINE_4 = 0xE0 # LCD RAM address for the 4th line
 
 # Timing constants
-E_PULSE = 0.00005
-E_DELAY = 0.00005
+E_PULSE = 0.0005
+E_DELAY = 0.0005
 
 def lcd_init():
   # Initialise display
   lcd_byte(0x33,LCD_CMD)
   lcd_byte(0x32,LCD_CMD)
-  lcd_byte(0x28,LCD_CMD)
   lcd_byte(0x0C,LCD_CMD)
   lcd_byte(0x06,LCD_CMD)
+  lcd_byte(0x28,LCD_CMD)
   lcd_byte(0x01,LCD_CMD)
+  time.sleep(E_DELAY)
 
 def lcd_string(message):
   # Send string to display
@@ -117,6 +118,7 @@ if len(sys.argv) > 1:
     LCD_D6 = int(pins[4])
     LCD_D7 = int(pins[5])
 
+    GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)     # Use GPIO BOARD numbers
     GPIO.setup(LCD_RS, GPIO.OUT) # RS
     GPIO.setup(LCD_E,  GPIO.OUT) # E
