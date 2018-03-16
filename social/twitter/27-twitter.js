@@ -399,7 +399,7 @@ module.exports = function(RED) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
                     if (msg.payload.slice(0,2) == "D ") {
-                            // split payload for legacy direct message support ("D user message")
+                            // direct message syntax: "D user message"
                             var dm=true, dm_dst;
                             [dm_dst,msg.payload]=msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
                     }
@@ -408,11 +408,8 @@ module.exports = function(RED) {
                         node.warn(RED._("twitter.errors.truncated"));
                     }
 
-                    if (msg.media && Buffer.isBuffer(msg.media) || dm) {
+                    if (msg.media && Buffer.isBuffer(msg.media)) {
                         var apiUrl = "https://api.twitter.com/1.1/statuses/update_with_media.json";
-                        if (dm) {
-                            apiUrl = "https://api.twitter.com/1.1/direct_messages/new.json";
-                        }
                         var signedUrl = oa.signUrl(apiUrl,
                             credentials.access_token,
                             credentials.access_token_secret,
@@ -436,24 +433,29 @@ module.exports = function(RED) {
                             }
                         });
                         var form = r.form();
-                        if (dm) {
-                            form.append("screen_name",dm_dst);
-                            form.append("text",msg.payload);
-                        } else {
-                            form.append("status",msg.payload);
-                            form.append("media[]",msg.media,{filename:"image"});
-                        }
+                        form.append("status",msg.payload);
+                        form.append("media[]",msg.media,{filename:"image"});
 
                     }
                     else {
                         if (typeof msg.params === 'undefined') { msg.params = {}; }
-                        twit.updateStatus(msg.payload, msg.params, function (err, data) {
-                            if (err) {
-                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                node.error(err,msg);
-                            }
-                            node.status({});
-                        });
+                        if (dm) {
+                            twit.newDirectMessage(dm_dst,msg.payload, msg.params, function (err, data) {
+                                if (err) {
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                    node.error(err,msg);
+                                }
+                                node.status({});
+                            });
+                        } else {
+                            twit.updateStatus(msg.payload, msg.params, function (err, data) {
+                                if (err) {
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                    node.error(err,msg);
+                                }
+                                node.status({});
+                            });
+                        }
                     }
                 }
                 else { node.warn(RED._("twitter.errors.nopayload")); }
