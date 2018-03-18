@@ -58,6 +58,7 @@ module.exports = function(RED) {
             }
             else {
                 node.error("ERROR : No valid data type set - " + this.datatype);
+                node.status({fill:"red",shape:"ring",text:"No valid data type set"});
                 return;
             }
 
@@ -139,6 +140,7 @@ module.exports = function(RED) {
             });
             request.setTimeout(1000, function() {
                 node.error("timeout: " + msg);
+                node.status({fill:"red",shape:"ring",text:"HTTP Timeout"});
             });
         });
     }
