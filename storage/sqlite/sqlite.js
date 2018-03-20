@@ -42,7 +42,6 @@ module.exports = function(RED) {
             this.mydbConfig.doConnect();
             var bind = [];
             node.on("input", function(msg) {
-				console.log(this.sqlquery);
                 if (this.sqlquery == "msg.topic"){
                     if (typeof msg.topic === 'string') {
                         bind = Array.isArray(msg.payload) ? msg.payload : [];
