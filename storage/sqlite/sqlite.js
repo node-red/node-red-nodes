@@ -32,7 +32,7 @@ module.exports = function(RED) {
     function SqliteNodeIn(n) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
-        this.sqltype = n.sqltype||"msg.topic";
+        this.sqlquery = n.sqlquery||"msg.topic";
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
         var node = this;
@@ -42,7 +42,7 @@ module.exports = function(RED) {
             this.mydbConfig.doConnect();
             var bind = [];
             node.on("input", function(msg) {
-                if (this.sqltype == "msg.topic"){
+                if (this.sqlquery == "msg.topic"){
                     if (typeof msg.topic === 'string') {
                         bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
@@ -60,7 +60,7 @@ module.exports = function(RED) {
                         }
                     }
                 }
-                if (this.sqltype == "normal"){
+                if (this.sqlquery == "normal"){
                     if (typeof this.sql === 'string'){
                         bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.db.all(this.sql, bind, function(err, row) {
@@ -78,7 +78,7 @@ module.exports = function(RED) {
                         }
                     }
                 }
-                if (this.sqltype == "prepared"){
+                if (this.sqlquery == "prepared"){
                     if (typeof this.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object"){
                         node.mydbConfig.db.all(this.sql, msg.params, function(err, row) {
                             if (err) { node.error(err,msg); }
