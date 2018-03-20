@@ -32,13 +32,9 @@ module.exports = function(RED) {
     function SqliteNodeIn(n) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
-        this.sqltype = n.sqltype;
+        this.sqltype = n.sqltype||"msg.topic";
         this.sql = n.sql;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
-        //default to msg.topic for backwards compatibility
-        if (typeof this.sqltype == "undefined" || this.sqltype === null || this.sqltype == ""){
-            this.sqltype = "msg.topic";
-        }
         var node = this;
         node.status({});
 
