@@ -97,7 +97,7 @@
             return this.dname||this.name||"email";
         },
         labelStyle: function() {
-            return (this.dname||!this.topic)?"node_label_italic":"";
+            return (this.dname)?"node_label_italic":"";
         },
         oneditprepare: function() {
             if (this.credentials.global) {
@@ -249,7 +249,7 @@
             return this.name||"email";
         },
         labelStyle: function() {
-            return (this.name||!this.topic)?"node_label_italic":"";
+            return (this.name)?"node_label_italic":"";
         },
         oneditprepare: function() {
             if (this.credentials.global) {

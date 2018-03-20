@@ -203,6 +203,7 @@ module.exports = function(RED) {
         function checkPOP3(msg) {
             var currentMessage;
             var maxMessage;
+            //node.log("Checking POP3 for new messages");
 
             // Form a new connection to our email server using POP3.
             var pop3Client = new POP3Client(
@@ -237,7 +238,7 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("error", function(err) {
-                node.log("We caught an error: " + JSON.stringify(err));
+                node.log("error: " + JSON.stringify(err));
             });
 
             pop3Client.on("connect", function() {
@@ -297,7 +298,7 @@ module.exports = function(RED) {
         //
         // Check the email sever using the IMAP protocol for new messages.
         function checkIMAP(msg) {
-            node.log("Checking IMAP for new messages");
+            //node.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             imap.once("ready", function() {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
