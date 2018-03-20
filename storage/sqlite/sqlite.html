@@ -21,21 +21,48 @@
 
 <script type="text/x-red" data-template-name="sqlite">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-mydb"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-input-mydb">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for=""><i class="fa fa-code"></i> SQL Query</label>
+        <select id="node-input-sqlquery">
+            <option value="msg.topic">Via msg.topic</option>
+            <option value="fixed">Fixed Statement</option>
+            <option value="prepared">Prepared Statement</option>
+        </select>
+    </div>
+    <div class="form-row" style="margin-bottom: 0px;">
+        <label for="" style="width: unset;" id="node-input-sqllabel"><i class="fa fa-code"></i> SQL Statement</label>
+    </div>
+    <div>
+        <input type="hidden" id="node-input-sql" autofocus="autofocus">
+    </div>
+    <div class="form-row node-text-editor-row">
+        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-sql-editor" ></div>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="sqlite">
-    <p>Allows basic access to a Sqlite database.</p>
-    <p>This node uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
+    <p>Allows access to a Sqlite database.</p>
+    <p>SQL Query sets how the query is passed to the node.</p>
+    <p>SQL Query <i>Via msg.topic</i> and <i>Fixed Statement</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
     By its very nature it is SQL injection... so <i>be careful out there...</i></p>
-    <p><code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
-    <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
+    <p>SQL Type <i>Prepared Statement</i> also uses <b>db.all</b> but sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
+    <p>When using msg.topic <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
+    <p>When using Normal or Prepared the <i>query</i> must be entered in the node config.</p>
+    <p>Pass in the parameters as an object in <code>msg.params</code> for Prepared.  Ex:<br />
+    <code>msg.params = {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$id:1,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
+    }</code><br />
+    Parameter object names must match parameters set up in the Prepared Statement. If you get the error <code>SQLITE_RANGE: bind or column index out of range</code>
+    be sure to include $ on the parameter object key.</p>
+    <p>Using any SQL Query, the result is returned in <code>msg.payload</code></p>
     <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
     <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>sqliteReconnectTime: 20000,</pre></p>
@@ -47,6 +74,8 @@
         color:"#e97b00",
         defaults: {
             mydb: {type:"sqlitedb",required:true},
+            sqlquery: {value:"msg.topic",required:true},
+            sql: {value:""},
             name: {value:""}
         },
         inputs:1,
@@ -56,8 +85,59 @@
             var dbNode = RED.nodes.node(this.mydb);
             return this.name||(dbNode?dbNode.label():"sqlite");
         },
-            labelStyle: function() {
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var ace = this;
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-sql-editor',
+                mode: 'ace/mode/sql',
+                value: $("#node-input-sql").val(),
+                globals: {
+                    msg:true,
+                    context:true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+            
+            $("#node-input-sqlquery").change(function() {
+                if ($("#node-input-sqlquery").val() == "msg.topic"){
+                    $("#node-input-sqllabel").hide();
+                    $("#node-input-sql-editor").hide();
+                }
+                else{
+                    $("#node-input-sqllabel").show();
+                    $("#node-input-sql-editor").show();
+                    ace.editor.renderer.updateFull();
+                }
+            });
+            $("#node-input-sqlquery").change();
+        },
+        oneditsave: function() {
+            $("#node-input-sql").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function(size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i=0; i<rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height",height+"px");
+            this.editor.resize();
         }
     });
 </script>
