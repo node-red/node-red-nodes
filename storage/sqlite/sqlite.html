@@ -29,11 +29,11 @@
         <input type="text" id="node-input-mydb">
     </div>
     <div class="form-row">
-        <label for=""><i class="fa fa-code"></i> SQL Type</label>
-        <select id="node-input-sqltype">
-            <option value="msg.topic">msg.topic</option>
-            <option value="normal">Normal</option>
-            <option value="prepared">Prepared</option>
+        <label for=""><i class="fa fa-code"></i> SQL Query</label>
+        <select id="node-input-sqlquery">
+            <option value="msg.topic">Via msg.topic</option>
+            <option value="normal">Fixed Statement</option>
+            <option value="prepared">Prepared Statement</option>
         </select>
     </div>
     <div class="form-row" style="margin-bottom: 0px;">
@@ -48,12 +48,12 @@
 </script>
 
 <script type="text/x-red" data-help-name="sqlite">
-    <p>Allows basic access to a Sqlite database.</p>
-    <p>SQL Type is how the SQL is sent to the node.</p>
-    <p>SQL Types <i>msg.topic</i> and <i>Normal</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
+    <p>Allows access to a Sqlite database.</p>
+    <p>SQL Query sets how the query is passed to the node.</p>
+    <p>SQL Query <i>Via msg.topic</i> and <i>Fixed Statement</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
     By its very nature it is SQL injection... so <i>be careful out there...</i></p>
-    <p>The SQL Type <i>Prepared</i> uses <b>db.run</b> and sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
-    <p>When using msg.topic <code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
+    <p>SQL Type <i>Prepared Statement</i> also uses <b>db.all</b> but sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
+    <p>When using msg.topic <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
     <p>When using Normal or Prepared the <i>query</i> must be entered in the node config.</p>
     <p>Pass in the parameters as an object in <code>msg.params</code> for Prepared.  Ex:<br />
     <code>msg.params = {<br />
@@ -62,7 +62,7 @@
     }</code><br />
     Parameter object names must match parameters set up in the Prepared Statement. If you get the error <code>SQLITE_RANGE: bind or column index out of range</code>
     be sure to include $ on the parameter object key.</p>
-    <!-- <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p> -->
+    <p>Using any SQL Query, the result is returned in <code>msg.payload</code></p>
     <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
     <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>sqliteReconnectTime: 20000,</pre></p>
@@ -74,7 +74,7 @@
         color:"#e97b00",
         defaults: {
             mydb: {type:"sqlitedb",required:true},
-            sqltype: {value:"msg.topic",required:true},
+            sqlquery: {value:"msg.topic",required:true},
             sql: {value:""},
             name: {value:""}
         },
@@ -110,8 +110,8 @@
                 }
             });
             
-            $("#node-input-sqltype").change(function() {
-                if ($("#node-input-sqltype").val() == "msg.topic"){
+            $("#node-input-sqlquery").change(function() {
+                if ($("#node-input-sqlquery").val() == "msg.topic"){
                     $("#node-input-sqllabel").hide();
                     $("#node-input-sql-editor").hide();
                 }
@@ -121,7 +121,7 @@
                     ace.editor.renderer.updateFull();
                 }
             });
-            $("#node-input-sqltype").change();
+            $("#node-input-sqlquery").change();
         },
         oneditsave: function() {
             $("#node-input-sql").val(this.editor.getValue());
