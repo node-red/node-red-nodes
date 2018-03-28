@@ -4,7 +4,9 @@
     <p><code>msg.from</code>を指定すると、<code>ユーザID</code>のデフォルト値を上書きできます。</p>
     <p>ペイロードはHTML形式とすることも可能です。</p>
     <p>ペイロードにバイナリバッファを指定すると、添付ファイルに変換します。ファイル名は<code>msg.filename</code>に指定、メッセージ本体は<code>msg.description</code>に指定することができます。</p>
-    <p><code>msg.attachments</code>に<a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a>形式のオブジェクトを1つ以上含む配列設定して、複数の添付ファイルを指定することもできます。</p>
+    <p><code>msg.attachments</code>
+    に<a href="https://www.npmjs.com/package/nodemailer#attachments"
+    target="_new">nodemailer</a>形式のオブジェクトを1つ以上含む配列を設定して、複数の添付ファイルを指定することもできます。</p>
     <p>受信側で必要な場合には、<code>msg.envelope</code>オブジェクトを指定できます。このオブジェクトには、fromやtoを指定します。</p>
     <p>注: SMTP over SSLを465番ポートで利用。</p>
 </script>
