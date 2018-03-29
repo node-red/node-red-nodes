@@ -102,7 +102,8 @@ module.exports = function(RED) {
                 host : node.host,
                 port : node.port,
                 skipPresence : true,
-                reconnect : false
+                reconnect : false,
+                preferred : "PLAIN"
             });
         }
         catch(e) {
@@ -179,7 +180,8 @@ module.exports = function(RED) {
                 host : node.host,
                 port : node.port,
                 skipPresence : true,
-                reconnect : false
+                reconnect : false,
+                preferred : "PLAIN"
             });
         }
         catch(e) {
