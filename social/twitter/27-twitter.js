@@ -386,6 +386,7 @@ module.exports = function(RED) {
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         var credentials = RED.nodes.getCredentials(this.twitter);
         var node = this;
+	var dm_user;
 
         if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
             var twit = new Ntwitter({
@@ -398,6 +399,10 @@ module.exports = function(RED) {
                 if (msg.hasOwnProperty("payload")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
 
+                    if (msg.payload.slice(0,2) == "D ") {
+                            // direct message syntax: "D user message"
+                            [dm_user,msg.payload]=msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
+                    }
                     if (msg.payload.length > 280) {
                         msg.payload = msg.payload.slice(0,279);
                         node.warn(RED._("twitter.errors.truncated"));
@@ -434,13 +439,23 @@ module.exports = function(RED) {
                     }
                     else {
                         if (typeof msg.params === 'undefined') { msg.params = {}; }
-                        twit.updateStatus(msg.payload, msg.params, function (err, data) {
-                            if (err) {
-                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                node.error(err,msg);
-                            }
-                            node.status({});
-                        });
+                        if (dm_user) {
+                            twit.newDirectMessage(dm_user,msg.payload, msg.params, function (err, data) {
+                                if (err) {
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                    node.error(err,msg);
+                                }
+                                node.status({});
+                            });
+                        } else {
+                            twit.updateStatus(msg.payload, msg.params, function (err, data) {
+                                if (err) {
+                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                    node.error(err,msg);
+                                }
+                                node.status({});
+                            });
+                        }
                     }
                 }
                 else { node.warn(RED._("twitter.errors.nopayload")); }
