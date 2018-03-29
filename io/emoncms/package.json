@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-emoncms",
-    "version"       : "0.1.0",
+    "version"       : "0.2.0",
     "description"   : "A Node-RED node to fetch/post data to/from emoncms",
     "dependencies"  : {
     },
@@ -32,6 +32,10 @@
         {
             "name": "Glyn Hudson",
             "email": "glyn.hudson@openenergymonitor.org"
-       }
+       },
+       {
+           "name": "borpin",
+           "email": "brian.orpin@gmail.com"
+      }
     ]
 }

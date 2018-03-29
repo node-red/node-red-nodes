@@ -58,6 +58,7 @@ module.exports = function(RED) {
             }
             else {
                 node.error("ERROR : No valid data type set - " + this.datatype);
+                node.status({fill:"red",shape:"ring",text:"No valid data type set"});
                 return;
             }
 
@@ -76,7 +77,7 @@ module.exports = function(RED) {
 
             // check for a time object and setup URI if valid
             if (typeof msg.time === "undefined") {
-                node.warn("WARN: Time object undefined, no time set");
+                // node.warn("WARN: Time object undefined, no time set");
             }
             else {
                 if (!isNaN(msg.time)) { 
@@ -84,7 +85,7 @@ module.exports = function(RED) {
                 }
                 else {
                     if (isNaN(Date.parse(msg.time))) {
-                        // error condition
+                        // error condition as msg.tme has some value that is not understood
                         node.warn("WARN: Time object not valid, no time set - " + msg.time);
                     } else {
                         this.url += '&time=' + Date.parse(msg.time)/1000; //seconds
@@ -94,34 +95,52 @@ module.exports = function(RED) {
             }
             var URIsent = this.url;
 
-            http.get(this.url, function(res) {
+            msg.payload = "";
+            msg.urlsent = decodeURIComponent(URIsent);
+
+            var request = http.get(this.url, function(res) {
                 msg.topic = "http response";
                 msg.rc = res.statusCode;
-                msg.payload = "";
                 res.setEncoding('utf8');
+                var body = "";
+
                 res.on('data', function(chunk) {
-                    msg.payload += chunk;
+                    body += chunk;
                 });
-                res.on('end', function() { //A 200 StatusCode does not mean data input sucess
+
+                res.on('end', function() {
+                    // need to test for JSON as some responses are not valid JSON
                     try {
-                        msg.payload = JSON.parse(msg.payload);
-                        if (msg.payload.success) {
-                            node.status({fill:"green",shape:"dot",text:"Success"});
-                        } else {
-                            msg.warning = "ERROR: API Call Failed";
-                            msg.payload.urlsent = decodeURIComponent(URIsent);
-                            node.error(msg);
-                            node.status({fill:"red",shape:"ring",text:"Failed"});
-                        }
+                        msg.payload = JSON.parse(body);
                     }
-                    catch(err) {
-                        msg.warning = "ERROR: Http response"
-                        node.warn(msg);
-                        node.status({fill:"red",shape:"ring",text:"http issue"});
+                    catch (e) { 
+                        msg.payload = body;
+                    }
+
+                    if (msg.payload.success) {
+                        node.status({fill:"green",shape:"dot",text:"Success RC="+ msg.rc});
+                    }
+                    else if (msg.payload === 'ok') {
+                        node.status({fill:"green",shape:"dot",text:"ok RC="+ msg.rc});
+                    }
+                    else if (msg.payload === 'Invalid API key') {
+                        node.error(msg);
+                        node.status({fill:"red",shape:"ring",text:"Invalid API key RC="+ msg.rc});
+                    } else {
+                        msg.warning = "ERROR: API Call Failed";
+                        node.error(msg);
+                        node.status({fill:"red",shape:"ring",text:"API Failed RC="+ msg.rc});
                     }
                 });
             }).on('error', function(e) {
+                msg.warning = e
+                node.error(msg);
                 node.error(e,msg);
+                node.status({fill:"red",shape:"dot",text:"HTTP Error"});
+            });
+            request.setTimeout(1000, function() {
+                node.error("timeout: " + msg);
+                node.status({fill:"red",shape:"ring",text:"HTTP Timeout"});
             });
         });
     }
