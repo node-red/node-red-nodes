@@ -1,0 +1,43 @@
+<script type="text/x-red" data-help-name="twitter in">
+    <p>twitter inputノード。以下を検索するために利用します:
+    <ul><li>指定した検索語を含む公開ストリームのツイート</li>
+        <li>認証したユーザがフォローしているアカウントからの全てのツイート</li>
+        <li>指定したユーザの全てのツイート</li>
+        <li>認証したユーザが受け取ったダイレクトメッセージ</li>
+        <li>認証したユーザに対するtwitterイベント</li>
+    </ul></p>
+    <p>複数の検索語を指定する場合、スペース文字で<i>and</i>、コンマ「,」
+    で<i>or</i>を表します。検索語を<code>msg.payload</code>で渡す場合、
+    <b>for</b>フィールドは空としてください。</p>
+    <p><i>ツイート</i>を<code>msg.topic</code>にセットし、送信者のスク
+    リーンネームを付加します。</p>
+    <p>ツイートの送信者の位置情報が既知の場合、
+    <code>msg.location</code>に設定します。</p>
+
+    <p>返却値がイベントの場合、<code>msg.payload</code>にtwitterイベントを設定します。
+詳細については、
+      <a href="https://dev.twitter.com/streaming/overview/messages-types#Events_event"
+	 target="_new">Twitterのドキュメント</a>を参照してください。</p>
+    <p>tweetオブジェクトを<code>msg.tweet</code>に設定します。詳細
+    は<a href="https://dev.twitter.com/overview/api/tweets"
+    target="_new">Twitterのドキュメント</a>を参照してください。</p>
+
+    <p><b>注</b>: このノードはFireHouseに接続はしないため、@idや#ハッ
+    シュタグに対する全ツイートを100%返すことは保証しません。</p>
+    <p><b>注:</b> 特定のユーザ、もしくは、自身に対するダイレクトメッセー
+      ジをフォローする場合、Twitter APIのレート制限の対象となります。
+      そのため、フローのデプロイを15分のうちに複数回行うと、制限に引っ
+      かかってノード実行がエラーとなるかもしれません。このエラーは15分
+      経過すれば自動的に解消します。</p>
+</script>
+
+<script type="text/x-red" data-help-name="twitter out">
+    <p>twitter outノード。<code>msg.payload</code>をツイートします。</p>
+    <p>ダイレクトメッセージ(DM)を送るには、"D {ユーザ名} {メッセージ}"
+    形式のペイロードを用います。</p>
+    <p><code>msg.media</code>にBufferオブジェクトを指定すると、その値
+    を画像としてツイートに付け加えます。</p>
+    <p><code>msg.params</code>に「名前:値」の組みからなるオブジェクト
+    を指定すると、更新リクエストのパラメータとして用います。</p>
+</script>
+
