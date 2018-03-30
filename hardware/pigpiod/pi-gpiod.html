@@ -381,6 +381,15 @@
             <option value="ser" data-i18n="pi-gpiod.servo"></option>
         </select>
     </div>
+    <div class="form-row" id="node-set-freq-tick">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-setfreq" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-setfreq" style="width:70%;"><span data-i18n="pi-gpiod.label.setfreq"></span></label>
+    </div>
+    <div class="form-row" id="node-set-frequency">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.freq"></label>
+        <input type="text" id="node-input-freq" style="width:70px;"> Hz
+    </div>
     <div class="form-row" id="node-set-minimax">
         <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.limits"></label>
         <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> uS
@@ -448,6 +457,8 @@
             set: { value:"" },
             level: { value:"0" },
             out: { value:"out" },
+            setfreq: { value:""},
+            freq: { value:"800" },
             sermin: { value:"1000" },
             sermax: { value:"2000" }
         },
@@ -479,8 +490,9 @@
                 if ($("#node-input-out").val() === "pwm") {
                     $('#node-set-tick').hide();
                     $('#node-set-state').hide();
-                    $('#node-set-minimax').hide();
                     $('#node-input-set').prop('checked', false);
+                    $('#node-set-freq-tick').show();
+                    $('#node-set-minimax').hide();
                     $("#dig-tip").hide();
                     $("#pwm-tip").show();
                     $("#ser-tip").hide();
@@ -488,14 +500,20 @@
                 else if ($("#node-input-out").val() === "ser") {
                     $('#node-set-tick').hide();
                     $('#node-set-state').hide();
-                    $('#node-set-minimax').show();
                     $('#node-input-set').prop('checked', false);
+                    $('#node-set-freq-tick').hide();
+                    $("#node-set-frequency").hide();
+                    $('#node-input-setfreq').prop('checked', false);
+                    $('#node-set-minimax').show();
                     $("#dig-tip").hide();
                     $("#pwm-tip").hide();
                     $("#ser-tip").show();
                 }
                 else {
                     $('#node-set-tick').show();
+                    $('#node-set-freq-tick').hide();
+                    $("#node-set-frequency").hide();
+                    $('#node-input-setfreq').prop('checked', false);
                     $('#node-set-minimax').hide();
                     $("#dig-tip").show();
                     $("#pwm-tip").hide();
@@ -514,6 +532,16 @@
             };
             $("#node-input-set").change(function () { setstate(); });
             setstate();
+
+            var setfreqstate = function () {
+                if ($('#node-input-setfreq').is(":checked")) {
+                    $("#node-set-frequency").show();
+                } else {
+                    $("#node-set-frequency").hide();
+                }
+            };
+            $("#node-input-setfreq").change(function () { setfreqstate(); });
+            setfreqstate();
 
             $('#pinform input').on('change', function() {
                 this.pin = $("#pinform input[type='radio']:checked").val();

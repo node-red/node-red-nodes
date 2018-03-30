@@ -86,6 +86,10 @@ module.exports = function(RED) {
         this.set = n.set || false;
         this.level = parseInt(n.level || 0);
         this.out = n.out || "out";
+        this.setfreq = n.setfreq || false;
+        this.freq = Number(n.freq || 800);
+        if (this.freq < 5) { this.freq = 5; }
+        if (this.freq > 40000) { this.freq = 40000; }
         this.sermin = Number(n.sermin)/100;
         this.sermax = Number(n.sermax)/100;
         if (this.sermin > this.sermax) {
@@ -146,10 +150,10 @@ module.exports = function(RED) {
                         } else {
                             node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                         }
-                        // if (node.out === "pwm") {
-                        //     PiGPIO.set_PWM_frequency(1000);
-                        //     PiGPIO.set_PWM_range(1000);
-                        // }
+                        if (node.setfreq) {
+                            PiGPIO.set_PWM_frequency(node.pin,node.freq);
+                        }
+			//PiGPIO.set_PWM_range(node.pin,1000);
                     }
                 });
             }

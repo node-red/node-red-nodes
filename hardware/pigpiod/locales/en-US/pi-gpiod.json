@@ -7,6 +7,8 @@
             "resistor": "Resistor?",
             "readinitial": "Read initial state of pin on deploy/restart?",
             "type": "Type",
+            "setfreq": "Set frequency?",
+            "freq": "Frequency",
             "initpin": "Initialise pin state?",
             "debounce": "Debounce",
             "limits": "Limits",
