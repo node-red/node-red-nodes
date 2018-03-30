@@ -1,5 +1,6 @@
 {
     "email": {
+        "email": "email",
         "label": {
             "to": "To",
             "server": "Server",

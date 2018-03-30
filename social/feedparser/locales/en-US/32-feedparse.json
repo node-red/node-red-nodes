@@ -1,5 +1,6 @@
 {
     "feedparse": {
+        "feedparse": "feedparser",
         "label": {
             "feedurl": "Feed url",
             "refresh": "Refresh",

@@ -87,8 +87,8 @@
         outputs:1,
         icon: "rbe.png",
         label: function() {
-            var ll = (this.func||"").replace("Eq","").replace("rbei","rbe")||"rbe";
-            return this.name||ll||"rbe";
+            var ll = (this.func||"").replace("Eq","").replace("rbei","rbe")||this._("rbe.rbe");
+            return this.name||ll||this._("rbe.rbe");
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
