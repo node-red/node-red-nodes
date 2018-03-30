@@ -7,7 +7,6 @@
             "resistor": "Resistor?",
             "readinitial": "Read initial state of pin on deploy/restart?",
             "type": "Type",
-            "setfreq": "Set frequency?",
             "freq": "Frequency",
             "initpin": "Initialise pin state?",
             "debounce": "Debounce",
@@ -34,8 +33,7 @@
             "pin": "<b>Pins in Use</b>: ",
             "in": "Only Digital Input is supported - input must be 0 or 1.",
             "dig": "Digital output - input must be 0 or 1.",
-            "pwm": "PWM output - input must be between 0 to 100.",
-            "freq": "Frequency must be in between 5 and 40000 Hz",
+            "pwm": "PWM output - input must be between 0 to 100.<br/>Frequency must be in between 5 and 40000 Hz.",
             "ser": "Servo output - input must be between 0 to 100. 50 is centre.<br/>Min must be 500uS or more, Max must be 2500uS or less."
         },
         "types": {
