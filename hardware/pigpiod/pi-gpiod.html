@@ -419,6 +419,7 @@
     </div>
     <div class="form-tips" id="dig-tip"><span data-i18n="[html]pi-gpiod.tip.dig"></span></div>
     <div class="form-tips" id="pwm-tip"><span data-i18n="[html]pi-gpiod.tip.pwm"></span></div>
+    <div class="form-tips" id="freq-tip"><span data-i18n="[html]pi-gpiod.tip.freq"></span></div>
     <div class="form-tips" id="ser-tip"><span data-i18n="[html]pi-gpiod.tip.ser"></span></div>
     <div class="form-tips" id="pin-tip">Pins marked in blue are dual use. Make sure they are not enabled for
     their other use before using as GPIO.</div>
@@ -507,6 +508,7 @@
                     $('#node-set-minimax').show();
                     $("#dig-tip").hide();
                     $("#pwm-tip").hide();
+                    $("#freq-tip").hide();
                     $("#ser-tip").show();
                 }
                 else {
@@ -517,6 +519,7 @@
                     $('#node-set-minimax').hide();
                     $("#dig-tip").show();
                     $("#pwm-tip").hide();
+                    $("#freq-tip").hide();
                     $("#ser-tip").hide();
                 }
             };
@@ -536,8 +539,10 @@
             var setfreqstate = function () {
                 if ($('#node-input-setfreq').is(":checked")) {
                     $("#node-set-frequency").show();
+                    $("#freq-tip").show();
                 } else {
                     $("#node-set-frequency").hide();
+                    $("#freq-tip").hide();
                 }
             };
             $("#node-input-setfreq").change(function () { setfreqstate(); });
