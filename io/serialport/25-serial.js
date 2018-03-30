@@ -118,6 +118,7 @@ module.exports = function(RED) {
             // Serial Out
             node.on("input",function(msg) {
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
+                node.status({fill:"yellow",shape:"dot",text:"waiting"});
                 node.port.enqueue(msg,node,function(err,res) {
                     if (err) {
                         var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
@@ -130,12 +131,14 @@ module.exports = function(RED) {
             this.port.on('data', function(msgout, sender) {
                 // serial request will only process incoming data pertaining to its own request (i.e. when it's at the head of the queue)
                 if (sender !== node) { return; }
+                node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                 msgout.status = "OK";
                 node.send(msgout);
             });
             this.port.on('timeout', function(msgout, sender) {
                 if (sender !== node) { return; }
                 msgout.status = "ERR_TIMEOUT";
+                node.status({fill:"red",shape:"ring",text:"timeout"});
                 node.send(msgout);
             });
 
