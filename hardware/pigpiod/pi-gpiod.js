@@ -153,7 +153,7 @@ module.exports = function(RED) {
                         if (node.setfreq) {
                             PiGPIO.set_PWM_frequency(node.pin,node.freq);
                         }
-			//PiGPIO.set_PWM_range(node.pin,1000);
+                        //PiGPIO.set_PWM_range(node.pin,1000);
                     }
                 });
             }
