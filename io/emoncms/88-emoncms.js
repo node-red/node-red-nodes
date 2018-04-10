@@ -139,7 +139,7 @@ module.exports = function(RED) {
                 node.status({fill:"red",shape:"dot",text:"HTTP Error"});
             });
             request.setTimeout(6000, function() {
-                node.error("Http Timeout",msg);
+                node.error("HTTP Timeout",msg);
                 node.status({fill:"red",shape:"ring",text:"HTTP Timeout"});
             });
         });
