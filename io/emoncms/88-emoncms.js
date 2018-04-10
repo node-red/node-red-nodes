@@ -138,8 +138,8 @@ module.exports = function(RED) {
                 node.error(e,msg);
                 node.status({fill:"red",shape:"dot",text:"HTTP Error"});
             });
-            request.setTimeout(1000, function() {
-                node.error("timeout: " + msg);
+            request.setTimeout(6000, function() {
+                node.error("HTTP Timeout",msg);
                 node.status({fill:"red",shape:"ring",text:"HTTP Timeout"});
             });
         });
