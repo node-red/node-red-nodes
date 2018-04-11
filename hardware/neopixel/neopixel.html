@@ -31,6 +31,16 @@
         <option value="grb">GRB</option>
     </select>
 </div>
+<div class="form-row">
+    <label for="node-input-gamma"> </label>
+    <label for="node-input-gamma" style="width:70%">
+    <input type="checkbox" id="node-input-gamma" style="display:inline-block; width:22px; vertical-align:baseline;"> Gamma corrected
+    </label>
+</div>
+<div class="form-row">
+    <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+    <input type="text" id="node-input-brightness" placeholder="number" style="width:60px;"> &nbsp;(0-100)
+</div>
 <br/>
 <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -53,6 +63,7 @@
     <!-- <p>The whole strip is set by <code>msg.payload</code> with a CSV string <i>r,g,b</i> -->
     <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <code>msg.payload</code>
     with a CSV string <i>x,y,r,g,b</i>
+    <p>By default ,gamma correction is enabled but it can disabled which is useful for working with low brightness levels</p>
     <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
     this may conflict with audio playback.</p>
     <p align="right"><a href="http://flows.nodered.org/node/node-red-node-pi-neopixel#usage">More info&nbsp;&nbsp;</a></p>
@@ -69,7 +80,9 @@
             fgnd: { value:"" },
             wipe: { value:"40", required:true, validate:RED.validators.number() },
             mode: { value:"pcent" },
-            rgb: { value:"rgb" }
+            rgb: { value:"rgb" },
+            gamma: { value: true },
+            brightness: { value:"100", required:true, validate:RED.validators.number() }
         },
         inputs:1,
         outputs:0,
@@ -82,6 +95,10 @@
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
+            if (this.gamma === undefined) {
+                this.gamma = true;
+                $("#node-input-gamma").prop('checked', true);
+            };
             var setstate = function () {
                 if ($('#node-input-mode').val().indexOf("shift") !== -1) {
                     $("#bgcol").hide();

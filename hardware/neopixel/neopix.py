@@ -36,9 +36,13 @@ LED_GAMMA = [
 222,224,227,229,231,233,235,237,239,241,244,246,248,250,252,255]
 
 
-LED_COUNT = int(sys.argv[1])
-WAIT_MS = int(sys.argv[2])
+LED_COUNT = max(0,int(sys.argv[1]))
+WAIT_MS = max(0,int(sys.argv[2]))
 MODE = sys.argv[3]
+if (sys.argv[4].lower() == "false"):
+    LED_GAMMA = range(256)
+
+LED_BRIGHTNESS = min(255,int(max(0,float(sys.argv[5])) * 255 / 100))
 
 def getRGBfromI(RGBint):
     blue =  RGBint & 255
@@ -58,6 +62,12 @@ def setPixels(strip, s, e, color, wait_ms=30):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
+
+def setBrightness(strip, brightness, wait_ms=30):
+    """Set overall brighness"""
+    strip.setBrightness(brightness)
+    strip.show()
+    time.sleep(wait_ms/1000.0)
 
 def colorWipe(strip, color, wait_ms=30):
     """Wipe color across display a pixel at a time."""
@@ -145,6 +155,9 @@ if __name__ == '__main__':
         try:
             data = raw_input()
             bits = data.split(',')
+            if len(bits) == 2:
+                if bits[0] == "brightness":
+                    setBrightness(strip, min(255,max(0,int(bits[1]))), WAIT_MS)
             if len(bits) == 3:
                 if MODE == "shiftu":
                     shiftUp(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)

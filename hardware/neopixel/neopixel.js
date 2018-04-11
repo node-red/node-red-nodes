@@ -35,6 +35,8 @@ module.exports = function(RED) {
         this.fgnd = n.fgnd || "128,128,128";
         this.mode = n.mode || "pcent";
         this.rgb = n.rgb || "rgb";
+        this.gamma = n.gamma;
+        this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
         var node = this;
@@ -45,9 +47,13 @@ module.exports = function(RED) {
         var p4 = /^[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+$/
 
         function inputlistener(msg) {
+            if (msg.hasOwnProperty("brightness")) {
+                node.child.stdin.write("brightness,"+msg.brightness.toString()+"\n"); 
+            }
             if (msg.hasOwnProperty("payload")) {
                 var pay = msg.payload.toString().toUpperCase();
                 var parts = pay.split(",");
+                node.warn("parts : "+ parts);
                 if (parts.length <= 2) {
                     if (parts.length === 2) { // it's a colour and length
                         if (isNaN(parseInt(parts[1]))) { parts = parts.reverse(); }
@@ -102,7 +108,7 @@ module.exports = function(RED) {
             }
         }
 
-        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode]);
+        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.gamma,node.brightness]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
         node.on("input", inputlistener);
