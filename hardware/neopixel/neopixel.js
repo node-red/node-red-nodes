@@ -53,7 +53,6 @@ module.exports = function(RED) {
             if (msg.hasOwnProperty("payload")) {
                 var pay = msg.payload.toString().toUpperCase();
                 var parts = pay.split(",");
-                node.warn("parts : "+ parts);
                 if (parts.length <= 2) {
                     if (parts.length === 2) { // it's a colour and length
                         if (isNaN(parseInt(parts[1]))) { parts = parts.reverse(); }
