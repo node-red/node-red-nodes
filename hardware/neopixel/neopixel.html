@@ -99,6 +99,10 @@
                 this.gamma = true;
                 $("#node-input-gamma").prop('checked', true);
             };
+            if (this.brightness === undefined) {
+                this.brighness = "100";
+                $("#node-input-brightness").val("100");
+            };            
             var setstate = function () {
                 if ($('#node-input-mode').val().indexOf("shift") !== -1) {
                     $("#bgcol").hide();
