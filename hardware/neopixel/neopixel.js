@@ -73,7 +73,6 @@ module.exports = function(RED) {
                     }
                     else {
                         if (isNaN(pay)) { // it's a single colour word so set background
-                            if (pay === "") {return};
                             if (colors.getRGB(pay,node.rgb)) {
                                 node.bgnd = colors.getRGB(pay,node.rgb);
                                 pay = node.bgnd;
