@@ -32,14 +32,14 @@
     </select>
 </div>
 <div class="form-row">
-    <label for="node-input-gamma"> </label>
-    <label for="node-input-gamma" style="width:70%">
-    <input type="checkbox" id="node-input-gamma" style="display:inline-block; width:22px; vertical-align:baseline;"> Gamma corrected
-    </label>
-</div>
-<div class="form-row">
     <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
     <input type="text" id="node-input-brightness" placeholder="number" style="width:60px;"> &nbsp;(0-100)
+</div>
+<div class="form-row">
+    <label for="node-input-gamma"> </label>
+    <label for="node-input-gamma" style="width:70%">
+    <input type="checkbox" id="node-input-gamma" style="display:inline-block; width:22px; vertical-align:baseline;"> Apply gamma correction
+    </label>
 </div>
 <br/>
 <div class="form-row">
@@ -82,8 +82,8 @@
             wipe: { value:"40", required:true, validate:RED.validators.number() },
             mode: { value:"pcent" },
             rgb: { value:"rgb" },
-            gamma: { value: true },
-            brightness: { value:"100", required:true, validate:RED.validators.number() }
+            brightness: { value:"100", required:true, validate:RED.validators.number() },
+            gamma: { value: true }
         },
         inputs:1,
         outputs:0,

@@ -39,10 +39,9 @@ LED_GAMMA = [
 LED_COUNT = max(0,int(sys.argv[1]))
 WAIT_MS = max(0,int(sys.argv[2]))
 MODE = sys.argv[3]
-if (sys.argv[4].lower() == "false"):
+LED_BRIGHTNESS = min(255,int(max(0,float(sys.argv[4])) * 255 / 100))
+if (sys.argv[5].lower() == "false"):
     LED_GAMMA = range(256)
-
-LED_BRIGHTNESS = min(255,int(max(0,float(sys.argv[5])) * 255 / 100))
 
 def getRGBfromI(RGBint):
     blue =  RGBint & 255

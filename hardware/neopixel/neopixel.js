@@ -35,10 +35,12 @@ module.exports = function(RED) {
         this.fgnd = n.fgnd || "128,128,128";
         this.mode = n.mode || "pcent";
         this.rgb = n.rgb || "rgb";
-        this.gamma = n.gamma;
+        this.gamma = n.gamma || "false";
         this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
+        if (this.brightness < 0) { this.brightness = 0; }
+        if (this.brightness > 100) { this.brightness = 100; }
         var node = this;
         var needle = "255,255,255";
         //var p1 = /^\#[A-Fa-f0-9]{6}$/
@@ -77,7 +79,7 @@ module.exports = function(RED) {
                                 node.bgnd = colors.getRGB(pay,node.rgb);
                                 pay = node.bgnd;
                             }
-                            else { node.warn("Invalid payload : "+pay); return; } //
+                            else { node.warn("Invalid payload : "+pay); return; }
                         }
                         else { // it's a single number so just draw bar
                             var ll = pay;
@@ -107,7 +109,7 @@ module.exports = function(RED) {
             }
         }
 
-        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.gamma,node.brightness]);
+        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
         node.on("input", inputlistener);
