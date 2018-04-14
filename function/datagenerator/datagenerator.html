@@ -40,7 +40,6 @@
     RED.nodes.registerType('data-generator',{
         color:"rgb(243, 181, 103)",
         category: 'function',
-        paletteLabel:"data&nbsp;generator",
         defaults: {
             name: {value:""},
             field: {value:"payload"},
@@ -51,6 +50,9 @@
         inputs:1,
         outputs:1,
         icon: "template.png",
+        paletteLabel: function() {
+            return this._("datagen.datagen");
+        },
         label: function() {
             return this.name || "data generator";
         },

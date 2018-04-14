@@ -93,6 +93,9 @@
         outputs:0,
         icon: "envelope.png",
         align: "right",
+        paletteLabel: function() {
+            return this._("email.email");
+        },
         label: function() {
             return this.dname||this.name||"email";
         },
@@ -246,7 +249,7 @@
         outputs:1,
         icon: "envelope.png",
         paletteLabel: function() {
-            return this.name||this._("email.email");
+            return this._("email.email");
         },
         label: function() {
             return this.name||this._("email.email");

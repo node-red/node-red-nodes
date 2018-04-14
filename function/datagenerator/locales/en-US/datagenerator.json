@@ -1,5 +1,6 @@
 {
     "datagen": {
+        "datagen": "datagenerator",
         "label": {
             "syntax": "Return",
             "text": "a text string",

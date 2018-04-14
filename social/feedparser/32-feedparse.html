@@ -34,6 +34,9 @@
         inputs:0,
         outputs:1,
         icon: "feed.png",
+        paletteLabel: function() {
+            return this._("feedparse.feedparse");
+        },
         label: function() {
             return this.name||this.url||this._("feedparse.feedparse");
         },
