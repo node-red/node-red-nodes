@@ -69,11 +69,12 @@ with a CSV string `x,y,r,g,b`
 
 #### Brightness
 
-The overall brightness can be set in the node configuration a 0-100 range (0 being off and 100 is fully on).
+The overall brightness of all the pixesl can be set to a level in the 0-100 range (0 being off and 100 is fully on).
 It can also be set via `msg.brightness`
+The default level is 100 (fully on)
 
 #### Gamma correction
 
 The node defaults to using gamma correction to display colours as naturally as possible.
-This can be disabled if required. e.g when working with low brightness levels. 
+This can be disabled if required. (e.g when working with low brightness levels) 
 
