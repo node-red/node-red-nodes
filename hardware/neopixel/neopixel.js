@@ -35,7 +35,7 @@ module.exports = function(RED) {
         this.fgnd = n.fgnd || "128,128,128";
         this.mode = n.mode || "pcent";
         this.rgb = n.rgb || "rgb";
-        this.gamma = n.gamma || "true";
+        this.gamma = n.gamma;
         this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
@@ -108,7 +108,7 @@ module.exports = function(RED) {
                 else { node.warn("Invalid payload : "+pay); }
             }
         }
-
+        node.warn("GAMMA: "+node.gamma);
         node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
