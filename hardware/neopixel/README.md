@@ -69,7 +69,7 @@ with a CSV string `x,y,r,g,b`
 
 #### Brightness
 
-The overall brightness of all the pixels can be set to a level in the 0-100 range (0 being off, 100 being full brightness).
+The overall brightness of the pixels can be set to a level in the 0-100 range (0 being off, 100 being full brightness).
 It can also be set via `msg.brightness`
 The default level is 100 (full brightness)
 
