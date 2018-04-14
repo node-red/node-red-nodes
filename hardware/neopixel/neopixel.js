@@ -35,8 +35,13 @@ module.exports = function(RED) {
         this.fgnd = n.fgnd || "128,128,128";
         this.mode = n.mode || "pcent";
         this.rgb = n.rgb || "rgb";
+        this.gamma = n.gamma;
+        if (this.gamma === undefined) { this.gamma = true; }
+        this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
+        if (this.brightness < 0) { this.brightness = 0; }
+        if (this.brightness > 100) { this.brightness = 100; }
         var node = this;
         var needle = "255,255,255";
         //var p1 = /^\#[A-Fa-f0-9]{6}$/
@@ -45,6 +50,9 @@ module.exports = function(RED) {
         var p4 = /^[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+$/
 
         function inputlistener(msg) {
+            if (msg.hasOwnProperty("brightness")) {
+                node.child.stdin.write("brightness,"+msg.brightness.toString()+"\n"); 
+            }
             if (msg.hasOwnProperty("payload")) {
                 var pay = msg.payload.toString().toUpperCase();
                 var parts = pay.split(",");
@@ -101,8 +109,8 @@ module.exports = function(RED) {
                 else { node.warn("Invalid payload : "+pay); }
             }
         }
-
-        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode]);
+        node.warn("GAMMA: "+node.gamma);
+        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
         node.on("input", inputlistener);
