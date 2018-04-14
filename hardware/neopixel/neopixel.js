@@ -36,6 +36,7 @@ module.exports = function(RED) {
         this.mode = n.mode || "pcent";
         this.rgb = n.rgb || "rgb";
         this.gamma = n.gamma;
+        if (this.gamma === undefined) { this.gamma = true; }
         this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
