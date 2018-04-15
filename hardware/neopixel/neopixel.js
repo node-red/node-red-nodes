@@ -54,7 +54,7 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             if (msg.hasOwnProperty("brightness")) {
-                node.child.stdin.write("brightness,"+msg.brightness.toString()+"\n"); 
+                node.child.stdin.write("brightness,"+msg.brightness.toString()+"\n");
             }
             if (msg.hasOwnProperty("payload")) {
                 var pay = msg.payload.toString().toUpperCase();
@@ -113,17 +113,9 @@ module.exports = function(RED) {
             }
         }
 
-<<<<<<< Updated upstream
-        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
-        node.status({fill:"green",shape:"dot",text:"ok"});
-||||||| merged common ancestors
-        node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode]);
-        node.status({fill:"green",shape:"dot",text:"ok"});
-=======
         if (allOK === true) {
-            node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode]);
+            node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
             node.status({fill:"green",shape:"dot",text:"ok"});
->>>>>>> Stashed changes
 
             node.on("input", inputlistener);
 
