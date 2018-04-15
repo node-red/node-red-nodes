@@ -109,7 +109,7 @@ module.exports = function(RED) {
                 else { node.warn("Invalid payload : "+pay); }
             }
         }
-        node.warn("GAMMA: "+node.gamma);
+
         node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
         node.status({fill:"green",shape:"dot",text:"ok"});
 
