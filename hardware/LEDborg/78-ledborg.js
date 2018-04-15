@@ -8,23 +8,26 @@ module.exports = function(RED) {
     var LedBorgInUse = false;
 
     var gpioCommand = __dirname+'/nrgpio';
+    var allOK = true;
 
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
-        if (cpuinfo.indexOf(": BCM") === -1) { throw "Info : "+RED._("rpi-gpio.errors.ignorenode"); }
+        if (cpuinfo.indexOf(": BCM") === -1) {
+            RED.log.warn("ledborg : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+            allOK = false;
+        }
+        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+            RED.log.warn("ledborg : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
+            allOK = false;
+        }
+        else if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
+            RED.log.warn("ledborg : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
+            allOK = false;
+        }
     }
     catch(err) {
-        throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
-    }
-
-    if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
-        util.log("[rpi-ledborg] Info : Can't find RPi.GPIO python library.");
-        throw "Warning : Can't find RPi.GPIO python library.";
-    }
-
-    if ( !(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
-        util.log("[rpi-ledborg] Error : "+gpioCommand+" needs to be executable.");
-        throw "Error : nrgpio must to be executable.";
+        RED.log.warn("ledborg : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+        allOK = false;
     }
 
     // GPIO pins 11 (R), 13 (G), 15 (B).
@@ -95,46 +98,50 @@ module.exports = function(RED) {
             }
         }
 
-        node.child = spawn(gpioCommand, ["borg","11"]);
-        node.running = true;
-        node.status({fill:"green",shape:"dot",text:"OK"});
+        if (allOK === true) {
+            node.child = spawn(gpioCommand, ["borg","11"]);
+            node.running = true;
+            node.status({fill:"green",shape:"dot",text:"OK"});
 
-        node.on("input", inputlistener);
+            node.on("input", inputlistener);
 
-        node.child.stdout.on('data', function (data) {
-            if (RED.settings.verbose) { node.log("out: "+data+" :"); }
-        });
+            node.child.stdout.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("out: "+data+" :"); }
+            });
 
-        node.child.stderr.on('data', function (data) {
-            if (RED.settings.verbose) { node.log("err: "+data+" :"); }
-        });
+            node.child.stderr.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("err: "+data+" :"); }
+            });
 
-        node.child.on('close', function () {
-            node.child = null;
-            node.running = false;
-            node.status({fill:"red",shape:"circle",text:""});
-            if (RED.settings.verbose) { node.log("closed"); }
-            if (node.done) { node.done(); }
-        });
+            node.child.on('close', function () {
+                node.child = null;
+                node.running = false;
+                node.status({fill:"red",shape:"circle",text:""});
+                if (RED.settings.verbose) { node.log("closed"); }
+                if (node.done) { node.done(); }
+            });
 
-        node.child.on('error', function (err) {
-            if (err.errno === "ENOENT") { node.warn('Command not found'); }
-            else if (err.errno === "EACCES") { node.warn('Command not executable'); }
-            else { node.log('error: ' + err); }
-        });
+            node.child.on('error', function (err) {
+                if (err.errno === "ENOENT") { node.warn('Command not found'); }
+                else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                else { node.log('error: ' + err); }
+            });
 
-        node.on("close", function(done) {
+            node.on("close", function(done) {
+                LedBorgInUse = false;
+                node.status({fill:"red",shape:"circle",text:""});
+                if (node.child != null) {
+                    node.done = done;
+                    node.child.stdin.write(" close 11");
+                    node.child.kill('SIGKILL');
+                }
+                else { done(); }
+            });
+        }
+        else {
             LedBorgInUse = false;
-            node.status({fill:"red",shape:"circle",text:""});
-            if (node.child != null) {
-                node.done = done;
-                node.child.stdin.write(" close 11");
-                node.child.kill('SIGKILL');
-            }
-            else { done(); }
-
-        });
-
+            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+        }
     }
     RED.nodes.registerType("ledborg",LedBorgNode);
 }

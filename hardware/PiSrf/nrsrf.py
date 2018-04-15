@@ -31,7 +31,7 @@ def Measure():
     # else:
         # print("Echo start detected")
     start = time.time()
-          
+
     GPIO.wait_for_edge(ECHO, GPIO.BOTH,  timeout=400)
     if channel is None:
         print("Ultrasonic sensor timed out (post-echo).")
@@ -40,7 +40,7 @@ def Measure():
     # else:
         # print("Echo finish detected")
     stop = time.time()
-   
+
     elapsed = stop-start
     distance = (elapsed * 34300)/2 # Using speed of sound at 20C (68F)
 

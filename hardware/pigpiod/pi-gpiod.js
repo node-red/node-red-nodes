@@ -99,14 +99,15 @@ module.exports = function(RED) {
         var PiGPIO;
 
         function inputlistener(msg) {
-            if (!inerror) {
-                if (msg.payload === "true") { msg.payload = true; }
-                if (msg.payload === "false") { msg.payload = false; }
-                var out = Number(msg.payload);
-                var limit = 1;
-                if (node.out !== "out") { limit = 100; }
-                if ((out >= 0) && (out <= limit)) {
-                    if (RED.settings.verbose) { node.log("out: "+msg.payload); }
+            if (msg.payload === "true") { msg.payload = true; }
+            if (msg.payload === "false") { msg.payload = false; }
+            var out = Number(msg.payload);
+            var limit = 1;
+            if (node.out !== "out") { limit = 100; }
+            var pre = "";
+            if ((out >= 0) && (out <= limit)) {
+                if (RED.settings.verbose) { node.log("out: "+msg.payload); }
+                if (!inerror) {
                     if (node.out === "out") {
                         PiGPIO.write(node.pin, msg.payload);
                     }
@@ -119,8 +120,11 @@ module.exports = function(RED) {
                     }
                     node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
                 }
-                else { node.warn(RED._("pi-gpiod:errors.invalidinput")+": "+out); }
+                else {
+                    node.status({fill:"grey",shape:"ring",text:"N/C: " + msg.payload.toString()});
+                }
             }
+            else { node.warn(RED._("pi-gpiod:errors.invalidinput")+": "+out); }
         }
 
         if (node.pin !== undefined) {
