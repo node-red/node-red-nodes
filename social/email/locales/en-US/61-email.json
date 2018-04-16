@@ -43,7 +43,8 @@
             "nosmtptransport": "No SMTP transport. See info panel.",
             "nopayload": "No payload to send",
             "fetchfail": "Failed to fetch folder: __folder__",
-            "messageerror": "Fetch message error: __error__"
+            "messageerror": "Fetch message error: __error__",
+            "refreshtoolarge": "Refresh interval too large. Limiting to 2147483 seconds"
         }
     }
 }

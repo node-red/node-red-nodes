@@ -138,6 +138,11 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.name = n.name;
         this.repeat = n.repeat * 1000 || 300000;
+        if (this.repeat > 2147483647) {
+            // setTimeout/Interval has a limit of 2**31-1 Milliseconds
+            this.repeat = 2147483647;
+            this.error(RED._("email.errors.refreshtoolarge"));
+        }
         this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
