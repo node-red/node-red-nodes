@@ -7,7 +7,7 @@ module.exports = function(RED) {
     var execSync = require('child_process').execSync;
 
     var hatCommand = __dirname+'/unihat';
-        var allOK = true;
+    var allOK = true;
 
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
@@ -19,7 +19,7 @@ module.exports = function(RED) {
             RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
             allOK = false;
         }
-        else if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
+        else if (!(1 & parseInt ((fs.statSync(hatCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
             RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:hatCommand}));
             allOK = false;
         }
