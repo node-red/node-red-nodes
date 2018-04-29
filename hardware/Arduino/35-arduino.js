@@ -56,24 +56,34 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             this.board = this.serverConfig.board;
             var node = this;
+            node.oldval = "";
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.connecting"});
             var doit = function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                 if (node.state === "ANALOG") {
                     node.board.pinMode(node.pin, 0x02);
                     node.board.analogRead(node.pin, function(v) {
-                        node.send({payload:v, topic:"A"+node.pin});
+                        if (v !== node.oldval) {
+                            node.oldval = v;
+                            node.send({payload:v, topic:"A"+node.pin});
+                        }
                     });
                 }
                 if (node.state === "INPUT") {
                     node.board.pinMode(node.pin, 0x00);
                     node.board.digitalRead(node.pin, function(v) {
-                        node.send({payload:v, topic:node.pin});
+                        if (v !== node.oldval) {
+                            node.oldval = v;
+                            node.send({payload:v, topic:node.pin});
+                        }
                     });
                 }
                 if (node.state == "STRING") {
                     node.board.on('string', function(v) {
-                        node.send({payload:v, topic:"string"});
+                        if (v !== node.oldval) {
+                            node.oldval = v;
+                            node.send({payload:v, topic:"string"});
+                        }
                     });
                 }
                 // node.board.on('close', function() {
