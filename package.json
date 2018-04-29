@@ -1,6 +1,6 @@
 {
     "name": "node-red-nodes",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "Node-RED-nodes package to hold the test framework ONLY - use npm to install individual nodes",
     "homepage": "http://nodered.org",
     "license": "Apache-2.0",
@@ -44,6 +44,7 @@
         "pushbullet": "~2.1.0",
         "should": "^11.2.1",
         "sinon": "^1.17.7",
+        "stoppable": "~1.0.6",
         "supertest": "^3.0.0",
         "when": "^3.7.8"
     }
