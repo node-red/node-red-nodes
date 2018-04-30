@@ -23,6 +23,13 @@ To manually install using this repo:
     - run `git clone https://github.com/node-red/node-red-nodes.git`
 3. run `npm install` in any of the node subfolders to install individual node's dependencies
 
+## Running Tests
+
+To run tests on all of the nodes you will need the node-red runtime:
+
+    npm install node-red --no-save
+    npm test
+
 ## Contributing
 
 Now that we support npm installation of nodes we recommend people post their own

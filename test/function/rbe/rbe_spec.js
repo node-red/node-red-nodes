@@ -1,6 +1,6 @@
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../function/rbe/rbe.js');
 
 describe('rbe node', function() {

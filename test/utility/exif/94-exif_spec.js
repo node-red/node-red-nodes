@@ -2,7 +2,7 @@
 var should = require("should");
 var sinon = require('sinon');
 //var fs = require("fs");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var exifNode = require('../../../utility/exif/94-exif.js');
 
 describe('exif node', function() {

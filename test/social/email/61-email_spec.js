@@ -1,6 +1,6 @@
 var should = require("should");
 var sinon = require("sinon");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var emailNode = require('../../../social/email/61-email.js');
 
 describe('email Node', function () {

@@ -8,6 +8,9 @@
         "type": "git",
         "url": "https://github.com/node-red/node-red-nodes.git"
     },
+    "scripts": {
+        "test": "grunt"
+    },
     "contributors": [
         {
             "name": "Dave Conway-Jones"
@@ -29,6 +32,7 @@
     "devDependencies": {
         "exif": "^0.6.0",
         "grunt": "^0.4.5",
+        "grunt-cli": "^1.2.0",
         "grunt-contrib-jshint": "^1.1.0",
         "grunt-jscs": "^3.0.1",
         "grunt-lint-inline": "^1.0.0",
@@ -38,14 +42,17 @@
         "mocha": "~3.5.3",
         "msgpack-lite": "^0.1.26",
         "ngeohash": "^0.6.0",
+        "node-red-node-test-helper": "^0.1.6",
         "nodemailer": "^1.11.0",
         "poplib": "^0.1.7",
         "proxyquire": "^1.7.11",
         "pushbullet": "~2.1.0",
         "should": "^11.2.1",
         "sinon": "^1.17.7",
-        "stoppable": "~1.0.6",
         "supertest": "^3.0.0",
         "when": "^3.7.8"
+    },
+    "peerDependencies": {
+        "node-red": "^0.18.4"
     }
 }
