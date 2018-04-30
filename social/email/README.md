@@ -12,6 +12,8 @@ You will need valid email credentials for your email server.
 Install
 -------
 
+**Node.js v6 or newer is required.**
+
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
         npm i node-red-node-email

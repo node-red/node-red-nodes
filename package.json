@@ -46,7 +46,7 @@
         "msgpack-lite": "^0.1.26",
         "ngeohash": "^0.6.0",
         "node-red-node-test-helper": "^0.1.6",
-        "nodemailer": "^1.11.0",
+        "nodemailer": "^4.6.4",
         "poplib": "^0.1.7",
         "proxyquire": "^1.7.11",
         "pushbullet": "~2.1.0",
@@ -57,5 +57,8 @@
     },
     "peerDependencies": {
         "node-red": "0.*"
+    },
+    "engines": {
+        "node": ">=6.0.0"
     }
 }
