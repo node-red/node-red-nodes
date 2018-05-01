@@ -15,7 +15,7 @@
  **/
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../parsers/geohash/70-geohash.js');
 
 describe('geohash node', function() {

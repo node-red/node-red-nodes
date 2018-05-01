@@ -14,10 +14,9 @@ node_js:
   - "6"
   - "4"
 before_script:
-  - npm install -g istanbul grunt-cli
-  - npm install coveralls
-  - npm install git+https://github.com/node-red/node-red.git
-  - export NODE_RED_HOME=`pwd`/node_modules/node-red
-  - (cd $NODE_RED_HOME ; npm install nock@~0.48.0)
+  # Remove the './node_modules/.bin:' entry, see https://github.com/travis-ci/travis-ci/issues/8813
+  - export PATH=`echo ${PATH} | sed -re 's,(^|:)(./)?node_modules/.bin($|:),\1,'`
+  - npm install -g istanbul grunt-cli coveralls
+  - npm install node-red
 script:
-  - istanbul cover grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
+  - istanbul cover grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | $(npm get prefix)/bin/coveralls || true ) && rm -rf coverage

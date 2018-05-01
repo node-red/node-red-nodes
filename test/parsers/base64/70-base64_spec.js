@@ -1,6 +1,6 @@
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../parsers/base64/70-base64.js');
 
 describe('base64 node', function() {

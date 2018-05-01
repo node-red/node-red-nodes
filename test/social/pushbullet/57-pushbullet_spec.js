@@ -8,7 +8,7 @@ var EventEmitter = require('events').EventEmitter
 var util = require('util');
 var data = require("./data");
 var path = require("path");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 
 // Mute "Starting/Stopping flows to stdout"
 
