@@ -1,12 +1,12 @@
 {
   "name": "node-red-node-email",
-  "version": "0.1.29",
+  "version": "1.0.0",
   "description": "Node-RED nodes to send and receive simple emails",
   "dependencies": {
-    "nodemailer": "^1.11.0",
-    "poplib": "^0.1.7",
+    "imap": "^0.8.19",
     "mailparser": "^0.6.2",
-    "imap": "^0.8.19"
+    "nodemailer": "^4.6.4",
+    "poplib": "^0.1.7"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,8 @@
     "name": "Dave Conway-Jones",
     "email": "ceejay@vnet.ibm.com",
     "url": "http://nodered.org"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   }
 }
