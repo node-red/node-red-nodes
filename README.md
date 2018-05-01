@@ -34,7 +34,7 @@ To run tests on all of the nodes you will need the node-red runtime:
 If you already have Node-RED installed you can point to the existing installation to save space.
 
     npm i node-red-nodes
-    npm i {path_to_your_existing_Node-RED-install} --no-save
+    npm i {path_to_your_existing_Node-RED_install} --no-save
     npm test
 
 ## Contributing
