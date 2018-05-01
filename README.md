@@ -27,7 +27,14 @@ To manually install using this repo:
 
 To run tests on all of the nodes you will need the node-red runtime:
 
-    npm install node-red --no-save
+    npm i node-red-nodes
+    npm i node-red --no-save
+    npm test
+
+If you already have Node-RED installed you can point to the existing installation to save space.
+
+    npm i node-red-nodes
+    npm i {path_to_your_existing_Node-RED-install} --no-save
     npm test
 
 ## Contributing
