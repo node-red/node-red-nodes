@@ -1,7 +1,7 @@
 node-red-node-email
 ===================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
+<a href="http://nodered.org" target=new">Node-RED</a> nodes to send and receive simple emails.
 
 
 Pre-requisite
@@ -9,14 +9,23 @@ Pre-requisite
 
 You will need valid email credentials for your email server.
 
+**Note :** Version 1.x of this node requires Node.js v6 or newer.
+
+
 Install
 -------
 
-**Node.js v6 or newer is required.**
+Version 0.x of this node is usually installed by default by Node-RED.
+To install version 1.x you need to uninstall the existing version.
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+        sudo npm uninstall -g node-red-node-email
+
+Then run the following command in your Node-RED user directory - typically `~/.node-red`
 
         npm i node-red-node-email
+
+**Note :** this installs the new version locally rather than globally. This can then be managed by the palette manager.
+
 
 Usage
 -----
