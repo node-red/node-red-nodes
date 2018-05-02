@@ -1,7 +1,7 @@
 node-red-node-email
 ===================
 
-<a href="http://nodered.org" target=new">Node-RED</a> nodes to send and receive simple emails.
+<a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
 
 
 Pre-requisite
