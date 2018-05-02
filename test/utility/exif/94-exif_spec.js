@@ -40,7 +40,7 @@ describe('exif node', function() {
             GPSProcessingMethod: 'ASCII\u0000\u0000\u0000FUSED',
             GPSDateStamp: '2014:06:10' }
         };
-        var spy = sinon.stub(exif, 'ExifImage', function(arg1,arg2) { arg2(null,gpsmsg); });
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(function(arg1,arg2) { arg2(null,gpsmsg); });
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -77,7 +77,7 @@ describe('exif node', function() {
             GPSProcessingMethod: 'ASCII\u0000\u0000\u0000FUSED',
             GPSDateStamp: '2014:06:10' }
         };
-        var spy = sinon.stub(exif, 'ExifImage', function(arg1,arg2) { arg2(null,gpsmsg); });
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(function(arg1,arg2) { arg2(null,gpsmsg); });
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -189,7 +189,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });
@@ -229,7 +229,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });
@@ -267,7 +267,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });
