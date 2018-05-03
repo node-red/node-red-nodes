@@ -28,8 +28,6 @@
     "keywords": [
         "node-red",
         "nodes",
-        "iot",
-        "ibm",
         "flow"
     ],
     "devDependencies": {
