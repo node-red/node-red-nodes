@@ -29,6 +29,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-closer"> on close</label>
+        <select id="node-input-closer" style='width:70%'>
+            <option value="SIGKILL">kill process immediately</option>
+            <option value="SIGTERM">try to terminate process</option>
+            <option value="SIGINT">try to interrupt process</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -51,12 +59,13 @@
         category: 'advanced-function',
         color:"darksalmon",
         defaults: {
+            name: {value:""},
             command: {value:"",required:true},
             args: {value:""},
             cr: {value:false},
             redo: {value:true},
             op: {value:"string"},
-            name: {value:""}
+            closer: {value:"SIGKILL"}
         },
         inputs:1,
         outputs:3,

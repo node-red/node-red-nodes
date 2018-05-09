@@ -11,6 +11,7 @@ module.exports = function(RED) {
         this.op = n.op;
         this.redo = n.redo;
         this.running = false;
+        this.closer = n.closer || "SIGKILL";
         var node = this;
 
         function inputlistener(msg) {
@@ -110,10 +111,21 @@ module.exports = function(RED) {
 
         node.on("close", function(done) {
             clearInterval(loop);
-            if (node.child != null) { node.child.kill('SIGKILL'); }
-            if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
+            if (node.child != null) {
+                var tout;
+                node.child.on('exit', function() {
+                    if (tout) { clearTimeout(tout); }
+                    done();
+                });
+                tout = setTimeout(function() {
+                    node.child.kill("SIGKILL"); // if it takes more than 3 secs kill it anyway.
+                    done();
+                }, 3000);
+                node.child.kill(node.closer);
+                if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
+            }
+            else { setTimeout(function() { done(); }, 100); }
             node.status({});
-            setTimeout(function() { done(); }, 100);
         });
 
         runit();
