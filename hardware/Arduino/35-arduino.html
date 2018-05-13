@@ -28,6 +28,7 @@
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
     <p>You can select either Digital or Analogue input. Outputs the value read as <code>msg.payload</code> and the pin number as <code>msg.topic</code>.</p>
     <p>It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.</p>
+    <p>For example you could use a <code>delay</code> node set to rate limit and drop intermediate values, or an <code>rbe</code> node to only report when it changes by a certain amount.</p>
 </script>
 
 <script type="text/javascript">

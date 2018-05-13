@@ -33,8 +33,8 @@ module.exports = function(RED) {
             if (node.board) {
                 try {
                     node.board.sp.close(function() {
-                        done();
                         if (RED.settings.verbose) { node.log(RED._("arduino.status.portclosed")); }
+                        done();
                     });
                 }
                 catch(e) { done(); }
@@ -93,9 +93,6 @@ module.exports = function(RED) {
             }
             if (node.board.isReady) { doit(); }
             else { node.board.on("ready", function() { doit(); }); }
-            node.on("close", function() {
-                if (node.tout) { clearTimeout(node.tout); }
-            })
         }
         else {
             this.warn(RED._("arduino.errors.portnotconf"));
@@ -155,9 +152,6 @@ module.exports = function(RED) {
             }
             if (node.board.isReady) { doit(); }
             else { node.board.on("ready", function() { doit(); }); }
-            node.on("close", function() {
-                if (node.tout) { clearTimeout(node.tout); }
-            })
         }
         else {
             this.warn(RED._("arduino.errors.portnotconf"));
