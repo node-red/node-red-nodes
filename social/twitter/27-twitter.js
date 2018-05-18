@@ -401,7 +401,9 @@ module.exports = function(RED) {
 
                     if (msg.payload.slice(0,2) == "D ") {
                             // direct message syntax: "D user message"
-                            [dm_user,msg.payload]=msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
+                            var t = msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
+                            dm_user = t[0];
+                            msg.payload = t[1];
                     }
                     if (msg.payload.length > 280) {
                         msg.payload = msg.payload.slice(0,279);

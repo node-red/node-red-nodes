@@ -95,11 +95,11 @@ module.exports = function(RED) {
                         }
                         if (typeof msg.params == "undefined"){
                             node.error("msg.params not passed");
-                            node.status({fill:"red",shape:"dot",text:"msg.params not passed",msg});
+                            node.status({fill:"red",shape:"dot",text:"msg.params not defined"});
                         }
                         else if (typeof msg.params != "object"){
                             node.error("msg.params not an object");
-                            node.status({fill:"red",shape:"dot",text:"msg.params not an object",msg});
+                            node.status({fill:"red",shape:"dot",text:"msg.params not an object"});
                         }
                     }
                 }
