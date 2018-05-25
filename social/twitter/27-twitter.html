@@ -1,5 +1,8 @@
 
 <script type="text/x-red" data-template-name="twitter-credentials">
+    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
+        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    </div>
     <div class="form-row" id="node-config-twitter-row"></div>
     <input type="hidden" id="node-config-input-screen_name">
 </script>
@@ -79,6 +82,9 @@
 </script>
 
 <script type="text/x-red" data-template-name="twitter in">
+    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
+        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    </div>
     <div class="form-row">
         <label for="node-input-twitter"><i class="fa fa-user"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
         <input type="text" id="node-input-twitter">
@@ -93,6 +99,10 @@
             <option value="event" data-i18n="twitter.search.events"></option>
         </select>
     </div>
+    <div id="tweet-events-deprecated" class="hide form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
+        <i class="fa fa-warning"></i> Twitter are withdrawing the API used to access a user&apos;s activity stream in August 2018 so this feature will be removed from the node in the near future. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    </div>
+
     <div class="form-row" id="node-input-tags-row">
         <label for="node-input-tags"><i class="fa fa-tags"></i> <span id="node-input-tags-label" data-i18n="twitter.label.for"></span></label>
         <input type="text" id="node-input-tags" data-i18n="[placeholder]twitter.placeholder.for">
@@ -181,6 +191,7 @@
                     $("#node-input-tags-label").html(forlabel);
                     $("#node-input-tags").attr("placeholder",forph);
                 }
+                $("#tweet-events-deprecated").toggle((type === 'event'));
             });
             $("#node-input-user").change();
         },
@@ -198,6 +209,9 @@
 
 
 <script type="text/x-red" data-template-name="twitter out">
+    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
+        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    </div>
     <div class="form-row">
         <label for="node-input-twitter"><i class="fa fa-user"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
         <input type="text" id="node-input-twitter">

@@ -20,7 +20,7 @@
             "follow": "all tweets from people I follow",
             "user": "the tweets of specific users",
             "direct": "your direct messages",
-            "events": "your twitter events"
+            "events": "*deprecated* your twitter events"
         },
         "tip": "Tip: Use commas without spaces between multiple search terms. Comma = OR, Space = AND.<br/>The Twitter API WILL NOT deliver 100% of all tweets.<br/>Tweets of who you follow will include their retweets and favourites.<br/><br/>Leave <b>for</b> blank to set using msg.payload.",
         "status": {

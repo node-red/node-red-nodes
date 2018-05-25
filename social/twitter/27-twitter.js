@@ -47,6 +47,7 @@ module.exports = function(RED) {
 
     function TwitterInNode(n) {
         RED.nodes.createNode(this,n);
+        this.error("This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See https://bit.ly/2kr7InE for details.")
         this.active = true;
         this.user = n.user;
         //this.tags = n.tags.replace(/ /g,'');
@@ -55,6 +56,8 @@ module.exports = function(RED) {
         this.topic = n.topic||"tweets";
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         var credentials = RED.nodes.getCredentials(this.twitter);
+
+        var node = this;
 
         if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
             var twit = new Ntwitter({
@@ -71,7 +74,6 @@ module.exports = function(RED) {
             //
             //},10000);
 
-            var node = this;
             if (this.user === "user") {
                 node.poll_ids = [];
                 node.since_ids = {};
@@ -179,6 +181,7 @@ module.exports = function(RED) {
                 });
             }
             else if (this.user === "event") {
+                this.error("This Twitter node is configured to access a user's activity stream. Twitter are withdrawing this API in August 2018 so this feature will be removed from the node in the near future. See https://bit.ly/2kr7InE for details.")
                 try {
                     var thingu = 'user';
                     var setupEvStream = function() {
@@ -381,6 +384,7 @@ module.exports = function(RED) {
 
     function TwitterOutNode(n) {
         RED.nodes.createNode(this,n);
+        this.error("This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See https://bit.ly/2kr7InE for details.")
         this.topic = n.topic;
         this.twitter = n.twitter;
         this.twitterConfig = RED.nodes.getNode(this.twitter);
