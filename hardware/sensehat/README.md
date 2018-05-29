@@ -109,7 +109,7 @@ Example: R180
 
 #### Flip the screen
 
-Format: `R<axis>`
+Format: `F<axis>`
 
 `axis` must be either `H` or `V` to flip on the horizontal or vertical axis respectively.
 
