@@ -21,9 +21,10 @@ module.exports = function(RED) {
             });
         }
 
-        node.on('close', function () {
+        node.on('close', function (done) {
             if (node.tick) { clearTimeout(node.tick); }
-            if (node.db) { node.db.close(); }
+            if (node.db) { node.db.close(done()); }
+            else { done(); }
         });
     }
     RED.nodes.registerType("sqlitedb",SqliteNodeDB);
