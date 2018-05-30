@@ -74,8 +74,8 @@ is an object with the following values:</p>
 <p>This node sends commands to the 8x8 LED display on the Sense HAT.</p>
 <p>Commands are sent to the node in <code>msg.payload</code>. Multiple commands can
 be sent in a single message by separating them with newline (\n) characters. You must 
-use a function node or a change node(jsonata expression) when using the newline (\n) 
-character to have multiple commands<p>
+use a function node or a change node (jsonata expression) when using the newline (\n) 
+character to create a payload containing multiple commands.<p>
 
 <p><b>Set the colour of individual pixels</b></p>
 <p>Format: <code>&lt;x&gt;,&lt;y&gt;,&lt;colour&gt;</code>
@@ -102,13 +102,13 @@ character to have multiple commands<p>
 <p><b>Rotate the screen</b></p>
 <p>Format: <code>R&lt;angle&gt;</code></p>
 <p><code>angle</code> must be 0, 90, 180 or 270.</p>
-<p>Example: R180</p>
+<p>Example: <code>R180</code></p>
 
 <p><b>Flip the screen</b></p>
 <p>Format: <code>F&lt;axis&gt;</code></p>
 <p><code>axis</code> must be either <code>H</code> or <code>V</code> to flip on
 the horizontal or vertical axis respectively.</p>
-<p>Example: FV</p>
+<p>Example: <code>FV</code></p>
 
 <p><b>Scroll a message</b></p>
 <p>If <code>msg.payload</code> is not recognised as any of the above commands,
@@ -125,7 +125,7 @@ To scroll a single character, append a blank space after it - <code>"A "</code>.
 <p><b>Set the screen brightness</b></p>
 <p>Format: <code>D&lt;level&gt;</code></p>
 <p><code>level</code> must be 0 (low) or 1 (high).</p>
-<p>Example: D1</p>
+<p>Example: <code>D1</code></p>
 </script>
 <script type="text/javascript">
     RED.nodes.registerType('rpi-sensehat in',{
