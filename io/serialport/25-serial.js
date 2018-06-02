@@ -36,9 +36,13 @@ module.exports = function(RED) {
                 this.serialConfig.stopbits,
                 this.serialConfig.newline);
             node.addCh = "";
-            if (node.serialConfig.addchar == "true" || node.serialConfig.addchar === true) {
-                node.addCh = this.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+            if (node.serialConfig.newline.substr(0,2) == "0x") {
+                node.addCh = new Buffer([parseInt(node.serialConfig.newline)]);
             }
+            else {
+                node.addCh = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
+            }
+
             node.on("input",function(msg) {
                 if (msg.hasOwnProperty("payload")) {
                     var payload = msg.payload;
@@ -49,10 +53,10 @@ module.exports = function(RED) {
                         else {
                             payload = payload.toString();
                         }
-                        if (node.out === "char") { payload += node.addCh; }
+                        if ((node.serialConfig.out === "char") && (node.serialConfig.addchar === true)) { payload += node.addCh; }
                     }
-                    else if ((node.addCh !== "") && (node.out === "char")) {
-                        payload = Buffer.concat([payload,new Buffer(node.addCh)]);
+                    else if ((node.serialConfig.out === "char") && (node.serialConfig.addchar === true) && (node.addCh !== "")) {
+                        payload = Buffer.concat([payload,node.addCh]);
                     }
                     node.port.write(payload,function(err,res) {
                         if (err) {

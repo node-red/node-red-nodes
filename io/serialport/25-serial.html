@@ -86,7 +86,7 @@
 <script type="text/x-red" data-template-name="serial-port">
     <div class="form-row">
         <label for="node-config-input-serialport"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
-        <input type="text" id="node-config-input-serialport" style="width:60%;" data-i18n="[placeholder]serial.placeholder.serialport">
+        <input type="text" id="node-config-input-serialport" style="width:66%;" data-i18n="[placeholder]serial.placeholder.serialport">
         <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
     </div>
     <div class="form-row">
@@ -98,16 +98,16 @@
             <td width="70px" data-i18n="serial.label.stopbits"></td>
         </tr><tr><td>&nbsp;</td>
         <td>
-            <input type="text" id="node-config-input-serialbaud" style="width:100px">
+            <input type="text" id="node-config-input-serialbaud" style="width:92%">
         </td><td>
-        <select type="text" id="node-config-input-databits" style="width:70px;">
+        <select type="text" id="node-config-input-databits" style="width:90%;">
             <option value="8">8</option>
             <option value="7">7</option>
             <option value="6">6</option>
             <option value="5">5</option>
         </select>
         </td><td>
-        <select type="text" id="node-config-input-parity" style="width:80px;">
+        <select type="text" id="node-config-input-parity" style="width:90%;">
             <option value="none" data-i18n="serial.parity.none"></option>
             <option value="even" data-i18n="serial.parity.even"></option>
             <option value="mark" data-i18n="serial.parity.mark"></option>
@@ -115,29 +115,29 @@
             <option value="space" data-i18n="serial.parity.space"></option>
         </select>
         </td><td>
-        <select type="text" id="node-config-input-stopbits" style="width:70px;">
+        <select type="text" id="node-config-input-stopbits" style="width:90%;">
             <option value="2">2</option>
             <option value="1">1</option>
         </select>
-    </td>
-    </tr></table></div>
+        </td></tr></table>
+    </div>
     <br/>
     <div class="form-row">
         <label><i class="fa fa-sign-in"></i> <span data-i18n="serial.label.input"></span></label>
     </div>
-    <div class="form-row" style="padding-left: 10px;">
+    <div class="form-row" style="padding-left:10px;">
         <span data-i18n="serial.label.split"></span>
-        <select type="text" id="node-config-input-out" style="margin-left: 5px; width:200px;">
+        <select type="text" id="node-config-input-out" style="margin-left:5px; width:200px;">
             <option value="char" data-i18n="serial.split.character"></option>
             <option value="time" data-i18n="serial.split.timeout"></option>
             <option value="count" data-i18n="serial.split.lengths"></option>
         </select>
-        <input type="text" id="node-config-input-newline"  style="width:50px;">
+        <input type="text" id="node-config-input-newline" style="width:50px;">
         <span id="node-units"></span>
     </div>
-    <div class="form-row" style="padding-left: 10px;">
+    <div class="form-row" style="padding-left:10px;">
         <span data-i18n="serial.label.deliver"></span>
-        <select type="text" id="node-config-input-bin" style="margin-left: 5px; width: 150px;">
+        <select type="text" id="node-config-input-bin" style="margin-left:5px; width:150px;">
             <option value="false" data-i18n="serial.output.ascii"></option>
             <option value="bin" data-i18n="serial.output.binary"></option>
         </select>
@@ -148,7 +148,7 @@
             <label><i class="fa fa-sign-out"></i> <span data-i18n="serial.label.output"></span></label>
         </div>
         <div class="form-row">
-            <input style="width: 30px;margin-left: 10px; vertical-align: top;" type="checkbox" id="node-config-input-addchar"><label style="width: auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
+            <input style="width:30px; margin-left:10px; vertical-align:top;" type="checkbox" id="node-config-input-addchar"><label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
         </div>
     </div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
