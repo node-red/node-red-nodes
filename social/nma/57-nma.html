@@ -1,47 +1,147 @@
+<!-- CREDENTIALS -->
 
-<script type="text/x-red" data-template-name="nma">
+<script type="text/x-red" data-template-name="NMA-credentials">
     <div class="form-row">
-        <label for="node-input-title"><i class="fa fa-flag"></i> Title</label>
-        <input type="text" id="node-input-title" placeholder="Node-RED">
+        <label for="node-config-input-name"><i class="fa fa-user"></i> Name</label>
+        <input type="text" id="node-config-input-name">
     </div>
-    <div class="form-row">
-        <label for="node-input-pushkey"><i class="fa fa-key"></i> API Key</label>
-        <input type="password" id="node-input-pushkey">
-    </div>
-    <br/>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
 
-<script type="text/x-red" data-help-name="nma">
-    <p>Uses NotifyMyAndroid (NMA) to push the <code>msg.payload</code> to an Android device that has NotifyMyAndroid app installed.</p>
-    <p>Optionally uses <code>msg.topic</code> to set the title, if not already set in the properties.</p>
-    <p>The API-key is stored in a separate credentials file.</p>
-    <p>Uses Notify-My-Android. See <i><a href="http://www.notifymyandroid.com/" target="_new">this link</a></i> for more details.</p>
+    <div class="form-row">
+        <label for="node-config-input-pushkey"><i class="fa fa-user"></i> Api key</label>
+        <input type="text" id="node-config-input-pushkey">
+    </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('nma',{
-        category: 'mobile-output',
+    RED.nodes.registerType('NMA-credentials',{
+        category: 'config',
         defaults: {
-            title: {value:""},
-            name: {value:""}
+            name:     { value:"" },
+            pushkey:  { value:"" }
         },
-        credentials: {
-            pushkey: {type: "password"}
-        },
-        color:"#a7c9a0",
-        inputs:1,
-        outputs:0,
-        icon: "nma.png",
-        align: "right",
         label: function() {
-            return this.name||this.title||"nma";
-        },
-        labelStyle: function() {
-            return this.name?"node_label_italic":"";
+            return this.name || "";
         }
     });
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('NMA-notification',{
+        category: 'notifications',
+        color:    '#a7c9a0',
+        defaults: {
+            format:  { value:"handlebars" },
+            name:    { value: "" },
+            application:   { value: "node-red" },
+            event:   { value: "{{event}}" },
+            description: { value: "{{payload}}" },
+            //content-type: { value: "text/html" },
+            priority: { value: 0 },
+			url: { value: "" },
+            broker:  { type:"NMA-credentials", required:true }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "nma.png",
+        label: function() {
+            return this.name||this.application||"nma";
+        },
+        oneditprepare: function() {
+            var that = this;
+            this.editor = RED.editor.createEditor({
+                id:    'node-input-description-editor',
+                mode:  'ace/mode/html',
+                value: $("#node-input-description").val()
+            });
+            RED.library.create({
+                url:    "functions", // where to get the data from
+                type:   "function",  // the type of object the library is for
+                editor: that.editor, // the field name the main text body goes to
+                fields: ['name','outputs']
+            });
+            this.editor.focus();
+        },
+        oneditsave: function() {
+            if (this.editor) {
+                $("#node-input-description").val(this.editor.getValue())
+                delete this.editor;
+            }
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="NMA-notification">
+    <div class="form-row">
+        <label for="node-input-broker"><i class="fa fa-globe"></i> Credentials</label>
+        <input type="text" id="node-input-broker">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-application"><i class="icon-tag"></i> Application</label>
+        <input type="text" id="node-input-application" placeholder="application">
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-description-editor"><i class="fa fa-file-code-o"></i> Description</label>
+        <input id="node-input-description" type="hidden">
+        <div style="height: 150px;" class="node-text-editor" id="node-input-description-editor" ></div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-event"><i class="icon-tag"></i> Event</label>
+        <input type="text" id="node-input-event" placeholder="event" >
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-url"><i class="icon-tag"></i> Open url</label>
+        <input type="text" id="node-input-url" placeholder="url" >
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-content-type"><i class="icon-tag"></i> Content Type</label>
+        <input type="text" id="node-input-content-type" placeholder="content-type" >
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-priority"><i class="icon-tag"></i> Priority</label>
+        <select id="node-input-priority" >
+            <option value='-2'>Very Low</option>
+            <option value='-1'>Moderate</option>
+            <option value='0'>Normal</option>
+            <option value='2'>High</option>
+            <option value='3'>Emergency</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="NMA-notification">
+    <p>Push <a href="http://new.NMA.io">NMA</a> notification.</p>
+    <p style="font-size: 12px; border-top: solid 1px lightgrey; text-align: right;">
+        Based on <a href="http://flows.nodered.org/flow/11fd7edfa582fb4045ca">NMA Push Notification to iOS</a> by mattcr.
+    </p>
+    <p>Message can be templated from the inbound<b>msg</b> using mustache syntax.
+        <pre>The payload is {{payload}}</pre>
+    </p>
+
+    <p>
+    <details style="padding: 0 1em;">
+    <summary><b>msg</b> properties:</summary>
+        <ul style="font-size: 12px;">
+          <li><i>msg.title</i> - string</li>
+          <li><i>msg.source_name</i> - string</li>
+          <li><i>msg.icon_url</i> - url to png image (best 64x64)</li>
+          <li><i>msg.sound</i> - string</li>
+	  <li><i>msg.open_url</i> - If defined, NMA will redirect you to this url when you open the notification from the Notification Center</li>
+        </ul>
+    </details>
+    <p>
+
+    </p>
+    </p>
+
 </script>
