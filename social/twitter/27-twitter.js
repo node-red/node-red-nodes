@@ -5,6 +5,7 @@ module.exports = function(RED) {
     var OAuth= require('oauth').OAuth;
     var request = require('request');
     var twitterRateTimeout;
+    var retry = 60000; // 60 secs backoff for now
 
     function TwitterCredentialsNode(n) {
         RED.nodes.createNode(this,n);
@@ -57,7 +58,7 @@ module.exports = function(RED) {
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         var credentials = RED.nodes.getCredentials(this.twitter);
 
-        if (credentials) {
+        if (credentials && credentials.consumer_key && credentials.consumer_secret && credentials.access_token && credentials.access_token_secret) {
             var twit = new Ntwitter({
                 consumer_key: credentials.consumer_key,
                 consumer_secret: credentials.consumer_secret,
@@ -248,7 +249,6 @@ module.exports = function(RED) {
                             twit.stream(thing, st, function(stream) {
                                 //console.log("ST",st);
                                 node.stream = stream;
-                                var retry = 60000; // 60 secs backoff for now
                                 stream.on('data', function(tweet) {
                                     if (tweet.user !== undefined) {
                                         var where = tweet.user.location;
@@ -358,25 +358,24 @@ module.exports = function(RED) {
                     node.error(err);
                 }
             }
-        }
-        else {
+            this.on('close', function() {
+                if (this.tout) { clearTimeout(this.tout); }
+                if (this.tout2) { clearTimeout(this.tout2); }
+                if (this.stream) {
+                    this.restart = false;
+                    this.stream.removeAllListeners();
+                    this.stream.destroy();
+                }
+                if (this.poll_ids) {
+                    for (var i=0; i<this.poll_ids.length; i++) {
+                        clearInterval(this.poll_ids[i]);
+                    }
+                }
+            });
+        } else {
             this.error(RED._("twitter.errors.missingcredentials"));
         }
 
-        this.on('close', function() {
-            if (this.tout) { clearTimeout(this.tout); }
-            if (this.tout2) { clearTimeout(this.tout2); }
-            if (this.stream) {
-                this.restart = false;
-                this.stream.removeAllListeners();
-                this.stream.destroy();
-            }
-            if (this.poll_ids) {
-                for (var i=0; i<this.poll_ids.length; i++) {
-                    clearInterval(this.poll_ids[i]);
-                }
-            }
-        });
     }
     RED.nodes.registerType("twitter in",TwitterInNode);
 
@@ -390,7 +389,7 @@ module.exports = function(RED) {
         var node = this;
         var dm_user;
 
-        if (credentials) {
+        if (credentials && credentials.consumer_key && credentials.consumer_secret && credentials.access_token && credentials.access_token_secret) {
             var twit = new Ntwitter({
                 consumer_key: credentials.consumer_key,
                 consumer_secret: credentials.consumer_secret,
@@ -464,6 +463,8 @@ module.exports = function(RED) {
                 }
                 else { node.warn(RED._("twitter.errors.nopayload")); }
             });
+        } else {
+            this.error(RED._("twitter.errors.missingcredentials"));
         }
     }
     RED.nodes.registerType("twitter out",TwitterOutNode);
