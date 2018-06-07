@@ -180,6 +180,7 @@ module.exports = function(RED) {
                 });
             }
             else if (this.user === "event") {
+                this.error("This Twitter node is configured to access a user's activity stream. Twitter are withdrawing this API in August 2018 so this feature will be removed from the node in the near future. See https://bit.ly/2kr7InE for details.")
                 try {
                     var thingu = 'user';
                     var setupEvStream = function() {
@@ -363,11 +364,11 @@ module.exports = function(RED) {
         }
 
         this.on('close', function() {
-            if (node.tout) { clearTimeout(node.tout); }
-            if (node.tout2) { clearTimeout(node.tout2); }
+            if (this.tout) { clearTimeout(this.tout); }
+            if (this.tout2) { clearTimeout(this.tout2); }
             if (this.stream) {
                 this.restart = false;
-                node.stream.removeAllListeners();
+                this.stream.removeAllListeners();
                 this.stream.destroy();
             }
             if (this.poll_ids) {
@@ -389,7 +390,7 @@ module.exports = function(RED) {
         var node = this;
         var dm_user;
 
-        if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
+        if (credentials) {
             var twit = new Ntwitter({
                 consumer_key: credentials.consumer_key,
                 consumer_secret: credentials.consumer_secret,

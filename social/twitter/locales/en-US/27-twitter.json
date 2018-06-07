@@ -47,7 +47,7 @@
             "unexpectedend":"stream ended unexpectedly",
             "invalidtag":"invalid tag property",
             "missingcredentials":"missing twitter credentials",
-            "truncated":"truncated tweet greater than 140 characters",
+            "truncated":"truncated tweet greater than 280 characters",
             "sendfail":"send tweet failed: __error__",
             "nopayload":"no payload to tweet"
         }

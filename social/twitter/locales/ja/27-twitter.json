@@ -39,7 +39,7 @@
             "unexpectedend": "ストリームが予期せず終了しました",
             "invalidtag": "無効なタグプロパティ",
             "missingcredentials": "Twitterが認証されていません",
-            "truncated": "140文字を超えるツイートが切り捨てられました",
+            "truncated": "280文字を超えるツイートが切り捨てられました",
             "sendfail": "ツイートの投稿が失敗: __error__",
             "nopayload": "ツイートするペイロードがありません",
             "oauthbroke": "something in twitter oauth broke.",

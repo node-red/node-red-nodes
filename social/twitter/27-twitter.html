@@ -32,6 +32,15 @@
     </div>
 </script>
 
+<script type="text/x-red" data-help-name="twitter-credentials">
+    <p>Authentication for the Twitter API</p>
+    <p>Earlier versions of this node provided one-click authentication. Twitter removed the ability
+       to do that in June 2018. You must now register your own application with
+       <a href="https://apps.twitter.com">Twitter</a> and generate your own access tokens.</p>
+
+</script>
+
+
 <script type="text/javascript">
 (function() {
     var twitterConfigNodeId = null;
@@ -75,6 +84,9 @@
             <option value="event" data-i18n="twitter.search.events"></option>
         </select>
     </div>
+    <div id="tweet-events-deprecated" class="hide form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
+        <i class="fa fa-warning"></i> Twitter are withdrawing the API used to access a user&apos;s activity stream in August 2018 so this feature will be removed from the node in the near future. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    </div>
     <div class="form-row" id="node-input-tags-row">
         <label for="node-input-tags"><i class="fa fa-tags"></i> <span id="node-input-tags-label" data-i18n="twitter.label.for"></span></label>
         <input type="text" id="node-input-tags" data-i18n="[placeholder]twitter.placeholder.for">
@@ -92,7 +104,6 @@
         <li>all the tweets from accounts that the authenticated user follows</li>
         <li>all tweets by specified users</li>
         <li>direct messages received by the authenticated user</li>
-        <li>twitter events for the authenticated user</li>
     </ul></p>
     <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
     If you want to pass in the search term(s) via the <code>msg.payload</code>, leave the <b>for</b> field blank.</p>
@@ -163,6 +174,7 @@
                     $("#node-input-tags-label").html(forlabel);
                     $("#node-input-tags").attr("placeholder",forph);
                 }
+                $("#tweet-events-deprecated").toggle((type === 'event'));
             });
             $("#node-input-user").change();
         },
