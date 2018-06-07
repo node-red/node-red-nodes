@@ -1,11 +1,45 @@
 
 <script type="text/x-red" data-template-name="twitter-credentials">
-    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
-        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
+    <div class="form-row">
+        <label for="node-config-input-screen_name"><i class="fa fa-twitter"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
+        <i class="fa fa-at"></i> <input type="text" id="node-config-input-screen_name">
     </div>
-    <div class="form-row" id="node-config-twitter-row"></div>
-    <input type="hidden" id="node-config-input-screen_name">
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>1.</b> <span data-i18n="twitter.label.create"></span> <a href="https://apps.twitter.com/" target="_blank" style="text-decoration:underline;">apps.twitter.com</a></p>
+    </div>
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>2.</b> <span data-i18n="twitter.label.copy-consumer"></span></p>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-consumer_key"><span data-i18n="twitter.label.consumer_key"></span></label>
+        <input type="password" id="node-config-input-consumer_key">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-consumer_secret"><span data-i18n="twitter.label.consumer_secret"></span></label>
+        <input type="password" id="node-config-input-consumer_secret">
+    </div>
+
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>3.</b> <span data-i18n="twitter.label.copy-accessToken"></span></p>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-access_token"><span data-i18n="twitter.label.access_key"></span></label>
+        <input type="password" id="node-config-input-access_token">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-access_token_secret"><span data-i18n="twitter.label.access_secret"></span></label>
+        <input type="password" id="node-config-input-access_token_secret">
+    </div>
 </script>
+
+<script type="text/x-red" data-help-name="twitter-credentials">
+    <p>Authentication for the Twitter API</p>
+    <p>Earlier versions of this node provided one-click authentication. Twitter removed the ability
+       to do that in June 2018. You must now register your own application with
+       <a href="https://apps.twitter.com">Twitter</a> and generate your own access tokens.</p>
+
+</script>
+
 
 <script type="text/javascript">
 (function() {
@@ -18,73 +52,24 @@
             screen_name: {value:""}
         },
         credentials: {
-            screen_name: {type:"text"},
+            consumer_key: { type: "password"},
+            consumer_secret: { type: "password" },
             access_token: {type: "password"},
             access_token_secret: {type:"password"}
         },
         label: function() {
-            return this.screen_name;
-        },
-        exportable: false,
-        oneditprepare: function() {
-            var twitterConfigNodeId = this.id;
-            var clickhere = this._("twitter.label.clickhere");
-            var twitterID = this._("twitter.label.twitter-id");
-            function showTwitterAuthStart() {
-                var pathname = document.location.pathname;
-                if (pathname.slice(-1) != "/") {
-                    pathname += "/";
-                }
-                var callback = encodeURIComponent(location.protocol+"//"+location.hostname+":"+location.port+pathname+"twitter-credentials/"+twitterConfigNodeId+"/auth/callback");
-                $("#node-config-dialog-ok").button("disable");
-                $("#node-config-twitter-row").html('<div style="text-align: center; margin-top: 20px; "><a class="editor-button" id="node-config-twitter-start" href="twitter-credentials/'+twitterConfigNodeId+'/auth?callback='+callback+'" target="_blank">'+clickhere+'</a></div>');
-                $("#node-config-twitter-start").click(function() {
-                    twitterConfigNodeIntervalId = window.setTimeout(pollTwitterCredentials,2000);
-                });
-            }
-            function updateTwitterScreenName(sn) {
-                $("#node-config-input-screen_name").val(sn);
-                $("#node-config-twitter-row").html('<label><i class="fa fa-user"></i> '+twitterID+'</label><span class="input-xlarge uneditable-input">'+sn+'</span>');
-            }
-            function pollTwitterCredentials(e) {
-                $.getJSON('credentials/twitter-credentials/'+twitterConfigNodeId,function(data) {
-                    if (data.screen_name) {
-                        updateTwitterScreenName(data.screen_name);
-                        twitterConfigNodeIntervalId = null;
-                        $("#node-config-dialog-ok").button("enable");
-                    } else {
-                        twitterConfigNodeIntervalId = window.setTimeout(pollTwitterCredentials,2000);
-                    }
-                })
-            }
-            if (!this.screen_name || this.screen_name === "") {
-                showTwitterAuthStart();
+            if (this.screen_name) {
+                return "@"+this.screen_name
             } else {
-                if (this.credentials.screen_name) {
-                    updateTwitterScreenName(this.credentials.screen_name);
-                } else {
-                    showTwitterAuthStart();
-                }
+                return "Twitter: "+this.id
             }
         },
-        oneditsave: function() {
-            if (twitterConfigNodeIntervalId) {
-                window.clearTimeout(twitterConfigNodeIntervalId);
-            }
-        },
-        oneditcancel: function(adding) {
-            if (twitterConfigNodeIntervalId) {
-                window.clearTimeout(twitterConfigNodeIntervalId);
-            }
-        }
+        exportable: false
     });
 })();
 </script>
 
 <script type="text/x-red" data-template-name="twitter in">
-    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
-        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
-    </div>
     <div class="form-row">
         <label for="node-input-twitter"><i class="fa fa-user"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
         <input type="text" id="node-input-twitter">
@@ -102,7 +87,6 @@
     <div id="tweet-events-deprecated" class="hide form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
         <i class="fa fa-warning"></i> Twitter are withdrawing the API used to access a user&apos;s activity stream in August 2018 so this feature will be removed from the node in the near future. See <a href="https://bit.ly/2kr7InE">here</a> for details.
     </div>
-
     <div class="form-row" id="node-input-tags-row">
         <label for="node-input-tags"><i class="fa fa-tags"></i> <span id="node-input-tags-label" data-i18n="twitter.label.for"></span></label>
         <input type="text" id="node-input-tags" data-i18n="[placeholder]twitter.placeholder.for">
@@ -120,7 +104,6 @@
         <li>all the tweets from accounts that the authenticated user follows</li>
         <li>all tweets by specified users</li>
         <li>direct messages received by the authenticated user</li>
-        <li>twitter events for the authenticated user</li>
     </ul></p>
     <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
     If you want to pass in the search term(s) via the <code>msg.payload</code>, leave the <b>for</b> field blank.</p>
@@ -209,9 +192,6 @@
 
 
 <script type="text/x-red" data-template-name="twitter out">
-    <div class="form-tips" style="background: #edd; padding: 20px; margin-bottom: 20px">
-        <i class="fa fa-warning"></i> This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See <a href="https://bit.ly/2kr7InE">here</a> for details.
-    </div>
     <div class="form-row">
         <label for="node-input-twitter"><i class="fa fa-user"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
         <input type="text" id="node-input-twitter">

@@ -6,13 +6,14 @@ module.exports = function(RED) {
     var request = require('request');
     var twitterRateTimeout;
 
-    function TwitterNode(n) {
+    function TwitterCredentialsNode(n) {
         RED.nodes.createNode(this,n);
         this.screen_name = n.screen_name;
     }
-    RED.nodes.registerType("twitter-credentials",TwitterNode,{
+    RED.nodes.registerType("twitter-credentials",TwitterCredentialsNode,{
         credentials: {
-            screen_name: {type:"text"},
+            consumer_key: { type: "password"},
+            consumer_secret: { type: "password" },
             access_token: {type: "password"},
             access_token_secret: {type:"password"}
         }
@@ -47,7 +48,6 @@ module.exports = function(RED) {
 
     function TwitterInNode(n) {
         RED.nodes.createNode(this,n);
-        this.error("This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See https://bit.ly/2kr7InE for details.")
         this.active = true;
         this.user = n.user;
         //this.tags = n.tags.replace(/ /g,'');
@@ -57,12 +57,10 @@ module.exports = function(RED) {
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         var credentials = RED.nodes.getCredentials(this.twitter);
 
-        var node = this;
-
-        if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
+        if (credentials) {
             var twit = new Ntwitter({
-                consumer_key: "OKjYEd1ef2bfFolV25G5nQ",
-                consumer_secret: "meRsltCktVMUI8gmggpXett7WBLd1k0qidYazoML6g",
+                consumer_key: credentials.consumer_key,
+                consumer_secret: credentials.consumer_secret,
                 access_token_key: credentials.access_token,
                 access_token_secret: credentials.access_token_secret
             });
@@ -74,6 +72,7 @@ module.exports = function(RED) {
             //
             //},10000);
 
+            var node = this;
             if (this.user === "user") {
                 node.poll_ids = [];
                 node.since_ids = {};
@@ -365,11 +364,11 @@ module.exports = function(RED) {
         }
 
         this.on('close', function() {
-            if (node.tout) { clearTimeout(node.tout); }
-            if (node.tout2) { clearTimeout(node.tout2); }
+            if (this.tout) { clearTimeout(this.tout); }
+            if (this.tout2) { clearTimeout(this.tout2); }
             if (this.stream) {
                 this.restart = false;
-                node.stream.removeAllListeners();
+                this.stream.removeAllListeners();
                 this.stream.destroy();
             }
             if (this.poll_ids) {
@@ -384,18 +383,17 @@ module.exports = function(RED) {
 
     function TwitterOutNode(n) {
         RED.nodes.createNode(this,n);
-        this.error("This version of the Twitter node will no longer be able to connect to the Twitter API from June 12th 2018. See https://bit.ly/2kr7InE for details.")
         this.topic = n.topic;
         this.twitter = n.twitter;
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         var credentials = RED.nodes.getCredentials(this.twitter);
         var node = this;
-	var dm_user;
+        var dm_user;
 
-        if (credentials && credentials.screen_name == this.twitterConfig.screen_name) {
+        if (credentials) {
             var twit = new Ntwitter({
-                consumer_key: "OKjYEd1ef2bfFolV25G5nQ",
-                consumer_secret: "meRsltCktVMUI8gmggpXett7WBLd1k0qidYazoML6g",
+                consumer_key: credentials.consumer_key,
+                consumer_secret: credentials.consumer_secret,
                 access_token_key: credentials.access_token,
                 access_token_secret: credentials.access_token_secret
             });
@@ -469,58 +467,4 @@ module.exports = function(RED) {
         }
     }
     RED.nodes.registerType("twitter out",TwitterOutNode);
-
-    var oa = new OAuth(
-        "https://api.twitter.com/oauth/request_token",
-        "https://api.twitter.com/oauth/access_token",
-        "OKjYEd1ef2bfFolV25G5nQ",
-        "meRsltCktVMUI8gmggpXett7WBLd1k0qidYazoML6g",
-        "1.0",
-        null,
-        "HMAC-SHA1"
-    );
-
-    RED.httpAdmin.get('/twitter-credentials/:id/auth', function(req, res) {
-        var credentials = {};
-        oa.getOAuthRequestToken({
-            oauth_callback: req.query.callback
-        },function(error, oauth_token, oauth_token_secret, results) {
-            if (error) {
-                var err = {statusCode: 401, data: "dummy error"};
-                var resp = RED._("twitter.errors.oautherror",{statusCode: err.statusCode, errorData: err.data});
-                res.send(resp)
-            }
-            else {
-                credentials.oauth_token = oauth_token;
-                credentials.oauth_token_secret = oauth_token_secret;
-                res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token)
-                RED.nodes.addCredentials(req.params.id,credentials);
-            }
-        });
-    });
-
-    RED.httpAdmin.get('/twitter-credentials/:id/auth/callback', function(req, res, next) {
-        var credentials = RED.nodes.getCredentials(req.params.id);
-        credentials.oauth_verifier = req.query.oauth_verifier;
-
-        oa.getOAuthAccessToken(
-            credentials.oauth_token,
-            credentials.token_secret,
-            credentials.oauth_verifier,
-            function(error, oauth_access_token, oauth_access_token_secret, results) {
-                if (error) {
-                    RED.log.error(error);
-                    res.send(RED._("twitter.errors.oauthbroke"));
-                }
-                else {
-                    credentials = {};
-                    credentials.access_token = oauth_access_token;
-                    credentials.access_token_secret = oauth_access_token_secret;
-                    credentials.screen_name = "@"+results.screen_name;
-                    RED.nodes.addCredentials(req.params.id,credentials);
-                    res.send(RED._("twitter.errors.authorized"));
-                }
-            }
-        );
-    });
 }
