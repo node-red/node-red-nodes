@@ -8,10 +8,7 @@ module.exports = function(RED) {
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
         this.url = n.url;
-        if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
-        this.interval = (parseInt(n.interval)||15) * 60000;
         var node = this;
-        this.interval_id = null;
         this.seen = {};
         var parsedUrl = url.parse(this.url);
         if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
@@ -53,14 +50,8 @@ module.exports = function(RED) {
                 feedparser.on('meta', function (meta) {});
                 feedparser.on('end', function () {});
             };
-            this.interval_id = setInterval(function() { getFeed(); }, node.interval);
-            getFeed();
         }
 
-        this.on("close", function() {
-            if (this.interval_id != null) {
-                clearInterval(this.interval_id);
-            }
         });
     }
 

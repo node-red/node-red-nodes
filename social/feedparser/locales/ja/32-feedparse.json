@@ -1,9 +1,7 @@
 {
     "feedparse": {
         "label": {
-            "feedurl": "取得先URL",
-            "refresh": "更新",
-            "minutes": "分"
+            "feedurl": "取得先URL"
         },
         "errors": {
             "badstatuscode": "エラー - 無効なステータスコード",

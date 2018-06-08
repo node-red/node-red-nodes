@@ -2,9 +2,7 @@
     "feedparse": {
         "feedparse": "feedparser",
         "label": {
-            "feedurl": "Feed url",
-            "refresh": "Refresh",
-            "minutes": "minutes"
+            "feedurl": "Feed url"
         },
         "errors": {
             "badstatuscode": "error - Bad status code",
