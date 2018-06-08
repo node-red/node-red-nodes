@@ -59,12 +59,27 @@
         },
         label: function() {
             if (this.screen_name) {
-                return "@"+this.screen_name
+                return (this.screen_name[0]!=="@"?"@":"")+this.screen_name
             } else {
                 return "Twitter: "+this.id
             }
         },
-        exportable: false
+        exportable: false,
+        oneditsave: function() {
+            var trimFields = [
+                "consumer_key",
+                "consumer_secret",
+                "access_token",
+                "access_token_secret"
+            ];
+            // Just in case any whitespace has crept in with the copy-paste of the fields
+            trimFields.forEach(function(field) {
+                var v = $("#node-config-input-"+field).val();
+                v = v.trim();
+                $("#node-config-input-"+field).val(v);
+
+            });
+        }
     });
 })();
 </script>

@@ -10,6 +10,9 @@ module.exports = function(RED) {
     function TwitterCredentialsNode(n) {
         RED.nodes.createNode(this,n);
         this.screen_name = n.screen_name;
+        if (this.screen_name && this.screen_name[0] !== "@") {
+            this.screen_name = "@"+this.screen_name;
+        }
     }
     RED.nodes.registerType("twitter-credentials",TwitterCredentialsNode,{
         credentials: {
@@ -396,6 +399,18 @@ module.exports = function(RED) {
                 access_token_key: credentials.access_token,
                 access_token_secret: credentials.access_token_secret
             });
+
+            var oa = new OAuth(
+                "https://api.twitter.com/oauth/request_token",
+                "https://api.twitter.com/oauth/access_token",
+                credentials.consumer_key,
+                credentials.consumer_secret,
+                "1.0",
+                null,
+                "HMAC-SHA1"
+            );
+
+
             node.on("input", function(msg) {
                 if (msg.hasOwnProperty("payload")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
