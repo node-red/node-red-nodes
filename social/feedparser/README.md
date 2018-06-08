@@ -16,5 +16,3 @@ Usage
 ### Input
 
 Monitors an RSS/atom feed for new entries.
-
-You can set the polling time in minutes. Defaults to 15 minutes.
