@@ -8,17 +8,14 @@ module.exports = function(RED) {
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
         this.url = n.url;
-        if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
-        this.interval = (parseInt(n.interval)||15) * 60000;
         var node = this;
-        this.interval_id = null;
         this.seen = {};
         var parsedUrl = url.parse(this.url);
         if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
             this.error(RED._("feedparse.errors.invalidurl"));
         }
         else {
-            var getFeed = function() {
+            var getFeed = function(msg) {
                 var req = request(node.url, {timeout:10000, pool:false});
                 //req.setMaxListeners(50);
                 req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
@@ -40,11 +37,11 @@ module.exports = function(RED) {
                     while (article = stream.read()) {  // jshint ignore:line
                         if (!(article.guid in node.seen) || ( node.seen[article.guid] !== 0 && node.seen[article.guid] != article.date.getTime())) {
                             node.seen[article.guid] = article.date?article.date.getTime():0;
-                            var msg = {
-                                topic: article.origlink || article.link,
-                                payload: article.description,
-                                article: article
-                            };
+                            
+                            msg.topic = article.origlink || article.link;
+                            msg.payload = article.description;
+                            msg.article = article;
+                            
                             node.send(msg);
                         }
                     }
@@ -53,14 +50,10 @@ module.exports = function(RED) {
                 feedparser.on('meta', function (meta) {});
                 feedparser.on('end', function () {});
             };
-            this.interval_id = setInterval(function() { getFeed(); }, node.interval);
-            getFeed();
         }
 
-        this.on("close", function() {
-            if (this.interval_id != null) {
-                clearInterval(this.interval_id);
-            }
+        this.on("input", function(msg) {
+            getFeed(msg);
         });
     }
 
