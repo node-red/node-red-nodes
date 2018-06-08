@@ -15,7 +15,7 @@ module.exports = function(RED) {
             this.error(RED._("feedparse.errors.invalidurl"));
         }
         else {
-            var getFeed = function() {
+            var getFeed = function(msg) {
                 var req = request(node.url, {timeout:10000, pool:false});
                 //req.setMaxListeners(50);
                 req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
@@ -37,11 +37,11 @@ module.exports = function(RED) {
                     while (article = stream.read()) {  // jshint ignore:line
                         if (!(article.guid in node.seen) || ( node.seen[article.guid] !== 0 && node.seen[article.guid] != article.date.getTime())) {
                             node.seen[article.guid] = article.date?article.date.getTime():0;
-                            var msg = {
-                                topic: article.origlink || article.link,
-                                payload: article.description,
-                                article: article
-                            };
+                            
+                            msg.topic = article.origlink || article.link;
+                            msg.payload = article.description;
+                            msg.article = article;
+                            
                             node.send(msg);
                         }
                     }
@@ -52,6 +52,8 @@ module.exports = function(RED) {
             };
         }
 
+        this.on("input", function(msg) {
+            getFeed(msg);
         });
     }
 
