@@ -151,7 +151,7 @@ Copyright JS Foundation and other contributors, http://js.foundation under [the 
 
 **node-red-node-irc** - *[91-irc](social/irc)* - Connects to an IRC server to send and receive messages.
 
-**node-red-node-nma** - *[57-nma](social/nma)* - Sends alerts to Android devices via the [Notify-My-Android](http://www.notifymyandroid.com/) app.
+**node-red-node-nma** - *[57-nma](social/nma)* - DEPRECATED as NMA closed down operations.
 
 **node-red-node-notify** - *[57-notify](social/notify)* - Uses [Growl](http://growl.info/) to provide a desktop popup containing the payload. Only useful on the local Apple machine.
 
