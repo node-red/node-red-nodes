@@ -33,29 +33,10 @@ module.exports = function(RED) {
         if (this.serialConfig) {
             var node = this;
             node.port = serialPool.get(this.serialConfig);
-            node.addCh = "";
-            if (node.serialConfig.newline.substr(0,2) == "0x") {
-                node.addCh = new Buffer([parseInt(node.serialConfig.newline)]);
-            }
-            else {
-                node.addCh = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
-            }
 
             node.on("input",function(msg) {
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
-                var payload = msg.payload;
-                if (!Buffer.isBuffer(payload)) {
-                    if (typeof payload === "object") {
-                        payload = JSON.stringify(payload);
-                    }
-                    else {
-                        payload = payload.toString();
-                    }
-                    if ((node.serialConfig.out === "char") && (node.serialConfig.addchar === true)) { payload += node.addCh; }
-                }
-                else if ((node.serialConfig.out === "char") && (node.serialConfig.addchar === true) && (node.addCh !== "")) {
-                    payload = Buffer.concat([payload,node.addCh]);
-                }
+                var payload = node.port.encodePayload(msg.payload);
                 node.port.write(payload,function(err,res) {
                     if (err) {
                         var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
@@ -95,74 +76,11 @@ module.exports = function(RED) {
         if (this.serialConfig) {
             var node = this;
             node.tout = null;
-            var buf;
-            if (node.serialConfig.out != "count") { buf = new Buffer(bufMaxSize); }
-            else { buf = new Buffer(Number(node.serialConfig.newline)); }
-            var i = 0;
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             node.port = serialPool.get(this.serialConfig);
 
-            var splitc;
-            if (node.serialConfig.newline.substr(0,2) == "0x") {
-                splitc = new Buffer([parseInt(node.serialConfig.newline)]);
-            }
-            else {
-                splitc = new Buffer(node.serialConfig.newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
-            }
-
-            this.port.on('data', function(msg) {
-                // single char buffer
-                if ((node.serialConfig.newline === 0)||(node.serialConfig.newline === "")) {
-                    if (node.serialConfig.bin !== "bin") { node.send({"payload": String.fromCharCode(msg), port:node.serialConfig.serialport}); }
-                    else { node.send({"payload": new Buffer([msg]), port:node.serialConfig.serialport}); }
-                }
-                else {
-                    // do the timer thing
-                    if (node.serialConfig.out === "time") {
-                        if (node.tout) {
-                            i += 1;
-                            buf[i] = msg;
-                        }
-                        else {
-                            node.tout = setTimeout(function () {
-                                node.tout = null;
-                                var m = new Buffer(i+1);
-                                buf.copy(m,0,0,i+1);
-                                if (node.serialConfig.bin !== "bin") { m = m.toString(); }
-                                node.send({"payload": m, port:node.serialConfig.serialport});
-                                m = null;
-                            }, node.serialConfig.newline);
-                            i = 0;
-                            buf[0] = msg;
-                        }
-                    }
-                    // count bytes into a buffer...
-                    else if (node.serialConfig.out === "count") {
-                        buf[i] = msg;
-                        i += 1;
-                        if ( i >= parseInt(node.serialConfig.newline)) {
-                            var m = new Buffer(i);
-                            buf.copy(m,0,0,i);
-                            if (node.serialConfig.bin !== "bin") { m = m.toString(); }
-                            node.send({"payload":m, port:node.serialConfig.serialport});
-                            m = null;
-                            i = 0;
-                        }
-                    }
-                    // look to match char...
-                    else if (node.serialConfig.out === "char") {
-                        buf[i] = msg;
-                        i += 1;
-                        if ((msg === splitc[0]) || (i === bufMaxSize)) {
-                            var n = new Buffer(i);
-                            buf.copy(n,0,0,i);
-                            if (node.serialConfig.bin !== "bin") { n = n.toString(); }
-                            node.send({"payload":n, port:node.serialConfig.serialport});
-                            n = null;
-                            i = 0;
-                        }
-                    }
-                }
+            this.port.on('data', function(payload, port) {
+                node.send({payload:payload, port:port});
             });
             this.port.on('ready', function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
@@ -205,6 +123,26 @@ module.exports = function(RED) {
                 // just return the connection object if already have one
                 // key is the port (file path)
                 if (connections[id]) { return connections[id]; }
+
+                // State variables to be used by the on('data') handler
+                var i = 0; // position in the buffer
+                // .newline is misleading as its meaning depends on the split input policy:
+                //   "char"  : a msg will be sent after a character with value .newline is received
+                //   "time"  : a msg will be sent after .newline milliseconds
+                //   "count" : a msg will be sent after .newline characters
+                // if we use "count", we already know how big the buffer will be
+                var bufSize = spliton == "count" ? Number(newline): bufMaxSize;
+                var buf = new Buffer(bufSize);
+
+                var splitc; // split character
+                // Parse the split character onto a 1-char buffer we can immediately compare against
+                if (newline.substr(0,2) == "0x") {
+                    splitc = new Buffer([parseInt(newline)]);
+                }
+                else {
+                    splitc = new Buffer(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
+                }
+
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
@@ -213,6 +151,21 @@ module.exports = function(RED) {
                         tout: null,
                         on: function(a,b) { this._emitter.on(a,b); },
                         close: function(cb) { this.serial.close(cb); },
+                        encodePayload: function (payload) {
+                            if (!Buffer.isBuffer(payload)) {
+                                if (typeof payload === "object") {
+                                    payload = JSON.stringify(payload);
+                                }
+                                else {
+                                    payload = payload.toString();
+                                }
+                                if ((spliton === "char") && (addchar === true)) { payload += splitc; }
+                            }
+                            else if ((spliton === "char") && (addchar === true) && (splitc !== "")) {
+                                payload = Buffer.concat([payload,splitc]);
+                            }
+                            return payload;
+                        },
                         write: function(m,cb) { this.serial.write(m,cb); },
                     }
                     //newline = newline.replace("\\n","\n").replace("\\r","\r");
@@ -259,9 +212,53 @@ module.exports = function(RED) {
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
                         });
+
                         obj.serial.on('data',function(d) {
+                            function emitData(data) {
+                                var m = Buffer.from(data);
+                                if (binoutput !== "bin") { m = m.toString(); }
+                                obj._emitter.emit('data',
+                                    /* payload */ m,
+                                    /* port */ port);
+                            }
+
                             for (var z=0; z<d.length; z++) {
-                                obj._emitter.emit('data',d[z]);
+                                var c = d[z];
+                                // handle the trivial case first -- single char buffer
+                                if ((newline === 0)||(newline === "")) {
+                                    emitData(new Buffer([c]));
+                                    continue;
+                                }
+
+                                // save incoming data into local buffer
+                                buf[i] = c;
+                                i += 1;
+
+                                // do the timer thing
+                                if (spliton === "time") {
+                                    // start the timeout at the first character
+                                    if (!obj.tout) {
+                                        obj.tout = setTimeout(function () {
+                                            obj.tout = null;
+                                            emitData(buf.slice(0, i));
+                                            i=0;
+                                        }, newline);
+                                    }
+                                }
+                                // count bytes into a buffer...
+                                else if (spliton === "count") {
+                                    if ( i >= parseInt(newline)) {
+                                        emitData(buf.slice(0,i));
+                                        i=0;
+                                    }
+                                }
+                                // look to match char...
+                                else if (spliton === "char") {
+                                    if ((c === splitc[0]) || (i === bufMaxSize)) {
+                                        emitData(buf.slice(0,i));
+                                        i=0;
+                                    }
+                                }
                             }
                         });
                         // obj.serial.on("disconnect",function() {
