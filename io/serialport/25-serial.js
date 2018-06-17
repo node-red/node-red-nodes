@@ -20,6 +20,7 @@ module.exports = function(RED) {
         this.stopbits = parseInt(n.stopbits) || 1;
         this.bin = n.bin || "false";
         this.out = n.out || "char";
+        this.responsetimeout = n.responsetimeout || 10000;
     }
     RED.nodes.registerType("serial-port",SerialPortNode);
 
@@ -178,7 +179,8 @@ module.exports = function(RED) {
                     newline   = serialConfig.newline,
                     spliton   = serialConfig.out,
                     binoutput = serialConfig.bin,
-                    addchar   = serialConfig.addchar;
+                    addchar   = serialConfig.addchar,
+                    responsetimeout = serialConfig.responsetimeout;
                 var id = port;
                 // just return the connection object if already have one
                 // key is the port (file path)
@@ -246,7 +248,7 @@ module.exports = function(RED) {
                             var qobj = this.queue[0];
                             this.write(qobj.payload,qobj.cb);
                             var msg = qobj.msg;
-                            var timeout = msg.timeout || 10000;
+                            var timeout = msg.timeout || responsetimeout;
                             this.tout = setTimeout(function () {
                                 this.tout = null;
                                 var msgout = obj.dequeue() || {};

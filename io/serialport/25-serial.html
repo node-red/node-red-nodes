@@ -207,6 +207,18 @@
             <input style="width:30px; margin-left:10px; vertical-align:top;" type="checkbox" id="node-config-input-addchar"><label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
         </div>
     </div>
+    <br/>
+    <div id="node-config-addchar">
+        <div class="form-row">
+            <label><i class="fa fa-exchange"></i> <span data-i18n="serial.label.request"></span></label>
+        </div>
+        <div class="form-row" style="padding-left:10px;">
+            <span data-i18n="serial.label.responsetimeout"></span>
+            <input type="text" id="node-config-input-responsetimeout" style="width:50px;">
+            <span data-i18n="serial.label.ms"></span>
+        </div>
+    </div>
+    <div class="form-tips" id="tip-responsetimeout" hidden><span data-i18n="serial.tip.responsetimeout"></span></div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
     <div class="form-tips" id="tip-bin" hidden><span data-i18n="serial.tip.timeout"></span></div>
 </script>
@@ -232,7 +244,8 @@
             newline: {value:"\\n"},
             bin: {value:"false"},
             out: {value:"char"},
-            addchar: {value:false}
+            addchar: {value:false},
+            responsetimeout: {value: 10000}
         },
         label: function() {
             this.serialbaud = this.serialbaud || 57600;
@@ -295,6 +308,8 @@
                     $("#tip-bin").hide();
                 }
             });
+
+            $("#node-config-input-responsetimeout").on('focus', function () { $("#tip-responsetimeout").show(); });
 
             try {
                 $("#node-config-input-serialport").autocomplete( "destroy" );
