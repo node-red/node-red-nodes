@@ -78,6 +78,15 @@ module.exports = function(RED) {
                         }
                     });
                 }
+                if (node.state === "PULLUP") {
+                    node.board.pinMode(node.pin, 0x0B);
+                    node.board.digitalRead(node.pin, function(v) {
+                        if (v !== node.oldval) {
+                            node.oldval = v;
+                            node.send({payload:v, topic:node.pin});
+                        }
+                    });
+                }
                 if (node.state == "STRING") {
                     node.board.on('string', function(v) {
                         if (v !== node.oldval) {

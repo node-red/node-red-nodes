@@ -18,6 +18,7 @@
         "state": {
             "in": {
                 "digital": "Digital pin",
+                "pullup": "Digital pin with pullup",
                 "analogue": "Analogue pin",
                 "string": "String"
             },
