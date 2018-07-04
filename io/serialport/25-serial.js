@@ -76,7 +76,6 @@ module.exports = function(RED) {
 
         if (this.serialConfig) {
             var node = this;
-            node.tout = null;
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
             node.port = serialPool.get(this.serialConfig);
 
@@ -114,7 +113,6 @@ module.exports = function(RED) {
 
         if (this.serialConfig) {
             var node = this;
-            node.tout = null;
             node.port = serialPool.get(this.serialConfig);
             // Serial Out
             node.on("input",function(msg) {
