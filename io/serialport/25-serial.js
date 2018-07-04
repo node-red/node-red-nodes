@@ -237,6 +237,8 @@ module.exports = function(RED) {
                                 cb: cb,
                             }
                             this.queue.push(qobj);
+                            // If we're enqueing the first message in line,
+                            // we shall send it right away
                             if (this.queue.length === 1) {
                                 this.writehead();
                             }
@@ -264,6 +266,8 @@ module.exports = function(RED) {
                             }, timeout);
                         },
                         dequeue: function() {
+                            // if we are trying to dequeue stuff from an
+                            // empty queue, that's an unsolicited message
                             if (!this.queue.length) { return null; }
                             var msg = Object.assign({}, this.queue[0].msg);
                             msg = Object.assign(msg, {
