@@ -320,7 +320,7 @@ module.exports = function(RED) {
                         obj.serial.on('open',function() {
                             olderr = "";
                             RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
-                            if (obj.tout) { clearTimeout(obj.tout); }
+                            if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
                         });
