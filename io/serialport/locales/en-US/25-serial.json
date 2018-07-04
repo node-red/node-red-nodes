@@ -1,5 +1,9 @@
 {
     "serial": {
+        "status": {
+            "waiting": "waiting",
+            "timeout": "timeout"
+        },
         "label": {
             "serialport": "Serial Port",
             "settings": "Settings",

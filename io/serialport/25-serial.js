@@ -119,7 +119,7 @@ module.exports = function(RED) {
             // Serial Out
             node.on("input",function(msg) {
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
-                node.status({fill:"yellow",shape:"dot",text:"waiting"});
+                node.status({fill:"yellow",shape:"dot",text:"serial.status.waiting"});
                 node.port.enqueue(msg,node,function(err,res) {
                     if (err) {
                         var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
@@ -139,7 +139,7 @@ module.exports = function(RED) {
             this.port.on('timeout', function(msgout, sender) {
                 if (sender !== node) { return; }
                 msgout.status = "ERR_TIMEOUT";
-                node.status({fill:"red",shape:"ring",text:"timeout"});
+                node.status({fill:"red",shape:"ring",text:"serial.status.timeout"});
                 node.send(msgout);
             });
 

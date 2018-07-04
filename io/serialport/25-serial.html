@@ -101,6 +101,7 @@
     The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request.
     Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is produced to the output (see Outputs below),
     with <code>msg.payload</code> containing the received response (or missing in case if timeout) and all other fields preserved.</p>
+    <p>For consistency with the <code>serial in</code> node, <code>msg.port</code> is set to the name of the port selected.</p>
     <h3>Inputs</h3>
     <ul>
     <li>
@@ -214,7 +215,7 @@
         </div>
         <div class="form-row" style="padding-left:10px;">
             <span data-i18n="serial.label.responsetimeout"></span>
-            <input type="text" id="node-config-input-responsetimeout" style="width:50px;">
+            <input type="text" id="node-config-input-responsetimeout" style="width:60px;">
             <span data-i18n="serial.label.ms"></span>
         </div>
     </div>
