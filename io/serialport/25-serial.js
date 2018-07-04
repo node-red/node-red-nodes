@@ -358,7 +358,13 @@ module.exports = function(RED) {
                                 // do the timer thing
                                 if (spliton === "time") {
                                     // start the timeout at the first character
-                                    if (!obj.tout) {
+                                    if ( i == 1 ) {
+                                        // if we had a response timeout set, clear it:
+                                        // we'll emit at least 1 character at some point anyway
+                                        if (obj.tout) {
+                                            clearTimeout(obj.tout);
+                                            obj.tout = null;
+                                        }
                                         obj.tout = setTimeout(function () {
                                             obj.tout = null;
                                             emitData(buf.slice(0, i));
