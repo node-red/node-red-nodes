@@ -187,6 +187,7 @@
         <select type="text" id="node-config-input-out" style="margin-left:5px; width:200px;">
             <option value="char" data-i18n="serial.split.character"></option>
             <option value="time" data-i18n="serial.split.timeout"></option>
+            <option value="interbyte" data-i18n="serial.split.silent"></option>
             <option value="count" data-i18n="serial.split.lengths"></option>
         </select>
         <input type="text" id="node-config-input-newline" style="width:50px;">
@@ -221,7 +222,8 @@
     </div>
     <div class="form-tips" id="tip-responsetimeout" hidden><span data-i18n="serial.tip.responsetimeout"></span></div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
-    <div class="form-tips" id="tip-bin" hidden><span data-i18n="serial.tip.timeout"></span></div>
+    <div class="form-tips" id="tip-timeout" hidden><span data-i18n="serial.tip.timeout"></span></div>
+    <div class="form-tips" id="tip-silent" hidden><span data-i18n="serial.tip.silent"></span></div>
 </script>
 
 <script type="text/x-red" data-help-name="serial-port">
@@ -290,7 +292,8 @@
                     $("#node-units").text("");
                     $("#node-config-addchar").show();
                     $("#tip-split").show();
-                    $("#tip-bin").hide();
+                    $("#tip-timeout").hide();
+                    $("#tip-silent").hide();
                 }
                 else if ($("#node-config-input-out").val() == "time") {
                     if (previous != "time") { $("#node-config-input-newline").val("0"); }
@@ -298,7 +301,17 @@
                     $("#node-config-addchar").hide();
                     $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
-                    $("#tip-bin").show();
+                    $("#tip-timeout").show();
+                    $("#tip-silent").hide();
+                }
+                else if ($("#node-config-input-out").val() == "interbyte") {
+                    if (previous != "interbyte") { $("#node-config-input-newline").val("0"); }
+                    $("#node-units").text("ms");
+                    $("#node-config-addchar").hide();
+                    $("#node-config-input-addchar").val("false");
+                    $("#tip-split").hide();
+                    $("#tip-timeout").hide();
+                    $("#tip-silent").show();
                 }
                 else {
                     if (previous != "count") { $("#node-config-input-newline").val(""); }
@@ -306,7 +319,8 @@
                     $("#node-config-addchar").hide();
                     $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
-                    $("#tip-bin").hide();
+                    $("#tip-timeout").hide();
+                    $("#tip-silent").hide();
                 }
             });
 

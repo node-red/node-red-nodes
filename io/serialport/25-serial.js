@@ -356,9 +356,11 @@ module.exports = function(RED) {
                                 i += 1;
 
                                 // do the timer thing
-                                if (spliton === "time") {
-                                    // start the timeout at the first character
-                                    if ( i == 1 ) {
+                                if (spliton === "time" || spliton === "interbyte") {
+                                    // start the timeout at the first character in case of regular timeout
+                                    // restart it at the last character of the this event in case of interbyte timeout
+                                    if ((spliton === "time" && i === 1) ||
+                                        (spliton === "interbyte" && z === d.length-1)) {
                                         // if we had a response timeout set, clear it:
                                         // we'll emit at least 1 character at some point anyway
                                         if (obj.tout) {
