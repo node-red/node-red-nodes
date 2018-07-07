@@ -62,8 +62,8 @@ def restart():
 if len(sys.argv) > 1:
     pins = sys.argv[1].lower().split(',')
     if len(pins) != 3:
-        print "Bad parameters supplied"
-        print pins
+        print("Bad parameters supplied")
+        print(pins)
         sys.exit(0)
 
     TRIGGER = int(pins[0])
@@ -91,6 +91,6 @@ if len(sys.argv) > 1:
             sys.exit(0)
 
 else:
-    print "Bad params"
-    print "    sudo nrsrf.py trigger_pin,echo_pin,rate_in_seconds"
+    print("Bad params")
+    print("    sudo nrsrf.py trigger_pin,echo_pin,rate_in_seconds")
     sys.exit(0)

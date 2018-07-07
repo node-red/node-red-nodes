@@ -107,8 +107,8 @@ def lcd_byte(bits, mode):
 if len(sys.argv) > 1:
     pins = sys.argv[1].lower().split(',')
     if len(pins) != 6:
-        print "Bad number of pins supplied"
-        print "    "+pins
+        print("Bad number of pins supplied")
+        print("    "+pins)
         sys.exit(0)
 
     LCD_RS = int(pins[0])
@@ -181,6 +181,6 @@ if len(sys.argv) > 1:
             sys.exit(0)
 
 else:
-    print "Bad params"
-    print "    sudo nrlcd.py RS,E,D4,D5,D6,D7"
+    print("Bad params")
+    print("    sudo nrlcd.py RS,E,D4,D5,D6,D7")
     sys.exit(0)

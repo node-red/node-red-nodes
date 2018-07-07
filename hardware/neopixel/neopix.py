@@ -171,5 +171,5 @@ if __name__ == '__main__':
         except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
             sys.exit(0)
         except Exception as ex:
-            print "bad data: "+data
-            print ex
+            print("bad data: "+data)
+            print(ex)
