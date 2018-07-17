@@ -7,8 +7,13 @@ module.exports = function (RED) {
 
     function getSession(host, community, version, timeout) {
         var sessionKey = host + ":" + community + ":" + version;
+        var port = 161;
+        if (host.indexOf(":") !== -1) {
+            port = host.split(":")[1];
+            host = host.split(":")[0];
+        }
         if (!(sessionKey in sessions)) {
-            sessions[sessionKey] = snmp.createSession(host, community, { version:version, timeout:(timeout || 5000) });
+            sessions[sessionKey] = snmp.createSession(host, community, { port:port, version:version, timeout:(timeout || 5000) });
         }
         return sessions[sessionKey];
     }
