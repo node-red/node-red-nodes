@@ -13,7 +13,7 @@ module.exports = function(RED) {
         var node = this;
         var oldval = null;
 
-        this.tick = setInterval(function() {
+        var tick = function() {
             var now = new Date();
             var times = SunCalc.getTimes(now, node.lat, node.lon);
             var nowMillis = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),now.getUTCHours(),now.getUTCMinutes());
@@ -21,6 +21,8 @@ module.exports = function(RED) {
             var endMillis = Date.UTC(times[node.end].getUTCFullYear(),times[node.end].getUTCMonth(),times[node.end].getUTCDate(),times[node.end].getUTCHours(),times[node.end].getUTCMinutes());
             var e1 = nowMillis - startMillis;
             var e2 = nowMillis - endMillis;
+            if (isNaN(e1)) { e1 = 1; }
+            if (isNaN(e2)) { e2 = -1; }
             var moon = parseInt(SunCalc.getMoonIllumination(now).fraction * 100 + 0.5) / 100;
             var msg = {payload:0, topic:"sun", moon:moon};
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
@@ -32,10 +34,14 @@ module.exports = function(RED) {
                 node.send([msg,msg]);
             }
             else { node.send(msg); }
-        }, 60000);
+        }
+
+        this.tick = setInterval(function() { tick(); }, 60000);
+        this.tock = setTimeout(function() { tick(); }, 500);
 
         this.on("close", function() {
-            clearInterval(this.tick);
+            if (this.tock) { clearTimeout(this.tock); }
+            if (this.tick) { clearInterval(this.tick); }
         });
     }
     RED.nodes.registerType("sunrise",SunNode);
