@@ -61,6 +61,23 @@ module.exports = function(RED) {
                         }
                     }
                 }
+                if (this.sqlquery == "batch") {
+                    if (typeof msg.topic === 'string') {
+                        node.mydbConfig.db.exec(msg.topic, function(err) {
+                            if (err) { node.error(err,msg);}
+                            else {
+                                delete msg.payload;
+                                node.send(msg);
+                            }
+                        });
+                    }
+                    else {
+                        if (typeof msg.topic !== 'string') {
+                            node.error("msg.topic : the query is not defined as string", msg);
+                            node.status({fill:"red", shape:"dot",text:"msg.topic error"});
+                        }
+                    }
+                }
                 if (this.sqlquery == "fixed"){
                     if (typeof this.sql === 'string'){
                         bind = Array.isArray(msg.payload) ? msg.payload : [];

@@ -32,6 +32,7 @@
         <label for=""><i class="fa fa-code"></i> SQL Query</label>
         <select id="node-input-sqlquery">
             <option value="msg.topic">Via msg.topic</option>
+            <option value="batch">Batch</option>
             <option value="fixed">Fixed Statement</option>
             <option value="prepared">Prepared Statement</option>
         </select>
@@ -53,7 +54,8 @@
     <p>SQL Query <i>Via msg.topic</i> and <i>Fixed Statement</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
     By its very nature it is SQL injection... so <i>be careful out there...</i></p>
     <p>SQL Type <i>Prepared Statement</i> also uses <b>db.all</b> but sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
-    <p>When using msg.topic <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
+    <p>SQL Type <i>Batch</i> uses <b>db.exec</b> which runs all SQL statements in the provided string. No result rows are returned.</p>
+    <p>When using msg.topic or batch <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
     <p>When using Normal or Prepared the <i>query</i> must be entered in the node config.</p>
     <p>Pass in the parameters as an object in <code>msg.params</code> for Prepared.  Ex:<br />
     <code>msg.params = {<br />
@@ -111,7 +113,7 @@
             });
             
             $("#node-input-sqlquery").change(function() {
-                if ($("#node-input-sqlquery").val() == "msg.topic"){
+                if ($("#node-input-sqlquery").val() == "msg.topic" || $("#node-input-sqlquery").val() == "batch"){
                     $("#node-input-sqllabel").hide();
                     $("#node-input-sql-editor").hide();
                 }
