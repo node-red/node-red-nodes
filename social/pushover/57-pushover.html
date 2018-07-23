@@ -49,6 +49,11 @@
         <input type="text" id="node-input-url_title" placeholder="optional url title">
     </div>
     <div class="form-row">
+        <label for="node-input-html"><i class="fa fa-code"></i> HTML</label>
+        <input type="checkbox" id="node-input-html" style="display:inline-block; width:15px; vertical-align:baseline;" />
+        <span>Message is <a href="https://pushover.net/api#html" target="_blank">HTML formatted</a></span>
+    </div>
+    <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
         <input type="text" id="node-input-deviceid">
     </div>
@@ -70,8 +75,8 @@
 <script type="text/x-red" data-help-name="pushover">
     <p>Uses Pushover to push the <code>msg.payload</code> to a device that has the Pushover app installed.</p>
     <p>Optionally uses <code>msg.topic</code> to set the title, <code>msg.device</code> to set the device,
-    <code>msg.priority</code> to set the priority, <code>msg.url</code> to add a web address and <code>msg.url_title</code>
-    to add a url title if not already set in the properties.</p>
+    <code>msg.priority</code> to set the priority, <code>msg.url</code> to add a web address, <code>msg.url_title</code>
+    to add a url title, and <code>html</code> to enable HTML formatting if not already set in the properties.</p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
 
@@ -86,6 +91,7 @@
             sound: {value:""},
             url: {value:""},
             url_title: {value:""},
+            html: {value:false}
         },
         credentials: {
             deviceid: {type:"text"},
