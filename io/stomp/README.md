@@ -6,7 +6,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to publish and su
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-stomp
 
@@ -16,7 +16,7 @@ Usage
 
 Connects to a Stomp capable server to send and receive messages.
 
-The **destination** field is optional. If set it overrides the **msg.topic**
+The **destination** field is optional. If set it overrides the `msg.topic`
 property of the message.
 
 As noted [here](https://github.com/easternbloc/node-stomp-client#queue-names),

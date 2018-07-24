@@ -1,18 +1,3 @@
-<!--
-  Copyright 2014 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="pushover">
     <div class="form-row">
@@ -20,8 +5,48 @@
         <input type="text" id="node-input-title" placeholder="Node-RED">
     </div>
     <div class="form-row">
+        <label for="node-input-device"><i class="fa fa-mobile"></i> Device</label>
+        <input type="text" id="node-input-device" placeholder="leave blank for all">
+    </div>
+    <div class="form-row">
         <label for="node-input-priority"><i class="fa fa-star"></i> Priority</label>
         <input type="text" id="node-input-priority" placeholder="0" style="width:50px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sound"><i class="fa fa-bell"></i> Sound</label>
+        <select id="node-input-sound">
+            <option></option>
+            <option>pushover</option>
+            <option>bike</option>
+            <option>bugle</option>
+            <option>cashregister</option>
+            <option>classical</option>
+            <option>cosmic</option>
+            <option>falling</option>
+            <option>gamelan</option>
+            <option>incoming</option>
+            <option>intermission</option>
+            <option>magic</option>
+            <option>mechanical</option>
+            <option>pianobar</option>
+            <option>siren</option>
+            <option>spacealarm</option>
+            <option>tugboat</option>
+            <option>alien</option>
+            <option>climb</option>
+            <option>persistent</option>
+            <option>echo</option>
+            <option>updown</option>
+            <option>none</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
+        <input type="text" id="node-input-url" placeholder="optional url">
+    </div>
+    <div class="form-row">
+        <label for="node-input-url_title"><i class="fa fa-anchor"></i> URL title</label>
+        <input type="text" id="node-input-url_title" placeholder="optional url title">
     </div>
     <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
@@ -36,24 +61,31 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="node-tip">Tip: Leave title blank to set using <b>msg.topic</b> and <b>msg.priority</b>.<br/>
-    Only supports priorities 2, 1, 0, and -1.</div>
+    <div class="form-tips" id="node-tip">Tip: Leave title blank to set using <code>msg.topic</code>.<br/>
+    Leave device blank to send to all devices, or to set using <code>msg.device</code>.<br/>
+    Leave priority blank to set using <code>msg.priority</code>. Supports priorities 2, 1, 0, -1, and -2.<br/>
+    Leave sound blank to use the default, or set using <code>msg.sound</code>.</div>
 </script>
 
 <script type="text/x-red" data-help-name="pushover">
-    <p>Uses Pushover to push the <b>msg.payload</b> to a device that has the Pushover app installed.</p>
-    <p>Optionally uses <b>msg.topic</b> to set the title, and <b>msg.priority</b> to set the priority, if not already set in the properties.</p>
-    <p>The User-key and API-token are stored in a separate credentials file.</p>
+    <p>Uses Pushover to push the <code>msg.payload</code> to a device that has the Pushover app installed.</p>
+    <p>Optionally uses <code>msg.topic</code> to set the title, <code>msg.device</code> to set the device,
+    <code>msg.priority</code> to set the priority, <code>msg.url</code> to add a web address and <code>msg.url_title</code>
+    to add a url title if not already set in the properties.</p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('pushover',{
-        category: 'output',
+        category: 'mobile-output',
         defaults: {
-            title: {value:""},
             name: {value:""},
-            priority: {value:0}
+            device: {value:""},
+            title: {value:""},
+            priority: {value:0},
+            sound: {value:""},
+            url: {value:""},
+            url_title: {value:""},
         },
         credentials: {
             deviceid: {type:"text"},
@@ -72,7 +104,7 @@
         },
         oneditprepare: function() {
             $("#node-input-priority").spinner({
-                min:-1,
+                min:-2,
                 max:2
             });
         }

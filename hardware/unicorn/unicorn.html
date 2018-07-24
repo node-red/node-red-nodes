@@ -1,0 +1,55 @@
+
+<script type="text/x-red" data-template-name="rpi-unicorn">
+<div class="form-row">
+    <label for="node-input-png"><i class="fa fa-picture-o"></i> Background</label>
+    <input type="text" id="node-input-png" placeholder="8 x 8 pixel png file or rrr,ggg,bbb">
+</div>
+<div class="form-row">
+    <label for="node-input-bright"><i class="fa fa-sun-o"></i> Brightness</label>
+    <input type="text" id="node-input-bright" placeholder="0 to 100, default 20" style="width:150px;"> %
+</div>
+<br/>
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-unicorn">
+    <p>Raspberry Pi Unicorn HAT Node</p>
+    <p>The background of the array can be configured using an 8x8 pixel sized
+    png image, or by specifying a single colour using an <code>r,g,b</code> triple.</p>
+    <p>A pixel is set by a <code>payload</code> containing a CSV string <code>x,y,r,g,b</code> .
+    <code>x</code> and <code>y</code> can be a single pixel <code>0</code> to <code>7</code>,
+    a range of pixels, eg <code>2-5</code>, or <code>*</code> to indicate the whole line.
+    Multiple pixels strings can also be sent as <code>x1,y1,r1,g1,b1,x2,y2,r2,g2,b2,...</code> .</p>
+    <p>Any msg with a <code>topic</code> identifies a 'sprite', which can then
+    be moved independently. A 'sprite' can be a single pixel or a group of pixels.</p>
+    <p>Setting <code>payload</code> to <code>0</code> will delete the sprite from the list.</p>
+    <p>Setting <code>payload</code> to <code>CLEAR</code> will clear the display to off, and delete any sprites.</p>
+    <p>Setting <code>payload</code> to <ode>DELETE</ode> will delete any sprites, and leave the background.</p>
+    <p>The brightness may be set by setting <code>payload</code> to <code>brightness,nn</code> where nn is 0 to 100.</p>
+    <p>The rotation may be set by setting <code>payload</code> to <code>rotate,rr</code> where rr is 0, 90, 180 or 270.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-unicorn',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            png: { value:"" },
+            bright: { value:"" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||"unicorn hat";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

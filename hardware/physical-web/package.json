@@ -1,0 +1,35 @@
+{
+  "name": "node-red-node-physical-web",
+  "version": "0.0.15",
+  "description": "Node-RED nodes to interact with the Physical Web",
+  "main": "physical-web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node-red",
+    "physical-web",
+    "eddystone",
+    "beacon",
+    "ble"
+  ],
+  "node-red": {
+    "nodes"     : {
+      "physical-web": "physical-web.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/physical-web"
+  },
+  "author": {
+    "name": "Ben Hardill",
+    "email": "hardillb@gmail.com",
+    "url": "http://www.hardill.me.uk/wordpress"
+  },
+  "license": "APACHE-2.0",
+  "dependencies": {
+    "eddystone-beacon": "~1.0.4",
+    "eddystone-beacon-scanner": "~3.0.0"
+  }
+}

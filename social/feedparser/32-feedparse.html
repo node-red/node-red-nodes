@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013, 2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="feedparse">
     <div class="form-row">
@@ -21,7 +6,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-interval"><i class="fa fa-repeat"></i> <span data-i18n="feedparse.label.refresh"></span></label>
-        <input type="text" id="node-input-interval" style="width: 50px"> <span data-i18n="feedparse.label.minutes"></span>
+        <input type="text" id="node-input-interval" style="width:60px"> <span data-i18n="feedparse.label.minutes"></span>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -31,6 +16,10 @@
 
 <script type="text/x-red" data-help-name="feedparse">
     <p>Monitors an RSS/atom feed for new entries.</p>
+    <p>The <code>msg.topic</code> contains the original article link. The <code>msg.payload</code>
+    contains the description, and <code>msg.article</code> contains the complete article object,
+    which has properties such as <code>.title</code>, <code>.summary</code>, <code>.date</code> and so on.</p>
+    <p>The Refresh interval cannot be greater than 35790 minutes (approx 24.8 days).
 </script>
 
 <script type="text/javascript">
@@ -40,13 +29,16 @@
         defaults: {
             name: {value:""},
             url: {value:"", required:true},
-            interval: { value:15, required: true,validate:RED.validators.number()}
+            interval: { value:15, required:true, validate:function(v) {return (!isNaN(parseInt(v)) && (parseInt(v) <= 35790))} }
         },
         inputs:0,
         outputs:1,
         icon: "feed.png",
+        paletteLabel: function() {
+            return this._("feedparse.feedparse");
+        },
         label: function() {
-            return this.name||this.url;
+            return this.name||this.url||this._("feedparse.feedparse");
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

@@ -1,18 +1,3 @@
-/**
- * Copyright 2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -21,41 +6,65 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         this.action = n.action;
         this.round = n.round || false;
+        if (this.round == "true") { this.round = 0; }
         this.count = Number(n.count);
+        this.mult = n.mult || "single";
+        this.property = n.property || "payload";
         var node = this;
-        var a = [];
-        var tot = 0;
-        var pop = 0;
-        var old = null;
+        var v = {};
 
         this.on('input', function (msg) {
-            if (msg.hasOwnProperty("payload")) {
-                var n = Number(msg.payload);
+            var value = RED.util.getMessageProperty(msg,node.property);
+            var top = msg.topic || "_my_default_topic";
+            if (this.mult === "single") { top = "a"; }
+
+            if ((v.hasOwnProperty(top) !== true) || msg.hasOwnProperty("reset")) {
+                v[top] = {};
+                v[top].a = [];
+                v[top].tot = 0;
+                v[top].tot2 = 0;
+                v[top].pop = 0;
+                v[top].old = null;
+                v[top].count = this.count;
+            }
+            if (value !== undefined) {
+                var n = Number(value);
                 if (!isNaN(n)) {
                     if ((node.action === "low") || (node.action === "high")) {
-                        if (old == null) { old = n; }
-                        old = old + (n - old) / node.count;
-                        if (node.action === "low") { msg.payload = old; }
-                        else { msg.payload = n - old; }
+                        if (v[top].old == null) { v[top].old = n; }
+                        v[top].old = v[top].old + (n - v[top].old) / v[top].count;
+                        if (node.action === "low") { value = v[top].old; }
+                        else { value = n - v[top].old; }
                     }
                     else {
-                        a.push(n);
-                        if (a.length > node.count) { pop = a.shift(); }
+                        v[top].a.push(n);
+                        if (v[top].a.length > v[top].count) { v[top].pop = v[top].a.shift(); }
                         if (node.action === "max") {
-                            msg.payload = Math.max.apply(Math, a);
+                            value = Math.max.apply(Math, v[top].a);
                         }
                         if (node.action === "min") {
-                            msg.payload = Math.min.apply(Math, a);
+                            value = Math.min.apply(Math, v[top].a);
                         }
                         if (node.action === "mean") {
-                            tot = tot + n - pop;
-                            msg.payload = tot / a.length;
+                            v[top].tot = v[top].tot + n - v[top].pop;
+                            value = v[top].tot / v[top].a.length;
+                        }
+                        if (node.action === "sd") {
+                            v[top].tot = v[top].tot + n - v[top].pop;
+                            v[top].tot2 = v[top].tot2 + (n*n) - (v[top].pop * v[top].pop);
+                            if (v[top].a.length > 1) {
+                                value = Math.sqrt((v[top].a.length * v[top].tot2 - v[top].tot * v[top].tot)/(v[top].a.length * (v[top].a.length - 1)));
+                            }
+                            else { value = 0; }
                         }
                     }
-                    if (node.round) { msg.payload = Math.round(msg.payload); }
+                    if (node.round !== false) {
+                        value = Math.round(value * Math.pow(10, node.round)) / Math.pow(10, node.round);
+                    }
+                    RED.util.setMessageProperty(msg,node.property,value);
                     node.send(msg);
                 }
-                else { node.log("Not a number: "+msg.payload); }
+                else { node.log("Not a number: "+value); }
             } // ignore msg with no payload property.
         });
     }

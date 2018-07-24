@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-pi-sense-hat-simulator",
+    "version"       : "0.0.2",
+    "description"   : "A Node-RED node to simulate a Raspberry Pi Sense HAT",
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensehatsim"
+    },
+    "dependencies": {
+        "ws": "0.8.1"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "sensehat", "astropi" ],
+    "node-red"      : {
+        "nodes"     : {
+            "sensehatsim": "sensehatsim.js"
+        }
+    },
+    "author": {
+        "name": "Nick O'Leary",
+        "email": "nick.oleary@gmail.com",
+        "url": "http://nodered.org"
+    }
+}

@@ -6,10 +6,9 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a h
 Install
 -------
 
-Run the following command in the home directory of your Node-RED install.
-This is usually `~/.node-red`
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-digirgb
+    npm i node-red-node-digirgb
 
 
 Usage
@@ -17,4 +16,4 @@ Usage
 
 Simple output node to drive a Digispark RGB LED.
 
-Requires a <b>msg.payload</b> to be of the form 'r,g,b' - for example 255,0,0  for red.
+Requires a `msg.payload` to be of the form 'r,g,b' - for example 255,0,0  for red.

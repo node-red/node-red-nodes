@@ -15,7 +15,7 @@
  **/
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../parsers/geohash/70-geohash.js');
 
 describe('geohash node', function() {
@@ -50,7 +50,21 @@ describe('geohash node', function() {
                 msg.should.have.a.property("payload", "gcnfju78x");
                 done();
             });
-            n1.emit("input", {payload:"51.0,-1.5"});
+            n1.emit("input", {payload:"51.0,-1.5,10"});
+        });
+    });
+
+    it('should convert payload lat,lon to geohash at low precision', function(done) {
+        var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("payload", "g");
+                done();
+            });
+            n1.emit("input", {payload:"51.0,-1.5,0"});
         });
     });
 
@@ -93,7 +107,22 @@ describe('geohash node', function() {
                 msg.payload.should.have.a.property("geohash", "t9cbbukqn");
                 done();
             });
-            n1.emit("input", {payload:{latitude:10,longitude:70}});
+            n1.emit("input", {payload:{latitude:10,longitude:70,precision:10}});
+        });
+    });
+
+    it('should convert payload object lat,lon to geohash (low precision)', function(done) {
+        var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("payload");
+                msg.payload.should.have.a.property("geohash", "t");
+                done();
+            });
+            n1.emit("input", {payload:{latitude:10,longitude:70,precision:-1}});
         });
     });
 
@@ -115,7 +144,7 @@ describe('geohash node', function() {
     });
 
     it('should convert location lat, lon to geohash', function(done) {
-        var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
+        var flow = [{id:"n1", type:"geohash", func:"geohash", property:"location", gap:0, wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -125,12 +154,27 @@ describe('geohash node', function() {
                 msg.location.should.have.a.property("geohash", "kukqnpp5e");
                 done();
             });
-            n1.emit("input", {location:{lat:-20,lon:40}});
+            n1.emit("input", {location:{lat:-20,lon:40,precision:10}});
+        });
+    });
+
+    it('should convert location lat, lon to geohash (low precision)', function(done) {
+        var flow = [{"id":"n1", "type":"geohash", func:"geohash", property:"location", gap:0, wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("location");
+                msg.location.should.have.a.property("geohash", "k");
+                done();
+            });
+            n1.emit("input", {location:{lat:-20,lon:40,precision:-1}});
         });
     });
 
     it('should convert location geohash to lat.lon', function(done) {
-        var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"geohash", func:"geohash", property:"location", gap:0, wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -227,7 +271,7 @@ describe('geohash node', function() {
                 msg.should.have.property('msg', 'Unexpected string format - should be lat,lon');
                 done();
             },50);
-            n1.emit("input", {payload:"bananas,apples,pears"});
+            n1.emit("input", {payload:"bananas,apples,pears,oranges"});
         });
     });
 
@@ -260,7 +304,7 @@ describe('geohash node', function() {
     });
 
     it('should warn if location object with only a lat (or lon)', function(done) {
-        var flow = [{"id":"n1", "type":"geohash", func:"gap", gap:10, wires:[["n2"]] },
+        var flow = [{"id":"n1", "type":"geohash", func:"gap", property:"location", gap:10, wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");

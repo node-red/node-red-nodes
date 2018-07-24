@@ -1,0 +1,69 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('mraa-gpio-ain',{
+        category: 'Intel gpio',
+        color: '#a6bbcf',
+        paletteLabel: 'analogue',
+        defaults: {
+            name: {value:""},
+            pin:  {value:"", required: true, validate:RED.validators.number()},
+            interval: {value:"100", required: true, validate:RED.validators.number()}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "arrow.png",
+        label: function() {
+            return this.name||"A"+this.pin;
+        },
+        oneditprepare: function() {
+            var pinnow = this.pin;
+            $.getJSON('mraa-gpio/'+this.id,function(data) {
+                var t = "unknown";
+                if (data === 0) { t = "Galileo v1"; }
+                if (data === 1) { t = "Galileo v2"; }
+                if (data === 2) { t = "Edison Fab C"; }
+                if (data === 3) { t = "DE3813 Baytrail"; }
+                if (data === 4) { t = "Minnow Max"; }
+                if (data === 5) { t = "Raspberry Pi"; }
+                if (data === 6) { t = "Beaglebone"; }
+                if (data === 7) { t = "Banana"; }
+                $('#btype').text(t);
+                $('#node-input-pin').val(pinnow);
+            });
+            $.getJSON('mraa-version/'+this.id,function(data) {
+                $('#ver-tip').text(data);
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mraa-gpio-ain">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <select type="text" id="node-input-pin" style="width:250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="0">A0</option>
+            <option value="1">A1</option>
+            <option value="2">A2</option>
+            <option value="3">A3</option>
+            <option value="4">A4</option>
+            <option value="5">A5</option>
+        </select>
+    </div>
+    <div class="form-row">
+       <label for="node-input-name"><i class="fa fa-clock-o"></i> Interval</label>
+        <input type="text" id="node-input-interval" placeholder="Interval" style="width:250px;"> mS
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
+    </div>
+    <div class="form-tips">Board : <span id="btype">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
+</script>
+
+<script type="text/x-red" data-help-name="mraa-gpio-ain">
+    <p>An analogue input pin for an Intel Galileo or Edison board that is read every <i>interval</i> milliseconds.</p>
+    <p>The <code>msg.payload</code> will contain the value, and <code>msg.topic</code>
+    contains "{the_board_name}/A{the pin number}".</p>
+    <p>The value is only sent if it is different from the previously read value.</p>
+</script>

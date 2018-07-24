@@ -1,0 +1,51 @@
+{
+    "serial": {
+        "label": {
+            "serialport": "シリアルポート",
+            "settings": "設定",
+            "baudrate": "ボーレート",
+            "databits": "データビット",
+            "parity": "パリティ",
+            "stopbits": "終了ビット",
+            "input": "入力",
+            "split": "入力の分割方法",
+            "deliver": "分割後の配信データ",
+            "output": "出力",
+            "serial": "serial",
+            "none": "なし"
+        },
+        "placeholder": {
+            "serialport": "例: /dev/ttyUSB0/"
+        },
+        "parity": {
+            "none": "なし",
+            "even": "偶数",
+            "mark": "マーク",
+            "odd": "奇数",
+            "space": "スペース"
+        },
+        "split": {
+            "character": "文字列で区切る",
+            "timeout": "タイムアウト後で区切る",
+            "lengths": "一定の文字数で区切る"
+        },
+        "output": {
+            "ascii": "文字列",
+            "binary": "バイナリバッファ"
+        },
+        "addsplit": "出力メッセージに分割文字を追加する",
+        "tip": {
+            "split": "Tip: \"区切り\" 文字は、入力を別々のメッセージに分割するために使用され、シリアルポートに送信されるすべてのメッセージに追加することもできます。",
+            "timeout": "Tip: タイムアウトモードでのタイムアウトは最初の文字が到着したときから始まります。"
+        },
+        "onopen": "serial port __port__ opened at __baud__ baud __config__",
+        "errors": {
+            "missing-conf": "missing serial config",
+            "serial-port": "serial port",
+            "error": "serial port __port__ error: __error__",
+            "unexpected-close": "serial port __port__ closed unexpectedly",
+            "disconnected": "serial port __port__ disconnected",
+            "closed": "serial port __port__ closed"
+        }
+    }
+}

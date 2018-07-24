@@ -1,29 +1,34 @@
 node-red-node-beaglebone
 ========================
-A set of <a href="http://nodered.org" target="_new">Node-RED</a> nodes to interface with the GPIO pins of a <a href="http://http://beagleboard.org/black/" target="_new">Beaglebone Black</a>.
+A set of <a href="http://nodered.org" target="_new">Node-RED</a> nodes to
+interface with the GPIO pins of a <a href="http://http://beagleboard.org/black/" target="_new">Beaglebone Black</a>.
 
 Pre-requisites
 --------------
 
-Only of use on a BeagleboneBlack board. Should ideally be running the <a href="http://beagleboard.org/latest-images/" target="_new"> latest Debian</a> image - as that has node.js v0.10.x and the bonescript npm preinstalled.
-it does also need <b>bonescript</b> - but this is also pre-installed so no need to mark as a dependency...
+Only of use on a BeagleboneBlack board. Should ideally be running the
+<a href="http://beagleboard.org/latest-images/" target="_new"> latest Debian</a>
+images - as they have node.js v0.10.x preinstalled.
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+For Debian **Jessie** with kernel 4.1 run the following command in your
+Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-beaglebone
 
-v0.4 now also supports <a href="http://octalbonejs.com/" target="_new">OctaBoneScript</a> if installed.
+For previous versions of Debian, for example **Wheezy** - use the older version
+of this node.
 
+    npm install node-red-node-beaglebone@0.0.8
 
 Usage
 -----
 
 This package provides 5 nodes for use with the BeagleboneBlack board.
 
-###Analogue Input
+### Analogue Input
 
 Reads an analogue pin when triggered by
 a message.
@@ -41,7 +46,7 @@ each. Values between breakpoints are linearly interpolated.
 To reduce the effect of noise, enable averaging. This will read the input pin
 voltage ten times in rapid succession for each input message and output the mean value.
 
-###Digital Input
+### Digital Input
 
 Sends a message with payload 0 or 1 on the first output when the pin changes state, and logs the total time in the active state.
 
@@ -57,7 +62,7 @@ The pin state messages may be generated for both directions of change, or for ju
 or just 1 to 0 changes. This is useful to generate a single message from a button
 press. When using buttons or switches, enable debouncing to improve reliability.
 
-###Pulse Input
+### Pulse Input
 
 Pulse input for the Beaglebone Black. Counts input pulses or pulse edges: outputs
 total counts and the rate of counts/sec, with scaling.
@@ -67,22 +72,20 @@ rate message on the second output, at the chosen interval. An input message with
 and a numeric payload will set the total count to that value (no scaling is applied):
 any other input message will reset it to zero.
 
-###Digital Output
+### Digital Output
 
 Sets the output pin high or low depending on the payload of the input message. Numeric
 payloads > 0.5 are 'high' (1), payloads <= 0.5 are 'low' (0). Other payloads which
 evaluate to true are 'high', if not then 'low'. Selecting the Inverting checkbox will
 switch the sense of the pin output.
 
-
 If the Toggle state checkbox is checked, the message content is ignored: successive
 messages cause the pin to toggle between 0 and 1.
-
 
 The pin will be initially set to the given Startup state until the first message arrives:
 the Inverting property is not applied to this value.
 
-###Pulse Output
+### Pulse Output
 
 Pulses the output pin for the set time after receiving an input message, unless the
 message has a topic including the text 'time' and a numeric payload. In this case, the

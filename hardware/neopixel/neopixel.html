@@ -1,0 +1,120 @@
+
+<script type="text/x-red" data-template-name="rpi-neopixels">
+<div class="form-row">
+    <label for="node-input-pixels"><i class="fa fa-sun-o"></i> LEDs</label>
+    <input type="text" id="node-input-pixels" placeholder="number" style="width:60px;"> in the string
+</div>
+<div class="form-row">
+    <label for="node-input-mode"><i class="fa fa-cogs"></i> Mode</label>
+    <select id="node-input-mode" style="width:73%">
+        <option value="pcent">Bar - Percent of length</option>
+        <option value="pixels">Bar - Number of pixels</option>
+        <option value="pcentneedle">Needle - Percent of length</option>
+        <option value="pixelsneedle">Needle - Number of pixels</option>
+        <option value="shiftu">Add pixel to start</option>
+        <option value="shiftd">Add pixel to end</option>
+    </select>
+</div>
+<div class="form-row" id="bgcol">
+    <label for="node-input-bgnd"><i class="fa fa-picture-o"></i> Background</label>
+    <input type="text" id="node-input-bgnd" placeholder="HTML colour name or rrr,ggg,bbb">
+</div>
+<div class="form-row"  id="fgcol">
+    <label for="node-input-fgnd"><i class="fa fa-picture-o"></i> Foreground</label>
+    <input type="text" id="node-input-fgnd" placeholder="HTML colour name or rrr,ggg,bbb">
+</div>
+<div class="form-row">
+    <label for="node-input-wipe"><i class="fa fa-clock-o"></i> Wipe time</label>
+    <input type="text" id="node-input-wipe" placeholder="number" style="width:60px;"> mS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pixel order
+    <select id="node-input-rgb" style="width:80px">
+        <option value="rgb">RGB</option>
+        <option value="grb">GRB</option>
+    </select>
+</div>
+<div class="form-row">
+    <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+    <input type="text" id="node-input-brightness" placeholder="number" style="width:60px;"> &nbsp;(0-100)
+</div>
+<div class="form-row">
+    <label for="node-input-gamma"> </label>
+    <label for="node-input-gamma" style="width:70%">
+    <input type="checkbox" id="node-input-gamma" style="display:inline-block; width:22px; vertical-align:baseline;"> Apply gamma correction
+    </label>
+</div>
+<br/>
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-neopixels">
+    <p>Raspberry Pi node to drive a string of neopixel or ws2812 LEDs.</p>
+    <p>Defaults to a bar chart style mode using configured foreground and background colours.
+    It can also display a needle (single pixel) type gauge.</p>
+    <p>It can accept a number in <code>msg.payload</code> that can be either the
+    number of pixels, or a percentage of the total length.</p>
+    <p>If you want to change the foregound colour, you can send a CSV of <i>html colour,length</i>.</p>
+    <p>To set the background just send an <i>html colour</i> name.
+    <a href="http://html-color-codes.info/color-names/" target="_top">Here
+    is a list</a> of html colour names.<p>
+    <p>You can also select shift modes where a single colour pixel is added to either the start or the end of the strip.</p>
+    <p>The <i>nth</i> pixel is set by <code>msg.payload</code> with a CSV string <i>n,r,g,b</i>
+    <!-- <p>The whole strip is set by <code>msg.payload</code> with a CSV string <i>r,g,b</i> -->
+    <p>A range of pixels from <i>x</i> to <i>y</i> can be set by <code>msg.payload</code>
+    with a CSV string <i>x,y,r,g,b</i>
+    <p>By default, gamma correction is enabled but it can disabled which can be useful for working with low brightness levels</p>
+    <p><code>msg.brightness</code> can be used to dynamically set brightness level</p>
+    <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
+    this may conflict with audio playback.</p>
+    <p align="right"><a href="http://flows.nodered.org/node/node-red-node-pi-neopixel#usage">More info&nbsp;&nbsp;</a></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-neopixels',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pixels: { value:"", required:true, validate:RED.validators.number() },
+            bgnd: { value:"" },
+            fgnd: { value:"" },
+            wipe: { value:"40", required:true, validate:RED.validators.number() },
+            mode: { value:"pcent" },
+            rgb: { value:"rgb" },
+            brightness: { value:"100", required:true, validate:RED.validators.number() },
+            gamma: { value: true }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||this.pixels+" neopixels";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.gamma === undefined) {
+                this.gamma = true;
+                $("#node-input-gamma").prop('checked', true);
+            }
+            if (this.brightness === undefined) {
+                this.brighness = "100";
+                $("#node-input-brightness").val("100");
+            }
+            var setstate = function () {
+                if ($('#node-input-mode').val().indexOf("shift") !== -1) {
+                    $("#bgcol").hide();
+                    $("#fgcol").hide();
+                } else {
+                    $("#bgcol").show();
+                    $("#fgcol").show();
+                }
+            };
+            $("#node-input-mode").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>

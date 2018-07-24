@@ -1,30 +1,15 @@
-<!--
-  Copyright 2013 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="digiRGB">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="DigiSpark">
     </div>
-    <div class="form-tips">Expects a msg.payload with three part csv string of r,g,b.</div>
+    <div class="form-tips">Expects a <code>msg.payload</code> with three part csv string of r,g,b.</div>
 </script>
 
 <script type="text/x-red" data-help-name="digiRGB">
     <p>Simple output node to drive digispark RGB</p>
-    <p>Requires <b>msg.payload</b> to be of the form 'r,g,b' decimals 0-255, or a hex string "#rrggbb". For example:</p>
+    <p>Requires <code>msg.payload</code> to be of the form 'r,g,b' decimals 0-255, or a hex string "#rrggbb". For example:</p>
     <ul><li>Red : "255,0,0"</li><li>Green : "#00FF00"</li></ul>
 </script>
 

@@ -6,7 +6,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to control and po
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-contrib-heatmiser
 
@@ -14,22 +14,22 @@ Run the following command in the root directory of your Node-RED install
 Usage
 -----
 
-###Input node###
+### Input node
 
-Expects a **msg.payload** with a JSON object that contains settings for the Heatmiser thermostat
+Expects a `msg.payload` with a JSON object that contains settings for the Heatmiser thermostat
 
-**msg.payload** can currently be either a heating boost option, or a run mode, as below:
+`msg.payload` can currently be either a heating boost option, or a run mode, as below:
 
-####Heating boost####
+#### Heating boost
 
     {heating: {target: TARGET_TEMPERATURE, hold: MINUTES_TO_STAY_ON_FOR}}
 
-####Run mode####
+#### Run mode
 
     {runmode:"frost"}
     {runmode:"heating"}
 
 
-###Output node.###
+### Output node
 
 Will read and send a status update at a configurable time interval. This is set to every 30 minutes by default.

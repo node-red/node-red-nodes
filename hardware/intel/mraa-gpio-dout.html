@@ -1,0 +1,105 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('mraa-gpio-dout',{
+        category: 'Intel gpio',
+        color: '#a6bbcf',
+        paletteLabel: 'digital',
+        defaults: {
+            name: {value:""},
+            pin:  {value:"", required: true},
+            set: { value:"" },
+            level: { value:"0" }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "arrow.png",
+        align: "right",
+        label: function() {
+            if (this.pin === "14") {
+                return "LED";
+            } else {
+                return this.name||"D"+this.pin;
+            }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var pinnow = this.pin;
+            $.getJSON('mraa-gpio/'+this.id,function(data) {
+                var t = "unknown";
+                if (data === 0) { t = "Galileo v1"; }
+                if (data === 1) { t = "Galileo v2"; }
+                if (data === 2) { t = "Edison Fab C"; }
+                if (data === 3) { t = "DE3813 Baytrail"; }
+                if (data === 4) { t = "Minnow Max"; }
+                if (data === 5) { t = "Raspberry Pi"; }
+                if (data === 6) { t = "Beaglebone"; }
+                if (data === 7) { t = "Banana"; }
+                $('#btype').text(t);
+                if (data === 0) {
+                    $('#node-input-pin').append($("<option></option>").attr("value",14).text("LED - Galileo v1"));
+                }
+                $('#node-input-pin').val(pinnow);
+            });
+            $.getJSON('mraa-version/'+this.id,function(data) {
+                $('#ver-tip').text(data);
+            });
+
+            var setstate = function () {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            };
+            $("#node-input-set").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mraa-gpio-dout">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="0">D0</option>
+            <option value="1">D1</option>
+            <option value="2">D2</option>
+            <option value="3">D3</option>
+            <option value="4">D4</option>
+            <option value="5">D5</option>
+            <option value="6">D6</option>
+            <option value="7">D7</option>
+            <option value="8">D8</option>
+            <option value="9">D9</option>
+            <option value="10">D10</option>
+            <option value="11">D11</option>
+            <option value="12">D12</option>
+            <option value="13">D13</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-set-tick">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-set" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-set" style="width: 70%;">Set initial level of pin.</label>
+    </div>
+    <div class="form-row" id="node-set-state">
+        <label for="node-input-level">&nbsp;</label>
+        <select id="node-input-level" style="width: 250px;">
+            <option value="0">0 - low</option>
+            <option value="1">1 - high</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
+    </div>
+    <div class="form-tips">Board : <span id="btype">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
+</script>
+
+<script type="text/x-red" data-help-name="mraa-gpio-dout">
+    <p>A digital output pin for an Intel Galileo or Edison board.</p>
+    <p>The <code>msg.payload</code> should contain the value 0 or 1.</p>
+</script>

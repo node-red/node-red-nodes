@@ -1,18 +1,3 @@
-/**
- * Copyright 2014, 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
@@ -65,13 +50,16 @@ module.exports = function(RED) {
                         msg.location.lat = latitude;
                         msg.location.lon = longitude;
                         return;
-                    } else {
+                    }
+                    else {
                         node.log("Invalid longitude data, no location information has been added to the message.");
                     }
-                } else {
+                }
+                else {
                     node.log("Invalid latitude data, no location information has been added to the message.");
                 }
-            } else {
+            }
+            else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
         }
@@ -83,27 +71,34 @@ module.exports = function(RED) {
                         new ExifImage({ image : msg.payload }, function (error, exifData) {
                             if (error) {
                                 node.log(error.toString());
-                            } else {
-                                //msg.payload remains the same buffer
-                                if ((exifData) && (exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
+                            }
+                            else {
+                                if (exifData) {
                                     msg.exif = exifData;
-                                    addMsgLocationDataFromExifGPSData(msg);
-                                } else {
-                                    node.warn("The incoming image did not contain Exif GPS data, nothing to do. ");
+                                    if((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
+                                        addMsgLocationDataFromExifGPSData(msg);
+                                    }
+                                    //else { node.log("The incoming image did not contain Exif GPS data."); }
+                                }
+                                else {
+                                    node.warn("The incoming image did not contain any Exif data, nothing to do.");
                                 }
                             }
                             node.send(msg);
                         });
-                    } else {
-                        node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.");
+                    }
+                    else {
+                        node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.",msg);
                         return;
                     }
-                } else {
-                    node.error("No payload received, the Exif node cannot proceed, no messages sent.");
+                }
+                else {
+                    node.error("No payload received, the Exif node cannot proceed, no messages sent.",msg);
                     return;
                 }
-            } catch (error) {
-                node.error("An error occurred while extracting Exif information. Please check the log for details.");
+            }
+            catch (error) {
+                node.error("An error occurred while extracting Exif information. Please check the log for details.",msg);
                 node.log('Error: '+error.message);
                 return;
             }

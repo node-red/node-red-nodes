@@ -1,7 +1,7 @@
 {
     "name"          : "node-red-node-emoncms",
-    "version"       : "0.0.4",
-    "description"   : "A Node-RED node to send energy data to emoncms.org.",
+    "version"       : "0.2.1",
+    "description"   : "A Node-RED node to fetch/post data to/from emoncms",
     "dependencies"  : {
     },
     "repository" : {
@@ -24,6 +24,18 @@
         {
             "name": "dceejay",
             "email": "ceejay@vnet.ibm.com"
-        }
+        },
+        {
+            "name": "knolleary",
+            "email": "nick.oleary@gmail.com"
+        },
+        {
+            "name": "Glyn Hudson",
+            "email": "glyn.hudson@openenergymonitor.org"
+       },
+       {
+           "name": "borpin",
+           "email": "brian.orpin@gmail.com"
+      }
     ]
 }

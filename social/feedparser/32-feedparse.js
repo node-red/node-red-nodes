@@ -1,36 +1,27 @@
-/**
- * Copyright 2013, 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
     var FeedParser = require("feedparser");
     var request = require("request");
+    var url = require('url');
 
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
         this.url = n.url;
+        if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
         this.interval = (parseInt(n.interval)||15) * 60000;
         var node = this;
         this.interval_id = null;
         this.seen = {};
-        if (this.url !== "") {
+        var parsedUrl = url.parse(this.url);
+        if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
+            this.error(RED._("feedparse.errors.invalidurl"));
+        }
+        else {
             var getFeed = function() {
-                var req = request(node.url, {timeout: 10000, pool: false});
+                var req = request(node.url, {timeout:10000, pool:false});
                 //req.setMaxListeners(50);
-                //req.setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
+                req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
                 req.setHeader('accept', 'text/html,application/xhtml+xml');
 
                 var feedparser = new FeedParser();
@@ -38,7 +29,7 @@ module.exports = function(RED) {
                 req.on('error', function(err) { node.error(err); });
 
                 req.on('response', function(res) {
-                    if (res.statusCode != 200) { node.warn(RED._("feedparse.errors.badstatuscode")); }
+                    if (res.statusCode != 200) { node.warn(RED._("feedparse.errors.badstatuscode")+" "+res.statusCode); }
                     else { res.pipe(feedparser); }
                 });
 
@@ -64,8 +55,6 @@ module.exports = function(RED) {
             };
             this.interval_id = setInterval(function() { getFeed(); }, node.interval);
             getFeed();
-        } else {
-            this.error(RED._("feedparse.errors.invalidurl"));
         }
 
         this.on("close", function() {

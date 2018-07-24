@@ -1,0 +1,9 @@
+{
+    "ping": {
+        "ping": "ping",
+        "label": {
+            "target": "Target",
+            "ping": "Ping (S)"
+        }
+    }
+}

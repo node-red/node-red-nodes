@@ -5,7 +5,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a h
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-pibrella
 
@@ -22,16 +22,16 @@ Usage
 
 A pair of input and output Node-RED nodes for the Raspberry Pi Pibrella from Pimoroni.
 
-###Output
+### Output
 
-The output node will set the selected output high (on) or low (off) depending on the value passed in. Expects a <b>msg.payload</b> with either a 0 or 1 (or true or false).
+The output node will set the selected output high (on) or low (off) depending on the value passed in. Expects a `msg.payload` with either a 0 or 1 (or true or false).
 
 You may also select PWM mode to dim the on board LEDs if you wish. Expects a value from 0 to 100.
 
 The Buzzer expects a number representing the frequency in Hz. 0 is off and 1 is a tone - so you can use 0/1 type inputs as well.
 
-###Input
+### Input
 
-The input node generates a <b>msg.payload</b> with either a 0 or 1 depending on the state of the input pin.
+The input node generates a `msg.payload` with either a 0 or 1 depending on the state of the input pin.
 
-The <b>msg.topic</b> is set to <i>pibrella/{the pin id}</i> - which will be A, B, C, D or R.
+The `msg.topic` is set to <i>pibrella/{the pin id}</i> - which will be A, B, C, D or R.

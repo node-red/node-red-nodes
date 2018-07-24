@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013,2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="xmpp in">
     <div class="form-row">
@@ -37,8 +22,8 @@
 <script type="text/x-red" data-help-name="xmpp in">
     <p>Connects to an XMPP server to receive messages.</p>
     <p>The <b>Buddy</b> field is the id of the buddy or room you want to receive messages from.</p>
-    <p>Incoming messages will appear as <b>msg.payload</b> on the first output, while <b>msg.topic</b> will contain who it is from.</p>
-    <p>The second output will show the presence and status of a user in <b>msg.payload</b>. Again <b>msg.topic</b> will hold the user.</p>
+    <p>Incoming messages will appear as <code>msg.payload</code> on the first output, while <code>msg.topic</code> will contain who it is from.</p>
+    <p>The second output will show the presence and status of a user in <code>msg.payload</code>. Again <code>msg.topic</code> will hold the user.</p>
 </script>
 
 <script type="text/javascript">
@@ -86,15 +71,15 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">The <b>To</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</div>
+    <div class="form-tips">The <b>To</b> field is optional. If not set uses the <code>msg.topic</code> property of the message.</div>
 </script>
 
 <script type="text/x-red" data-help-name="xmpp out">
     <p>Connects to an XMPP server to send messages.</p>
-    <p>The <b>To</b> field is optional. If not set the <b>msg.topic</b> property of the message is used.</p>
-    <p>If you are joining a room then the <b>To</b> field must be filled in.</p>
-    <p>You may also send a msg with <b>msg.presence</b> to set your presence to one of <i>chat, away, dnd</i> or <i>xa</i>.
-    If you do so then the <b>msg.payload</b> will set your status message.</p>
+    <p>The <b>To</b> field is optional. If not set the <code>msg.topic</code> property of the message is used.</p>
+    <p>If you are joining a room then the <b>To</b> field must be supplied.</p>
+    <p>You may also send a msg with <code>msg.presence</code> to set your presence to one of <i>chat, away, dnd</i> or <i>xa</i>.
+    If you do so then the <code>msg.payload</code> will set your status message.</p>
 </script>
 
 <script type="text/javascript">

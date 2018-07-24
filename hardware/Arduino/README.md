@@ -1,21 +1,15 @@
 node-red-node-arduino
 =====================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to talk to an Arduino running firmata.
-
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node. However it will be deprecated from
-the core in due course, at which point you will need to install it from here if
-still required.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to talk to an
+Arduino running standard firmata 2.2 or better.
 
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install, usually
-this is ~/.node-red .
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-        npm install node-red-node-arduino
-
+        npm i --unsafe-perm node-red-node-arduino
 
 Usage
 -----
@@ -25,23 +19,32 @@ The Firmata firmware must be loaded into the Arduino.
 See the [main documentation](http://nodered.org/docs/hardware/arduino.html) for
 details and examples of how to use this node.
 
-###Input Node
+### Input Node
 
 Connects to local Arduino and monitors the selected pin for changes.
 
-You can select either Digital or Analogue input. Outputs the value read as **msg.payload** and the pin number as **msg.topic**.
+You can select either **Digital**, **Pullup**, **Analogue**, or **String** input type.
+Outputs the value read as `msg.payload` and the pin number as `msg.topic`.
 
-It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.
+It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle. For example you could use a `delay` node set to rate limit and drop intermediate values, or an `rbe` node to only report when it changes by a certain amount.
 
-You can set the sample rate in ms from 20 to 65535.
-
-###Output Node
+### Output Node
 
 Connects to local Arduino and writes to the selected pin.
 
-You can select Digital, Analogue (PWM) or Servo type outputs. Expects a numeric value in **msg.payload**. The pin number is set in the properties panel.
+You can select
 
-###Example
+ - **Digital** - accepts 0, 1, true, false, on, off
+ - **Analogue** (PWM) - accepts Integer 0 to 255
+ - **Servo** - accepts Integer 0 - 180
+ - **String** - to send a *String* to the Arduino
+
+Expects a numeric value in `msg.payload`. The pin number is set in the properties panel.
+
+*Note* - some servos will not travel a full 180 degree range so may only accept 30 - 150 degrees for example.
+Please use the `range` node to scale the input appropriately.
+
+### Example
 
 Simple flow to blink Pin 13
 

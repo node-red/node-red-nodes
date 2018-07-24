@@ -22,7 +22,12 @@
             "count": "count",
             "aggregate": "aggregate"
         },
-        "tip": "<b> Tip:</b> If no collection is set, ensure <b>msg.collection</b> will contain the collection name",
+        "status": {
+            "connecting": "connecting",
+            "connected": "connected",
+            "error": "error"
+        },
+        "tip": "<b> Tip:</b> If no collection is set, ensure <code>msg.collection</code> will contain the collection name",
         "errors": {
             "nocollection": "No collection defined",
             "missingconfig": "missing mongodb configuration"

@@ -1,0 +1,233 @@
+
+<script type="text/x-red" data-template-name="PhysicalWeb in">
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="eddystone">
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-list"></i> Duplicates</span></label>
+        <input type="checkbox" id="node-input-duplicates" style="display: inline-block; width: auto; vertical-align: top;">
+        Check this to allow duplicate messages
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="PhysicalWeb in">
+<p><a href="https://google.github.io/physical-web/">Physical Web</a> node to scan for Eddystone beacons.</p>
+<p>This node scans for Eddystones and publishes what it finds. The status of the Eddystone
+(found, updated or lost) will be sent as <code>msg.topic</code> and the data as <code>msg.payload</code></p>
+<p>If a <code>topic</code> is specified in the node configuration, it will override the status.</p>
+<p><b>URL</b> type:</p>
+    <ul>
+        <li><code>type</code> - Eddystone type</li>
+        <li><code>txPower</code> - Received power at 0m in dBm</li>
+        <li><code>url</code> - The URL the beacon is broadcasting</li>
+        <li><code>tlm</code> - TLM data, if the device is interleaving broadcasts</li>
+        <li><code>rssi</code> - RSSI of the beacon</li>
+        <li><code>distance</code> - Estimated distance to the beacon</li>
+    </ul>
+<p><b>UID</b> type:</p>
+    <ul>
+        <li><code>type</code> - Eddystone type</li>
+        <li><code>txPower</code> - Received power at 0m in dBm</li>
+        <li><code>namespace</code> - 10-byte ID of namspace</li>
+        <li><code>instance</code> - 6-byte ID insance</li>
+        <li><code>rssi</code> - RSSI of the beacon</li>
+        <li><code>distance</code> - Estimated distance to the beacon</li>
+        <li><code>tlm</code> - TLM data, if the device is interleaving broadcasts</li>
+    </ul>
+<p>Where the <code>tlm</code> data will be an object containing:</p>
+    <ul>
+        <li><code>version</code> - TML version</li>
+        <li><code>vbatt</code> - Battery Voltage</li>
+        <li><code>temp</code> - Temperature</li>
+        <li><code>advCnt</code> - Advertising PDU count</li>
+        <li><code>secCnt</code> - Time since power on or reboot</li>
+    </ul>
+</ul>
+<p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('PhysicalWeb in',{
+        category: 'input',
+        defaults: {
+            name: {value:""},
+            topic: {value:""},
+            duplicates: {value: true}
+        },
+        color: "#2F7ACD",
+        inputs:0,
+        outputs:1,
+        icon: "physical-web.png",
+        label: function() {
+            return this.name||"PhysicalWeb";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="PhysicalWeb out">
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-wrench"></i> <span>Mode</span></label>
+        <select id="node-input-mode" style='width:100px'>
+          <option value="url">url</option>
+          <option value="uid">uid</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-url">
+        <label for="node-input-url"><i class="fa fa-link"></i> URL</label>
+        <input type="text" id="node-input-url" style="width:250px;" placeholder="http://...">
+        <span id="url-length"></span>
+        <!--<button type="button" id="node-input-url-shorten" disabled=true>Shorten</button> -->
+        <p style="margin-left:100px; width:70%">This URL needs to be shorter than 18 bytes
+        in length to meet Eddystone spec</p>
+    </div>
+    <div class="form-row" id="node-namespace">
+        <label for="node-input-namespace"><i class="fa fa-bluetooth"></i> Namespace</label>
+        <input type="text" id="node-input-namespace" style="width:250px;">
+    </div>
+    <div class="form-row" id="node-instance">
+        <label for="node-input-instance"><i class="fa fa-bluetooth"></i> Instance</label>
+        <input type="text" id="node-input-instance" style="width:250px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-period"><i class="fa fa-repeat"></i> Period</label>
+        <input type="text" id="node-input-period" style="width:80px;" placeholder="Period">
+    </div>
+    <div class="form-row">
+        <label for="node-input-count"><i class="fa fa-repeat"></i> Count</label>
+        <input type="text" id="node-input-count" style="width:80px;" placeholder="Count">
+    </div>
+    <div class="form-row">
+        <label for="node-input-power"><i class="fa fa-battery-half"></i> Power (dB)</label>
+        <input type="text" id="node-input-power" style="width:80px;" placeholder="Power">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="PhysicalWeb out">
+    <p><a href="https://google.github.io/physical-web/">Physical Web</a> beacon node.</p>
+    <p>This node can be set to URL mode or UID mode</p>
+    <p>In <strong>URL mode</strong> this node can take the value of <code>msg.payload</code> and publishes it as an Eddystone URL
+    announcement. URLs <b>must</b> be less than 18 bytes long, so should be run through a shortner first.</p>
+    <p>You can also preset the URL, in which case the node does not require any input.</p>
+    <p>In <strong>UID mode</strong> this node can take the 10 bytes namespace (as an HEX string) as <code>msg.payload</code>
+    and the 6 bytes instance (as an HEX string) as <code>msg.topic</code>.
+    <p>The config window will allow you to set the powerlevel (-100 to 20 dbm) and the TLM count and period values.</p>
+    <p>TLM stands for telemetry data and is a type of packet sent alongside the main packet that provides diagnostics information.
+    The count and period determine the ratio of TLM packets sent versus normal packets.
+    A period of 10 and a count of 2 means that 2 TLM packets are sent for each 10 advertisements.</p>
+
+    <p>The actual advertisement rate can be set by changing the <code>BLENO_ADVERTISING_INTERVAL</code> environment variable.
+    For example, to set a 20ms interval, you would need to type <code>sudo BLENO_ADVERTISING_INTERVAL=20 node-red</code></p>
+
+    <p>Linux users should <a href="https://github.com/sandeepmistry/bleno#running-on-linux" target="_new">READ THIS</a>.</p>
+
+    <p>Sending <code>msg.advestising = false</code> will stop advertisement, sending <code>msg.advestising = true</code> will
+    resume it.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('PhysicalWeb out',{
+        category: 'output',
+        defaults: {
+            name: {value:""},
+            mode: {value:"url"},
+            url: {value:"",validate:function(v) {return v.length<19; }},
+            namespace: {value:""},
+            instance: {value:""},
+            power: {value:"-21",validate:RED.validators.number()},
+            period: {value:"10",validate:RED.validators.number()},
+            count: {value:"2",validate:RED.validators.number()}
+        },
+        color: "#2F7ACD",
+        inputs:1,
+        outputs:0,
+        icon: "physical-web.png",
+        label: function() {
+            return this.name||"PhysicalWeb";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+
+            var checkLength = function(text) {
+                var l = text.length;
+                switch(true) {
+                    case /^http:\/\/www./.test(text):
+                        l -= 10;
+                        break;
+                    case /^https:\/\/www./.test(text):
+                        l -= 11;
+                        break;
+                    case /^http:\/\//.test(text):
+                        l -= 6;
+                        break;
+                    case /^https:\/\//.test(text):
+                        l -= 7;
+                        break;
+                }
+
+                switch(true) {
+                    case /.*\.info\/.*/.test(text):
+                        l -= 5;
+                        break;
+                    case /.*\.com\/.*/.test(text):
+                    case /.*\.net\/.*/.test(text):
+                    case /.*\.org\/.*/.test(text):
+                    case /.*\.edu\/.*/.test(text):
+                    case /.*\.biz\/.*/.test(text):
+                    case /.*\.gov\/.*/.test(text):
+                    case /.*\.info.*/.test(text):
+                        l -= 4;
+                        break;
+                    case /.*\.com.*/.test(text):
+                    case /.*\.net.*/.test(text):
+                    case /.*\.org.*/.test(text):
+                    case /.*\.edu.*/.test(text):
+                    case /.*\.biz.*/.test(text):
+                    case /.*\.gov.*/.test(text):
+                        l -= 3;
+                        break;
+                }
+
+                return l;
+            }
+
+            $("#node-input-period").spinner({min:0});
+            $("#node-input-count").spinner({min:0});
+            $("#node-input-power").spinner({min:-100,max:20});
+            $("#url-length").text(checkLength($('#node-input-url').val()));
+            $("#node-input-mode").on("change",function() {
+              if ($("#node-input-mode").val() === "uid") {
+                  $("#node-url").hide();
+                  $('#url-length').hide();
+                  $("#node-namespace").show();
+                  $("#node-instance").show();
+              } else {
+                  $("#node-url").show();
+                  $("#url-length").show();
+                  $("#node-input-url").bind('input',function(){
+                    console.log("change " + $(this).val());
+                    $("#url-length").text(checkLength($(this).val()));
+                  });
+                  $("#node-namespace").hide();
+                  $("#node-instance").hide();
+              }
+            });
+
+
+        }
+    });
+</script>

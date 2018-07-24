@@ -1,49 +1,63 @@
-/**
- * Copyright 2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
-
     function Base64Node(n) {
         RED.nodes.createNode(this,n);
+        this.action = n.action || "";
+        this.property = n.property || "payload";
         var node = this;
+        var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');  // check it only contains valid characters
+
         this.on("input", function(msg) {
-            if (msg.hasOwnProperty("payload")) {
-                if (Buffer.isBuffer(msg.payload)) {
-                    // Take binary buffer and make into a base64 string
-                    msg.payload = msg.payload.toString('base64');
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
+                if (node.action === "str") {
+                    value = RED.util.ensureBuffer(value).toString('base64');
+                    RED.util.setMessageProperty(msg,node.property,value);
                     node.send(msg);
                 }
-                else if (typeof msg.payload === "string") {
-                    // Take base64 string and make into binary buffer
-                    var regexp = new RegExp('^[A-Za-z0-9+\/=]*$');
-                    if ( regexp.test(msg.payload) && (msg.payload.length % 4 === 0) ) {
-                        msg.payload = new Buffer(msg.payload,'base64');
-                        node.send(msg);
+                else if (node.action === "b64") {
+                    if ( typeof value === "string") {
+                        var load = value.replace(/\s+/g,'');
+                        if (regexp.test(load) && (load.length % 4 === 0) ) {
+                            value = Buffer.from(load,'base64').toString('binary');
+                            RED.util.setMessageProperty(msg,node.property,value);
+                            node.send(msg);
+                        }
+                        else { node.error("Invalid Base64 string",msg); }
                     }
-                    else {
-                        node.log("Not a Base64 string - maybe we should encode it...");
-                        msg.payload = (new Buffer(msg.payload,"binary")).toString('base64');
-                        node.send(msg);
-                    }
+                    else { node.error("Not a Base64 string",msg); }
                 }
                 else {
-                    node.warn("This node only handles strings or buffers.");
+                    if (Buffer.isBuffer(value)) {
+                        // Take binary buffer and make into a base64 string
+                        value = value.toString('base64');
+                        RED.util.setMessageProperty(msg,node.property,value);
+                        node.send(msg);
+                    }
+                    else if (typeof value === "string") {
+                        // Take base64 string and make into binary buffer
+                        var load = value.replace(/\s+/g,'');      // remove any whitespace
+                        //var load = value.replace(/[\t\r\n\f]+/g,'');
+                        //var load = value;
+                        if ( regexp.test(load) && (load.length % 4 === 0) ) {
+                            value = Buffer.from(load,'base64');
+                            RED.util.setMessageProperty(msg,node.property,value);
+                            node.send(msg);
+                        }
+                        else {
+                            node.log("Not a Base64 string - maybe we should encode it...");
+                            value = Buffer.from(value).toString('base64');
+                            RED.util.setMessageProperty(msg,node.property,value);
+                            node.send(msg);
+                        }
+                    }
+                    else {
+                        node.warn("This node only handles strings or buffers.");
+                    }
                 }
-            } else { node.warn("No payload found to process"); }
+            }
+            else { node.warn("No property found to process"); }
         });
     }
     RED.nodes.registerType("base64",Base64Node);

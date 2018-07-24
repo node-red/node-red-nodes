@@ -1,24 +1,36 @@
 {
-    "name"          : "node-red-node-wemo",
-    "version"       : "0.0.2",
-    "description"   : "A Node-RED node to control a Belkin Wemo set of devices.",
-    "dependencies"  : {
-        "wemo"   : "0.2.*"
-    },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/wemo"
-    },
-    "license": "Apache-2.0",
-    "keywords": [ "node-red", "wemo" ],
-    "node-red"      : {
-        "nodes"     : {
-            "wemo": "60-wemo.js"
-        }
-    },
-    "author": {
-        "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
-        "url": "http://nodered.org"
+  "name": "node-red-node-wemo",
+  "version": "0.1.14",
+  "description": "Input and Output nodes for Belkin WeMo devices",
+  "repository": "https://github.com/node-red/node-red-nodes/tree/master/hardware",
+  "main": "WeMoNG.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node-red",
+    "wemo",
+    "belkin"
+  ],
+  "author": {
+    "email": "hardillb@gmail.com",
+    "name": "Benjamin Hardill",
+    "url": "http://www.hardill.me.uk/wordpress/"
+  },
+  "license": "APACHE-2.0",
+  "dependencies": {
+    "node-ssdp": "~3.2.5",
+    "request": "~2.74.0",
+    "xml2js": "~0.4.13",
+    "util": "~0.10.3",
+    "url": "~0.11.0",
+    "ip": "~1.0.1",
+    "body-parser": "~1.14.1",
+    "q": "~1.4.1"
+  },
+  "node-red": {
+    "nodes": {
+      "wemo": "WeMoNG.js"
     }
+  }
 }

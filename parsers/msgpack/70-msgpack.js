@@ -1,47 +1,37 @@
-/**
- * Copyright 2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
-    var msgpack = require('msgpack-js');
+    var msgpack = require('msgpack-lite');
 
     function MsgPackNode(n) {
         RED.nodes.createNode(this,n);
+        this.property = n.property||"payload";
         var node = this;
         this.on("input", function(msg) {
-            if (msg.hasOwnProperty("payload")) {
-                if (Buffer.isBuffer(msg.payload)) {
-                    var l = msg.payload.length;
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
+                if (Buffer.isBuffer(value)) {
+                    var l = value.length;
                     try {
-                        msg.payload = msgpack.decode(msg.payload);
+                        value = msgpack.decode(value);
+                        RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
-                        node.status({text:l +" b->o "+ JSON.stringify(msg.payload).length});
+                        node.status({text:l +" b->o "+ JSON.stringify(value).length});
                     }
                     catch (e) {
-                        node.warn("Bad decode: "+e);
+                        node.error("Bad decode",msg);
                         node.status({text:"not a msgpack buffer"});
                     }
                 }
                 else {
-                    var le = JSON.stringify(msg.payload).length;
-                    msg.payload = msgpack.encode(msg.payload);
+                    var le = JSON.stringify(value).length;
+                    value = msgpack.encode(value);
+                    RED.util.setMessageProperty(msg,node.property,value);
+                    node.status({text:le +" o->b "+ value.length});
                     node.send(msg);
-                    node.status({text:le +" o->b "+ msg.payload.length});
                 }
-            } else { node.warn("No payload found to process"); }
+            }
+            else { node.warn("No payload found to process"); }
         });
     }
     RED.nodes.registerType("msgpack",MsgPackNode);

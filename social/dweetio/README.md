@@ -8,7 +8,7 @@ This node does **NOT** support private or "locked" dweets.
 Install
 -------
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-dweetio
 
@@ -16,28 +16,28 @@ Run the following command in the root directory of your Node-RED install
 Usage
 -----
 
-###Output
+### Output
 
-Sends the **msg.payload** to Dweet.io
+Sends the `msg.payload` to Dweet.io
 
 
-Optionally uses **msg.thing** to set the thing id, if not already set in the properties.
+Optionally uses `msg.thing` to set the thing id, if not already set in the properties.
 
 You need to make the thing id unique - you are recommended to use a GUID.
 
-###Input
+### Input
 
 Listens for messages from Dweet.io
 
 The thing id should be globally unique as they are all public - you are recommended to use a GUID.
 
-The Thing ID is set into **msg.dweet**, and the timesamp into **msg.created**.
+The Thing ID is set into `msg.dweet`, and the timesamp into `msg.created`.
 
 
-For further info see the <a href="https://dweetio.io/" target="_new">Dweet.io website</a>
+For further info see the <a href="https://dweet.io/" target="_new">Dweet.io website</a>
 
 
-###Sample Flow
+### Sample Flow
 
 Cut the text below - then in Node-RED use Ctrl-I (Import) - Ctrl-V (Paste) to insert into your workspace.
 

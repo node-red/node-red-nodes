@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-contrib-heatmiser",
-    "version"       : "0.0.2",
+    "version"       : "0.0.5",
     "description"   : "A Node-RED node to control and poll a HeatMiser thermostat.",
     "dependencies"  : {
-        "heatmiser"   : "2.0.0"
+        "heatmiser"   : "~2.0.0"
     },
     "repository" : {
         "type":"git",

@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "0.0.3",
+    "version"       : "0.0.19",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
-        "net-snmp"  : "1.1.13"
+        "net-snmp"  : "1.2.4"
     },
     "repository" : {
         "type":"git",
@@ -20,5 +20,9 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [
+        { "name": "Mika Karaila" },
+        { "name": "Bryan Malyn" }
+    ]
 }

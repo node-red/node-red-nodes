@@ -1,15 +1,25 @@
 {
     "rbe": {
+        "rbe": "rbe",
         "label": {
             "func": "Mode",
+            "init": "Send initial value",
+            "start": "Start value",
             "name": "Name"
         },
         "placeholder":{
-            "bandgap": "e.g. 10 or 5%"
+            "bandgap": "e.g. 10 or 5%",
+            "start": "leave blank to use first data received"
         },
         "opts": {
             "rbe": "block unless value changes",
-            "deadband": "block unless changes by more than"
+            "rbei": "block unless value changes (ignore initial value)",
+            "deadband": "block unless value change is greater than",
+            "deadbandEq": "block unless value change is greater or equal to",
+            "narrowband": "block if value change is greater than",
+            "narrowbandEq": "block if value change is greater or equal to",
+            "in": "compared to last input value",
+            "out": "compared to last valid output value"
         },
         "warn": {
             "nonumber": "no number found in payload"

@@ -1,0 +1,13 @@
+{
+    "datagen": {
+        "datagen": "datagenerator",
+        "label": {
+            "syntax": "Return",
+            "text": "a text string",
+            "json": "a parsed JSON object"
+        },
+        "errors": {
+            "json-error": "error trying to parse string to JSON"
+        }
+    }
+}

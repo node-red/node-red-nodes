@@ -1,22 +1,8 @@
-/**
- * Copyright 2013,2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
     var irc = require("irc");
+
 
     // The Server Definition - this opens (and closes) the connection
     function IRCServerNode(n) {
@@ -35,8 +21,23 @@ module.exports = function(RED) {
                 this.ircclient.disconnect();
             }
         });
+
+        this.username = null;
+        this.password = null;
+        if (this.credentials && this.credentials.hasOwnProperty("username")) {
+            this.username = this.credentials.username;
+        }
+        if (this.credentials && this.credentials.hasOwnProperty("password")) {
+            this.password = this.credentials.password;
+        }
+
     }
-    RED.nodes.registerType("irc-server",IRCServerNode);
+    RED.nodes.registerType("irc-server",IRCServerNode, {
+        credentials: {
+            username: {type:"text"},
+            password: {type:"password"}
+        }
+    });
 
 
     // The Input Node
@@ -47,9 +48,11 @@ module.exports = function(RED) {
         this.channel = n.channel || this.serverConfig.channel;
         var node = this;
         if (node.serverConfig.ircclient === null) {
-            node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
+            node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server+" "+node.serverConfig.username+" "+node.serverConfig.ssl);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
+            if (node.serverConfig.username !== null) { options["userName"] = node.serverConfig.username }
+            if (node.serverConfig.password !== null) { options["password"] = node.serverConfig.password }
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
             node.serverConfig.ircclient.addListener('error', function(message) {
@@ -148,6 +151,11 @@ module.exports = function(RED) {
             node.send([null,msg]);
             //node.log(who+' '+RED._("irc.errors.hasleft")+' '+channel+': '+reason);
         });
+        node.ircclient.addListener('topic', function (channel, topic, nick, message) {
+            var msg = { "payload": { "type":"topic", "who":nick, "channel":channel, "topic":topic, "message":message } };
+            node.send([null,msg]);
+            //node.log(nick+' '+RED._("irc.errors.topicchanged")+' '+channel+': '+topic);
+        });
         node.ircclient.addListener('quit', function(nick, reason, channels, message) {
             var msg = { "payload": { "type":"quit", "who":nick, "channel":channels, "reason":reason } };
             node.send([null,msg]);
@@ -185,6 +193,8 @@ module.exports = function(RED) {
             node.log(RED._("irc.errors.connect")+": "+node.serverConfig.server);
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             var options = {autoConnect:true,autoRejoin:false,floodProtection:true,secure:node.serverConfig.ssl,selfSigned:node.serverConfig.cert,port:node.serverConfig.port,retryDelay:20000};
+            if (node.serverConfig.username !== null) { options['userName'] = node.serverConfig.username }
+            if (node.serverConfig.password !== null) { options['password'] = node.serverConfig.password }
             node.serverConfig.ircclient = new irc.Client(node.serverConfig.server, node.serverConfig.nickname, options);
             node.serverConfig.ircclient.setMaxListeners(0);
             node.serverConfig.ircclient.addListener('error', function(message) {

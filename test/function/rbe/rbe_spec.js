@@ -1,21 +1,6 @@
-/**
- * Copyright 2015 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../function/rbe/rbe.js');
 
 describe('rbe node', function() {
@@ -42,7 +27,7 @@ describe('rbe node', function() {
         });
     });
 
-    it('should only send output if payload changes', function(done) {
+    it('should only send output if payload changes (rbe)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -54,8 +39,14 @@ describe('rbe node', function() {
                     msg.should.have.a.property("payload", "a");
                     c+=1;
                 }
-                else {
+                else if (c === 1) {
                     msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload");
+                    msg.payload.should.have.a.property("b",1);
+                    msg.payload.should.have.a.property("c",2);
                     done();
                 }
             });
@@ -65,12 +56,14 @@ describe('rbe node', function() {
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"b"});
-            n1.emit("input", {payload:"b"});
+            n1.emit("input", {payload:{b:1,c:2}});
+            n1.emit("input", {payload:{c:2,b:1}});
+            n1.emit("input", {payload:{c:2,b:1}});
         });
     });
 
-    it('should only send output if more than x away from original value', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
+    it('should only send output if another chosen property changes - foo (rbe)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", property:"foo", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -78,16 +71,184 @@ describe('rbe node', function() {
             var c = 0;
             n2.on("input", function(msg) {
                 if (c === 0) {
-                    msg.should.have.a.property("payload", 0);
+                    msg.should.have.a.property("foo", "a");
+                    c+=1;
                 }
                 else if (c === 1) {
+                    msg.should.have.a.property("foo", "b");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("foo");
+                    msg.foo.should.have.a.property("b",1);
+                    msg.foo.should.have.a.property("c",2);
+                    done();
+                }
+            });
+            n1.emit("input", {foo:"a"});
+            n1.emit("input", {payload:"a"});
+            n1.emit("input", {foo:"a"});
+            n1.emit("input", {payload:"a"});
+            n1.emit("input", {foo:"a"});
+            n1.emit("input", {foo:"b"});
+            n1.emit("input", {foo:{b:1,c:2}});
+            n1.emit("input", {foo:{c:2,b:1}});
+            n1.emit("input", {payload:{c:2,b:1}});
+        });
+    });
+
+    it('should only send output if payload changes - ignoring first value (rbei)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"rbei", gap:"0", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", "b");
+                    msg.should.have.a.property("topic", "a");
+                    c+=1;
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", "b");
+                    msg.should.have.a.property("topic", "b");
+                    c+=1;
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", "c");
+                    msg.should.have.a.property("topic", "a");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload", "c");
+                    msg.should.have.a.property("topic", "b");
+                    done();
+                }
+
+            });
+            n1.emit("input", {payload:"a", topic:"a"});
+            n1.emit("input", {payload:"a", topic:"b"});
+            n1.emit("input", {payload:"a", topic:"a"});
+            n1.emit("input", {payload:"b", topic:"a"});
+            n1.emit("input", {payload:"b", topic:"b"});
+            n1.emit("input", {payload:"c", topic:"a"});
+            n1.emit("input", {payload:"c", topic:"b"});
+        });
+    });
+
+    it('should send output if queue is reset (rbe)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else if (c === 3) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 4) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 5) {
+                    msg.should.have.a.property("payload", "b");
+                    c+=1;
+                }
+                else if (c === 6) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else {
+                    msg.should.have.a.property("payload", "c");
+                    done();
+                }
+            });
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {reset:true});             // reset all
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"b", reset:""});    // reset b
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {reset:""}); // reset all
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"c"});              // don't reset a non topic
+            n1.emit("input", {topic:"b", payload:"b"});
+            n1.emit("input", {topic:"a", payload:"a"});
+            n1.emit("input", {topic:"c", payload:"c"});
+        });
+    });
+
+    it('should only send output if x away from original value (deadbandEq)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadbandEq", gap:"10", inout:"out", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c = c + 1;
+                if (c === 1) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 10);
+                }
+                else if (c == 3) {
+                    msg.should.have.a.property("payload", 20);
+                    done();
+                }
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:4});
+            n1.emit("input", {payload:6});
+            n1.emit("input", {payload:8});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:15});
+            n1.emit("input", {payload:20});
+        });
+    });
+
+    it('should only send output if more than x away from original value (deadband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c = c + 1;
+                //console.log(c,msg);
+                if (c === 1) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 2) {
                     msg.should.have.a.property("payload", 20);
                 }
                 else {
                     msg.should.have.a.property("payload", "5 deg");
                     done();
                 }
-                c += 1;
             });
             n1.emit("input", {payload:0});
             n1.emit("input", {payload:2});
@@ -100,37 +261,34 @@ describe('rbe node', function() {
         });
     });
 
-    it('should only send output if more than x% away from original value', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10%", wires:[["n2"]] },
+    it('should only send output if more than x% away from original value (deadband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10%", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
             var n2 = helper.getNode("n2");
             var c = 0;
             n2.on("input", function(msg) {
-                if (c === 0) {
-                    msg.should.have.a.property("payload", 100);
-                }
-                else if (c === 1) {
+                c = c + 1;
+                if (c === 1) {
                     msg.should.have.a.property("payload", 120);
                 }
-                else {
-                    msg.should.have.a.property("payload", 132);
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 135);
                     done();
                 }
-                c += 1;
             });
             n1.emit("input", {payload:100});
             n1.emit("input", {payload:95});
             n1.emit("input", {payload:105});
             n1.emit("input", {payload:120});
             n1.emit("input", {payload:130});
-            n1.emit("input", {payload:132});
+            n1.emit("input", {payload:135});
         });
     });
 
-    it('should warn if no number found in gap mode', function(done) {
-        var flow = [{"id":"n1", "type":"rbe", func:"gap", gap:"10", wires:[["n2"]] },
+    it('should warn if no number found in deadband mode', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"deadband", gap:"10", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
@@ -157,4 +315,89 @@ describe('rbe node', function() {
         });
     });
 
+    it('should not send output if x away or greater from original value (narrowbandEq)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowbandEq", gap:"10", inout:"out", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c = c + 1;
+                //console.log(c,msg);
+                if (c === 1) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 2) {
+                    msg.should.have.a.property("payload", 5);
+                }
+                else if (c === 3) {
+                    msg.should.have.a.property("payload", 10);
+                    done();
+                }
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:15});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:25});
+        });
+    });
+
+    it('should not send output if more than x away from original value (narrowband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 0);
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload","6 deg");
+                }
+                else {
+                    msg.should.have.a.property("payload", "5 deg");
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:40});
+            n1.emit("input", {payload:"6 deg"});
+            n1.emit("input", {payload:18});
+            n1.emit("input", {payload:20});
+            n1.emit("input", {payload:50});
+            n1.emit("input", {payload:"5 deg"});
+        });
+    });
+
+    it('should not send output if more than x away from original value (narrowband in step mode)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"10", inout:"in", start:"500", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 55);
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", 205);
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:50});
+            n1.emit("input", {payload:55});
+            n1.emit("input", {payload:200});
+            n1.emit("input", {payload:205});
+        });
+    });
 });

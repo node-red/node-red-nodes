@@ -1,0 +1,88 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('mraa-gpio-pwm',{
+        category: 'Intel gpio',
+        color: '#a6bbcf',
+        paletteLabel: 'pwm',
+        defaults: {
+            name: {value:""},
+            pin:  {value:"", required: true},
+            period: { value:"100", required: true }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "arrow.png",
+        align: "right",
+        label: function() {
+            if (this.pin === "14") {
+                return "LED";
+            } else {
+                return this.name||"PWM D"+this.pin;
+            }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var pinnow = this.pin;
+            $.getJSON('mraa-gpio/'+this.id,function(data) {
+                var t = "unknown";
+                if (data === 0) { t = "Galileo v1"; }
+                if (data === 1) { t = "Galileo v2"; }
+                if (data === 2) { t = "Edison Fab C"; }
+                if (data === 3) { t = "DE3813 Baytrail"; }
+                if (data === 4) { t = "Minnow Max"; }
+                if (data === 5) { t = "Raspberry Pi"; }
+                if (data === 6) { t = "Beaglebone"; }
+                if (data === 7) { t = "Banana"; }
+                $('#type-tip').text(t);
+                $('#node-input-pin').val(pinnow);
+            });
+            $.getJSON('mraa-version/'+this.id,function(data) {
+                $('#ver-tip').text(data);
+            });
+
+            var setstate = function () {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            };
+            $("#node-input-set").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mraa-gpio-pwm">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="3">D3</option>
+            <option value="5">D5</option>
+            <option value="6">D6</option>
+            <option value="9">D9</option>
+            <option value="10">D10</option>
+            <option value="11">D11</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-period"><i class="fa fa-clock-o"></i> Period</label>
+        <input type="text" id="node-input-period" placeholder="number" style="width: 250px;"> mS
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
+    </div>
+    <div class="form-tips">Board : <span id="type-tip">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
+</script>
+
+<script type="text/x-red" data-help-name="mraa-gpio-pwm">
+    <p>A pulse width modulation (PWM) output pin for an Intel Galileo or Edison board.</p>
+    <p>The <code>msg.payload</code> should contain a floating point number value
+    between 0 and 1, (or a string representation thereof.)</p>
+    <p>For servo control set the period to 20mS and vary the input between 0.05 and 0.10</p>
+    <p><b>Note</b> : Only pins 3, 5, 6, 9, 10 & 11 support PWM output.</p>
+</script>

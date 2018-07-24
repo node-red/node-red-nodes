@@ -1,0 +1,170 @@
+
+<script type="text/x-red" data-template-name="rpi-sensehat in">
+<div class="form-row">
+    <label><i class="fa fa-arrow-right"></i> Outputs</label>
+    <label style="width: auto" for="node-input-motion"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-motion"> Motion events</label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">accelerometer, gyroscope, magnetometer, compass</div>
+</div>
+<div class="form-row">
+    <label></label>
+    <label style="width: auto" for="node-input-env"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-env"> Environment events</label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">temperature, humidity, pressure</div>
+</div>
+<div class="form-row">
+    <label></label>
+    <label style="width: auto" for="node-input-stick"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-stick"> Joystick events</label>
+</div>
+
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-template-name="rpi-sensehat out">
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-sensehat in">
+<p>Raspberry Pi Sense HAT input node.</p>
+<p>This node sends readings from the various sensors on the Sense HAT,
+grouped into three sets; motion events, environment events and joystick events.</p>
+<p><b>Motion events</b></p>
+<p>Motion events include readings from the accelerometer, gyroscope and magnetometer,
+as well as the current compass heading. They are sent at a rate of approximately 10
+per second. The <code>topic</code> is set to <code>motion</code> and the
+<code>payload</code> is an object with the following values:</p>
+<ul>
+    <li><code>acceleration.x/y/z</code> : the acceleration intensity in Gs</li>
+    <li><code>gyroscope.x/y/z</code> : the rotational intensity in radians/s</li>
+    <li><code>orientation.roll/pitch/yaw</code> : the angle of the axis in degrees</li>
+    <li><code>compass</code> : the direction of North in degrees</li>
+</ul>
+<p><b>Environment events</b></p>
+<p>Environment events include readings from the temperature, humidity and pressure
+sensors. They are sent at a rate of approximately 1 per second.  The <code>topic</code>
+is set to <code>environment</code> and the <code>payload</code> is an object
+with the following values:</p>
+<ul>
+<li><code>temperature</code> : degrees Celsius</li>
+<li><code>humidity</code> : percentage of relative humidity</li>
+<li><code>pressure</code> : Millibars</li>
+</ul>
+<p><b>Joystick events</b></p>
+<p>Joystick events are sent when the Sense HAT joystick is interacted with. The
+<code>topic</code> is set to <code>joystick</code> and the <code>payload</code>
+is an object with the following values:</p>
+<ul>
+    <li><code>key</code> : one of <code>UP</code>, <code>DOWN</code>, <code>LEFT</code>, <code>RIGHT</code>, <code>ENTER</code></li>
+        <li><code>state</code> : the state of the key:
+        <ul>
+            <li><code>0</code> : the key has been released</li>
+            <li><code>1</code> : the key has been pressed</li>
+            <li><code>2</code> : the key is being held down</li>
+        </ul>
+</li>
+</ul>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-sensehat out">
+<p>Raspberry Pi Sense HAT output node.</p>
+<p>This node sends commands to the 8x8 LED display on the Sense HAT.</p>
+<p>Commands are sent to the node in <code>msg.payload</code>. Multiple commands can
+be sent in a single message by separating them with newline (\n) characters. You must 
+use a function node or a change node (jsonata expression) when using the newline (\n) 
+character to create a payload containing multiple commands.<p>
+
+<p><b>Set the colour of individual pixels</b></p>
+<p>Format: <code>&lt;x&gt;,&lt;y&gt;,&lt;colour&gt;</code>
+<p><code>x</code> and <code>y</code> must either be a value from 0 to 7, a
+<code>*</code> to indicate the entire row or column, or a range such as <code>3-6</code>.</p>
+<p><code>colour</code> must be one of:
+<ul>
+    <li>the well-known <a href="https://en.wikipedia.org/wiki/Web_colors" target="_new">HTML colour names</a>
+     - eg <code>red</code> or <code>aquamarine</code>,</li>
+    <li>the <a href="http://cheerlights.com/cheerlights-api/">CheerLights colour names</a>,</li>
+    <li>a HEX colour value - eg <code>#aa9900</code></li>
+    <li>an RGB triple - <code>190,255,0</code></li>
+    <li>or simply <code>off</code></li>
+</ul>
+
+<p><i>Examples</i></p>
+<p>To set the entire screen to red:</p>
+<p><code>*,*,red</code></p>
+<p>To set the four corners of the display to red, green (#00ff00), yellow and blue (0,0,255):</p>
+<p><code>0,0,red,0,7,#00ff00,7,7,yellow,7,0,0,0,255</code></p>
+<p>To set a 3-pixel wide column to purple:</p>
+<p><code>4-6,*,purple</code></p>
+
+<p><b>Rotate the screen</b></p>
+<p>Format: <code>R&lt;angle&gt;</code></p>
+<p><code>angle</code> must be 0, 90, 180 or 270.</p>
+<p>Example: <code>R180</code></p>
+
+<p><b>Flip the screen</b></p>
+<p>Format: <code>F&lt;axis&gt;</code></p>
+<p><code>axis</code> must be either <code>H</code> or <code>V</code> to flip on
+the horizontal or vertical axis respectively.</p>
+<p>Example: <code>FV</code></p>
+
+<p><b>Scroll a message</b></p>
+<p>If <code>msg.payload</code> is not recognised as any of the above commands,
+it is treated as a text message to be scrolled across the screen.</p>
+<p>If the text is a single character, it will be displayed without scrolling.
+To scroll a single character, append a blank space after it - <code>"A "</code>.</p>
+<p>The following message properties can be used to customise the appearance:</p>
+<ul>
+    <li><code>msg.color</code> - the colour of the text, default: <code>white</code></li>
+    <li><code>msg.background</code> - the colour of the background, default: <code>off</code></li>
+    <li><code>msg.speed</code> - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: <code>3</code></li>
+</ul>
+
+<p><b>Set the screen brightness</b></p>
+<p>Format: <code>D&lt;level&gt;</code></p>
+<p><code>level</code> must be 0 (low) or 1 (high).</p>
+<p>Example: <code>D1</code></p>
+</script>
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-sensehat in',{
+        category: 'Raspberry Pi',
+        paletteLabel: "Sense HAT",
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            motion: { value: true },
+            env: { value: true },
+            stick: { value: true }
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rpi.png",
+        label: function() {
+            return this.name||"Sense HAT";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+
+    RED.nodes.registerType('rpi-sensehat out',{
+        category: 'Raspberry Pi',
+        paletteLabel: "Sense HAT",
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rpi.png",
+        align: "right",
+        label: function() {
+            return this.name||"Sense HAT";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

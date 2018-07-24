@@ -1,18 +1,3 @@
-<!--
-  Copyright 2014 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="stomp in">
     <div class="form-row">
@@ -31,10 +16,10 @@
 
 <script type="text/x-red" data-help-name="stomp in">
     <p>Connects to a server using the Stomp protocol to receive messages.</p>
-    <p>If the message received is JSON <b>msg.payload</b> will be parsed into an
+    <p>If the message received is JSON <code>msg.payload</code> will be parsed into an
     object. If not it will be the raw data.</p>
-    <p><b>msg.headers</b> contains any header information that was also delivered.</p>
-    <p><b>msg.topic</b> is set to the predefined subscription topic.</p>
+    <p><code>msg.headers</code> contains any header information that was also delivered.</p>
+    <p><code>msg.topic</code> is set to the predefined subscription topic.</p>
     <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting to an ActiveMQ server, the destination should
     begin with <i>"/queue/"</i> or with <i>"/topic/"</i>. See
     <a href="https://stomp.github.io/stomp-specification-1.0.html#frame-SEND" target="new">Stomp 1.0 spec</a>
@@ -75,14 +60,15 @@
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">The <b>Destination</b> field is optional. If not set uses the <b>msg.topic</b> property of the message.</div>
+    <div class="form-tips">The <b>Destination</b> field is optional. If not set uses the <code>msg.topic</code>
+    property of the message.</div>
 </script>
 
 <script type="text/x-red" data-help-name="stomp out">
     <p>Connects to an Stomp capable server to send messages.</p>
-    <p>The <b>Destination</b> field is optional. If set it overrides the <b>msg.topic</b>
+    <p>The <b>Destination</b> field is optional. If set it overrides the <code>msg.topic</code>
     property of the message.</p>
-    <p><b>msg.headers</b></code>, if set, should be an object containing field/value
+    <p><code>msg.headers</code></code>, if set, should be an object containing field/value
         pairs to be added as request headers.</p>
     <p><b>Note</b>: While not a requirement of the Stomp protocol, if connecting
     to an ActiveMQ server, the destination should
@@ -128,6 +114,26 @@
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-password">
     </div>
+
+    <div class="form-row">
+    <label for="node-config-input-protocolversion"><i class="fa fa-tag"></i> Protocol Version</label>
+        <select type="text" id="node-config-input-protocolversion" style="display: inline-block; width: 250px; vertical-align: top;">
+            <option value="1.0">v1.0</option>
+            <option value="1.1">v1.1</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-vhost"><i class="fa fa-server"></i> vhost</label>
+        <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reconnectretries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
+        <input type="number" id="node-config-input-reconnectretries" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reconnectdelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
+        <input type="number" id="node-config-input-reconnectdelay" />
+    </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
@@ -139,7 +145,11 @@
         category: 'config',
         defaults: {
             server: {required:true},
-            port: {value:61618,required:true,validate:RED.validators.number()},
+            port: {value:61613,required:true,validate:RED.validators.number()},
+            protocolversion: {value:"1.0",required:true},
+            vhost: {},
+            reconnectretries: {value:"0",required:true,validate:RED.validators.number()},
+            reconnectdelay: {value:"0.5",required:true,validate:RED.validators.number()},
             name: {}
         },
         credentials: {

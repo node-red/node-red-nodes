@@ -1,22 +1,7 @@
-/**
- * Copyright 2013 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
     "use strict";
-    var reconnect = RED.settings.mysqlReconnectTime || 30000;
+    var reconnect = RED.settings.mysqlReconnectTime || 20000;
     var mysqldb = require('mysql');
 
     function MySQLNode(n) {
@@ -29,37 +14,64 @@ module.exports = function(RED) {
         this.connecting = false;
 
         this.dbname = n.db;
+        this.setMaxListeners(0);
         var node = this;
+
+        function checkVer() {
+            node.connection.query("SELECT version();", [], function(err, rows) {
+                if (err) {
+                    node.connection.release();
+                    node.error(err);
+                    node.status({fill:"red",shape:"ring",text:"Bad Ping"});
+                    doConnect();
+                }
+            });
+        }
 
         function doConnect() {
             node.connecting = true;
-            node.connection = mysqldb.createConnection({
-                host : node.host,
-                port : node.port,
-                user : node.credentials.user,
-                password : node.credentials.password,
-                database : node.dbname,
-                timezone : node.tz,
-                insecureAuth: true
-            });
+            node.emit("state","connecting");
+            if (!node.pool) {
+                node.pool = mysqldb.createPool({
+                    host : node.host,
+                    port : node.port,
+                    user : node.credentials.user,
+                    password : node.credentials.password,
+                    database : node.dbname,
+                    timezone : node.tz,
+                    insecureAuth: true,
+                    multipleStatements: true,
+                    connectionLimit: 25
+                });
+            }
 
-            node.connection.connect(function(err) {
+            node.pool.getConnection(function(err, connection) {
                 node.connecting = false;
                 if (err) {
-                    node.warn(err);
-                    node.tick = setTimeout(doConnect, reconnect);
-                } else {
-                    node.connected = true;
-                }
-            });
-
-            node.connection.on('error', function(err) {
-                node.connected = false;
-                if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-                    doConnect(); // silently reconnect...
-                } else {
+                    node.emit("state",err.code);
                     node.error(err);
-                    doConnect();
+                    node.tick = setTimeout(doConnect, reconnect);
+                }
+                else {
+                    node.connection = connection;
+                    node.connected = true;
+                    node.emit("state","connected");
+                    node.connection.on('error', function(err) {
+                        node.connected = false;
+                        node.connection.release();
+                        node.emit("state",err.code);
+                        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                            doConnect(); // silently reconnect...
+                        }
+                        else if (err.code === 'ECONNRESET') {
+                            doConnect(); // silently reconnect...
+                        }
+                        else {
+                            node.error(err);
+                            doConnect();
+                        }
+                    });
+                    if (!node.check) { node.check = setInterval(checkVer, 290000); }
                 }
             });
         }
@@ -72,14 +84,10 @@ module.exports = function(RED) {
 
         this.on('close', function (done) {
             if (this.tick) { clearTimeout(this.tick); }
-            if (this.connection) {
-                node.connection.end(function(err) {
-                    if (err) { node.error(err); }
-                    done();
-                });
-            } else {
-                done();
-            }
+            if (this.check) { clearInterval(this.check); }
+            node.connected = false;
+            node.emit("state"," ");
+            node.pool.end(function (err) { done(); });
         });
     }
     RED.nodes.registerType("MySQLdatabase",MySQLNode, {
@@ -98,21 +106,46 @@ module.exports = function(RED) {
         if (this.mydbConfig) {
             this.mydbConfig.connect();
             var node = this;
+            node.mydbConfig.on("state", function(info) {
+                if (info === "connecting") { node.status({fill:"grey",shape:"ring",text:info}); }
+                else if (info === "connected") { node.status({fill:"green",shape:"dot",text:info}); }
+                else {
+                    if (info === "ECONNREFUSED") { info = "connection refused"; }
+                    if (info === "PROTOCOL_CONNECTION_LOST") { info = "connection lost"; }
+                    node.status({fill:"red",shape:"ring",text:info});
+                }
+            });
+
             node.on("input", function(msg) {
-                if (typeof msg.topic === 'string') {
-                    //console.log("query:",msg.topic);
-                    var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                    node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
-                        if (err) { node.warn(err); }
-                        else {
-                            msg.payload = rows;
-                            node.send(msg);
-                        }
-                    });
+                if (node.mydbConfig.connected) {
+                    if (typeof msg.topic === 'string') {
+                        //console.log("query:",msg.topic);
+                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                            if (err) {
+                                node.error(err,msg);
+                                node.status({fill:"red",shape:"ring",text:"Error"});
+                            }
+                            else {
+                                msg.payload = rows;
+                                node.send(msg);
+                                node.status({fill:"green",shape:"dot",text:"OK"});
+                            }
+                        });
+                    }
+                    else {
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    }
                 }
                 else {
-                    if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                    node.error("Database not connected",msg);
+                    node.status({fill:"red",shape:"ring",text:"not yet connected"});
                 }
+            });
+
+            node.on('close', function () {
+                node.mydbConfig.removeAllListeners();
+                node.status({});
             });
         }
         else {

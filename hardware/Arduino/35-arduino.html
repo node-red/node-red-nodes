@@ -1,33 +1,21 @@
-<!--
-  Copyright 2013,2015 IBM Corp.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <script type="text/x-red" data-template-name="arduino in">
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
         <input type="text" id="node-input-arduino">
     </div>
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
-        <input type="text" id="node-input-pin" placeholder="2">
+        <label for="node-input-state"><i class="fa fa-wrench"></i> <span data-i18n="arduino.label.type"></span></label>
+        <select type="text" id="node-input-state" style="width:200px;">
+            <option value="INPUT" data-i18n="arduino.state.in.digital"></option>
+            <option value="PULLUP" data-i18n="arduino.state.in.pullup"></option>
+            <option value="ANALOG" data-i18n="arduino.state.in.analogue"></option>
+            <option value="STRING" data-i18n="arduino.state.in.string"></option>
+        </select>
     </div>
     <div class="form-row">
-        <label for="node-input-state"><i class="fa fa-wrench"></i> <span data-i18n="arduino.label.type"></span></label>
-        <select type="text" id="node-input-state" style="width: 150px;">
-            <option value="INPUT" data-i18n="arduino.state.in.digital"></option>
-            <option value="ANALOG" data-i18n="arduino.state.in.analogue"></option>
-        </select>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
+        <input type="text" id="node-input-pin" placeholder="2">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -37,11 +25,11 @@
 </script>
 
 <script type="text/x-red" data-help-name="arduino in">
-    <p>Arduino input node. Connects to local Arduino and monitors the selected pin for changes. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
+    <p>Arduino input node. Connects to a local Arduino and monitors the selected pin for changes. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
-    <p>You can select either Digital or Analogue input. Outputs the value read as <b>msg.payload</b> and the pin number as <b>msg.topic</b>.</p>
+    <p>You can select either Digital or Analogue input. Outputs the value read as <code>msg.payload</code> and the pin number as <code>msg.topic</code>.</p>
     <p>It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.</p>
-    <p>You can set the sample rate in ms from 20 to 65535.</p>
+    <p>For example you could use a <code>delay</code> node set to rate limit and drop intermediate values, or an <code>rbe</code> node to only report when it changes by a certain amount.</p>
 </script>
 
 <script type="text/javascript">
@@ -50,7 +38,10 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",required:true},
+            pin: {value:"",validate: function(v) {
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"INPUT",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -58,6 +49,7 @@
         outputs:1,
         icon: "arduino.png",
         label: function() {
+            if (this.state === "STRING") { return "String"; }
             var a = "";
             if (this.state === "ANALOG") { a = "A"; }
             return this.name||"Pin: "+a+this.pin;
@@ -74,16 +66,17 @@
         <input type="text" id="node-input-arduino">
     </div>
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
-        <input type="text" id="node-input-pin" placeholder="13">
-    </div>
-    <div class="form-row">
         <label for="node-input-state"><i class="fa fa-wrench"></i> <span data-i18n="arduino.label.type"></span></label>
-        <select type="text" id="node-input-state" style="width: 200px;">
+        <select type="text" id="node-input-state" style="width:200px;">
             <option value="OUTPUT" data-i18n="arduino.state.out.digital"></option>
             <option value="PWM" data-i18n="arduino.state.out.analogue"></option>
             <option value="SERVO" data-i18n="arduino.state.out.servo"></option>
+            <option value="STRING" data-i18n="arduino.state.out.string"></option>
         </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
+        <input type="text" id="node-input-pin" placeholder="13">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -93,18 +86,23 @@
 </script>
 
 <script type="text/x-red" data-help-name="arduino out">
-    <p>Arduino output node. Connects to local Arduino and writes to the selected digital pin. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
+    <p>Arduino output node. Connects to local Arduino and writes to the selected digital
+    pin. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
-    <p>You can select Digital, Analogue (PWM) or Servo type outputs. Expects a numeric value in <b>msg.payload</b>. The pin number is set in the properties panel.</p>
+    <p>You can select Digital, Analogue (PWM) or Servo type outputs. Expects an integer numeric
+    value in <code>msg.payload</code>. The pin number is set in the properties panel.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('arduino out',{
+    RED.nodes.registerType('arduino out', {
         category: 'Arduino',
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",required:true},
+            pin: {value:"",validate: function(v) {
+                    var ct = $("#node-input-state").val() || this.state;
+                    return ct === 'STRING' || (v !== '');
+                }},
             state: {value:"",required:true},
             arduino: {type:"arduino-board"}
         },
@@ -113,6 +111,7 @@
         icon: "arduino.png",
         align: "right",
         label: function() {
+            if (this.state === "STRING") { return "String"; }
             return this.name||"Pin: "+this.pin;
         },
         labelStyle: function() {
@@ -154,8 +153,8 @@
                     $("#node-config-lookup-serial-icon").removeClass('spinner');
                     $("#node-config-lookup-serial").removeClass('disabled');
                     var ports = [];
-                    $.each(data, function(i, port){
-                        ports.push(port);
+                    $.each(data, function(i, port) {
+                        ports.push(port.comName);
                     });
                     $("#node-config-input-device").autocomplete({
                         source:ports,

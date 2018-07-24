@@ -1,0 +1,45 @@
+
+<script type="text/x-red" data-template-name="rpi-lcd">
+    <div class="form-row">
+        <label for="node-input-pins"><i class="fa fa-circle"></i> Pins</label>
+        <input type="text" id="node-input-pins" placeholder="RS,E,D4,D5,D6,D7">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Tip</b>: Pins MUST be a comma separated list of the 6 GPIO
+    connector pin numbers that are connected to the RS, E, D4, D5, D6 and D7 pins of the LCD.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-lcd">
+    <p>Raspberry Pi output to a HD44780 style LCD. Usually 1, 2, or 4 lines of characters.</p>
+    <p>Expects a <code>msg.payload</code> with a string in it.</p>
+    <p>Strings for the second line of the display must start <b>2:</b> - the third start <b>3:</b> - and the fourth <b>4:</b></p>
+    <p>To clear the display send the string <b>clr:</b></p>
+    <p>It is up to you to manage string lengths to suit the display.</p>
+    <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
+    <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-lcd',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+,\d+,\d+,\d+,\d+$/) }
+        },
+        inputs:1,
+        outputs:0,
+        align:"right",
+        icon:"rpi.png",
+        label:function() {
+            return this.name||"Pi LCD";
+        },
+        labelStyle:function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

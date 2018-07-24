@@ -1,18 +1,3 @@
-<!--
-  Copyright 2014 Maxwell R Hadley
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <!-- Edit dialog for bbb-analogue-in -->
 <script type="text/x-red" data-template-name="bbb-analogue-in">
@@ -228,7 +213,7 @@ voltage ten times in rapid succession for each input message and output the mean
     </div>
     <div class="form-row">
         <label for="node-input-debounce">Debounce</label>
-        <input type="checkbox" id="node-input-debounce" style="display:inline-block; width:auto; vertical-align:top;">
+        <input type="text" id="node-input-debounce" placeholder="debounce time in mS" style="width: 160px"> mS
     </div>
     <div class="form-row">
         <label for="node-input-outputOn">Output on</label>
@@ -284,7 +269,7 @@ press. When using buttons or switches, enable debouncing to improve reliability.
         defaults: {                 // defines the editable properties of the node
             pin: { value:"", required:true },
             activeLow: { value:false, required:true },
-            debounce: { value:false, required:true },
+            debounce: { value:0, required:true },
             outputOn: { value:"both", required:true },
             updateInterval: { value:60, required:true, validate:RED.validators.number() },
             topic: { value:"" },

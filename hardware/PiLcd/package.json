@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-pilcd",
+    "version"       : "0.0.10",
+    "description"   : "A Node-RED node for Raspberry Pi to write to HD44780 style LCD panels.",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/PiLcd"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "lcd", "HD44780" ],
+    "node-red"      : {
+        "nodes"     : {
+            "rpi-lcd": "pilcd.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

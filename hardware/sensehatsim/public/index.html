@@ -1,0 +1,367 @@
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <style>
+    html {
+        box-sizing: border-box;
+    }
+    *, *:before, *:after {
+        box-sizing: inherit;
+    }
+    body {
+        text-align: center;
+        background: #003300;
+        font-family: Arial;
+
+    }
+    #display {
+        display:inline-block;
+        border-radius: 5px;
+        width: auto;
+        margin: auto;
+        padding: 20px;
+        background: #00AA00;
+        margin-bottom: 20px;
+        box-shadow: 2px 2px 1px #99cc99;
+
+    }
+    .led {
+        background-color: #000;
+        border: 1px solid #eee;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        margin: 1px;
+        box-shadow: 1px 1px 1px #666;
+    }
+    #controls {
+    }
+    #environment {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    #joystick {
+        margin-left: 10px;
+        vertical-align: middle;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .envvar {
+        margin: 10px auto;
+    }
+    .envvar>span {
+        display: block;
+        color: silver;
+        margin-bottom: 2px;
+    }
+    .envvar>div {
+        border: 1px solid #999;
+        border-radius: 3px;
+        display:inline-block;
+        font-size: 18px;
+        background: #000;
+        box-shadow: 1px 1px 1px #eee;
+
+    }
+
+    a {
+        font-size: 38px;
+        line-height: 40px;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background: silver;
+        text-decoration: none;
+        vertical-align: top;
+        color: #333;
+    }
+
+    .envvar a {
+        margin: none;
+    }
+    .envvar a:first-of-type {
+        line-height: 35px;
+    }
+
+    a:active {
+        background: grey;
+    }
+
+    .envvar .value {
+        vertical-align: top;
+        height: 40px;
+        line-height: 40px;
+        color: silver;
+        display: inline-block;
+        width: 80px;
+        background: #000;
+        box-shadow: inset 1px 1px 2px #ddd;
+
+    }
+
+    #joystick a {
+        display: inline-block;
+        width: 43px;
+        height: 43px;
+        border: 1px solid #999;
+        margin: 3px;
+        line-height: 50px;
+        border-radius: 8px;
+        box-shadow: 1px 1px 1px #eee;
+
+    }
+    #joystick a.up {}
+    #joystick a.right {
+        box-shadow: 1px -1px 1px #eee;
+        transform: rotate(90deg);
+    }
+    #joystick a.down {
+        box-shadow: -1px -1px 1px #eee;
+        transform: rotate(180deg);
+    }
+    #joystick a.left {
+        box-shadow: -1px 1px 1px #eee;
+        transform: rotate(270deg);
+    }
+    #joystick a.enter {
+    }
+
+    </style>
+</head>
+<body>
+
+<div id="display">
+</div>
+<div id="controls">
+    <div id="environment">
+        <div class="envvar">
+            <span>Temperature</span>
+            <div>
+                <a href="" onclick="changeTemperature(-0.2); return false;">-</a><div class="value" id="temperature"></div><a href="" onclick="changeTemperature(0.2); return false;">+</a>
+            </div>
+        </div>
+        <div class="envvar">
+            <span>Humidity</span>
+            <div>
+                <a href="" onclick="changeHumidity(-1); return false;">-</a><div class="value" id="humidity"></div><a href="" onclick="changeHumidity(1); return false;">+</a>
+            </div>
+        </div>
+        <div class="envvar">
+            <span>Pressure</span>
+            <div>
+                <a href="" onclick="changePressure(-5); return false;">-</a><div class="value" id="pressure"></div><a href="" onclick="changePressure(5); return false;">+</a>
+            </div>
+        </div>
+    </div>
+    <div id="joystick">
+        <div><a href="" id="j-up" class="up" onclick="return false;">^</a></div>
+        <div><a href="" id="j-left" class="left" onclick="return false;">^</a><a id="j-enter" href="" class="enter" onclick="return false;"></a><a id="j-right" href="" class="right" onclick="return false;">^</a></div>
+        <div><a href="" id="j-down" class="down" onclick="return false;">^</a></div>
+    </div>
+</div>
+
+<script>
+var temperature = 29;
+var humidity = 80;
+var pressure = 1000;
+var rotation = 0;
+var flipH = false;
+var flipV = false;
+
+function updateTemperature(d) {
+    temperature = Number(d.toFixed(1));
+    document.getElementById('temperature').innerHTML = temperature.toFixed(1)+"&deg;C";
+}
+function changeTemperature(d) {
+    updateTemperature(temperature+d);
+    publishEnvironment();
+}
+function updateHumidity(d) {
+    humidity = d;
+    document.getElementById('humidity').innerHTML = humidity+"%";
+}
+function changeHumidity(d) {
+    updateHumidity(humidity+d);
+    publishEnvironment();
+}
+function updatePressure(d) {
+    pressure = d;
+    document.getElementById('pressure').innerHTML = pressure+"mb";
+}
+function changePressure(d) {
+    updatePressure(pressure+d);
+    publishEnvironment();
+}
+function publishEnvironment() {
+    if (ws && ws.readyState === ws.OPEN) {
+        ws.send("Y"+temperature+","+humidity+","+pressure);
+    }
+}
+
+var k = document.getElementById("j-up");
+k.onmousedown = function() { keyDown('U'); }
+k.onmouseup = function() { keyUp('U'); }
+
+k = document.getElementById("j-down");
+k.onmousedown = function() { keyDown('D'); }
+k.onmouseup = function() { keyUp('D'); }
+
+k = document.getElementById("j-left");
+k.onmousedown = function() { keyDown('L'); }
+k.onmouseup = function() { keyUp('L'); }
+
+k = document.getElementById("j-right");
+k.onmousedown = function() { keyDown('R'); }
+k.onmouseup = function() { keyUp('R'); }
+
+k = document.getElementById("j-enter");
+k.onmousedown = function() { keyDown('E'); }
+k.onmouseup = function() { keyUp('E'); }
+
+var keyTimer = null;
+function keyDown(evt) {
+    //  K[U|L|R|D|E][0|1|2] - joystick event:  direction,state
+    ws.send("K"+evt+"1");
+    keyTimer = setInterval(function() {
+        ws.send("K"+evt+"2");
+    },200);
+
+}
+function keyUp(evt) {
+    //  K[U|L|R|D|E][0|1|2] - joystick event:  direction,state
+    clearInterval(keyTimer);
+    ws.send("K"+evt+"0");
+}
+
+var display = document.getElementById("display");
+var cells = [];
+
+for (var y=0;y<8;y++) {
+    cells.push([]);
+    var r = document.createElement("div");
+    r.className = "row";
+    display.appendChild(r);
+    for (var x=0;x<8;x++) {
+        var d = document.createElement("div");
+        d.className = "led";
+        d.id = "led_"+x+"_"+y;
+        r.appendChild(d);
+        cells[y].push(d);
+    }
+}
+
+var ws;
+function connect() {
+    var location = document.location.toString().replace(/^http/,"ws")+"/ws";
+    ws = new WebSocket(location);
+    ws.onopen = function() {
+    }
+    ws.onclose = function() {
+        setTimeout(connect,5000);
+    }
+    ws.onmessage = function(msg) {
+        var command = msg.data[0];
+        var data = msg.data.substring(1);
+        var parts;
+        var x,y,t;
+        if (command === 'P') {
+            parts = data.split(",");
+            for (var i=0;i<parts.length;i+=5) {
+                x = parts[i];
+                y = parts[i+1];
+                if (flipH) { x = 7-x; }
+                if (flipV) { y = 7-y; }
+                if (rotation === 180) {
+                    x = 7-x;
+                    y = 7-y;
+                } else if (rotation === 90) {
+                    if (y<4 && x<4) { t = y; y = x; x = 7-t; }
+                    else if (y<4 && x>3) { t=x; x = 7-y; y = t;  }
+                    else if (y>3 && x>3) { t=x; x = 7-y; y = t;  }
+                    else if (y>3 && x<4) { t=y; y = x; x = 7-t;  }
+                } else if (rotation === 270) {
+                    if (y<4 && x<4) { t = x; x = y; y = 7-t; }
+                    else if (y<4 && x>3) { t=y; y = 7-x; x = t;  }
+                    else if (y>3 && x>3) { t=y; y = 7-x; x = t;  }
+                    else if (y>3 && x<4) { t=x; x = y; y = 7-t;  }
+                }
+                cells[y][x].style.backgroundColor = "rgb("+parts[i+2]+","+parts[i+3]+","+parts[i+4]+")"
+            }
+        } else if (command === 'Y') {
+            parts = data.split(",");
+            updateTemperature(Number(parts[0]));
+            updateHumidity(Number(parts[1]));
+            updatePressure(Number(parts[2]));
+        } else if (command === 'R') {
+            var delta = Number(data) - rotation;
+            if (delta < 0) {
+                delta += 360;
+            }
+            if (delta === 90) {
+                for (y=0;y<4;y++) {
+                    for (x=0;x<4;x++) {
+                        t = cells[y][x].style.backgroundColor;
+                        cells[y][x].style.backgroundColor = cells[7-y][x].style.backgroundColor;
+                        cells[7-y][x].style.backgroundColor = cells[7-x][7-y].style.backgroundColor;
+                        cells[7-x][7-y].style.backgroundColor = cells[y][7-x].style.backgroundColor;
+                        cells[y][7-x].style.backgroundColor = t;
+
+                    }
+                }
+            } else if (delta === 270) {
+                for (y=0;y<4;y++) {
+                    for (x=0;x<4;x++) {
+                        t = cells[y][x].style.backgroundColor;
+                        cells[y][x].style.backgroundColor = cells[y][7-x].style.backgroundColor;
+                        cells[y][7-x].style.backgroundColor = cells[7-x][7-y].style.backgroundColor;
+                        cells[7-x][7-y].style.backgroundColor = cells[7-y][x].style.backgroundColor;
+                        cells[7-y][x].style.backgroundColor = t;
+
+                    }
+                }
+            } else if (delta === 180) {
+                for (y=0;y<4;y++) {
+                    for (x=0;x<4;x++) {
+                        t = cells[y][x].style.backgroundColor;
+                        cells[y][x].style.backgroundColor = cells[7-y][7-x].style.backgroundColor;
+                        cells[7-y][7-x].style.backgroundColor = t;
+
+                        t = cells[7-y][x].style.backgroundColor;
+                        cells[7-y][x].style.backgroundColor = cells[y][7-x].style.backgroundColor;
+                        cells[y][7-x].style.backgroundColor = t;
+
+                    }
+                }
+            }
+
+
+            rotation = Number(data);
+            //data = 0,90,180,270
+        } else if (command === 'F') {
+            if (data === 'H') {
+                flipH = !flipH;
+                for (y=0;y<8;y++) {
+                    for (x=0;x<4;x++) {
+                        t = cells[y][x].style.backgroundColor;
+                        cells[y][x].style.backgroundColor = cells[y][7-x].style.backgroundColor;
+                        cells[y][7-x].style.backgroundColor = t;
+                    }
+                }
+            } else {
+                flipV = !flipV;
+                for (x=0;x<8;x++) {
+                    for (y=0;y<4;y++) {
+                        t = cells[y][x].style.backgroundColor;
+                        cells[y][x].style.backgroundColor = cells[7-y][x].style.backgroundColor;
+                        cells[7-y][x].style.backgroundColor = t;
+                    }
+                }
+            }
+        }
+    }
+}
+connect();
+</script>
+</body>
+</html>

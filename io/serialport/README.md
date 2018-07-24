@@ -1,18 +1,16 @@
 node-red-node-serialport
 ========================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to an hardware Serial port.
+<a href="http://nodered.org" target="noderedinfo">Node-RED</a> nodes to talk to
+hardware Serial ports.
 
-**Note** : This is the same node as is/was in the core of Node-RED. If you already
-have it installed you do NOT need this node.
+## Install
 
-Install
--------
+This node is sometimes installed by default in Node-RED so may not need to be installed manually.
 
-Run the following command in the root directory of your Node-RED install, usually
-this is ~/.node-red .
+Run the following command in your Node-RED user directory (typically `~/.node-red`):
 
-        npm install node-red-node-serialport
+        npm i node-red-node-serialport
 
 During install there may be multiple messages about optional compilation.
 These may look like failures... as they report as failure to compile errors -
@@ -20,13 +18,11 @@ but often are warnings and the node will continue to install and, assuming nothi
 failed, you should be able to use it. Occasionally some platforms *will* require
 you to install the full set of tools in order to compile the underlying package.
 
-
-Usage
------
+## Usage
 
 Provides two nodes - one to receive messages, and one to send.
 
-###Input
+### Input
 
 Reads data from a local serial port.
 
@@ -36,18 +32,18 @@ the device, however you many need to manually specify it. COM1, /dev/ttyUSB0, et
 It can either
 
  - wait for a "split" character (default \n). Also accepts hex notation (0x0a).
- - wait for a timeout in milliseconds for the first character received
+ - wait for a timeout in milliseconds from the first character received
  - wait to fill a fixed sized buffer
 
-It then outputs **msg.payload** as either a UTF8 ascii string or a binary Buffer object.
+It then outputs `msg.payload` as either a UTF8 ascii string or a binary Buffer object.
 
 If no split character is specified, or a timeout or buffer size of 0, then a stream
 of single characters is sent - again either as ascii chars or size 1 binary buffers.
 
-###Output
+### Output
 
 Provides a connection to an outbound serial port.
 
-Only the **msg.payload** is sent.
+Only the `msg.payload` is sent.
 
-Optionally the new line character used to split the input can be appended to every message sent out to the serial port.
+Optionally the character used to split the input can be appended to every message sent out to the serial port.

@@ -1,0 +1,57 @@
+{
+    "pi-gpiod": {
+        "label": {
+            "gpiopin": "GPIO",
+            "selectpin": "select pin",
+            "host": "Host",
+            "resistor": "Resistor?",
+            "readinitial": "Read initial state of pin on deploy/restart?",
+            "type": "Type",
+            "initpin": "Initialise pin state?",
+            "debounce": "Debounce",
+            "limits": "Limits",
+            "min": "min",
+            "max": "max"
+        },
+        "place": {
+            "host": "local or remote ip",
+            "port": "port"
+        },
+        "resistor": {
+            "none": "none",
+            "pullup": "pullup",
+            "pulldown": "pulldown"
+        },
+        "digout": "Digital output",
+        "pwmout": "PWM output",
+        "servo": "Servo output",
+        "initpin0": "initial level of pin - low (0)",
+        "initpin1": "initial level of pin - high (1)",
+        "pinname": "Pin",
+        "tip": {
+            "pin": "<b>Pins in Use</b>: ",
+            "in": "Only Digital Input is supported - input must be 0 or 1.",
+            "dig": "Digital output - input must be 0 or 1.",
+            "pwm": "PWM output - input must be between 0 to 100.",
+            "ser": "Servo output - input must be between 0 to 100. 50 is centre.<br/>Min must be 500uS or more, Max must be 2500uS or less."
+        },
+        "types": {
+            "digout": "digital output",
+            "input": "input",
+            "pullup": "input with pull up",
+            "pulldown": "input with pull down",
+            "pwmout": "PWM output",
+            "servo": "Servo output"
+        },
+        "status": {
+            "stopped": "stopped",
+            "closed": "closed",
+            "not-running": "not running"
+        },
+        "errors": {
+            "invalidpin": "Invalid GPIO pin",
+            "invalidinput": "Invalid input",
+            "error": "error: __error__"
+        }
+    }
+}

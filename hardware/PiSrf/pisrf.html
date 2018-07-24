@@ -1,0 +1,50 @@
+
+<script type="text/x-red" data-template-name="rpi-srf">
+    <div class="form-row">
+        <label for="node-input-pins"><i class="fa fa-circle"></i> Pins</label>
+        <input type="text" id="node-input-pins" placeholder="Trigger,Echo">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pulse"><i class="fa fa-clock-o"></i> Repeat (S)</label>
+        <input type="text" id="node-input-pulse" placeholder="time between readings">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-bars"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="optional topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Tip</b>: Pins MUST be a comma separated list of the 2 GPIO
+    connector pin numbers that are connected to the Trigger and Echo pins of the SRF04 or SRF05.</div>
+</script>
+
+<script type="text/x-red" data-help-name="rpi-srf">
+    <p>Raspberry Pi input from an SRF04 or SRF05 ultrasonic range finder.</p>
+    <p>Outputs a <code>msg.payload</code> with a number representing the range in cm.</p>
+    <p>Produces one measurement every 0.5s (default) - but only if the distance is different from the previous reading.</p>
+    <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-srf',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            topic: { value:"SRF" },
+            pulse: {value:"0.5" },
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) }
+        },
+        inputs:0,
+        outputs:1,
+        icon:"rpi.png",
+        label:function() {
+            return this.name||"Pi SRF";
+        },
+        labelStyle:function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

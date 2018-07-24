@@ -1,0 +1,8 @@
+{
+    "sentiment": {
+        "sentiment": "sentiment",
+        "label": {
+            "language": "Language"
+        }
+    }
+}

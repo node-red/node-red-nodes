@@ -1,19 +1,3 @@
-<!--
-  Copyright 2013-2014 Agile Innovative Ltd.
-  Based on code written by Dave Conway-Jones, IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="blinkstick">
     <div class="form-row">
@@ -22,6 +6,15 @@
             <input type="text" id="node-input-serial" placeholder="defaults to first found" style="width:60%">
             <a id="node-lookup-serial" class="btn"><i id="node-lookup-serial-icon" class="fa fa-search"></i></a>
         </div>
+        <div class="form-row">
+            <label for="node-input-mode">Mode</label>
+            <select id="node-input-mode" style="width:125px !important">
+                <option value="normal">Normal</option>
+                <option value="inverted">Inverted</option>
+                <option value="neopixel">NeoPixel</option>
+            </select>
+        </div>
+
         <div class="form-row">
             <label for="node-input-task"><i class="fa fa-empire"></i> Task</label>
             <select id="node-input-task" style="width:125px !important">
@@ -34,22 +27,21 @@
 
         <div id="delay-details" class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="text" id="node-input-delay" placeholder="Delay" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-delay" placeholder="Delay" style="text-align:end; width:50px !important">
             milliseconds
         </div>
         <div id="repeats-details" class="form-row">
             <label for="node-input-repeats"><i class="fa fa-history"></i> Repeats</label>
-            <input type="text" id="node-input-repeats" placeholder="Times" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-repeats" placeholder="Times" style="text-align:end; width:50px !important">
         </div>
-
         <div id="duration-details" class="form-row">
             <label for="node-input-duration"><i class="fa fa-clock-o"></i> Duration</label>
-            <input type="text" id="node-input-duration" placeholder="Duration" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-duration" placeholder="Duration" style="text-align:end; width:50px !important">
             milliseconds
         </div>
         <div id="steps-details" class="form-row">
             <label for="node-input-steps"><i class="fa fa-history"></i> Steps</label>
-            <input type="text" id="node-input-steps" placeholder="Steps" style="direction:rtl; width:50px !important">
+            <input type="text" id="node-input-steps" placeholder="Steps" style="text-align:end; width:50px !important">
         </div>
         <div id="repeat-details" class="form-row">
             <label>&nbsp;</label>
@@ -64,17 +56,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="blinkstick">
-    <p><i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <b>msg.payload</b> with one of:</p>
+    <p><i><a href="http://www.blinkstick.com" target="_new">BlinkStick</a></i> output node. Expects a <code>msg.payload</code> with one of:</p>
     <ul>
         <li>A hex string <b>"#rrggbb"</b> triple</li>
         <li><b>"red,green,blue"</b> three 0-255 values as a string</li>
         <li><b>"random"</b> will generate a random color</li>
         <li><i><a href="http://www.w3schools.com/html/html_colornames.asp" target="_new">Standard HTML color</a></i> name</li>
-        <li><b>object</b> can override any of the parameters</li>
+        <li>An <b>object</b> can override any of the parameters</li>
         <li><b>array</b> of colours for a neopixel rgb strip - either name,name,... or r,g,b,r,g,b,... where r,g,b are 0 to 255.</li>
     </ul>
     <p>If using a neopixel strip it <i>must</i> be wired to the red or R channel of the blinkstick.</p>
-    <p>An object payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
+    <p>An <b>object</b> payload can override any of the settings on the node. Omitted parameters are left intact. For example:</p>
 <pre>
 { 'color': 'blue' }
 { 'task': 'blink', 'color': 'red' }
@@ -120,6 +112,7 @@
         defaults: {             // defines the default editable properties of the node
             name: {value:""},   //  along with default values.
             serial: {value:""},
+            mode: {value:"normal", validate:function(v) {return ((v === undefined)||v=="normal"||v=="inverted"||v=="neopixel"); }},
             task: {value:"set_color", validate:function(v) {return ((v === undefined)||v=="set_color"||v=="blink"||v=="morph"||v=="pulse"); }},
             delay: {value:"500", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
             repeats: {value:"1", validate:function(v) {return ((v === undefined)||(/^\d+$/).test(v)); }},
@@ -138,6 +131,10 @@
             return this.name?"node_label_italic":"";
         },
         oneditprepare: function() {
+          if (!$("#node-input-mode").val()) {
+              $("#node-input-mode").val("normal");
+          }
+
           if (!$("#node-input-task").val()) {
               $("#node-input-task").val("set_color");
           }

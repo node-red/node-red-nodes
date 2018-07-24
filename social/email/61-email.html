@@ -1,18 +1,3 @@
-<!--
-  Copyright 2013, 2015 IBM Corp.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <script type="text/x-red" data-template-name="e-mail">
     <div class="form-row">
@@ -50,7 +35,10 @@
     </div>
     <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
-        <input type="text" id="node-input-port" placeholder="465">
+        <input type="text" id="node-input-port" placeholder="465" style="width:100px">
+        <label style="width:40px"> </label>
+        <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="email.label.useSecureConnection"></span>
     </div>
     <div class="form-row">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
@@ -69,14 +57,19 @@
 </script>
 
 <script type="text/x-red" data-help-name="e-mail">
-    <p>Sends the <b>msg.payload</b> as an email, with a subject of <b>msg.topic</b>.</p>
+    <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
     <p>The default message recipient can be configured in the node, if it is left
-    blank it should be set using the <b>msg.to</b> property of the incoming message.</p>
+    blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
+    you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
+    default value.</p>
     <p>The payload can be html format.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
-    The filename should be set using <b>msg.filename</b>. Optionally <b>msg.description</b> can be added for the body text.</p>
-    <p>Alternatively you may provide <b>msg.attachments</b> which should contain an array of one or
+    The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
+    <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
     more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
+    <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
+    <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
 <script type="text/javascript">
@@ -87,6 +80,7 @@
         defaults: {
             server: {value:"smtp.gmail.com",required:true},
             port: {value:"465",required:true},
+            secure: {value: true},
             name: {value:""},
             dname: {value:""}
         },
@@ -99,11 +93,14 @@
         outputs:0,
         icon: "envelope.png",
         align: "right",
+        paletteLabel: function() {
+            return this._("email.email");
+        },
         label: function() {
             return this.dname||this.name||"email";
         },
         labelStyle: function() {
-            return (this.dname||!this.topic)?"node_label_italic":"";
+            return (this.dname)?"node_label_italic":"";
         },
         oneditprepare: function() {
             if (this.credentials.global) {
@@ -123,6 +120,17 @@
         <input type="text" id="node-input-repeat" style="width: 80px"> <span data-i18n="email.label.seconds">seconds</span>
     </div>
     <div class="form-row">
+        <label for="node-input-protocol"><i class="fa fa-envelope"></i> <span data-i18n="email.label.protocol"></span></label>
+        <select type="text" id="node-input-protocol">
+            <option value="IMAP">IMAP</option>
+            <option value="POP3">POP3</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-useSSL"><i class="fa fa-lock"></i> <span data-i18n="email.label.useSSL"></span></label>
+        <input type="checkbox" id="node-input-useSSL" style="width: auto;">
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
         <input type="text" id="node-input-server" placeholder="imap.gmail.com">
     </div>
@@ -138,27 +146,84 @@
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-box">
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
         <input type="text" id="node-input-box">
+    </div>
+    <div class="form-row node-input-disposition">
+            <label for="node-input-disposition"><i class="fa fa-trash"></i> <span data-i18n="email.label.disposition"></span></label>
+        <select type="text" id="node-input-disposition">
+            <option value="None" selected="selected" data-i18n="email.label.none"></option>
+            <option value="Read" data-i18n="email.label.read"></option>
+            <option value="Delete" data-i18n="email.label.delete"></option>
+        </select>
     </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
-    <div id="node-input-tip" class="form-tips"><span data-i18n="[html]email.tip.recent"></span></div>
+    <script>
+        var checkPorts = function() {
+            var currentPort = $("#node-input-port").val();
+            if (currentPort === "143" || currentPort === "993" || currentPort === "110" || currentPort == "995") {
+                if ($("#node-input-useSSL").prop("checked") === true) {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"993":"995");
+                } else {
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"143":"110");
+                }
+            }
+        };
+
+        $("#node-input-useSSL").change(function(x, y) {
+          console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+          console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+          checkPorts();
+        });
+
+        $("#node-input-protocol").change(function() {
+            var protocol = $("#node-input-protocol").val();
+            if (protocol === "IMAP") {
+                $(".node-input-box").show();
+                $(".node-input-disposition").show();
+            } else {
+                $(".node-input-box").hide();
+                $(".node-input-disposition").hide();
+            }
+            checkPorts();
+        });
+    </script>
 </script>
 
 <script type="text/x-red" data-help-name="e-mail in">
     <p>Repeatedly gets a <b>single email</b> from an IMAP server and forwards on as a msg if not already seen.</p>
-    <p>The subject is loaded into <b>msg.topic</b> and <b>msg.payload</b> is the plain text body.
-       If there is text/html then that is returned in <b>msg.html</b>. <b>msg.from</b> and <b>msg.date</b> are also set if you need them.</p>
-    <p>Additionally <b>msg.header</b> contains the complete header object including
+    <p>The subject is loaded into <code>msg.topic</code> and <code>msg.payload</code> is the plain text body.
+       If there is text/html then that is returned in <code>msg.html</code>. <code>msg.from</code> and <code>msg.date</code> are also set if you need them.</p>
+    <p>Additionally <code>msg.header</code> contains the complete header object including
     <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
     <p>Uses the imap module.</p>
     <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
+    <p>Note: uses IMAP with SSL to port 993.</p>
+    <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
+    each object represents a specific attachments.  The format of the object is:</p>
+
+<pre>
+{
+  contentType:        // The MIME content description
+  fileName:           // A suggested file name associated with this attachment
+  transferEncoding:   // How was the original email attachment encodded?
+  contentDisposition: // Unknown
+  generatedFileName:  // A suggested file name associated with this attachment
+  contentId:          // A unique generated ID for this attachment
+  checksum:           // A checksum against the data
+  length:             // Size of data in bytes
+  content:            // The actual content of the data contained in a Node.js Buffer object
+                      // We can turn this into a base64 data string with content.toString('base64')
+}
+</pre>
+<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+<p>The maximum refresh interval is 2147483 seconds (24.8 days).</p>
+
 </script>
 
 <script type="text/javascript">
@@ -168,9 +233,12 @@
         color:"#c7e9c0",
         defaults: {
             name: {value:""},
+            protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
             server: {value:"imap.gmail.com",required:true},
+            useSSL: {value: true},
             port: {value:"993",required:true},
-            box: {value:"INBOX"},
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process
+            disposition: { value: "Read" }, // For IMAP, the disposition of the read email
             repeat: {value:"300",required:true}
         },
         credentials: {
@@ -181,11 +249,14 @@
         inputs:0,
         outputs:1,
         icon: "envelope.png",
+        paletteLabel: function() {
+            return this._("email.email");
+        },
         label: function() {
-            return this.name||"email";
+            return this.name||this._("email.email");
         },
         labelStyle: function() {
-            return (this.name||!this.topic)?"node_label_italic":"";
+            return (this.name)?"node_label_italic":"";
         },
         oneditprepare: function() {
             if (this.credentials.global) {
