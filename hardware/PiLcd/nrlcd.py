@@ -11,7 +11,13 @@
 import RPi.GPIO as GPIO
 import time
 import sys
-import os, select
+import os
+import select
+
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
 
 # Turn off warnings if you run it a second time...
 GPIO.setwarnings(False)

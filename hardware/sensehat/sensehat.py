@@ -30,6 +30,12 @@ import threading
 
 from sense_hat import SenseHat
 
+try:
+    StandardError              # Python 2
+except NameError:
+    StandardError = Exception  # Python 3
+
+
 EVENT_FORMAT = 'llHHI'
 EVENT_SIZE = struct.calcsize(EVENT_FORMAT)
 EVENT_NAMES = {103:'U',105:'L',106:'R',108:'D',28:'E'}
