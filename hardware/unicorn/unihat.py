@@ -6,6 +6,11 @@ import sys
 import os
 import unicornhat as UH
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 if sys.version_info >= (3,0):
     print("Sorry - currently only configured to work with python 2.x")
     sys.exit(1)
