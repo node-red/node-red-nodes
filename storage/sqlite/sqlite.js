@@ -7,10 +7,14 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 
         this.dbname = n.db;
+        this.mod = n.mode;
+        if (n.mode === "RWC") { this.mode = sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE; }
+        if (n.mode === "RW") { this.mode = sqlite3.OPEN_READWRITE; }
+        if (n.mode === "RO") { this.mode = sqlite3.OPEN_READONLY; }
         var node = this;
 
         node.doConnect = function() {
-            node.db = new sqlite3.Database(node.dbname);
+            node.db = node.db || new sqlite3.Database(node.dbname,node.mode);
             node.db.on('open', function() {
                 if (node.tick) { clearTimeout(node.tick); }
                 node.log("opened "+node.dbname+" ok");
@@ -41,6 +45,7 @@ module.exports = function(RED) {
 
         if (this.mydbConfig) {
             this.mydbConfig.doConnect();
+            node.status({fill:"green",shape:"dot",text:this.mydbConfig.mod});
             var bind = [];
             node.on("input", function(msg) {
                 if (this.sqlquery == "msg.topic"){
