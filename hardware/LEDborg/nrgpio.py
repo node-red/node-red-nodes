@@ -4,6 +4,11 @@
 import RPi.GPIO as GPIO
 import sys
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 bounce = 20     # bounce time in mS to apply
 
 if len(sys.argv) > 1:

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # Import library functions we need
+from __future__ import print_function
 import sys
 import os
 import unicornhat as UH
@@ -64,4 +65,4 @@ while True:
     except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
         sys.exit(0)
     except Exception as ex:
-        print "bad data: "+data
+        print("bad data: "+data)

@@ -9,6 +9,11 @@ except ImportError:
     from neopixel import Adafruit_NeoPixel as PixelStrip, Color
     __version__ = "legacy"
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 # LED strip configuration:
 LED_COUNT      = 8      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
