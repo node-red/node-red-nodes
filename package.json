@@ -42,6 +42,7 @@
         "mailparser": "^0.6.2",
         "mocha": "~5.1.1",
         "msgpack-lite": "^0.1.26",
+        "multilang-sentiment": "^1.1.6",
         "ngeohash": "^0.6.0",
         "node-red": "0.*",
         "node-red-node-test-helper": "^0.1.7",
