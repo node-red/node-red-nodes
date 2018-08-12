@@ -4,13 +4,24 @@
         <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-config-input-db" placeholder="/tmp/sqlite">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-mode">Mode</label>
+        <select id="node-config-input-mode" style="width:70%">
+            <option value="RWC">Read-Write-Create</option>
+            <option value="RW">Read-Write</option>
+            <option value="RO">Read-Only</option>
+        </select>
+    </div>
+    <div class="form-tips"><b>Note</b>: Setting the database name to <code>:memory:</code>
+    will create a non-persistant in memory database.</div>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('sqlitedb',{
         category: 'config',
         defaults: {
-            db: {value:"",required:true}
+            db: {value:"", required:true},
+            mode: {value:"RWC"}
         },
         label: function() {
             return this.db;
@@ -111,7 +122,7 @@
                     clearInterval: true
                 }
             });
-            
+
             $("#node-input-sqlquery").change(function() {
                 if ($("#node-input-sqlquery").val() == "msg.topic" || $("#node-input-sqlquery").val() == "batch"){
                     $("#node-input-sqllabel").hide();
