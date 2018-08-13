@@ -49,6 +49,11 @@
         <input type="text" id="node-input-url_title" placeholder="optional url title">
     </div>
     <div class="form-row">
+        <label for="node-input-html"><i class="fa fa-code"></i> HTML</label>
+        <input type="checkbox" id="node-input-html" style="display:inline-block; width:15px; vertical-align:baseline;" />
+        <span>Message is <a href="https://pushover.net/api#html" target="_blank">HTML formatted</a></span>
+    </div>
+    <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
         <input type="text" id="node-input-deviceid">
     </div>
@@ -86,6 +91,7 @@
             sound: {value:""},
             url: {value:""},
             url_title: {value:""},
+            html: {value:false}
         },
         credentials: {
             deviceid: {type:"text"},
