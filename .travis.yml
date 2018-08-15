@@ -1,8 +1,12 @@
 sudo: false
 language: node_js
 node_js:
-  - "8"
   - "6"
+  - "8"
+  - "10"
+matrix:
+  allow_failures:
+    - node_js: 10
 before_script:
   # Remove the './node_modules/.bin:' entry, see https://github.com/travis-ci/travis-ci/issues/8813
   - export PATH=`echo ${PATH} | sed -re 's,(^|:)(./)?node_modules/.bin($|:),\1,'`
