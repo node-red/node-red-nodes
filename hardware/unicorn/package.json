@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pi-unicorn-hat",
-    "version"       : "0.0.19",
+    "version"       : "0.0.20",
     "description"   : "A Node-RED node to output to a Raspberry Pi Unicorn HAT from Pimorini.",
     "dependencies"  : {
         "pngjs": "2.2.*"
@@ -15,9 +15,6 @@
         "nodes"     : {
             "unicorn": "unicorn.js"
         }
-    },
-    "scripts" : {
-        "postinstall" : "scripts/checklib.js"
     },
     "author": {
         "name": "Dave Conway-Jones",
