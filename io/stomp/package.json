@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-stomp",
-    "version"       : "0.0.10",
+    "version"       : "0.0.11",
     "description"   : "A Node-RED node to publish and subscribe to/from a Stomp server",
     "dependencies"  : {
-        "stomp-client"   : "0.8.*"
+        "stomp-client"   : "^0.9.0"
     },
     "repository" : {
         "type":"git",
