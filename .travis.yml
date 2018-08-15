@@ -1,9 +1,9 @@
 sudo: false
 language: node_js
 node_js:
-  - "6"
   - "8"
   - "10"
+  - "6"
 matrix:
   include:
     - python: 2.7
@@ -16,10 +16,10 @@ matrix:
       sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
       before_script: pip install flake8
       script: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
-    
+before_install:
+  - npm i -g npm
 before_script:
   # Remove the './node_modules/.bin:' entry, see https://github.com/travis-ci/travis-ci/issues/8813
-  - npm i -g npm
   - export PATH=`echo ${PATH} | sed -re 's,(^|:)(./)?node_modules/.bin($|:),\1,'`
   - npm install -g istanbul grunt-cli coveralls
   - npm install node-red
