@@ -374,6 +374,10 @@ module.exports = function(RED) {
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
+                        if (res.errors[0].code === 44) {
+                            // 'since_id parameter is invalid' - reset it for next time
+                            delete opts.since_id;
+                        }
                         clearInterval(pollId);
                         node.timeout_ids.push(setTimeout(function() {
                             node.poll(interval,url,opts);
