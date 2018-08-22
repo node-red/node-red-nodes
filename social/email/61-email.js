@@ -30,6 +30,7 @@ module.exports = function(RED) {
         this.outserver = n.server;
         this.outport = n.port;
         this.secure = n.secure;
+        this.tls = true;
         var flag = false;
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
@@ -50,12 +51,16 @@ module.exports = function(RED) {
         if (flag) {
             RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
+        if (n.tls === false){
+            this.tls = false;
+        }
         var node = this;
 
         var smtpOptions = {
             host: node.outserver,
             port: node.outport,
-            secure: node.secure
+            secure: node.secure,
+            tls: {rejectUnauthorized: node.tls}
         }
 
         if (this.userid && this.password) {

@@ -374,6 +374,14 @@ module.exports = function(RED) {
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
+                        if (res.errors[0].code === 44) {
+                            // 'since_id parameter is invalid' - reset it for next time
+                            delete opts.since_id;
+                        }
+                        clearInterval(pollId);
+                        node.timeout_ids.push(setTimeout(function() {
+                            node.poll(interval,url,opts);
+                        },interval))
                         return;
                     }
                     if (res.length > 0) {
@@ -438,7 +446,11 @@ module.exports = function(RED) {
             node.debug("Twitter DM Poll, rateLimitRemaining="+result.rateLimitRemaining+" rateLimitTimeout="+Math.floor(result.rateLimitTimeout/1000)+"s");
             var res = result.body;
             if (res.errors) {
-                throw new Error(res.errors[0].message);
+                node.error(res.errors[0].message);
+                node.timeout_ids.push(setTimeout(function() {
+                    node.pollDirectMessages();
+                },interval))
+                return;
             }
             var since = "0";
             var messages = res.events.filter(tweet => tweet.type === 'message_create' && tweet.id > since);
@@ -459,6 +471,10 @@ module.exports = function(RED) {
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
+                        clearInterval(pollId);
+                        node.timeout_ids.push(setTimeout(function() {
+                            node.pollDirectMessages();
+                        },interval))
                         return;
                     }
                     var messages = res.events.filter(tweet => tweet.type === 'message_create' && tweet.id > since);
