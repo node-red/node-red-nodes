@@ -86,8 +86,7 @@ module.exports = function(RED) {
                 }
                 if (node.sqlquery == "fixed"){
                     if (typeof node.sql === 'string') {
-                        if (msg.payload && msg.payload.length > 0) {
-                            bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        if (node.sql.length > 0) {
                             node.mydbConfig.db.all(node.sql, bind, function(err, row) {
                                 if (err) { node.error(err,msg); }
                                 else {
