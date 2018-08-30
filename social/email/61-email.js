@@ -190,7 +190,7 @@ module.exports = function(RED) {
         // will be used to populate the email.
         // DCJ NOTE: - heirachical multipart mime parsers seem to not exist - this one is barely functional.
         function processNewMessage(msg, mailMessage) {
-            msg = JSON.parse(JSON.stringify(msg)); // Clone the message
+            msg = RED.util.cloneMessage(msg); // Clone the message
             // Populate the msg fields from the content of the email message
             // that we have just parsed.
             msg.payload = mailMessage.text;
@@ -198,9 +198,9 @@ module.exports = function(RED) {
             msg.date = mailMessage.date;
             msg.header = mailMessage.headers;
             if (mailMessage.html) { msg.html = mailMessage.html; }
-            if (mailMessage.to && mailMessage.from.to > 0) { msg.to = mailMessage.to; }
-            if (mailMessage.cc && mailMessage.from.cc > 0) { msg.cc = mailMessage.cc; }
-            if (mailMessage.bcc && mailMessage.from.bcc > 0) { msg.bcc = mailMessage.bcc; }
+            if (mailMessage.to && mailMessage.to.length > 0) { msg.to = mailMessage.to; }
+            if (mailMessage.cc && mailMessage.cc.length > 0) { msg.cc = mailMessage.cc; }
+            if (mailMessage.bcc && mailMessage.bcc.length > 0) { msg.bcc = mailMessage.bcc; }
             if (mailMessage.from && mailMessage.from.length > 0) { msg.from = mailMessage.from[0].address; }
             if (mailMessage.attachments) { msg.attachments = mailMessage.attachments; }
             else { msg.attachments = []; }
