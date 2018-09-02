@@ -1,0 +1,21 @@
+{
+  "name": "node-red-pi-mote-phat",
+  "version": "0.0.1",
+  "description": "A Node-RED node to output to a Raspberry Pi Mote pHAT from Pimoroni",
+  "node-red"      : {
+    "nodes"     : {
+        "mote": "mote.js"
+    }
+  },
+  "keywords": [
+    "node-red",
+    "motephat",
+    "mote",
+    "pimoroni"
+  ],
+  "author": {
+    "name": "Matt Brailsford",
+    "url": "https://twitter.com/mattbrailsford" 
+  },
+  "license": "Apache-2.0"
+}
