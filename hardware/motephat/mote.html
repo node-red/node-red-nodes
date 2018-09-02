@@ -1,0 +1,43 @@
+
+<script type="text/x-red" data-template-name="rpi-mote">
+    <div class="form-row">
+        <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+        <input type="text" id="node-input-brightness" placeholder="0 to 100, default 20" style="width:150px;"> %
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="rpi-mote">
+        <p>Raspberry Pi Mote pHAT Node</p>
+        <p>A pixel is set by a <code>payload</code> containing a CSV string <code>c,p,r,g,b</code>.
+        <code>c</code> and <code>p</code> can be a single index value,
+        a range, eg <code>2-5</code>, or <code>*</code> to indicate the whole line.
+        Multiple pixels strings can also be sent as <code>c1,p1,r1,g1,b1,c2,p2,r2,g2,b2,...</code> .</p>
+        <p>Setting <code>payload</code> to <code>CLEAR</code> will clear the display to off.</p>
+        <p>The brightness may be set by setting <code>payload</code> to <code>brightness,nn</code> where nn is 0 to 100.</p>
+    </script>
+    
+    <script type="text/javascript">
+        RED.nodes.registerType('rpi-mote',{
+            category: 'Raspberry Pi',
+            color:"#c6dbef",
+            defaults: {
+                name: { value:"" },
+                brightness: { value:"" }
+            },
+            inputs:1,
+            outputs:0,
+            icon: "rpi.png",
+            align: "right",
+            label: function() {
+                return this.name||"MOTE";
+            },
+            labelStyle: function() {
+                return this.name?"node_label_italic":"";
+            }
+        });
+    </script>
