@@ -61,7 +61,10 @@ module.exports = function (RED) {
           //console.log("FILL",s)
           node.child.stdin.write('F' + msg.payload + '\n');
         }
-        else if (s.length % 5 === 0) {
+        else if (s.length % 3 === 0 && s.length <= 48) {
+          node.child.stdin.write('P*,' + msg.payload + '\n');
+        }
+        else if (s.length % 3 === 1 || s.length % 5 === 0 || s.length === 192) {
           //console.log("PIXELS",s)
           node.child.stdin.write('P' + msg.payload + '\n');
         }
