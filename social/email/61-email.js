@@ -226,6 +226,7 @@ module.exports = function(RED) {
             function nextMessage() {
                 if (currentMessage > maxMessage) {
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                     return;
                 }
                 pop3Client.retr(currentMessage);
@@ -248,6 +249,7 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("error", function(err) {
+                setInputRepeatTimeout();
                 node.log("error: " + JSON.stringify(err));
             });
 
@@ -263,6 +265,7 @@ module.exports = function(RED) {
                 } else {
                     node.log(util.format("login error: %s %j", status, rawData));
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                 }
             });
 
@@ -284,6 +287,7 @@ module.exports = function(RED) {
                 else {
                     node.log(util.format("retr error: %s %j", status, rawData));
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                 }
             });
 
@@ -323,6 +327,7 @@ module.exports = function(RED) {
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                             imap.end();
+                            setInputRepeatTimeout();
                             return;
                         }
                         //console.log("> search - err=%j, results=%j", err, results);
@@ -330,6 +335,7 @@ module.exports = function(RED) {
                             //console.log(" [X] - Nothing to fetch");
                             node.status({});
                             imap.end();
+                            setInputRepeatTimeout();
                             return;
                         }
 
@@ -377,10 +383,12 @@ module.exports = function(RED) {
                             } else {
                                 cleanup();
                             }
+                            setInputRepeatTimeout();
                         });
 
                         fetch.once('error', function(err) {
                             console.log('Fetch error: ' + err);
+                            setInputRepeatTimeout();
                         });
                     }); // End of imap->search
                 }); // End of imap->openInbox
@@ -424,16 +432,19 @@ module.exports = function(RED) {
 
         this.on("close", function() {
             if (this.interval_id != null) {
-                clearInterval(this.interval_id);
+                clearTimeout(this.interval_id);
             }
             if (imap) { imap.destroy(); }
         });
 
-        // Set the repetition timer as needed
-        if (!isNaN(this.repeat) && this.repeat > 0) {
-            this.interval_id = setInterval( function() {
-                node.emit("input",{});
-            }, this.repeat );
+        function setInputRepeatTimeout()
+        {
+            // Set the repetition timer as needed
+            if (!isNaN(node.repeat) && node.repeat > 0) {
+                node.interval_id = setTimeout( function() {
+                    node.emit("input",{});
+                }, node.repeat );
+            }
         }
 
         node.emit("input",{});
