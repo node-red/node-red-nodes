@@ -9,7 +9,7 @@ Pre-requisite
 
 You will need valid email credentials for your email server.
 
-**Note :** Version 1.x of this node requires Node.js v6 or newer.
+**Note :** Version 1.x of this node requires **Node.js v6** or newer.
 
 
 Install
@@ -18,10 +18,12 @@ Install
 Version 0.x of this node is usually installed by default by Node-RED.
 To install version 1.x you need to uninstall the existing version.
 
-        sudo npm uninstall -g node-red-node-email
+        cd /usr/lib/node_modules/node-red
+        sudo npm uninstall --unsafe-perm node-red-node-email
 
 Then run the following command in your Node-RED user directory - typically `~/.node-red`
 
+        cd ~/.node-red
         npm i node-red-node-email
 
 **Note :** this installs the new version locally rather than globally. This can then be managed by the palette manager.
