@@ -1,7 +1,7 @@
 node-red-node-email
 ===================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to send and receive simple emails.
+<a href="http://nodered.org" target="info">Node-RED</a> nodes to send and receive simple emails.
 
 
 Pre-requisite
@@ -9,7 +9,7 @@ Pre-requisite
 
 You will need valid email credentials for your email server.
 
-**Note :** Version 1.x of this node requires **Node.js v6** or newer.
+**Note :** Version 1.x of this node requires **Node.js v8** or newer.
 
 
 Install

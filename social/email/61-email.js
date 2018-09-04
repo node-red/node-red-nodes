@@ -17,6 +17,10 @@ module.exports = function(RED) {
     var MailParser = require("mailparser").MailParser;
     var util = require("util");
 
+    if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
+        throw "Error : Requires nodejs version >= 8.";
+    }
+
     try {
         var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
     }
