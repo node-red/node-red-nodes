@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var wol = require('wake_on_lan');
-    var chk = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+    var chk = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 
     function WOLnode(n) {
         RED.nodes.createNode(this,n);
