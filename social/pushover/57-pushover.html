@@ -73,10 +73,15 @@
 </script>
 
 <script type="text/x-red" data-help-name="pushover">
-    <p>Uses Pushover to push the <code>msg.payload</code> to a device that has the Pushover app installed.</p>
-    <p>Optionally uses <code>msg.topic</code> to set the title, <code>msg.device</code> to set the device,
-    <code>msg.priority</code> to set the priority, <code>msg.url</code> to add a web address and <code>msg.url_title</code>
-    to add a url title if not already set in the properties.</p>
+    <p>Uses Pushover to push the msg.payload to a device that has the Pushover app installed.</p>
+	<br>
+    <p>Optionally uses msg.topic to set the configuration:</p>
+    <p><code>msg.topic</code>: set the title</p>
+    <p><code>msg.device</code>: set the device</p>
+    <p><code>msg.priority</code>: set the priority</p>
+    <p><code>msg.url</code>: to add a web address</p>
+	<p><code>msg.url_title</code>: to add a url title if not already set in the properties</p>
+	<p><code>msg.sound</code>: set the notification sound, <i><a href="https://pushover.net/api#sounds" target="_new">see the available options</a></i></p>
     <p>Uses Pushover. See <i><a href="https://pushover.net" target="_new">this link</a></i> for more details.</p>
 </script>
 
