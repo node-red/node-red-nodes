@@ -37,6 +37,8 @@ select the channel dynamically. If so then the payload must be a value from 0 to
 
 You can also select device id 0 or 1 (CE0 or CE1) depending on how you have wired up your device. Defaults to CE0.
 
+And you can also select the SPI bus number 0 or 1 depending on how you have wired up your device. Defaults to 0 for spidev0.
+
 Outputs a numeric `msg.payload` with a range of 0 to 1023, where 0 = 0V and 1023 = 3.3V (assuming you use the default 3.3V voltage reference).
 
 **Hint**: use a `range` node to adjust the values to the range you want.

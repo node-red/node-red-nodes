@@ -19,14 +19,15 @@ module.exports = function(RED) {
         this.pin = n.pin || 0;
         this.interval = n.interval || 1000;
         this.dnum = parseInt(n.dnum || 0);
+        this.bus = parseInt(n.bus || 0);
         this.dev = n.dev || "3008";
         var node = this;
         var cb = function (err) { if (err) { node.error("Error: "+err); } };
-        var opt = { speedHz:20000, deviceNumber:node.dnum };
+        var opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
         var chans = parseInt(this.dev.substr(3));
 
         try {
-            fs.statSync("/dev/spidev0."+node.dnum);
+            fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
             if (mcp3xxx.length === 0) {
                 for (var i=0; i<chans; i++) {
                     if (node.dev === "3002") { mcp3xxx.push(mcpadc.openMcp3002(i, opt, cb)); }
