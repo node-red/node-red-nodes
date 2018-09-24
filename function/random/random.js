@@ -11,10 +11,10 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             var value;
             if (node.inte == "true" || node.inte === true) {
-                value = Math.round(Number(Math.random()) * (node.high - node.low + 1) + node.low - 0.5);
+                value = Math.round(Math.random() * (node.high - node.low + 1) + node.low - 0.5);
             }
             else {
-                value = Number(Math.random()) * (node.high - node.low) + node.low;
+                value = Math.random() * (node.high - node.low) + node.low;
             }
             RED.util.setMessageProperty(msg,node.property,value);
             node.send(msg);
