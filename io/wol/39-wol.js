@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var wol = require('wake_on_lan');
-    var chk = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+    var chk = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 
     function WOLnode(n) {
         RED.nodes.createNode(this,n);
@@ -17,9 +17,13 @@ module.exports = function(RED) {
                 if (chk.test(mac)) {
                     try {
                         wol.wake(mac, {address: host}, function(error) {
-                            if (error) { node.warn(error); }
+                            if (error) {
+                                node.warn(error);
+                                node.status({fill:"red",shape:"ring",text:" "});
+                            }
                             else if (RED.settings.verbose) {
                                 node.log("sent WOL magic packet");
+                                node.status({fill:"green",shape:"dot",text:" "});
                             }
                         });
                     }
@@ -31,6 +35,10 @@ module.exports = function(RED) {
             }
             else { node.warn("WOL: no mac address specified"); }
         });
+        
+        this.on("close", function () {
+            node.status({});
+        })
     }
     RED.nodes.registerType("wake on lan",WOLnode);
 }

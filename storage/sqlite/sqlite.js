@@ -43,89 +43,107 @@ module.exports = function(RED) {
         var node = this;
         node.status({});
 
-        if (this.mydbConfig) {
-            this.mydbConfig.doConnect();
+        if (node.mydbConfig) {
+            node.mydbConfig.doConnect();
             node.status({fill:"green",shape:"dot",text:this.mydbConfig.mod});
             var bind = [];
-            node.on("input", function(msg) {
-                if (this.sqlquery == "msg.topic"){
+
+            var doQuery = function(msg) {
+                if (node.sqlquery == "msg.topic"){
                     if (typeof msg.topic === 'string') {
-                        bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
-                            if (err) { node.error(err,msg); }
-                            else {
-                                msg.payload = row;
-                                node.send(msg);
-                            }
-                        });
+                        if (msg.topic.length > 0) {
+                            bind = Array.isArray(msg.payload) ? msg.payload : [];
+                            node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
+                                if (err) { node.error(err,msg); }
+                                else {
+                                    msg.payload = row;
+                                    node.send(msg);
+                                }
+                            });
+                        }
                     }
                     else {
                         node.error("msg.topic : the query is not defined as a string",msg);
                         node.status({fill:"red",shape:"dot",text:"msg.topic error"});
                     }
                 }
-                if (this.sqlquery == "batch") {
+                if (node.sqlquery == "batch") {
                     if (typeof msg.topic === 'string') {
-                        node.mydbConfig.db.exec(msg.topic, function(err) {
-                            if (err) { node.error(err,msg);}
-                            else {
-                                msg.payload = [];
-                                node.send(msg);
-                            }
-                        });
+                        if (msg.topic.length > 0) {
+                            node.mydbConfig.db.exec(msg.topic, function(err) {
+                                if (err) { node.error(err,msg);}
+                                else {
+                                    msg.payload = [];
+                                    node.send(msg);
+                                }
+                            });
+                        }
                     }
                     else {
                         node.error("msg.topic : the query is not defined as string", msg);
                         node.status({fill:"red", shape:"dot",text:"msg.topic error"});
                     }
                 }
-                if (this.sqlquery == "fixed"){
-                    if (typeof this.sql === 'string'){
-                        bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.db.all(this.sql, bind, function(err, row) {
-                            if (err) { node.error(err,msg); }
-                            else {
-                                msg.payload = row;
-                                node.send(msg);
-                            }
-                        });
+                if (node.sqlquery == "fixed"){
+                    if (typeof node.sql === 'string') {
+                        if (node.sql.length > 0) {
+                            node.mydbConfig.db.all(node.sql, bind, function(err, row) {
+                                if (err) { node.error(err,msg); }
+                                else {
+                                    msg.payload = row;
+                                    node.send(msg);
+                                }
+                            });
+                        }
                     }
                     else{
-                        if (this.sql === null || this.sql == ""){
+                        if (node.sql === null || node.sql == "") {
                             node.error("SQL statement config not set up",msg);
                             node.status({fill:"red",shape:"dot",text:"SQL config not set up"});
                         }
                     }
                 }
-                if (this.sqlquery == "prepared"){
-                    if (typeof this.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object"){
-                        node.mydbConfig.db.all(this.sql, msg.params, function(err, row) {
-                            if (err) { node.error(err,msg); }
-                            else {
-                                msg.payload = row;
-                                node.send(msg);
-                            }
-                        });
+                if (node.sqlquery == "prepared"){
+                    if (typeof node.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object") {
+                        if (node.sql.length > 0) {
+                                node.mydbConfig.db.all(node.sql, msg.params, function(err, row) {
+                                if (err) { node.error(err,msg); }
+                                else {
+                                    msg.payload = row;
+                                    node.send(msg);
+                                }
+                            });
+                        }
                     }
-                    else{
-                        if (this.sql === null || this.sql == ""){
+                    else {
+                        if (node.sql === null || node.sql == "") {
                             node.error("Prepared statement config not set up",msg);
                             node.status({fill:"red",shape:"dot",text:"Prepared statement not set up"});
                         }
-                        if (typeof msg.params == "undefined"){
+                        if (typeof msg.params == "undefined") {
                             node.error("msg.params not passed");
                             node.status({fill:"red",shape:"dot",text:"msg.params not defined"});
                         }
-                        else if (typeof msg.params != "object"){
+                        else if (typeof msg.params != "object") {
                             node.error("msg.params not an object");
                             node.status({fill:"red",shape:"dot",text:"msg.params not an object"});
                         }
                     }
                 }
+            }
+
+            node.on("input", function(msg) {
+                if (msg.hasOwnProperty("extension")) {
+                    node.mydbConfig.db.loadExtension(msg.extension, function(err) {
+                        if (err) { node.error(err,msg); }
+                        else { doQuery(msg); }
+                    });
+                }
+                else { doQuery(msg); }
             });
         }
         else {
-            this.error("Sqlite database not configured");
+            node.error("Sqlite database not configured");
         }
     }
     RED.nodes.registerType("sqlite",SqliteNodeIn);

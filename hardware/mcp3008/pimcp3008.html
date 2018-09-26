@@ -34,6 +34,13 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-bus"><i class="fa fa-toggle-on"></i> SPI bus</label>
+        <select type="text" id="node-input-bus" style="width:150px;">
+          <option value=0>0</option>
+          <option value=1>1</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name"/>
     </div>
@@ -61,7 +68,8 @@
             name: {value:""},
             dev: {value:"3008"},
             pin: {value:0, required:true},
-            dnum: {value:0}
+            dnum: {value:0},
+            bus: {value:0}
         },
         inputs: 1,
         outputs: 1,

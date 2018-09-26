@@ -22,7 +22,7 @@ module.exports = function(RED) {
                 var req = request(node.url, {timeout:10000, pool:false});
                 //req.setMaxListeners(50);
                 req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
-                req.setHeader('accept', 'text/html,application/xhtml+xml');
+                req.setHeader('accept', 'application/rss+xml,text/html,application/xhtml+xml');
 
                 var feedparser = new FeedParser();
 

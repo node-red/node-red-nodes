@@ -12,6 +12,8 @@ module.exports = function(RED) {
         this.redo = n.redo;
         this.running = false;
         this.closer = n.closer || "SIGKILL";
+        this.autorun = true;
+        if (n.autorun === false) { this.autorun = false; }
         var node = this;
 
         function inputlistener(msg) {

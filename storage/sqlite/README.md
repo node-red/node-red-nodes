@@ -25,6 +25,8 @@ By it's very nature it is SQL injection... so *be careful* out there...
 
 Typically the returned payload will be an array of the result rows, (or an error).
 
+You can load sqlite extensions by inputting a <code>msg.extension</code> property containing the full path and filename.
+
 The reconnect timeout in milliseconds can be changed by adding a line to **settings.js**
 
     sqliteReconnectTime: 20000,

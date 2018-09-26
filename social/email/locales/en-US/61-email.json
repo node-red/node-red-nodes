@@ -13,6 +13,7 @@
             "folder": "Folder",
             "protocol": "Protocol",
             "useSSL": "Use SSL?",
+            "useTLS": "Use TLS?",
             "disposition": "Disposition",
             "none": "None",
             "read": "Mark Read",

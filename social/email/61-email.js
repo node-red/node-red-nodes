@@ -14,8 +14,12 @@ module.exports = function(RED) {
     var nodemailer = require("nodemailer");
     var Imap = require('imap');
     var POP3Client = require("poplib");
-    var MailParser = require("mailparser").MailParser;
+    var MailParser = require("mailparser-mit").MailParser;
     var util = require("util");
+
+    if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
+        throw "Error : Requires nodejs version >= 8.";
+    }
 
     try {
         var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
@@ -30,6 +34,7 @@ module.exports = function(RED) {
         this.outserver = n.server;
         this.outport = n.port;
         this.secure = n.secure;
+        this.tls = true;
         var flag = false;
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
@@ -50,12 +55,16 @@ module.exports = function(RED) {
         if (flag) {
             RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
+        if (n.tls === false){
+            this.tls = false;
+        }
         var node = this;
 
         var smtpOptions = {
             host: node.outserver,
             port: node.outport,
-            secure: node.secure
+            secure: node.secure,
+            tls: {rejectUnauthorized: node.tls}
         }
 
         if (this.userid && this.password) {
@@ -185,7 +194,7 @@ module.exports = function(RED) {
         // will be used to populate the email.
         // DCJ NOTE: - heirachical multipart mime parsers seem to not exist - this one is barely functional.
         function processNewMessage(msg, mailMessage) {
-            msg = JSON.parse(JSON.stringify(msg)); // Clone the message
+            msg = RED.util.cloneMessage(msg); // Clone the message
             // Populate the msg fields from the content of the email message
             // that we have just parsed.
             msg.payload = mailMessage.text;
@@ -193,9 +202,9 @@ module.exports = function(RED) {
             msg.date = mailMessage.date;
             msg.header = mailMessage.headers;
             if (mailMessage.html) { msg.html = mailMessage.html; }
-            if (mailMessage.to && mailMessage.from.to > 0) { msg.to = mailMessage.to; }
-            if (mailMessage.cc && mailMessage.from.cc > 0) { msg.cc = mailMessage.cc; }
-            if (mailMessage.bcc && mailMessage.from.bcc > 0) { msg.bcc = mailMessage.bcc; }
+            if (mailMessage.to && mailMessage.to.length > 0) { msg.to = mailMessage.to; }
+            if (mailMessage.cc && mailMessage.cc.length > 0) { msg.cc = mailMessage.cc; }
+            if (mailMessage.bcc && mailMessage.bcc.length > 0) { msg.bcc = mailMessage.bcc; }
             if (mailMessage.from && mailMessage.from.length > 0) { msg.from = mailMessage.from[0].address; }
             if (mailMessage.attachments) { msg.attachments = mailMessage.attachments; }
             else { msg.attachments = []; }
@@ -221,6 +230,7 @@ module.exports = function(RED) {
             function nextMessage() {
                 if (currentMessage > maxMessage) {
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                     return;
                 }
                 pop3Client.retr(currentMessage);
@@ -243,6 +253,7 @@ module.exports = function(RED) {
             });
 
             pop3Client.on("error", function(err) {
+                setInputRepeatTimeout();
                 node.log("error: " + JSON.stringify(err));
             });
 
@@ -258,6 +269,7 @@ module.exports = function(RED) {
                 } else {
                     node.log(util.format("login error: %s %j", status, rawData));
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                 }
             });
 
@@ -279,6 +291,7 @@ module.exports = function(RED) {
                 else {
                     node.log(util.format("retr error: %s %j", status, rawData));
                     pop3Client.quit();
+                    setInputRepeatTimeout();
                 }
             });
 
@@ -318,6 +331,7 @@ module.exports = function(RED) {
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                             imap.end();
+                            setInputRepeatTimeout();
                             return;
                         }
                         //console.log("> search - err=%j, results=%j", err, results);
@@ -325,6 +339,7 @@ module.exports = function(RED) {
                             //console.log(" [X] - Nothing to fetch");
                             node.status({});
                             imap.end();
+                            setInputRepeatTimeout();
                             return;
                         }
 
@@ -372,10 +387,12 @@ module.exports = function(RED) {
                             } else {
                                 cleanup();
                             }
+                            setInputRepeatTimeout();
                         });
 
                         fetch.once('error', function(err) {
                             console.log('Fetch error: ' + err);
+                            setInputRepeatTimeout();
                         });
                     }); // End of imap->search
                 }); // End of imap->openInbox
@@ -419,16 +436,19 @@ module.exports = function(RED) {
 
         this.on("close", function() {
             if (this.interval_id != null) {
-                clearInterval(this.interval_id);
+                clearTimeout(this.interval_id);
             }
             if (imap) { imap.destroy(); }
         });
 
-        // Set the repetition timer as needed
-        if (!isNaN(this.repeat) && this.repeat > 0) {
-            this.interval_id = setInterval( function() {
-                node.emit("input",{});
-            }, this.repeat );
+        function setInputRepeatTimeout()
+        {
+            // Set the repetition timer as needed
+            if (!isNaN(node.repeat) && node.repeat > 0) {
+                node.interval_id = setTimeout( function() {
+                    node.emit("input",{});
+                }, node.repeat );
+            }
         }
 
         node.emit("input",{});
