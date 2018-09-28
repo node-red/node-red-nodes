@@ -78,18 +78,32 @@ module.exports = function(RED) {
         xmpp.on('online', function(data) {
             node.status({fill:"green",shape:"dot",text:"connected"});
             if ((node.join) && (node.from !== "")) {
-                xmpp.join(node.to+'/'+node.nick);
+                // disable chat history
+                var to = node.to+'/'+node.nick;
+                var stanza = new xmpp.Element('presence', {"to": to}).
+                    c('x', { xmlns: 'http://jabber.org/protocol/muc' }).
+                    c('history', { maxstanzas:0, seconds:1 });
+                xmpp.conn.send(stanza);
+                xmpp.join(to);
             }
         });
 
         xmpp.on('chat', function(from, message) {
             var msg = { topic:from, payload:message };
-            node.send([msg,null]);
+            if (!node.join && ((node.from === "") || (node.from === from))) {
+                node.send([msg,null]);
+            }
         });
 
         xmpp.on('groupchat', function(conference, from, message, stamp) {
+            if (!stamp) {stamp = Date.now(); }
+            //else { console.log("STAMP",stamp) }
             var msg = { topic:from, payload:message, room:conference, ts:stamp };
-            if (from != node.nick) { node.send([msg,null]); }
+            if (from != node.nick) {
+                if ((node.join) && (node.from === conference)) {
+                    node.send([msg,null]);
+                }
+            }
         });
 
         //xmpp.on('chatstate', function(from, state) {
@@ -170,7 +184,13 @@ module.exports = function(RED) {
         xmpp.on('online', function(data) {
             node.status({fill:"green",shape:"dot",text:"connected"});
             if ((node.join) && (node.from !== "")) {
-                xmpp.join(node.to+'/'+node.nick);
+                // disable chat history
+                var to = node.to+'/'+node.nick;
+                var stanza = new xmpp.Element('presence', {"to": to}).
+                    c('x', { xmlns: 'http://jabber.org/protocol/muc' }).
+                    c('history', { maxstanzas:0, seconds:1 });
+                xmpp.conn.send(stanza);
+                xmpp.join(to);
             }
         });
 
