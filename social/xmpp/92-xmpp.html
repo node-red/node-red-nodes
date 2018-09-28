@@ -21,7 +21,7 @@
 
 <script type="text/x-red" data-help-name="xmpp in">
     <p>Connects to an XMPP server to receive messages.</p>
-    <p>The <b>Buddy</b> field is the id of the buddy or room you want to receive messages from.</p>
+    <p>The <b>Buddy</b> field is the id of the buddy or room you want to receive messages from. Leave blank to receive from anyone.</p>
     <p>Incoming messages will appear as <code>msg.payload</code> on the first output, while <code>msg.topic</code> will contain who it is from.</p>
     <p>The second output will show the presence and status of a user in <code>msg.payload</code>. Again <code>msg.topic</code> will hold the user.</p>
 </script>
@@ -33,7 +33,7 @@
         defaults: {
             name: {value:""},
             server: {type:"xmpp-server",required:true},
-            to: {value:"",required:true},
+            to: {value:""},
             join: {value:false}
         },
         inputs:0,
@@ -107,19 +107,19 @@
 </script>
 
 <script type="text/x-red" data-template-name="xmpp-server">
-    <div class="form-row node-input-server">
+<!--    <div class="form-row node-input-server">
         <label for="node-config-input-server"><i class="fa fa-bookmark"></i> Server</label>
         <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
         <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
         <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div> -->
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="fa fa-user"></i> JID</label>
+        <input type="text" id="node-config-input-user">
     </div>
     <div class="form-row">
         <label for="node-config-input-nickname"><i class="fa fa-user"></i> Nickname</label>
         <input type="text" id="node-config-input-nickname" placeholder="Joe">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-user"><i class="fa fa-user"></i> Username</label>
-        <input type="text" id="node-config-input-user">
     </div>
     <div class="form-row">
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
@@ -131,16 +131,16 @@
     RED.nodes.registerType('xmpp-server',{
         category: 'config',
         defaults: {
-            server: {required:true},
-            port: {value:5222,required:true,validate:RED.validators.number()},
-            nickname: {}
+            // server: {required:true},
+            // port: {value:5222,required:true,validate:RED.validators.number()},
+            nickname: {value:""},
+            user: {type:"text"},
         },
         credentials: {
-            user: {type:"text"},
             password: {type: "password"}
         },
         label: function() {
-            return (this.nickname?this.nickname+"@":"")+this.server+":"+this.port;
+            return this.user;
         }
     });
 </script>
