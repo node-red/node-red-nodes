@@ -53,7 +53,6 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("xmpp-server",XMPPServerNode,{
         credentials: {
-            user: {type:"text"},
             password: {type: "password"}
         }
     });
@@ -61,13 +60,8 @@ module.exports = function(RED) {
     function XmppInNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
-
         this.serverConfig = RED.nodes.getNode(this.server);
-        // this.host = this.serverConfig.server;
-        // this.port = this.serverConfig.port;
-        var pa = this.serverConfig.username.split("@");
-        this.nick = this.serverConfig.nickname || pa[0];
-
+        this.nick = this.serverConfig.nickname || this.serverConfig.username.split("@")[0];
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         this.from = n.to || "";
@@ -88,17 +82,35 @@ module.exports = function(RED) {
             }
         });
 
-        xmpp.on('chat', function(from, message) {
-            var msg = { topic:from, payload:message };
-            if (!node.join && ((node.from === "") || (node.from === from))) {
-                node.send([msg,null]);
+        // xmpp.on('chat', function(from, message) {
+        //     var msg = { topic:from, payload:message };
+        //     if (!node.join && ((node.from === "") || (node.from === from))) {
+        //         node.send([msg,null]);
+        //     }
+        // });
+
+        xmpp.on('stanza', function(stanza) {
+            if (stanza.is('message')) {
+                if (stanza.attrs.type == 'chat') {
+                    //console.log(stanza);
+                    var body = stanza.getChild('body');
+                    if (body) {
+                        var msg = { payload:body.getText() };
+                        var ids = stanza.attrs.from.split('/');
+                        if (ids[1].length !== 36) {
+                            msg.topic = stanza.attrs.from
+                        }
+                        else { msg.topic = ids[0]; }
+                        if (!node.join && ((node.from === "") || (node.from === from))) {
+                            node.send([msg,null]);
+                        }
+                    }
+                }
             }
         });
 
         xmpp.on('groupchat', function(conference, from, message, stamp) {
-            if (!stamp) {stamp = Date.now(); }
-            //else { console.log("STAMP",stamp) }
-            var msg = { topic:from, payload:message, room:conference, ts:stamp };
+            var msg = { topic:from, payload:message, room:conference };
             if (from != node.nick) {
                 if ((node.join) && (node.from === conference)) {
                     node.send([msg,null]);
@@ -108,7 +120,7 @@ module.exports = function(RED) {
 
         //xmpp.on('chatstate', function(from, state) {
         //console.log('%s is currently %s', from, state);
-        //var msg = { topic:from, payload:state };
+        //var msg = { topic:from, payload: {presence:state} };
         //node.send([null,msg]);
         //});
 
@@ -117,6 +129,11 @@ module.exports = function(RED) {
             var msg = { topic:jid, payload: { presence:state, status:statusText} };
             node.send([null,msg]);
         });
+
+        // xmpp.on('groupbuddy', function(conference, from, state, statusText) {
+        //     //console.log('%s: %s is in %s state - %s',conference, from, state, statusText);
+        //     var msg = { topic:from, payload: { presence:state, status:statusText}, room:conference };
+        // });
 
         xmpp.on('error', function(err) {
             if (RED.settings.verbose) { node.log(err); }
@@ -165,15 +182,8 @@ module.exports = function(RED) {
     function XmppOutNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
-
         this.serverConfig = RED.nodes.getNode(this.server);
-        // this.host = this.serverConfig.server;
-        // this.port = this.serverConfig.port;
-        //this.nick = this.serverConfig.nickname || "Node-RED";
-        this.userid = this.serverConfig.username;
-        var pa = this.userid.split("@");
-        this.nick = this.serverConfig.nickname || pa[0];
-
+        this.nick = this.serverConfig.nickname || this.serverConfig.username.split("@")[0];
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         this.to = n.to || "";
@@ -232,20 +242,21 @@ module.exports = function(RED) {
                 if (['away', 'dnd', 'xa', 'chat'].indexOf(msg.presence) > -1 ) {
                     xmpp.setPresence(msg.presence, msg.payload);
                 }
-                else { node.warn("Can't set presence - invalid value"); }
+                else { node.warn("Can't set presence - invalid value: "+msg.presence); }
             }
             else {
-                var to = msg.topic;
-                if (node.to !== "") { to = node.to; }
-                if (node.sendAll) {
-                    xmpp.send(to, JSON.stringify(msg), node.join);
-                }
-                else if (msg.payload) {
-                    if (typeof(msg.payload) === "object") {
-                        xmpp.send(to, JSON.stringify(msg.payload), node.join);
+                var to = node.to || msg.topic || "";
+                if (to !== "") {
+                    if (node.sendAll) {
+                        xmpp.send(to, JSON.stringify(msg), node.join);
                     }
-                    else {
-                        xmpp.send(to, msg.payload.toString(), node.join);
+                    else if (msg.payload) {
+                        if (typeof(msg.payload) === "object") {
+                            xmpp.send(to, JSON.stringify(msg.payload), node.join);
+                        }
+                        else {
+                            xmpp.send(to, msg.payload.toString(), node.join);
+                        }
                     }
                 }
             }

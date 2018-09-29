@@ -6,12 +6,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-to"><i class="fa fa-envelope"></i> Buddy</label>
-        <input type="text" id="node-input-to" placeholder="joe@gmail.com">
+        <input type="text" id="node-input-to" placeholder="joe@blah.im">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-join" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-join" style="width: 70%;">Is a Chat Room ?</label>
+        <input type="checkbox" id="node-input-join" placeholder="" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -21,9 +21,10 @@
 
 <script type="text/x-red" data-help-name="xmpp in">
     <p>Connects to an XMPP server to receive messages.</p>
-    <p>The <b>Buddy</b> field is the id of the buddy or room you want to receive messages from. Leave blank to receive from anyone.</p>
-    <p>Incoming messages will appear as <code>msg.payload</code> on the first output, while <code>msg.topic</code> will contain who it is from.</p>
-    <p>The second output will show the presence and status of a user in <code>msg.payload</code>. Again <code>msg.topic</code> will hold the user.</p>
+    <p>The <b>Buddy</b> field is the jid of the buddy or room you want to receive messages from. Leave blank to receive from anyone.</p>
+    <p>Incoming messages will appear as <code>msg.payload</code> on the first output, while <code>msg.topic</code> will contain who it is from.
+    If part of a chat room then <code>msg.room</code> may also be set.</p>
+    <p>The second output will show the presence and status of a user in <code>msg.payload</code>. Again <code>msg.topic</code> will hold the users jid.</p>
 </script>
 
 <script type="text/javascript">
@@ -48,6 +49,7 @@
     });
 </script>
 
+
 <script type="text/x-red" data-template-name="xmpp out">
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-bookmark"></i> Connect as</label>
@@ -55,17 +57,17 @@
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-sendObject" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-sendObject" style="width: 70%;">Send complete msg object ?</label>
+        <input type="checkbox" id="node-input-sendObject" placeholder="" style="display:inline-block; width:auto; vertical-align:top;">
+        <label for="node-input-sendObject" style="width:70%;">Send complete msg object ?</label>
     </div>
     <div class="form-row">
         <label for="node-input-to"><i class="fa fa-envelope"></i> To</label>
-        <input type="text" id="node-input-to" placeholder="joe@gmail.com">
+        <input type="text" id="node-input-to" placeholder="joe@blah.im">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-join" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-join" style="width: 70%;">Is a Chat Room ?</label>
+        <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -115,11 +117,11 @@
     </div> -->
     <div class="form-row">
         <label for="node-config-input-user"><i class="fa fa-user"></i> JID</label>
-        <input type="text" id="node-config-input-user">
+        <input type="text" id="node-config-input-user" placeholder="joe@blah.im">
     </div>
     <div class="form-row">
         <label for="node-config-input-nickname"><i class="fa fa-user"></i> Nickname</label>
-        <input type="text" id="node-config-input-nickname" placeholder="Joe">
+        <input type="text" id="node-config-input-nickname" placeholder="Joe (optional)">
     </div>
     <div class="form-row">
         <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
@@ -133,14 +135,22 @@
         defaults: {
             // server: {required:true},
             // port: {value:5222,required:true,validate:RED.validators.number()},
-            nickname: {value:""},
             user: {type:"text"},
+            nickname: {value:""}
         },
         credentials: {
-            password: {type: "password"}
+            password: {type:"password"}
         },
         label: function() {
             return this.user;
         }
     });
+</script>
+
+<script type="text/x-red" data-help-name="xmpp-server">
+    <p>The connection to an XMPP server to send and receive messages.</p>
+    <p>Connects to the standard C2S port 5222 on the server.</p>
+    <p>The JID is the full username of the client used to connect to the server
+    and must contain the resolvable fdqn of the server.</p>
+    <p>The nickname is optional.</p>
 </script>
