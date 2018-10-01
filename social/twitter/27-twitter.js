@@ -566,7 +566,7 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (msg.hasOwnProperty("payload")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
-                    if (msg.payload.slice(0,2) == "D ") {
+                    if (msg.payload.slice(0,2).toLowerCase() === "d ") {
                         var dm_user;
                         // direct message syntax: "D user message"
                         var t = msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
