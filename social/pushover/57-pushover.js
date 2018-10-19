@@ -30,13 +30,13 @@ module.exports = function(RED) {
         var node = this;
 
         this.on("input",function(msg) {
-            var titl = this.title || msg.topic || "Node-RED";
-            var pri = this.priority || msg.priority || 0;
-            var dev = this.device || msg.device;
-            var sound = this.sound || msg.sound || null;
-            var url = this.url || msg.url || null;
-            var url_title = this.url_title || msg.url_title || null;
-            var html = this.html || false;
+            var title = node.title || msg.topic || "Node-RED";
+            var pri = node.priority || msg.priority || 0;
+            var dev = node.device || msg.device;
+            var sound = node.sound || msg.sound || null;
+            var url = node.url || msg.url || null;
+            var url_title = node.url_title || msg.url_title || null;
+            var html = node.html || false;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
@@ -47,7 +47,7 @@ module.exports = function(RED) {
             if (pusher) {
                 var pushmsg = {
                     message: msg.payload,
-                    title: titl,
+                    title: title,
                     priority: pri,
                     retry: 30,
                     expire: 600,
