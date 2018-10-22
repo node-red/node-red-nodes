@@ -1,7 +1,7 @@
 {
     "twitter": {
         "label": {
-            "twitter-id":"Twitter ID",
+            "twitter-id": "Twitter ID",
             "search": "Search",
             "for": "for",
             "user": "User",
@@ -10,14 +10,13 @@
             "tweetslabel": "tweets",
             "eventslabel": "events",
             "create": "Create your own application at",
-            "copy-consumer": "From the 'Keys and Access Tokens' section, copy the Consumer Key and Secret",
-            "consumer_key": "Consumer Key",
-            "consumer_secret": "Consumer Secret",
-            "copy-accessToken": "Create a new 'Access Token' and copy the Access Token and Secret",
-            "access_key": "Access Token",
-            "access_secret": "Access Token Secret",
-            "enter-id":"Set your Twitter ID"
-
+            "copy-consumer": "From the 'Keys and tokens' section, copy the Consumer API keys",
+            "consumer_key": "API key",
+            "consumer_secret": "API secret key",
+            "copy-accessToken": "Create a new 'Access token & access token secret' and copy them",
+            "access_key": "Access token",
+            "access_secret": "Access token secret",
+            "enter-id": "Set your Twitter ID"
         },
         "placeholder": {
             "for": "comma-separated words, @ids, #tags",
@@ -34,22 +33,22 @@
         "status": {
             "using-geo": "Using geo location: __location__",
             "tweeting": "tweeting",
-            "failed":"failed"
+            "failed": "failed"
         },
         "warn": {
-            "nousers":"User option selected but no users specified",
-            "waiting":"Waiting for search term"
+            "nousers": "User option selected but no users specified",
+            "waiting": "Waiting for search term"
         },
         "errors": {
-            "ratelimit":"rate limit hit",
-            "limitrate":"limiting rate",
-            "streamerror":"stream error: __error__ (__rc__)",
-            "unexpectedend":"stream ended unexpectedly",
-            "invalidtag":"invalid tag property",
-            "missingcredentials":"missing twitter credentials",
-            "truncated":"truncated tweet greater than 280 characters",
-            "sendfail":"send tweet failed: __error__",
-            "nopayload":"no payload to tweet"
+            "ratelimit": "rate limit hit",
+            "limitrate": "limiting rate",
+            "streamerror": "stream error: __error__ (__rc__)",
+            "unexpectedend": "stream ended unexpectedly",
+            "invalidtag": "invalid tag property",
+            "missingcredentials": "missing twitter credentials",
+            "truncated": "truncated tweet greater than 280 characters",
+            "sendfail": "send tweet failed: __error__",
+            "nopayload": "no payload to tweet"
         }
     }
 }
