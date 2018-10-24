@@ -130,7 +130,7 @@ module.exports = function(RED) {
             node.status({});
         });
 
-        runit();
+        if (this.autorun) { runit(); }
 
         node.on("input", inputlistener);
     }
