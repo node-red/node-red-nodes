@@ -242,7 +242,7 @@ module.exports = function(RED) {
                             return payload;
                         },
                         write: function(m,cb) { this.serial.write(m,cb); },
-						update: function(m,cb) { this.serial.update(m,cb); },
+			update: function(m,cb) { this.serial.update(m,cb); },
                         enqueue: function(msg,sender,cb) {
                             var payload = this.encodePayload(msg.payload);
                             var qobj = {
