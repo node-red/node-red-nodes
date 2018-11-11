@@ -40,25 +40,40 @@ describe('rbe node', function() {
                     c+=1;
                 }
                 else if (c === 1) {
-                    msg.should.have.a.property("payload", "b");
+                    msg.should.have.a.property("payload", 2);
                     c+=1;
                 }
-                else {
+                else if (c == 2) {
                     msg.should.have.a.property("payload");
                     msg.payload.should.have.a.property("b",1);
                     msg.payload.should.have.a.property("c",2);
+                    c+=1;
+                }
+                else if (c == 3) {
+                    msg.should.have.a.property("payload",true);
+                    c+=1;
+                }
+                else if (c == 4) {
+                    msg.should.have.a.property("payload",false);
+                    c+=1;
+                }
+                else  {
+                    msg.should.have.a.property("payload",true);
                     done();
                 }
             });
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"a"});
             n1.emit("input", {payload:"a"});
-            n1.emit("input", {payload:"a"});
-            n1.emit("input", {payload:"a"});
-            n1.emit("input", {payload:"b"});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:2});
             n1.emit("input", {payload:{b:1,c:2}});
             n1.emit("input", {payload:{c:2,b:1}});
             n1.emit("input", {payload:{c:2,b:1}});
+            n1.emit("input", {payload:true});
+            n1.emit("input", {payload:false});
+            n1.emit("input", {payload:false});
+            n1.emit("input", {payload:true});
         });
     });
 
