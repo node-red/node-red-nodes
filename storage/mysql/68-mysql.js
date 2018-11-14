@@ -121,7 +121,7 @@ module.exports = function(RED) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
                         var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 node.error(err,msg);
                                 node.status({fill:"red",shape:"ring",text:"Error"});
