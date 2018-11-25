@@ -62,10 +62,15 @@ def setPixel(strip, i, color):
 
 def setPixels(strip, s, e, color, wait_ms=30):
     """Set pixels from s(tart) to e(nd)"""
-    for i in range(s, e+1):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 def setBrightness(strip, brightness, wait_ms=30):
     """Set overall brighness"""
@@ -75,36 +80,55 @@ def setBrightness(strip, brightness, wait_ms=30):
 
 def colorWipe(strip, color, wait_ms=30):
     """Wipe color across display a pixel at a time."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 def shiftUp(strip, color, wait_ms=30):
     """Shift all pixels one way."""
     oldcolour = strip.getPixelColor(0)
     strip.setPixelColor(0, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(1,LED_COUNT):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def shiftDown(strip, color, wait_ms=30):
     """Shift all pixels the other way."""
     oldcolour = strip.getPixelColor(LED_COUNT-1)
     strip.setPixelColor(LED_COUNT-1, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(LED_COUNT-2,-1,-1):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""
@@ -142,39 +166,39 @@ if __name__ == '__main__':
     else:
         strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_GAMMA)# Intialize the library (must be called once before other functions).
 
-    strip.begin()
+   strip.begin()
 
-    ## Color wipe animations.
-    colorWipe(strip, Color(127, 0, 0), WAIT_MS)  # Red wipe
-    colorWipe(strip, Color(0, 127, 0), WAIT_MS)  # Green wipe
-    colorWipe(strip, Color(0, 0, 127), WAIT_MS)  # Blue wipe
-    colorWipe(strip, Color(0, 0, 0), WAIT_MS)  # Off wipe
+   ## Color wipe animations.
+   colorWipe(strip, Color(127, 0, 0), WAIT_MS)  # Red wipe
+   colorWipe(strip, Color(0, 127, 0), WAIT_MS)  # Green wipe
+   colorWipe(strip, Color(0, 0, 127), WAIT_MS)  # Blue wipe
+   colorWipe(strip, Color(0, 0, 0), WAIT_MS)  # Off wipe
 
-    ## Rainbow animations.
-    #rainbow(strip)
-    #rainbowCycle(strip)
-    #colorWipe(strip, Color(0, 0, 0))  # Off wipe
+   ## Rainbow animations.
+   #rainbow(strip)
+   #rainbowCycle(strip)
+   #colorWipe(strip, Color(0, 0, 0))  # Off wipe
 
-    while True:
-        try:
-            data = raw_input()
-            bits = data.split(',')
-            if len(bits) == 2:
-                if bits[0] == "brightness":
-                    setBrightness(strip, min(255,max(0,int(bits[1]))), WAIT_MS)
-            if len(bits) == 3:
-                if MODE == "shiftu":
-                    shiftUp(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
-                elif MODE == "shiftd":
-                    shiftDown(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
-                else:
-                    colorWipe(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
-            if (MODE[0] == 'p' and len(bits) == 4):
-                setPixel(strip, int(bits[0]), Color(int(bits[1]), int(bits[2]), int(bits[3]) ))
-            if (MODE[0] == 'p' and len(bits) == 5):
-                setPixels(strip, int(bits[0]), int(bits[1]), Color(int(bits[2]), int(bits[3]), int(bits[4]) ), WAIT_MS)
-        except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
-            sys.exit(0)
-        except Exception as ex:
-            print("bad data: "+data)
-            print(ex)
+   while True:
+       try:
+           data = raw_input()
+           bits = data.split(',')
+           if len(bits) == 2:
+               if bits[0] == "brightness":
+                   setBrightness(strip, min(255,max(0,int(bits[1]))), WAIT_MS)
+           if len(bits) == 3:
+               if MODE == "shiftu":
+                   shiftUp(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+               elif MODE == "shiftd":
+                   shiftDown(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+               else:
+                   colorWipe(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
+           if (MODE[0] == 'p' and len(bits) == 4):
+               setPixel(strip, int(bits[0]), Color(int(bits[1]), int(bits[2]), int(bits[3]) ))
+           if (MODE[0] == 'p' and len(bits) == 5):
+               setPixels(strip, int(bits[0]), int(bits[1]), Color(int(bits[2]), int(bits[3]), int(bits[4]) ), WAIT_MS)
+       except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
+           sys.exit(0)
+       except Exception as ex:
+           print("bad data: "+data)
+           print(ex)
