@@ -8,6 +8,11 @@ import RPi.GPIO as GPIO
 import time
 import sys
 import os, select
+import signal
+
+def signal_handler(sig, frame):
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
 # Turn off warnings if you run it a second time...
 GPIO.setwarnings(False)
@@ -23,11 +28,13 @@ def Measure():
     GPIO.output(TRIGGER, True)
     time.sleep(0.00001)
     GPIO.output(TRIGGER, False)
+    start = time.time()
+    stop = time.time()
     while GPIO.input(ECHO)==0:
         start = time.time()
         Dif = time.time() - realstart
         if Dif > 0.2:
-            print("Ultrasonic Sensor Timed out, Restart.")
+            # print("Ultrasonic Sensor Timed out, Restart.")
             time.sleep(0.4)
             return 400
     while GPIO.input(ECHO)==1:
@@ -74,8 +81,6 @@ if len(sys.argv) > 1:
             time.sleep(SLEEP)
         except:                     # try to clean up on exit
             print("0.0")
-            GPIO.cleanup()
-            sys.exit(0)
 
 else:
     print("Bad params")
