@@ -11,9 +11,11 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
     npm install node-red-node-ping
 
-**Gotcha**
+**Gotchas**
 
-On some versions on Raspbian (Raspberry Pi) `ping` seems to be a root only command.
+ 1 This won't run on Ubunti Snap as the strict container does not allow spawning of external commands (like ping).
+
+ 2 On some versions on Raspbian (Raspberry Pi) `ping` seems to be a root only command.
 The fix is to allow it as follows
 
     sudo setcap cap_net_raw=ep /bin/ping
