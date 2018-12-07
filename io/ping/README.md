@@ -11,9 +11,12 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
     npm install node-red-node-ping
 
+
 **Gotchas**
 
- 1 This won't run on Ubunti Snap as the strict container does not allow spawning of external commands (like ping).
+ 1 Ubuntu Snap containers are strict and do not like giving external commands (like ping) external access. To allow ping to work you must manually add the network-observe interface
+
+     sudo snap connect node-red:network-observe
 
  2 On some versions on Raspbian (Raspberry Pi) `ping` seems to be a root only command.
 The fix is to allow it as follows
