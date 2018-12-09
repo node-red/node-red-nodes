@@ -5,8 +5,8 @@
         <input type="text" id="node-input-mac" placeholder="e.g. DE:AD:BE:EF:FE:ED">
     </div>
     <div class="form-row">
-        <label for="node-input-host"><i class="fa fa-globe"></i> Host Address</label>
-        <input type="text" id="node-input-host" placeholder="e.g. 255.255.255.255">
+        <label for="node-input-host"><i class="fa fa-globe"></i> Target Address</label>
+        <input type="text" id="node-input-host" placeholder="e.g. 192.168.1.255 or 10.255.255.255">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -18,7 +18,9 @@
 <script type="text/x-red" data-help-name="wake on lan">
     <p>Sends a Wake-On-LAN magic packet to the mac address specified.</p>
     <p>You may instead set <code>msg.mac</code> to dynamically set the target device mac to wake up.</p>
-    <p>The target host address can optionally be set using <code>msg.host</code></p>
+    <p>The address of the target machine can optionally be set using <code>msg.host</code></p>
+    <p>Setting the target address to the broadcast address of the subnet that the target machine is attached to works best.
+    For a class C address this is usually just the first three parts of the ip address followed by 255. eg 192.168.1.255.</p>
 </script>
 
 <script type="text/javascript">
