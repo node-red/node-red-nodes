@@ -21,6 +21,7 @@ Optionally uses `msg.topic` to set the configuration, if not already set in the 
  - `msg.device`: to set the device
  - `msg.priority`: to set the priority
  - `msg.topic`: to set the title
+ - `msg.attachment`: to specify an image to attach to message (path as a string or Buffer containing image)
  - `msg.url`: to add a web address
  - `msg.url_title`: to add a url title
  - `msg.sound`: to set the alert sound, see the [available options](https://pushover.net/api#sounds)
