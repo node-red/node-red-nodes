@@ -106,7 +106,7 @@ module.exports = function(RED) {
                 if (node.sqlquery == "prepared"){
                     if (typeof node.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object") {
                         if (node.sql.length > 0) {
-                                node.mydbConfig.db.all(node.sql, msg.params, function(err, row) {
+                            node.mydbConfig.db.all(node.sql, msg.params, function(err, row) {
                                 if (err) { node.error(err,msg); }
                                 else {
                                     msg.payload = row;

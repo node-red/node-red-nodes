@@ -8,7 +8,7 @@ Install
 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-sqlite
+    npm i --unsafe-perm node-red-node-sqlite
 
 
 Usage
