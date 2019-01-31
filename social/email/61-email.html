@@ -121,9 +121,16 @@
 
 
 <script type="text/x-red" data-template-name="e-mail in">
-    <div class="form-row node-input-repeat">
-        <label for="node-input-repeat"><i class="fa fa-repeat"></i> <span data-i18n="email.label.repeat"></span></label>
-        <input type="text" id="node-input-repeat" style="width: 80px"> <span data-i18n="email.label.seconds">seconds</span>
+    <div class="form-row">
+        <label for="node-input-fetch"><i class="fa fa-hourglass-half"></i> <span data-i18n="email.label.getmail"></span></label>
+        <select type="text" id="node-input-fetch" style="width:130px;">
+            <option value="auto" data-i18n="email.label.auto"></option>
+            <option value="trigger" data-i18n="email.label.trigger"></option>
+        </select>
+        <span id="node-repeatTime">
+            <span style="margin-left:20px;" data-i18n="email.label.repeat"></span>
+            <input type="text" id="node-input-repeat" style="width:80px"> <span data-i18n="email.label.seconds">seconds</span>
+        </span>
     </div>
     <div class="form-row">
         <label for="node-input-protocol"><i class="fa fa-envelope"></i> <span data-i18n="email.label.protocol"></span></label>
@@ -182,8 +189,8 @@
         };
 
         $("#node-input-useSSL").change(function(x, y) {
-          console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
-          console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+          // console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+          // console.log("Value: " + $("#node-input-useSSL").prop("checked"));
           checkPorts();
         });
 
@@ -245,15 +252,17 @@
             port: {value:"993",required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email
-            repeat: {value:"300",required:true}
+            repeat: {value:"300",required:true},
+            fetch: {value:"auto"},
+            inputs: {value:0}
         },
         credentials: {
             userid: {type:"text"},
             password: {type: "password"},
             global: { type:"boolean"}
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "envelope.png",
         paletteLabel: function() {
             return this._("email.email");
@@ -265,6 +274,7 @@
             return (this.name)?"node_label_italic":"";
         },
         oneditprepare: function() {
+            var that = this;
             if (this.credentials.global) {
                 $('#node-tip').show();
             } else {
@@ -274,6 +284,17 @@
                 $("#node-input-box").val("INBOX");
                 this.box = "INBOX";
             }
+            if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
+            $("#node-input-fetch").change(function() {
+                if ($("#node-input-fetch").val() === "trigger") {
+                    $('#node-repeatTime').hide();
+                    that.inputs = 1;
+                }
+                else  {
+                    $('#node-repeatTime').show();
+                    that.inputs = 0;
+                }
+            });
         }
     });
 })();

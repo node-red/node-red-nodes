@@ -2,13 +2,16 @@
     "email": {
         "email": "email",
         "label": {
+            "getmail":"Get mail",
+            "auto": "automatically",
+            "trigger": "when triggered",
             "to": "To",
             "server": "Server",
             "port": "Port",
             "useSecureConnection": "Use secure connection.",
             "userid": "Userid",
             "password": "Password",
-            "repeat": "Refresh",
+            "repeat": "every",
             "seconds": "seconds",
             "folder": "Folder",
             "protocol": "Protocol",

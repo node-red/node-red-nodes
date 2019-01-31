@@ -146,12 +146,14 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this,n);
         this.name = n.name;
+        this.inputs = n.inputs;
         this.repeat = n.repeat * 1000 || 300000;
         if (this.repeat > 2147483647) {
             // setTimeout/Interval has a limit of 2**31-1 Milliseconds
             this.repeat = 2147483647;
             this.error(RED._("email.errors.refreshtoolarge"));
         }
+        if (this.inputs === 1) { this.repeat = 0; }
         this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
@@ -315,10 +317,12 @@ module.exports = function(RED) {
         // checkIMAP
         //
         // Check the email sever using the IMAP protocol for new messages.
+        var s = true;
         function checkIMAP(msg) {
             //node.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             imap.once("ready", function() {
+                s = true;
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
                 // Open the inbox folder
@@ -328,6 +332,7 @@ module.exports = function(RED) {
                     //console.log("> Inbox err : %j", err);
                     //console.log("> Inbox open: %j", box);
                     if (err) {
+                        s = false;
                         node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                         node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                         imap.end();
@@ -337,6 +342,7 @@ module.exports = function(RED) {
                     else {
                         imap.search([ 'UNSEEN' ], function(err, results) {
                             if (err) {
+                                s = false;
                                 node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                                 node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                                 imap.end();
@@ -347,6 +353,7 @@ module.exports = function(RED) {
                                 //console.log("> search - err=%j, results=%j", err, results);
                                 if (results.length === 0) {
                                     //console.log(" [X] - Nothing to fetch");
+                                    s = true;
                                     node.status({});
                                     imap.end();
                                     setInputRepeatTimeout();
@@ -386,6 +393,7 @@ module.exports = function(RED) {
 
                                 // When we have fetched all the messages, we don't need the imap connection any more.
                                 fetch.on('end', function() {
+                                    s = true;
                                     node.status({});
                                     var cleanup = function() {
                                         imap.end();
@@ -409,6 +417,7 @@ module.exports = function(RED) {
                     }
                 }); // End of imap->openInbox
             }); // End of imap->ready
+            s = false;
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
         } // End of checkIMAP
@@ -416,10 +425,13 @@ module.exports = function(RED) {
 
         // Perform a check of the email inboxes using either POP3 or IMAP
         function checkEmail(msg) {
+            console.log("STAT",s);
             if (node.protocol === "POP3") {
                 checkPOP3(msg);
             } else if (node.protocol === "IMAP") {
-                checkIMAP(msg);
+                if (s !== false) {
+                    checkIMAP(msg);
+                }
             }
         }  // End of checkEmail
 
@@ -437,8 +449,10 @@ module.exports = function(RED) {
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     node.log(err);
+                    s = true;
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 }
+                setInputRepeatTimeout()
             });
         }
 
@@ -462,7 +476,7 @@ module.exports = function(RED) {
             }
         }
 
-        node.emit("input",{});
+        if (this.inputs !== 1) { node.emit("input",{}); }
     }
 
     RED.nodes.registerType("e-mail in",EmailInNode,{
