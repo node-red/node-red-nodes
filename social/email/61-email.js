@@ -317,12 +317,15 @@ module.exports = function(RED) {
         // checkIMAP
         //
         // Check the email sever using the IMAP protocol for new messages.
-        var s = true;
+        var s = false;
+        var ss = false;
         function checkIMAP(msg) {
-            //node.log("Checking IMAP for new messages");
+            //console.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
+            s = true;
             imap.once("ready", function() {
-                s = true;
+                if (ss === true) { return; }
+                ss = true;
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
                 // Open the inbox folder
@@ -342,10 +345,10 @@ module.exports = function(RED) {
                     else {
                         imap.search([ 'UNSEEN' ], function(err, results) {
                             if (err) {
-                                s = false;
                                 node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                                 node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                                 imap.end();
+                                s = false;
                                 setInputRepeatTimeout();
                                 return;
                             }
@@ -353,9 +356,9 @@ module.exports = function(RED) {
                                 //console.log("> search - err=%j, results=%j", err, results);
                                 if (results.length === 0) {
                                     //console.log(" [X] - Nothing to fetch");
-                                    s = true;
                                     node.status({});
                                     imap.end();
+                                    s = false;
                                     setInputRepeatTimeout();
                                     return;
                                 }
@@ -393,10 +396,10 @@ module.exports = function(RED) {
 
                                 // When we have fetched all the messages, we don't need the imap connection any more.
                                 fetch.on('end', function() {
-                                    s = true;
                                     node.status({});
                                     var cleanup = function() {
                                         imap.end();
+                                        s = false;
                                     };
                                     if (this.disposition === "Delete") {
                                         imap.addFlags(results, "\Deleted", cleanup);
@@ -417,7 +420,6 @@ module.exports = function(RED) {
                     }
                 }); // End of imap->openInbox
             }); // End of imap->ready
-            s = false;
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
         } // End of checkIMAP
@@ -425,13 +427,10 @@ module.exports = function(RED) {
 
         // Perform a check of the email inboxes using either POP3 or IMAP
         function checkEmail(msg) {
-            console.log("STAT",s);
             if (node.protocol === "POP3") {
                 checkPOP3(msg);
             } else if (node.protocol === "IMAP") {
-                if (s !== false) {
-                    checkIMAP(msg);
-                }
+                if (s === false) { checkIMAP(msg); }
             }
         }  // End of checkEmail
 
@@ -449,10 +448,10 @@ module.exports = function(RED) {
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     node.log(err);
-                    s = true;
+                    s = false;
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 }
-                setInputRepeatTimeout()
+                setInputRepeatTimeout();
             });
         }
 
@@ -474,6 +473,7 @@ module.exports = function(RED) {
                     node.emit("input",{});
                 }, node.repeat );
             }
+            ss = false;
         }
 
         if (this.inputs !== 1) { node.emit("input",{}); }
