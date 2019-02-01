@@ -106,6 +106,8 @@ module.exports = function(RED) {
         if (this.mydbConfig) {
             this.mydbConfig.connect();
             var node = this;
+            var busy = false;
+            var status = {};
             node.mydbConfig.on("state", function(info) {
                 if (info === "connecting") { node.status({fill:"grey",shape:"ring",text:info}); }
                 else if (info === "connected") { node.status({fill:"green",shape:"dot",text:info}); }
@@ -124,12 +126,12 @@ module.exports = function(RED) {
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 node.error(err,msg);
-                                node.status({fill:"red",shape:"ring",text:"Error"});
+                                status = {fill:"red",shape:"ring",text:"Error"};
                             }
                             else {
                                 msg.payload = rows;
                                 node.send(msg);
-                                node.status({fill:"green",shape:"dot",text:"OK"});
+                                status = {fill:"green",shape:"dot",text:"OK"};
                             }
                         });
                     }
@@ -139,11 +141,17 @@ module.exports = function(RED) {
                 }
                 else {
                     node.error("Database not connected",msg);
-                    node.status({fill:"red",shape:"ring",text:"not yet connected"});
+                    status = {fill:"red",shape:"ring",text:"not yet connected"};
+                }
+                if (!busy) {
+                    busy = true;
+                    node.status(status);
+                    node.tout = setTimeout(function() { busy = false; node.status(status); },500);
                 }
             });
 
             node.on('close', function () {
+                if (node.tout) { clearTimeout(node.tout); }
                 node.mydbConfig.removeAllListeners();
                 node.status({});
             });
