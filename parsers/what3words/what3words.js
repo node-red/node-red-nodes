@@ -44,9 +44,10 @@ module.exports = function(RED) {
                     else if (value.match(w3)) { // see if it's 3 dot separated words
                         node.w3w.wordsToPosition({ words:value })
                             .then(function(response) {
-                                value.lat = Number(response.split(",")[0]);
-                                value.lon = Number(response.split(",")[1]);
-                                RED.util.setMessageProperty(msg,node.property,value);
+                                var loc = {};
+                                loc.lat = Number(response.split(",")[0]);
+                                loc.lon = Number(response.split(",")[1]);
+                                RED.util.setMessageProperty(msg,"location",loc);
                                 node.send(msg);
                             })
                             .catch(function(err) {
