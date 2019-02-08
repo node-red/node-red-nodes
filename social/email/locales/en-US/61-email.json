@@ -20,7 +20,15 @@
             "disposition": "Disposition",
             "none": "None",
             "read": "Mark Read",
-            "delete": "Delete"
+            "delete": "Delete",
+            "criteria": "Criteria",
+            "all": "All",
+            "answered": "Answered",
+            "flagged": "Flagged",
+            "seen": "Seen",
+            "unanswered": "Unanswered",
+            "unflagged": "Unflagged",
+            "unseen": "Unseen"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {
