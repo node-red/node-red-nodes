@@ -160,6 +160,7 @@ module.exports = function(RED) {
         this.useSSL= n.useSSL;
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
+        this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
 
         var flag = false;
 
@@ -343,7 +344,7 @@ module.exports = function(RED) {
                         return;
                     }
                     else {
-                        imap.search([ 'UNSEEN' ], function(err, results) {
+                        imap.search([ this.criteria ], function(err, results) {
                             if (err) {
                                 node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                                 node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
