@@ -344,7 +344,7 @@ module.exports = function(RED) {
                         return;
                     }
                     else {
-                        imap.search([ this.criteria ], function(err, results) {
+                        imap.search([ node.criteria ], function(err, results) {
                             if (err) {
                                 node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                                 node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);

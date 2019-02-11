@@ -173,18 +173,18 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-criteria"><i class="fa fa-criteria"></i> <span data-i18n="node-red:common.label.criteria"></span></label>
+        <label for="node-input-criteria"><i class="fa fa-search"></i> <span data-i18n="email.label.criteria"></span></label>
         <select type="text" id="node-input-criteria">
-            <option value="ALL" selected="selected" data-i18n="email.label.all"></option>
+            <option value="ALL" data-i18n="email.label.all"></option>
             <option value="ANSWERED" data-i18n="email.label.answered"></option>
             <option value="FLAGGED" data-i18n="email.label.flagged"></option>
-            <option value="SEEN" selected="selected" data-i18n="email.label.seen"></option>
-            <option value="UNANSWERED" selected="selected" data-i18n="email.label.unanswered"></option>
-            <option value="UNFLAGGED" selected="selected" data-i18n="email.label.unflagged"></option>
-            <option value="UNSEEN" data-i18n="email.label.unseen"></option>
+            <option value="SEEN" data-i18n="email.label.seen"></option>
+            <option value="UNANSWERED" data-i18n="email.label.unanswered"></option>
+            <option value="UNFLAGGED" data-i18n="email.label.unflagged"></option>
+            <option value="UNSEEN" selected="selected" data-i18n="email.label.unseen"></option>
             <!--
             <option value="DELETED" data-i18n="email.label.delete"></option>
-            <option value="DRAFT" selected="selected" data-i18n="email.label.none"></option>
+            <option value="DRAFT" data-i18n="email.label.none"></option>
             <option value="NEW" data-i18n="email.label.delete"></option>
             <option value="UNDELETED" data-i18n="email.label.read"></option>
             <option value="UNDRAFT" data-i18n="email.label.delete"></option>
@@ -308,6 +308,10 @@
             if (typeof this.box === 'undefined') {
                 $("#node-input-box").val("INBOX");
                 this.box = "INBOX";
+            }
+            if (typeof this.criteria === 'undefined') {
+                $("#node-input-criteria").val("UNSEEN");
+                this.criteria = "UNSEEN";
             }
             if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
             $("#node-input-fetch").change(function() {
