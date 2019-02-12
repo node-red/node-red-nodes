@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="mongodb-config">
+<script type="text/x-red" data-template-name="mongodb">
     <div class="form-row">
         <label for="node-config-input-hostname"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.host"></span></label>
         <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost" style="width: 40%;" >
@@ -24,7 +24,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('mongodb-config', {
+    RED.nodes.registerType('mongodb', {
         category: 'config',
         color: "rgb(218, 196, 180)",
         defaults: {
@@ -44,7 +44,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="mongodb">
+<script type="text/x-red" data-template-name="mongodb out">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
@@ -56,10 +56,7 @@
     <div class="form-row">
         <label for="node-input-operation"><i class="fa fa-wrench"></i> <span data-i18n="mongodb.label.operation"></span></label>
         <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
-            <option value="find" data-i18n="mongodb.operation.find"></option>
-            <option value="count" data-i18n="mongodb.operation.count"></option>
-			<option value="aggregate" data-i18n="mongodb.operation.aggregate"></option>
-			<option value="store" data-i18n="mongodb.operation.save"></option>
+            <option value="store" data-i18n="mongodb.operation.save"></option>
             <option value="insert" data-i18n="mongodb.operation.insert"></option>
             <option value="update" data-i18n="mongodb.operation.update"></option>
             <option value="delete" data-i18n="mongodb.operation.remove"></option>
@@ -70,7 +67,7 @@
         <input type="checkbox" id="node-input-payonly" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-payonly" style="width: 70%;"><span data-i18n="mongodb.label.onlystore"></span></label>
     </div>
-	<div class="form-row node-input-upsert">
+    <div class="form-row node-input-upsert">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-upsert" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-upsert" style="width: 70%;"><span data-i18n="mongodb.label.createnew"></span></label>
@@ -87,50 +84,28 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mongodb">
-	<p>A simple MongoDB node. Can manipulate a chosen collection.</p>
-
-    <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
-	Optionally, you may also set a <code>msg.projection</code> object (via a function) to constrain the returned
-	fields. You can also set a <code>msg.sort</code> object, a <code>msg.limit</code> number and a <code>msg.skip</code> number.</p>
-
-    <p>Count returns a count of the number of documents in a collection, or matches a query using the
-	<code>msg.payload</code> as the query statement.</p>
-
-    <p>Aggregate provides access to the aggregation pipeline using the <code>msg.payload</code> as the pipeline array.</p>
-
-
-	<p>Save will update an existing object or insert a new object if one does not already exist.</p>
-
-	<p>Insert will insert a new object.</p>
-
-    <p>Update will modify an existing object or objects. The query to select objects to update uses <code>msg.query</code>,
+<script type="text/x-red" data-help-name="mongodb out">
+    <p>A simple MongoDB output node. Can save, insert, update and remove objects from a chosen collection.</p>
+    <p>Save will update an existing object or insert a new object if one does not already exist.</p>
+    <p>Insert will insert a new object.</p>
+    <p>Save and insert either store <code>msg</code> or <code>msg.payload</code>.</p>
+    <p>Update will modify an existing object or objects. The query to select objects to update uses <code>msg.query</code>, 
     and the update to the element uses <code>msg.payload</code>. If <code>msg.query._id</code> is
     a valid mongo ObjectId string it will be converted to an ObjectId type.</p>
     <p>Update can add an object if it does not exist or update multiple objects.</p>
     <p>Remove will remove objects that match the query passed in on <code>msg.payload</code>. A blank query will delete
-	<i>all of the objects</i> in the collection.</p>
-
+    <i>all of the objects</i> in the collection.</p>
     <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in the
-	node will override <code>msg.collection</code>.</p>
-
-	<p>See the <a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB
-	collection methods docs</i></a> for examples.</p>
-	<p>The result is returned in <code>msg.payload</code>.</p>
-
+    node will override <code>msg.collection</code>.</p>
     <p>By default, MongoDB creates an <i>_id</i> property as the primary key, so repeated injections of the
-	same <code>msg</code> will result in many database entries.</p>
-
+    same <code>msg</code> will result in many database entries.</p>
     <p>If this is NOT the desired behaviour, i.e., you want repeated entries to overwrite, then you must set
-	the <code>msg._id</code> property to be a constant by the use of a previous function node.</p>
-
+    the <code>msg._id</code> property to be a constant by the use of a previous function node.</p>
     <p>This could be a unique constant or you could create one based on some other msg property.</p>
     <p>Currently we do not limit or cap the collection size, however this may well change.</p>
 </script>
 
 <script type="text/javascript">
-
-
 
     function oneditprepare() {
         $("#node-input-operation").change(function () {
@@ -156,17 +131,83 @@
         });
     }
 
-    RED.nodes.registerType('mongodb', {
-        category: 'storage',
+    RED.nodes.registerType('mongodb out', {
+        category: 'storage-output',
         color: "rgb(218, 196, 180)",
         defaults: {
-            mongodb: { type: "mongodb-config", required: true },
+            mongodb: { type: "mongodb", required: true },
             name: { value: "" },
             collection: { value: "" },
             payonly: { value: false },
-            operation: { value: "find" },
             upsert: { value: false },
-            multi: { value: false }
+            multi: { value: false },
+            operation: { value: "store" }
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "mongodb.png",
+        align: "right",
+        label: function () {
+            var mongoNode = RED.nodes.node(this.mongodb);
+            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: oneditprepare
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="mongodb in">
+    <div class="form-row">
+        <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
+        <input type="text" id="node-input-mongodb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-collection"><i class="fa fa-briefcase"></i> <span data-i18n="mongodb.label.collection"></span></label>
+        <input type="text" id="node-input-collection">
+    </div>
+    <div class="form-row">
+        <label for="node-input-operation"><i class="fa fa-wrench"></i> <span data-i18n="mongodb.label.operation"></span></label>
+        <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
+            <option value="find" data-i18n="mongodb.operation.find"></option>
+            <option value="count" data-i18n="mongodb.operation.count"></option>
+            <option value="aggregate" data-i18n="mongodb.operation.aggregate"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="mongodb in">
+    <p>Calls a MongoDB collection method based on the selected operator.</p>
+    <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
+    Optionally, you may also set a <code>msg.projection</code> object (via a function) to constrain the returned
+    fields. You can also set a <code>msg.sort</code> object, a <code>msg.limit</code> number and a <code>msg.skip</code> number.</p>
+    <p>Count returns a count of the number of documents in a collection, or matches a query using the
+    <code>msg.payload</code> as the query statement.</p>
+    <p>Aggregate provides access to the aggregation pipeline using the <code>msg.payload</code> as the pipeline array.</p>
+    <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in
+    the node will override <code>msg.collection</code>.</p>
+    <p>See the <a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB
+    collection methods docs</i></a> for examples.</p>
+    <p>The result is returned in <code>msg.payload</code>.</p>
+</script>
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('mongodb in', {
+        category: 'storage-input',
+        color: "rgb(218, 196, 180)",
+        defaults: {
+            mongodb: { type: "mongodb", required: true },
+            name: { value: "" },
+            collection: { value: "" },
+            operation: { value: "find" }
         },
         inputs: 1,
         outputs: 1,
