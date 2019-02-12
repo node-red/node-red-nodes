@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-arduino",
-    "version"       : "0.0.18",
+    "version"       : "0.1.0",
     "description"   : "A Node-RED node to talk to an Arduino running firmata",
     "dependencies"  : {
-        "firmata"   : "~0.19.1"
+        "firmata"   : "^2.0.0"
     },
     "repository" : {
         "type":"git",
@@ -16,6 +16,7 @@
             "arduino": "35-arduino.js"
         }
     },
+    "engines" : { "node" : ">=8" },
     "author": {
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",

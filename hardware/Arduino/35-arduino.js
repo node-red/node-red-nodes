@@ -11,7 +11,7 @@ module.exports = function(RED) {
         this.device = n.device || null;
         var node = this;
 
-        node.board = Board(node.device, function(e) {
+        node.board = new Board(node.device, function(e) {
             //console.log("ERR",e);
             if ((e !== undefined) && (e.toString().indexOf("cannot open") !== -1) ) {
                 node.error(RED._("arduino.errors.portnotfound",{device:node.device}));
@@ -32,7 +32,7 @@ module.exports = function(RED) {
         node.on('close', function(done) {
             if (node.board) {
                 try {
-                    node.board.sp.close(function() {
+                    node.board.transport.close(function() {
                         if (RED.settings.verbose) { node.log(RED._("arduino.status.portclosed")); }
                         done();
                     });
@@ -172,6 +172,5 @@ module.exports = function(RED) {
         SP.list(function(error, ports) {
             res.json(ports);
         });
-
     });
 }
