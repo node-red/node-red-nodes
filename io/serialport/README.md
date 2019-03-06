@@ -2,13 +2,11 @@ node-red-node-serialport
 ========================
 
 <a href="http://nodered.org" target="noderedinfo">Node-RED</a> nodes to talk to
-hardware Serial ports.
+hardware serial ports.
 
 ## Install
 
-This node is sometimes installed by default in Node-RED so may not need to be installed manually.
-
-Run the following command in your Node-RED user directory (typically `~/.node-red`):
+To install the stable version use the `Menu - Manage palette` option and search for node-red-node-serialport, or run the following command in your Node-RED user directory, typically `~/.node-red`
 
         npm i node-red-node-serialport
 
@@ -20,7 +18,7 @@ you to install the full set of tools in order to compile the underlying package.
 
 ## Usage
 
-Provides two nodes - one to receive messages, and one to send.
+Provides three nodes - one to receive messages, and one to send, and a request node which can send then wait for a response.
 
 ### Input
 
@@ -47,3 +45,13 @@ Provides a connection to an outbound serial port.
 Only the `msg.payload` is sent.
 
 Optionally the character used to split the input can be appended to every message sent out to the serial port.
+
+### Request
+
+Provides a connection to a request/response serial port.
+
+This node behaves as a tightly coupled combination of serial in and serial out nodes, with which it shares the configuration.
+
+Send the request message in `msg.payload` as you would do with a serial out node. The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request. Once a response is received (with the same logic of a serial in node), or after a timeout occurs, a message is produced on the output, with msg.payload containing the received response (or missing in case if timeout), msg.status containing relevant info, and all other fields preserved.
+
+For consistency with the serial in node, msg.port is also set to the name of the port selected.
