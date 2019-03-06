@@ -101,7 +101,7 @@ module.exports = function(RED) {
                             msg.topic = stanza.attrs.from
                         }
                         else { msg.topic = ids[0]; }
-                        if (!node.join && ((node.from === "") || (node.from === from))) {
+                        if (!node.join && ((node.from === "") || (node.from === stanza.attrs.from))) {
                             node.send([msg,null]);
                         }
                     }
