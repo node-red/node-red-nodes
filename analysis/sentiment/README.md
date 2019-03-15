@@ -4,7 +4,7 @@ node-red-node-sentiment
 A <a href="http://nodered.org" target="new">Node-RED</a> node that scores incoming words
 using the AFINN-165 wordlist and attaches a sentiment.score property to the msg.
 
-NOTE: We also have a multi-language version available as <b>node-red-node-multilang-sentiment</b>.
+NOTE: There is also a multi-language version available - **node-red-node-multilang-sentiment**.
 
 Install
 -------
