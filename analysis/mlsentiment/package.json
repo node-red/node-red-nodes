@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-multilang-sentiment",
+    "version"       : "0.1.0",
+    "description"   : "A Node-RED node that uses the AFINN-165 wordlists for sentiment analysis of words translated into multiple languages including emojis.",
+    "dependencies"  : {
+        "multilang-sentiment" : "^1.2.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/sentiment"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "sentiment", "anaylsis", "AFINN" ],
+    "node-red" : {
+        "nodes" : {
+            "mlsentiment": "mlsentiment.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}
