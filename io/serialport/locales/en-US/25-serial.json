@@ -19,7 +19,9 @@
             "responsetimeout": "Default response timeout",
             "ms": "ms",
             "serial": "serial",
-            "none": "none"
+            "none": "none",
+            "start": "Optionally wait for a start character of",
+            "startor": ", then"
         },
         "placeholder": {
             "serialport": "for example: /dev/ttyUSB0/"
@@ -41,12 +43,15 @@
             "ascii": "ascii strings",
             "binary": "binary buffers"
         },
-        "addsplit": "add split character to output messages",
+        "addsplit": "Add character to output messages",
         "tip": {
             "responsetimeout": "Tip: The default response timeout can be overridden by setting msg.timeout.",
-            "split": "Tip: the \"Split on\" character is used to split the input into separate messages. It can also be added to every message sent out to the serial port.",
+            "split": "Tip: the \"Split on\" character is used to split the input into separate messages. Can accept chars ($), escape codes (\\n), or hex codes (0x03).",
             "silent": "Tip: In line-silent mode timeout is restarted upon arrival of any character (i.e. inter-byte timeout).",
-            "timeout": "Tip: In timeout mode timeout starts from arrival of first character."
+            "timeout": "Tip: In timeout mode timeout starts from arrival of first character.",
+            "count": "Tip: In count mode msg.count can override the configured count as long as it smaller than the configured value.",
+            "waitfor": "Tip: Optional. Leave blank to receive all data. Can accept chars ($), escape codes (\\n), or hex codes (0x02)." ,
+            "addchar": "Tip: This character is added to every message sent out to the serial port. Usually \\r or \\n."
         },
         "onopen": "serial port __port__ opened at __baud__ baud __config__",
         "errors": {

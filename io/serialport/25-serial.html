@@ -99,7 +99,7 @@
     with which it shares the configuration.</p>
     <p>Send the request message in <code>msg.payload</code> as you would do with a <code>serial out</code> node.
     The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request.
-    Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is produced to the output (see Outputs below),
+    Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is sent to the output (see Outputs below),
     with <code>msg.payload</code> containing the received response (or missing in case if timeout) and all other fields preserved.</p>
     <p>For consistency with the <code>serial in</code> node, <code>msg.port</code> is set to the name of the port selected.</p>
     <h3>Inputs</h3>
@@ -108,7 +108,8 @@
     <code>msg.timeout</code> is the timeout (in ms) after which the incoming message is propagated to the output with <code>msg.status</code> set to <code>"ERR_TIMEOUT"</code> and missing payload.
     If not present, the default value is 10000 (10s).
     </li>
-    <li>Any other field will be propagated to the output so to allow to match responses with requests.</li>
+    <li><code>msg.count</code> if set this will override the configured number of characters as long as it is less than the number configured.</li>
+    <li><code>msg.waitfor</code> single character, escape code, or hex code. If set, the node will wait until it matches that character in the stream and then start the output.</li>
     </ul>
     <h3>Outputs</h3>
     <ul>
@@ -178,59 +179,66 @@
         </select>
         </td></tr></table>
     </div>
-    <br/>
-    <div class="form-row">
+    <div class="form-row" style="margin-top:16px; margin-bottom:0;">
         <label><i class="fa fa-sign-in"></i> <span data-i18n="serial.label.input"></span></label>
     </div>
-    <div class="form-row" style="padding-left:10px;">
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
+        <span data-i18n="serial.label.start"></span>
+        <input type="text" id="node-config-input-waitfor" style="width:50px; height:28px;">
+        <span data-i18n="serial.label.startor"></span>
+    </div>
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
         <span data-i18n="serial.label.split"></span>
-        <select type="text" id="node-config-input-out" style="margin-left:5px; width:200px;">
+        <select type="text" id="node-config-input-out" style="margin-left:11px; width:200px; height:28px;">
             <option value="char" data-i18n="serial.split.character"></option>
             <option value="time" data-i18n="serial.split.timeout"></option>
             <option value="interbyte" data-i18n="serial.split.silent"></option>
             <option value="count" data-i18n="serial.split.lengths"></option>
         </select>
-        <input type="text" id="node-config-input-newline" style="width:50px;">
+        <input type="text" id="node-config-input-newline" style="width:50px; height:28px;">
         <span id="node-units"></span>
     </div>
-    <div class="form-row" style="padding-left:10px;">
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
         <span data-i18n="serial.label.deliver"></span>
-        <select type="text" id="node-config-input-bin" style="margin-left:5px; width:150px;">
+        <select type="text" id="node-config-input-bin" style="margin-left:5px; width:150px; height:28px;">
             <option value="false" data-i18n="serial.output.ascii"></option>
             <option value="bin" data-i18n="serial.output.binary"></option>
         </select>
     </div>
-    <br/>
     <div id="node-config-addchar">
-        <div class="form-row">
+        <div class="form-row" style="margin-top:16px; margin-bottom:0;">
             <label><i class="fa fa-sign-out"></i> <span data-i18n="serial.label.output"></span></label>
         </div>
-        <div class="form-row">
-            <input style="width:30px; margin-left:10px; vertical-align:top;" type="checkbox" id="node-config-input-addchar"><label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
+        <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
+            <label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
+            <input type="text" id="node-config-input-addchar" style="width:50px; height:28px;">
         </div>
     </div>
-    <br/>
-    <div id="node-config-addchar">
-        <div class="form-row">
+    <div id="node-config-req">
+        <div class="form-row" style="margin-top:16px; margin-bottom:0;">
             <label><i class="fa fa-exchange"></i> <span data-i18n="serial.label.request"></span></label>
         </div>
-        <div class="form-row" style="padding-left:10px;">
+        <div class="form-row" style="padding-left:18px; margin-bottom:18px;">
             <span data-i18n="serial.label.responsetimeout"></span>
-            <input type="text" id="node-config-input-responsetimeout" style="width:60px;">
+            <input type="text" id="node-config-input-responsetimeout" style="width:60px; height:28px;">
             <span data-i18n="serial.label.ms"></span>
         </div>
     </div>
+    <div class="form-tips" id="tip-waitfor" hidden><span data-i18n="serial.tip.waitfor"></span></div>
+    <div class="form-tips" id="tip-addchar" hidden><span data-i18n="serial.tip.addchar"></span></div>
     <div class="form-tips" id="tip-responsetimeout" hidden><span data-i18n="serial.tip.responsetimeout"></span></div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
     <div class="form-tips" id="tip-timeout" hidden><span data-i18n="serial.tip.timeout"></span></div>
     <div class="form-tips" id="tip-silent" hidden><span data-i18n="serial.tip.silent"></span></div>
+    <div class="form-tips" id="tip-count" hidden><span data-i18n="serial.tip.count"></span></div>
 </script>
 
 <script type="text/x-red" data-help-name="serial-port">
     <p>Provides configuration options for a serial port.</p>
     <p>The search button should return a list of available serial ports to choose from, or you
     can type in the location if known.</p>
-    <p>The input can be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
+    <p>The node can optionally wait until it matches a pre-defined character.
+        The data can then be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
     <p>If using a character, it can be specified as either the character, the escaped shortcut (e.g. \n), or the hex code (e.g. 0x0d).</p>
 </script>
 
@@ -244,6 +252,7 @@
             databits: {value:8,required:true},
             parity: {value:"none",required:true},
             stopbits: {value:1,required:true},
+            waitfor: {value:""},
             newline: {value:"\\n"},
             bin: {value:"false"},
             out: {value:"char"},
@@ -290,41 +299,50 @@
                 if ($("#node-config-input-out").val() == "char") {
                     if (previous != "char") { $("#node-config-input-newline").val("\\n"); }
                     $("#node-units").text("");
-                    $("#node-config-addchar").show();
+                    // $("#node-config-addchar").show();
                     $("#tip-split").show();
                     $("#tip-timeout").hide();
                     $("#tip-silent").hide();
+                    $("#tip-count").hide();
                 }
                 else if ($("#node-config-input-out").val() == "time") {
                     if (previous != "time") { $("#node-config-input-newline").val("0"); }
                     $("#node-units").text("ms");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").show();
                     $("#tip-silent").hide();
+                    $("#tip-count").hide();
                 }
                 else if ($("#node-config-input-out").val() == "interbyte") {
                     if (previous != "interbyte") { $("#node-config-input-newline").val("0"); }
                     $("#node-units").text("ms");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").hide();
                     $("#tip-silent").show();
+                    $("#tip-count").hide();
                 }
                 else {
                     if (previous != "count") { $("#node-config-input-newline").val(""); }
                     $("#node-units").text("chars");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").hide();
                     $("#tip-silent").hide();
+                    $("#tip-count").show();
                 }
             });
 
             $("#node-config-input-responsetimeout").on('focus', function () { $("#tip-responsetimeout").show(); });
+            $("#node-config-input-responsetimeout").on('blur', function () { $("#tip-responsetimeout").hide(); });
+            $("#node-config-input-waitfor").on('focus', function () { $("#tip-waitfor").show(); });
+            $("#node-config-input-waitfor").on('blur', function () { $("#tip-waitfor").hide(); });
+            $("#node-config-input-addchar").on('focus', function () { $("#tip-addchar").show(); });
+            $("#node-config-input-addchar").on('blur', function () { $("#tip-addchar").hide(); });
 
             try {
                 $("#node-config-input-serialport").autocomplete( "destroy" );
