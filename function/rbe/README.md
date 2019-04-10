@@ -1,7 +1,7 @@
 node-red-node-rbe
 =================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node that provides
+A <a href="http://nodered.org" target="_new">Node-RED</a> node that 
 provides report-by-exception (RBE) and deadband capability.
 
 The node blocks unless the incoming value changes - RBE mode, or
