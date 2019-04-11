@@ -11,14 +11,19 @@ module.exports = function(RED) {
         this.device = n.device || null;
         var node = this;
         var running = false;
+        var reported = false;
 
         var startup = function() {
             node.board = new Board(node.device, function(e) {
                 if ((e !== undefined) && (e.toString().indexOf("cannot open") !== -1) ) {
-                    node.error(RED._("arduino.errors.portnotfound",{device:node.device}));
+                    if (!reported) {
+                        node.error(RED._("arduino.errors.portnotfound",{device:node.device}));
+                        reported = true;
+                    }
                 }
                 else if (e === undefined) {
                     running = true;
+                    reported = false;
                     node.board.once('ready', function() {
                         node.log(RED._("arduino.status.connected",{device:node.board.sp.path}));
                         if (RED.settings.verbose) {
