@@ -202,7 +202,6 @@ module.exports = function(RED) {
                 waitfor = waitfor.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
                 if (waitfor.substr(0,2) == "0x") { waitfor = parseInt(waitfor,16); }
                 if (waitfor.length === 1) { waitfor = waitfor.charCodeAt(0); }
-                console.log("WF2",waitfor);
                 var active = (waitfor === "") ? true : false;
                 var buf = new Buffer.alloc(bufSize);
 
@@ -215,8 +214,7 @@ module.exports = function(RED) {
                     splitc = new Buffer.from(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
                 }
                 if (addchar === true) { addchar = splitc; }
-                console.log("AC:",addchar,":");
-
+                
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
