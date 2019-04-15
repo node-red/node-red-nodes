@@ -68,10 +68,10 @@ module.exports = function(RED) {
         this.arduino = n.arduino;
         this.serverConfig = RED.nodes.getNode(this.arduino);
         this.running = false;
+        var node = this;
         if (typeof this.serverConfig === "object") {
             var startup = function() {
-                this.board = this.serverConfig.board;
-                var node = this;
+                node.board = node.serverConfig.board;
                 node.oldval = "";
                 node.status({fill:"grey",shape:"ring",text:"node-red:common.status.connecting"});
                 var doit = function() {
@@ -119,12 +119,12 @@ module.exports = function(RED) {
                 }
                 if (node.board.isReady) { doit(); }
                 else { node.board.once("ready", function() { doit(); }); }
-                setTimeout(function() { if (!node.running) { startup(); } }, 4500);
+                setTimeout(function() { if (node.running === false) { startup(); } }, 4500);
             }
             startup();
         }
         else {
-            this.warn(RED._("arduino.errors.portnotconf"));
+            node.warn(RED._("arduino.errors.portnotconf"));
         }
         node.on('close', function() {
             node.running = false;
