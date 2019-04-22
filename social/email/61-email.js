@@ -116,10 +116,10 @@ module.exports = function(RED) {
                     smtpTransport.sendMail(sendopts, function(error, info) {
                         if (error) {
                             node.error(error,msg);
-                            node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
+                            node.status({fill:"red",shape:"ring",text:"email.status.sendfail",response:error.response,msg:{to:msg.to,topic:msg.topic,id:msg._msgid}});
                         } else {
                             node.log(RED._("email.status.messagesent",{response:info.response}));
-                            node.status({});
+                            node.status({text:"",response:info.response,msg:{to:msg.to,topic:msg.topic,id:msg._msgid}});
                         }
                     });
                 }
@@ -357,7 +357,7 @@ module.exports = function(RED) {
                                 //console.log("> search - err=%j, results=%j", err, results);
                                 if (results.length === 0) {
                                     //console.log(" [X] - Nothing to fetch");
-                                    node.status({});
+                                    node.status({results:0});
                                     imap.end();
                                     s = false;
                                     setInputRepeatTimeout();
@@ -397,7 +397,7 @@ module.exports = function(RED) {
 
                                 // When we have fetched all the messages, we don't need the imap connection any more.
                                 fetch.on('end', function() {
-                                    node.status({});
+                                    node.status({results:results.length});
                                     var cleanup = function() {
                                         imap.end();
                                         s = false;
