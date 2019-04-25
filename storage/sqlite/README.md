@@ -10,6 +10,12 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
     npm i --unsafe-perm node-red-node-sqlite
 
+**Note**: the install process requires a compile of native code. This can take 15-20 minutes on
+devices like a Raspberry Pi - please be prepared to wait a long time. Also if node.js is upgraded at any point you will need to rebuild the native part manually, for example.
+
+    cd ~/.node-red
+    npm rebuild
+
 
 Usage
 -----
