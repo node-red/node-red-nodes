@@ -208,13 +208,13 @@ module.exports = function(RED) {
                 var splitc; // split character
                 // Parse the split character onto a 1-char buffer we can immediately compare against
                 if (newline.substr(0,2) == "0x") {
-                    splitc = new Buffer.alloc([parseInt(newline,16)]);
+                    splitc = new Buffer.from([newline]);
                 }
                 else {
                     splitc = new Buffer.from(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
                 }
                 if (addchar === true) { addchar = splitc; }
-                
+
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
@@ -299,7 +299,6 @@ module.exports = function(RED) {
                     //newline = newline.replace("\\n","\n").replace("\\r","\r");
                     var olderr = "";
                     var setupSerial = function() {
-
                         obj.serial = new serialp(port,{
                             baudRate: baud,
                             dataBits: databits,
