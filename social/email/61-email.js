@@ -87,6 +87,9 @@ module.exports = function(RED) {
                     if (node.name === "") {
                         sendopts.cc = msg.cc;
                         sendopts.bcc = msg.bcc;
+                        sendopts.inReplyTo = msg.inReplyTo;
+                        sendopts.replyTo = msg.replyTo;
+                        sendopts.references = msg.references;
                     }
                     sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
                     if (msg.hasOwnProperty("envelope")) { sendopts.envelope = msg.envelope; }
