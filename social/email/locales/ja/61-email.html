@@ -2,7 +2,7 @@
 
 <script type="text/x-red" data-help-name="e-mail">
     <p><code>msg.payload</code>をemailとして送信します。件名は<code>msg.topic</code>で指定します。</p>
-    <p>メッセージの受信者のデフォルトはノードに設定できます。空のままとした場合は、入力メッセージの<code>msg.to</code>を設定します。<code>msg.cc</code>や<code>msg.bcc</code>プロパティを設定することもできます。</p>
+    <p>メッセージの受信者のデフォルトはノードに設定できます。空のままとした場合は、入力メッセージの<code>msg.to</code>を設定します。<code>msg.cc</code>や<code>msg.bcc</code>や<code>msg.replyTo</code>や<code>msg.inReplyTo</code>や<code>msg.references</code>プロパティを設定することもできます。</p>
     <p><code>msg.from</code>を指定すると、<code>ユーザID</code>のデフォルト値を上書きできます。</p>
     <p>ペイロードはHTML形式とすることも可能です。</p>
     <p>ペイロードにバイナリバッファを指定すると、添付ファイルに変換します。ファイル名は<code>msg.filename</code>に指定、メッセージ本体は<code>msg.description</code>に指定することができます。</p>
