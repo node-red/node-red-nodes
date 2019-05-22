@@ -14,7 +14,7 @@ module.exports = function(RED) {
     var nodemailer = require("nodemailer");
     var Imap = require('imap');
     var POP3Client = require("poplib");
-    var MailParser = require("mailparser-mit").MailParser;
+    var MailParser = require("mailparser").MailParser;
     var util = require("util");
 
     if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
