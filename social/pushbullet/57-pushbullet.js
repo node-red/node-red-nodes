@@ -524,7 +524,7 @@ module.exports = function(RED) {
         for(var i=0;i<devices.length;i++){
             if(chans.devices[i].active){
                 activeDevices.push(devices[i]);
-            };
+            }
         }
         return activeDevices;
     }
