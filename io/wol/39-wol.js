@@ -13,10 +13,6 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             var mac = this.mac || msg.mac || null;
             var host = this.host || msg.host || '255.255.255.255';
-            var h = host.split('.');
-            h.pop();
-            h.push('255');
-            host = h.join('.');
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
