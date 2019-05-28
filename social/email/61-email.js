@@ -14,7 +14,7 @@ module.exports = function(RED) {
     var nodemailer = require("nodemailer");
     var Imap = require('imap');
     var POP3Client = require("poplib");
-    var MailParser = require("mailparser").MailParser;
+    var SimpleParser = require("mailparser").simpleParser;
     var util = require("util");
 
     if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
@@ -206,7 +206,9 @@ module.exports = function(RED) {
             msg.payload = mailMessage.text;
             msg.topic = mailMessage.subject;
             msg.date = mailMessage.date;
-            msg.header = mailMessage.headers;
+            msg.header = {};
+            mailMessage.headers.forEach((v, k) => {msg.header[k] = v;});
+
             if (mailMessage.html) { msg.html = mailMessage.html; }
             if (mailMessage.to && mailMessage.to.length > 0) { msg.to = mailMessage.to; }
             if (mailMessage.cc && mailMessage.cc.length > 0) { msg.cc = mailMessage.cc; }
@@ -285,13 +287,16 @@ module.exports = function(RED) {
 
                     // We have now received a new email message.  Create an instance of a mail parser
                     // and pass in the email message.  The parser will signal when it has parsed the message.
-                    var mailparser = new MailParser();
-                    mailparser.on("end", function(mailObject) {
-                        //node.log(util.format("mailparser: on(end): %j", mailObject));
-                        processNewMessage(msg, mailObject);
+                    SimpleParser(data, {}, function(err, parsed) {
+                        //node.log(util.format("SimpleParser: on(end): %j", mailObject));
+                        if (err){
+                            node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                            node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
+                        }
+                        else {
+                            processNewMessage(msg, parsed);
+                        }
                     });
-                    mailparser.write(data);
-                    mailparser.end();
                     pop3Client.dele(msgNumber);
                 }
                 else {
@@ -379,22 +384,18 @@ module.exports = function(RED) {
                                 // For each fetched message returned ...
                                 fetch.on('message', function(imapMessage, seqno) {
                                     //node.log(RED._("email.status.message",{number:seqno}));
-                                    var messageText = "";
                                     //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                                     imapMessage.on('body', function(stream, info) {
                                         //console.log("> message - body - stream=?, info=%j", info);
-                                        stream.on('data', function(chunk) {
-                                            //console.log("> stream - data - chunk=??");
-                                            messageText += chunk.toString('utf8');
+                                        SimpleParser(stream, {}, function(err, parsed) {
+                                            if (err){
+                                                node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                                                node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
+                                            }
+                                            else {
+                                                processNewMessage(msg, parsed);
+                                            }
                                         });
-                                        stream.once('end', function() {
-                                            var mailParser = new MailParser();
-                                            mailParser.on('end', function(mailMessage) {
-                                                processNewMessage(msg, mailMessage);
-                                            });
-                                            mailParser.write(messageText);
-                                            mailParser.end();
-                                        }); // End of msg->end
                                     }); // End of msg->body
                                 }); // End of fetch->message
 
