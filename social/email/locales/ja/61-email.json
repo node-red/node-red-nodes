@@ -15,7 +15,8 @@
             "disposition": "受信後の処理",
             "none": "なし",
             "read": "既読",
-            "delete": "削除"
+            "delete": "削除",
+            "criteriaFromMsg": "- msg.criteriaから使用 -"
         },
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
         "tip": {
