@@ -353,7 +353,7 @@ module.exports = function(RED) {
                     }
                     else {
                         var criteria = ((node.criteria === '_msg_')?
-                                        (msg.criteria || []):
+                                        (msg.criteria || ["UNSEEN"]):
                                         ([node.criteria]));
                         imap.search(criteria, function(err, results) {
                             if (err) {
