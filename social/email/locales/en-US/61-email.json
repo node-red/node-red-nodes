@@ -22,6 +22,7 @@
             "read": "Mark Read",
             "delete": "Delete",
             "criteria": "Criteria",
+            "criteriaFromMsg": "- set from msg.criteria -",
             "all": "All",
             "answered": "Answered",
             "flagged": "Flagged",
