@@ -46,7 +46,7 @@
         "ngeohash": "^0.6.3",
         "node-red": "~0.20.5",
         "node-red-node-test-helper": "~0.2.2",
-        "nodemailer": "^6.1.1",
+        "nodemailer": "^6.2.1",
         "poplib": "^0.1.7",
         "proxyquire": "^2.1.0",
         "pushbullet": "^2.4.0",
