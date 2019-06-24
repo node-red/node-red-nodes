@@ -1,42 +1,17 @@
 
 module.exports = function(RED) {
     "use strict";
+    var execSync = require('child_process').execSync;
     var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
+    var testCommand = __dirname+'/testgpio.py'
     var gpioCommand = __dirname+'/nrgpio';
     var allOK = true;
 
     try {
-        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
-        if (cpuinfo.indexOf(": BCM") === -1) {
-            allOK = false;
-            RED.log.warn("rpi-gpio : "+RED._("rpi-gpio.errors.ignorenode"));
-        }
-        try {
-            fs.statSync("/usr/share/doc/python-rpi.gpio"); // test on Raspbian
-            // /usr/lib/python2.7/dist-packages/RPi/GPIO
-        } catch(err) {
-            try {
-                fs.statSync("/usr/lib/python2.7/site-packages/RPi/GPIO"); // test on Arch
-            } catch(err) {
-                try {
-                    fs.statSync("/usr/lib/python2.7/dist-packages/RPi/GPIO"); // test on Hypriot
-                } catch(err) {
-                    try {
-                        fs.statSync("/usr/local/lib/python2.7/dist-packages/RPi/GPIO"); // installed with pip
-                    } catch(err) {
-                        RED.log.warn("rpi-gpio : "+RED._("rpi-gpio.errors.libnotfound"));
-                        allOK = false;
-                    }
-                }
-            }
-        }
-        if ( !(1 & parseInt((fs.statSync(gpioCommand).mode & parseInt("777", 8)).toString(8)[0]) )) {
-            RED.log.warn("rpi-gpio : "+RED._("rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
-            allOK = false;
-        }
+        execSync(testCommand);
     } catch(err) {
         allOK = false;
         RED.log.warn("rpi-gpio : "+RED._("rpi-gpio.errors.ignorenode"));
