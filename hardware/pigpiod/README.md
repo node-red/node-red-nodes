@@ -2,9 +2,11 @@ node-red-node-pi-gpiod
 ======================
 
 An alternative pair of <a href="http://nodered.org" target="_new">Node-RED</a> nodes to interact with Pi GPIO using
-the <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">PiGPIOd</a> daemon that is now part of Raspbian.
+the <a href="http://abyz.me.uk/rpi/pigpio/pigpiod.html" target="_new">PiGPIOd</a> daemon that is now part of Raspbian.
 
-The advantage is that it also talk to GPIO on a Pi that is remote as long as it is running the daemon, and also sharing pins works more cleanly as contention is handled by the multiple connections.
+The advantage is that it also talk to GPIO on a Pi that is remote as long as it is running the daemon, and also sharing pins works more cleanly as contention is handled by the multiple connections. This is also a
+good way to access GPIO when running Docker on a Pi as you can use the network connection to link out of
+the container to the PiGPIO daemon running on the host.
 
 The disadvantage is that you must setup and run the PiGPIO daemon first.
 
@@ -19,7 +21,7 @@ PiGPIOd must be running on the pi. The easiest way to ensure this is to add the 
     /usr/bin/pigpiod -l
     /usr/bin/pigpiod -n 192.168.1.10
 
-See the <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="new">instructions</a> for more details.
+See the <a href="http://abyz.me.uk/rpi/pigpio/pigpiod.html" target="new">instructions</a> for more details.
 
 ## Install
 

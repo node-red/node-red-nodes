@@ -7,7 +7,9 @@ It also include a simple node that detect mouse buttons and also keyboard clicks
 picks up mouse keys direct from the keyboard so should work even when the app does not have
 focus, but YMMV.
 
-If you need servo control then look at the node-red-node-pi-gpiod node as this is a lot more accurate timing wise, and more suitable for driving servos
+If you need servo control then look at the
+<a href="https://flows.nodered.org/node/node-red-node-pi-gpiod">node-red-node-pi-gpiod</a> node
+as this is a lot more accurate timing wise, and more suitable for driving servos
 
 ## Install
 
@@ -16,7 +18,7 @@ command in your Node-RED user directory - typically `~/.node-red`
 
         npm i node-red-node-pi-gpio
 
-The python library may also work with other distros on on Pi (like Ubuntu on Pi) - you will need to install the PIGPIO package and run the following commands in order to gain full access to the GPIO pins as this ability is not part of the default distro.
+The python library may also work with other distros running on a Pi (like Ubuntu or Debian) - you will need to install the PIGPIO package and run the following commands in order to gain full access to the GPIO pins as this ability is not part of the default distro. This is NOT necessary on Raspbian.
 
         sudo apt-get install python-pip python-dev
         sudo pip install RPi.GPIO  
