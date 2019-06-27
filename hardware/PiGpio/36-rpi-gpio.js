@@ -68,9 +68,9 @@ module.exports = function(RED) {
                     node.running = false;
                     node.child = null;
                     if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                    if (node.done) {
+                    if (node.finished) {
                         node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
-                        node.done();
+                        node.finished();
                     }
                     else { node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"}); }
                 });
@@ -103,7 +103,7 @@ module.exports = function(RED) {
             node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
             delete pinsInUse[node.pin];
             if (node.child != null) {
-                node.done = done;
+                node.finished = done;
                 node.child.stdin.write("close "+node.pin);
                 node.child.kill('SIGKILL');
             }
@@ -174,9 +174,9 @@ module.exports = function(RED) {
                     node.child = null;
                     node.running = false;
                     if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                    if (node.done) {
+                    if (node.finished) {
                         node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
-                        node.done();
+                        node.finished();
                     }
                     else { node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"}); }
                 });
@@ -203,7 +203,7 @@ module.exports = function(RED) {
             node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
             delete pinsInUse[node.pin];
             if (node.child != null) {
-                node.done = done;
+                node.finished = done;
                 node.child.stdin.write("close "+node.pin);
                 node.child.kill('SIGKILL');
             }
@@ -236,9 +236,9 @@ module.exports = function(RED) {
                 node.child = null;
                 node.running = false;
                 if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                if (node.done) {
+                if (node.finished) {
                     node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
-                    node.done();
+                    node.finished();
                 }
                 else { node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"}); }
             });
@@ -252,7 +252,7 @@ module.exports = function(RED) {
             node.on("close", function(done) {
                 node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
                 if (node.child != null) {
-                    node.done = done;
+                    node.finished = done;
                     node.child.kill('SIGINT');
                     node.child = null;
                 }
@@ -289,9 +289,9 @@ module.exports = function(RED) {
                 node.running = false;
                 node.child = null;
                 if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                if (node.done) {
+                if (node.finished) {
                     node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
-                    node.done();
+                    node.finished();
                 }
                 else { node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"}); }
             });
@@ -305,7 +305,7 @@ module.exports = function(RED) {
             node.on("close", function(done) {
             node.status({});
             if (node.child != null) {
-                node.done = done;
+                node.finished = done;
                 node.child.kill('SIGINT');
                 node.child = null;
             }

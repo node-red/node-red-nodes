@@ -44,7 +44,7 @@
         "msgpack-lite": "^0.1.26",
         "multilang-sentiment": "^1.2.0",
         "ngeohash": "^0.6.3",
-        "node-red": "~0.20.5",
+        "node-red": "~0.20.6",
         "node-red-node-test-helper": "~0.2.2",
         "nodemailer": "^6.2.1",
         "poplib": "^0.1.7",
