@@ -21,10 +21,14 @@ from opening the config dialog and selecting the node you want.
 
 The node accecpts the following inputs
 
- * Strings on/off
- * integers 1/0
- * boolean true/false
- * an Object like this (lights only & color control is still work in the progress) 
+ * A single value, such as
+     * Strings `on`/`off`
+     * integers `1`/`0`
+     * boolean `true`/`false`
+```
+on
+```
+ * A JSON Object like this (lights only & color control is still work in the progress) 
  ```
     {
       state: 1,
