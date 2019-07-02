@@ -21,12 +21,14 @@ from opening the config dialog and selecting the node you want.
 
 The node accecpts the following inputs
 
- * A single value, such as
-     * Strings `on`/`off`
-     * integers `1`/`0`
-     * boolean `true`/`false`
+ * A single value
+     * Accepted values:
+         * Strings `on`/`off`
+         * integers `1`/`0`
+         * boolean `true`/`false`
+     * Example:
 ```
-on
+off
 ```
  * A JSON Object like this (lights only & color control is still work in the progress) 
  ```
