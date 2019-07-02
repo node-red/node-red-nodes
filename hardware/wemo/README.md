@@ -19,7 +19,7 @@ The output node switches a socket, a light or group of lights on or off
 This should be backward compatible with the pervious version of this node but will benefit 
 from opening the config dialog and selecting the node you want.
 
-The node accecpts the following inputs
+The node accepts the following `msg.payload` inputs
 
  * A single value
      * Accepted values:
