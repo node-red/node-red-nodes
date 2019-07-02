@@ -24,8 +24,8 @@ The node accecpts the following inputs
  * A single value
      * Accepted values:
          * Strings `on`/`off`
-         * integers `1`/`0`
-         * boolean `true`/`false`
+         * Integers `1`/`0`
+         * Boolean `true`/`false`
      * Example:
 ```
 off
