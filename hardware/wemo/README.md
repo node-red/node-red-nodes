@@ -19,12 +19,18 @@ The output node switches a socket, a light or group of lights on or off
 This should be backward compatible with the pervious version of this node but will benefit 
 from opening the config dialog and selecting the node you want.
 
-The node accecpts the following inputs
+The node accepts the following `msg.payload` inputs
 
- * Strings on/off
- * integers 1/0
- * boolean true/false
- * an Object like this (lights only & color control is still work in the progress) 
+ * A single value
+     * Accepted values:
+         * Strings `on`/`off`
+         * Integers `1`/`0`
+         * Boolean `true`/`false`
+     * Example:
+```
+off
+```
+ * A JSON Object like this (lights only & color control is still work in the progress) 
  ```
     {
       state: 1,
