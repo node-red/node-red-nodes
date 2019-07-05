@@ -40,6 +40,7 @@
         "grunt-simple-mocha": "^0.4.1",
         "imap": "^0.8.19",
         "mailparser-mit": "^1.0.0",
+        "markdown-it": "^8.4.2",
         "mocha": "^6.1.4",
         "msgpack-lite": "^0.1.26",
         "multilang-sentiment": "^1.2.0",

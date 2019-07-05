@@ -8,8 +8,12 @@
 
 <script type="text/x-red" data-help-name="markdown">
     <p>A function that converts the <code>msg.payload</code> in markdown format to html.</p>
-    <p>If the input is a string it tries to convert it to html.</p>
+    <p>If the input is a string it converts it to html.</p>
     <p>All other message types are ignored.</p>
+    <p>Uses the markdown-it library - You can see a demo
+        <a href="https://markdown-it.github.io/">here</a>.</p>
+    <p>It is configured with html, linkify and typographer options turned on.</p>
+
 </script>
 
 <script type="text/javascript">
