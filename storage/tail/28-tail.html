@@ -25,8 +25,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="tail">
-    <p>Tails (watches for things to be added) to the configured file. (Linux/Mac ONLY)</p>
-    <p>This will not work on Windows filesystems, as it relies on the <b>tail -F</b> command.</p>
+    <p>Tails (watches for things to be added) to the configured file.</p>
+    <p>Note: On Windows you may need to close the file between writes for any updates to be registered.</p>
     <h3>Outputs</h3>
     <ul>
         <li>Text (UTF-8) files will be returned as strings.</li>
@@ -40,7 +40,7 @@
         defaults: {
             name: {value:""},
             filetype: {value:"text"},
-            split: {value:"[\r]{0,1}\n"},
+            split: {value:"[\\r]{0,1}\\n"},
             filename: {value:"",required:true}
         },
         color:"BurlyWood",

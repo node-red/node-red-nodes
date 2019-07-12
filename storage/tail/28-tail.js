@@ -9,7 +9,7 @@ module.exports = function(RED) {
 
         this.filename = n.filename;
         this.filetype = n.filetype || "text";
-        this.split = new RegExp(n.split || "[\r]{0,1}\n");
+        this.split = new RegExp(n.split.replace(/\\r/g,'\r').replace(/\\n/g,'\n').replace(/\\t/g,'\t') || "[\r]{0,1}\n");
         var node = this;
 
         var fileTail = function() {
@@ -42,7 +42,7 @@ module.exports = function(RED) {
             }
             else {
                 node.tout = setTimeout(function() { fileTail(); },10000);
-                node.warn(RED._("tail.errors.filenotfound") + node.filename);
+                node.warn(RED._("tail.errors.filenotfound") + ": "+node.filename);
             }
         }
 
