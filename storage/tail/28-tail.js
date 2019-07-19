@@ -7,7 +7,7 @@ module.exports = function(RED) {
     function TailNode(n) {
         RED.nodes.createNode(this,n);
 
-        this.filename = n.filename;
+        this.filename = n.filename || "";
         this.filetype = n.filetype || "text";
         this.split = new RegExp(n.split.replace(/\\r/g,'\r').replace(/\\n/g,'\n').replace(/\\t/g,'\t') || "[\r]{0,1}\n");
         var node = this;
@@ -37,6 +37,7 @@ module.exports = function(RED) {
                 });
 
                 node.tail.on("error", function(err) {
+                    node.status({ fill: "red",shape:"ring", text: "error" });
                     node.error(err.toString());
                 });
             }
@@ -46,7 +47,29 @@ module.exports = function(RED) {
             }
         }
 
-        fileTail();
+        if (node.filename !== "") {
+            node.status({});
+            fileTail();
+        } else {
+            node.status({ fill: "grey", text: "paused" });
+            node.on('input', function (msg) {
+                if (!msg.hasOwnProperty("filename")) {
+                    node.error("Missing filename on input");
+                }else if (msg.filename === node.filename) {
+                    node.warn("No change of filename input");
+                } else if (msg.filename === "") {
+                    node.filename = "";
+                    if (node.tail) { node.tail.unwatch(); }
+                    if (node.tout) { clearTimeout(node.tout); }
+                    node.status({ fill: "grey", text: "paused" });
+                } else {
+                    node.filename = msg.filename;
+                    if (node.tail) { node.tail.unwatch(); }
+                    if (!node.tout) { fileTail(); }
+                    node.status({ fill: "green", text: node.filename });
+                } 
+            });
+        }
 
         node.on("close", function() {
             /* istanbul ignore else */
