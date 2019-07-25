@@ -3,6 +3,7 @@
     <div class="form-row">
          <label for="node-input-filename"><i class="fa fa-file"></i> <span data-i18n="tail.label.filename"></span></label>
          <input id="node-input-filename" type="text">
+         <input type="hidden" id="node-input-inputs">
     </div>
     <div class="form-row">
         <label for="node-input-filetype"><i class="fa fa-file-text-o"></i> <span data-i18n="tail.label.type"></span></label>
@@ -47,7 +48,8 @@
             name: {value:""},
             filetype: {value:"text"},
             split: {value:"[\\r]{0,1}\\n"},
-            filename: {value:""}
+            filename: {value:""},
+            inputs:{value:1}
         },
         color:"BurlyWood",
         inputs:1,
@@ -64,6 +66,14 @@
                 if (this.value === "text") { $("#node-tail-split").show(); }
                 else { $("#node-tail-split").hide(); }
             });
-        }
+        },
+        
+        oneditsave: function() {
+            var that = this;
+            if($("#node-input-filename").val()===""){
+                that.inputs = 1;
+            } else {
+                that.inputs = 0;
+            }
     });
 </script>
