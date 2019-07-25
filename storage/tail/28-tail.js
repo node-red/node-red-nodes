@@ -37,7 +37,7 @@ module.exports = function(RED) {
                 });
 
                 node.tail.on("error", function(err) {
-                    node.status({ fill: "red",shape:"ring", text: "error" });
+                    node.status({ fill: "red",shape:"ring", text: "node-red:common.status.error" });
                     node.error(err.toString());
                 });
             }
@@ -51,17 +51,17 @@ module.exports = function(RED) {
             node.status({});
             fileTail();
         } else {
-            node.status({ fill: "grey", text: "paused" });
+            node.status({ fill: "grey", text: "tail.state.stopped" });
             node.on('input', function (msg) {
                 if (!msg.hasOwnProperty("filename")) {
-                    node.error("Missing filename on input");
+                    node.error(RED._("tail.state.nofilename"));
                 }else if (msg.filename === node.filename) {
-                    node.warn("No change of filename input");
+                    node.warn(RED._("tail.state.nofilechange"));
                 } else if (msg.filename === "") {
                     node.filename = "";
                     if (node.tail) { node.tail.unwatch(); }
                     if (node.tout) { clearTimeout(node.tout); }
-                    node.status({ fill: "grey", text: "paused" });
+                    node.status({ fill: "grey", text: "tail.state.stopped" });
                 } else {
                     node.filename = msg.filename;
                     if (node.tail) { node.tail.unwatch(); }
