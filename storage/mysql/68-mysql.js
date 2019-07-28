@@ -122,7 +122,22 @@ module.exports = function(RED) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        var bind = [];
+                        if(Array.isArray(msg.payload)){bind = msg.payload}
+                        else if(typeof msg.payload === 'object' && msg.payload !== null){
+                            bind=msg.payload;
+                            node.mydbConfig.connection.config.queryFormat = function (query, values) {
+                                if (!values) return query;
+                                return query.replace(/\:(\w+)/g, function (txt, key) {
+                                  if (values.hasOwnProperty(key)) {
+                                    return this.escape(values[key]);
+                                  }
+                                  return txt;
+                                }.bind(this));
+                              };          
+                            
+                        }
+
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 node.error(err,msg);
