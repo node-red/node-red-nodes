@@ -47,7 +47,8 @@
             name: {value:""},
             filetype: {value:"text"},
             split: {value:"[\\r]{0,1}\\n"},
-            filename: {value:""}
+            filename: {value:""},
+            inputs: {value:1}
         },
         color:"BurlyWood",
         inputs:1,
@@ -64,6 +65,14 @@
                 if (this.value === "text") { $("#node-tail-split").show(); }
                 else { $("#node-tail-split").hide(); }
             });
-        }
+        },
+        oneditsave: function() {
+            var that = this;
+            if($("#node-input-filename").val()===""){
+                that.inputs = 1;
+            } else {
+               that.inputs = 0;
+           }
+       }
     });
 </script>
