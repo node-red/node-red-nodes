@@ -117,19 +117,19 @@ module.exports = function(RED) {
                     if (RED.settings.verbose) { node.log("out: "+msg.payload); }
                     if (!inerror) {
                         if (node.out === "out") {
-                            PiGPIO.write(node.pin, msg.payload);
+                            PiGPIO.write(node.pin, out);
                         }
                         if (node.out === "pwm") {
-                            PiGPIO.set_PWM_dutycycle(node.pin, parseInt(msg.payload * 2.55));
+                            PiGPIO.set_PWM_dutycycle(node.pin, parseInt(out * 2.55));
                         }
                         if (node.out === "ser") {
                             var r = (node.sermax - node.sermin) * 100;
-                            PiGPIO.setServoPulsewidth(node.pin, parseInt(1500 - (r/2) + (msg.payload * r / 100)));
+                            PiGPIO.setServoPulsewidth(node.pin, parseInt(1500 - (r/2) + (out * r / 100)));
                         }
-                        node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
+                        node.status({fill:"green",shape:"dot",text:out.toString()});
                     }
                     else {
-                        node.status({fill:"grey",shape:"ring",text:"N/C: " + msg.payload.toString()});
+                        node.status({fill:"grey",shape:"ring",text:"N/C: " + out.toString()});
                     }
                 }
                 else { node.warn(RED._("pi-gpiod:errors.invalidinput")+": "+out); }
