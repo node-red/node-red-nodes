@@ -27,3 +27,23 @@ If nothing is found for the key then <i>null</i> is returned.
 
 The reconnect retry timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>mysqlReconnectTime: 30000,</pre></p>
+
+Preparing Queries
+-----
+```javascript
+msg.payload=[24, 'Helloworld'];
+msg.topic="INSERT INTO database (`id`, `field1`) VALUES (?, ?);"
+return msg;
+```
+
+with named parameters:
+
+```javascript
+msg.payload={}
+msg.payload.id=42;
+msg.payload.field1="Hello World";
+msg.topic="INSERT INTO database (`id`, `field1`) VALUES (:id, :field1) ON DUPLICATE KEY UPDATE `id`=:id,`field1`=:field1;"
+return msg;
+```
+
+
