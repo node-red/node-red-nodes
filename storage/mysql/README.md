@@ -28,6 +28,7 @@ If nothing is found for the key then <i>null</i> is returned.
 The reconnect retry timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
     <pre>mysqlReconnectTime: 30000,</pre></p>
 
+
 Preparing Queries
 -----
 ```javascript
@@ -45,5 +46,7 @@ msg.payload.field1="Hello World";
 msg.topic="INSERT INTO database (`id`, `field1`) VALUES (:id, :field1) ON DUPLICATE KEY UPDATE `id`=:id,`field1`=:field1;"
 return msg;
 ```
-
-
+Documentation
+-----
+    
+<a href="https://www.npmjs.com/package/mysql" target="_new">Documentation</a> of the used Node.js package    
