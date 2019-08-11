@@ -76,7 +76,7 @@ module.exports = function(RED) {
                     // Is it base64 encoded or binary?
                     var attachmentString = attachment.toString();
                     var attachmentBuffer = Buffer.from(attachmentString,'base64');
-                    if(attachmentString === attachmentBuffer.toString('base64')) {
+                    if (attachmentString === attachmentBuffer.toString('base64')) {
                         // If converts back to same, then it was base64 so set to binary
                         // https://stackoverflow.com/a/48770228
                         attachment = attachmentBuffer;

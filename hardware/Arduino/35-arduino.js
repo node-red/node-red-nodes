@@ -179,8 +179,8 @@ module.exports = function(RED) {
                                 node.board.sysexCommand(msg.payload);
                             }
                             if (node.state === "STRING") {
-                            node.board.sendString(msg.payload.toString());
-                        }
+                                node.board.sendString(msg.payload.toString());
+                            }
                         }
                     });
                     node.board.once('disconnect', function() {

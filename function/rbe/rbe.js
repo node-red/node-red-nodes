@@ -21,7 +21,7 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("reset")) {
                 if (msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
-                     delete node.previous[msg.topic];
+                    delete node.previous[msg.topic];
                 }
                 else { node.previous = {}; }
             }

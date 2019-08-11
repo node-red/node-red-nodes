@@ -92,7 +92,7 @@ module.exports = function(RED) {
                 var val;
                 if (node.intype == "up") { val = 1; }
                 if (node.intype == "down") { val = 0; }
-                setTimeout(function(){
+                setTimeout(function() {
                     node.send({ topic:"pi/"+node.pin, payload:val });
                     node.status({fill:"grey",shape:"dot",text:RED._("rpi-gpio.status.na",{value:val})});
                 },250);
@@ -194,7 +194,7 @@ module.exports = function(RED) {
         }
         else {
             node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
-            node.on("input", function(msg){
+            node.on("input", function(msg) {
                 node.status({fill:"grey",shape:"dot",text:RED._("rpi-gpio.status.na",{value:msg.payload.toString()})});
             });
         }
@@ -303,14 +303,14 @@ module.exports = function(RED) {
             });
 
             node.on("close", function(done) {
-            node.status({});
-            if (node.child != null) {
-                node.finished = done;
-                node.child.kill('SIGINT');
-                node.child = null;
-            }
-            else { done(); }
-        });
+                node.status({});
+                if (node.child != null) {
+                    node.finished = done;
+                    node.child.kill('SIGINT');
+                    node.child = null;
+                }
+                else { done(); }
+            });
         }
         else {
             node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});

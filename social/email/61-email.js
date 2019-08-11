@@ -55,7 +55,7 @@ module.exports = function(RED) {
         if (flag) {
             RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
-        if (n.tls === false){
+        if (n.tls === false) {
             this.tls = false;
         }
         var node = this;
@@ -289,7 +289,7 @@ module.exports = function(RED) {
                     // and pass in the email message.  The parser will signal when it has parsed the message.
                     SimpleParser(data, {}, function(err, parsed) {
                         //node.log(util.format("SimpleParser: on(end): %j", mailObject));
-                        if (err){
+                        if (err) {
                             node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
                             node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
                         }
@@ -391,7 +391,7 @@ module.exports = function(RED) {
                                     imapMessage.on('body', function(stream, info) {
                                         //console.log("> message - body - stream=?, info=%j", info);
                                         SimpleParser(stream, {}, function(err, parsed) {
-                                            if (err){
+                                            if (err) {
                                                 node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
                                                 node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
                                             }

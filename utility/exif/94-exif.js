@@ -75,7 +75,7 @@ module.exports = function(RED) {
                             else {
                                 if (exifData) {
                                     msg.exif = exifData;
-                                    if((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
+                                    if ((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
                                         addMsgLocationDataFromExifGPSData(msg);
                                     }
                                     //else { node.log("The incoming image did not contain Exif GPS data."); }

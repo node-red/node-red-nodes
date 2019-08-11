@@ -174,16 +174,16 @@ module.exports = function(RED) {
         return {
             get:function(serialConfig) {
                 // make local copy of configuration -- perhaps not needed?
-                var port      = serialConfig.serialport,
-                    baud      = serialConfig.serialbaud,
-                    databits  = serialConfig.databits,
-                    parity    = serialConfig.parity,
-                    stopbits  = serialConfig.stopbits,
-                    newline   = serialConfig.newline,
-                    spliton   = serialConfig.out,
-                    waitfor   = serialConfig.waitfor,
+                var port = serialConfig.serialport,
+                    baud = serialConfig.serialbaud,
+                    databits = serialConfig.databits,
+                    parity = serialConfig.parity,
+                    stopbits = serialConfig.stopbits,
+                    newline = serialConfig.newline,
+                    spliton = serialConfig.out,
+                    waitfor = serialConfig.waitfor,
                     binoutput = serialConfig.bin,
-                    addchar   = serialConfig.addchar,
+                    addchar = serialConfig.addchar,
                     responsetimeout = serialConfig.responsetimeout;
                 var id = port;
                 // just return the connection object if already have one
@@ -320,6 +320,7 @@ module.exports = function(RED) {
                         obj.serial.on('error', function(err) {
                             RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
                             obj._emitter.emit('closed');
+                            if (obj.tout) { clearTimeout(obj.tout); }
                             obj.tout = setTimeout(function() {
                                 setupSerial();
                             }, settings.serialReconnectTime);
@@ -328,6 +329,7 @@ module.exports = function(RED) {
                             if (!obj._closing) {
                                 RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
                                 obj._emitter.emit('closed');
+                                if (obj.tout) { clearTimeout(obj.tout); }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
                                 }, settings.serialReconnectTime);

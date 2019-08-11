@@ -10,7 +10,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.title = n.title;
         var node = this;
-        
+
         node.on("input",function(msg) {
             var title = node.title || msg.topic;
             if (typeof msg.payload === 'object') {
