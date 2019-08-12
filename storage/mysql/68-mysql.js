@@ -123,20 +123,20 @@ module.exports = function(RED) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
                         var bind = [];
-                        if(Array.isArray(msg.payload)){bind = msg.payload}
-                        else if(typeof msg.payload === 'object' && msg.payload !== null){
+                        if (Array.isArray(msg.payload)) { bind = msg.payload; }
+                        else if (typeof msg.payload === 'object' && msg.payload !== null) {
                             bind=msg.payload;
                             node.mydbConfig.connection.config.queryFormat = function (query, values) {
                                 if (!values){
                                     return query;
                                 }
                                 return query.replace(/\:(\w+)/g, function (txt, key) {
-                                  if (values.hasOwnProperty(key)) {
-                                    return this.escape(values[key]);
-                                  }
-                                  return txt;
+                                    if (values.hasOwnProperty(key)) {
+                                        return this.escape(values[key]);
+                                    }
+                                return txt;
                                 }.bind(this));
-                              };          
+                            };          
                             
                         }
 

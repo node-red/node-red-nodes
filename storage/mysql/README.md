@@ -32,8 +32,8 @@ The reconnect retry timeout in milliseconds can be changed by adding a line to <
 Preparing Queries
 -----
 ```javascript
-msg.payload=[24, 'Helloworld'];
-msg.topic="INSERT INTO database (`id`, `field1`) VALUES (?, ?);"
+msg.payload=[24, 'example-user'];
+msg.topic="INSERT INTO users (`userid`, `username`) VALUES (?, ?);"
 return msg;
 ```
 
@@ -41,9 +41,9 @@ with named parameters:
 
 ```javascript
 msg.payload={}
-msg.payload.id=42;
-msg.payload.field1="Hello World";
-msg.topic="INSERT INTO database (`id`, `field1`) VALUES (:id, :field1) ON DUPLICATE KEY UPDATE `id`=:id,`field1`=:field1;"
+msg.payload.userToChange=42;
+msg.payload.newUsername="example-user";
+msg.topic="INSERT INTO users (`userid`, `username`) VALUES (:userToChange, :newUsername) ON DUPLICATE KEY UPDATE `username`=:newUsername;"
 return msg;
 ```
 Documentation
