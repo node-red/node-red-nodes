@@ -58,12 +58,24 @@ module.exports = function(RED) {
         catch(err) {
             node.error("Error : Can't find SPI device - is SPI enabled in raspi-config ?");
         }
-
+        
         node.on("close", function(done) {
             if (mcp3xxx.length !== 0) {
                 var j=0;
-                for (var i=0; i<8; i++) {
-                    mcp3xxx[i].close(function() { j += 1; if (j === 8) {done()} });
+                for (var i=0; i<chans; i++) {
+                    try {
+                        mcp3xxx[i].close(function(err) {
+                            if (err) {
+                                node.error("Error: "+err);
+                            }
+                            j += 1;
+                            if (j === chans) {
+                                done();
+                            }
+                        });
+                    } catch (err) {
+                        node.error("Error: " + err.message);
+                    }
                 }
                 mcp3xxx = [];
             }
