@@ -62,8 +62,8 @@ module.exports = function(RED) {
         node.on("close", function(done) {
             if (mcp3xxx.length !== 0) {
                 var j=0;
-                for (var i=0; i<8; i++) {
-                    mcp3xxx[i].close(function() { j += 1; if (j === 8) {done()} });
+                for (var i=0; i<chans; i++) {
+                    mcp3xxx[i].close(function() { j += 1; if (j === chans) {done()} });
                 }
                 mcp3xxx = [];
             }
