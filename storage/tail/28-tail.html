@@ -27,6 +27,12 @@
 <script type="text/x-red" data-help-name="tail">
     <p>Tails (watches for things to be added) to the configured file.</p>
     <p>Note: On Windows you may need to close the file between writes for any updates to be registered.</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt class="optional">filename <span class="property-type">string</span></dt>
+        <dd>If not configured in the node, this optional property sets the name of the file to be tailed.
+        If an empty string <code>""</code> is received, the tailing will stop.</dd>
+    </dl>
     <h3>Outputs</h3>
     <ul>
         <li>Text (UTF-8) files will be returned as strings.</li>
@@ -41,10 +47,11 @@
             name: {value:""},
             filetype: {value:"text"},
             split: {value:"[\\r]{0,1}\\n"},
-            filename: {value:"",required:true}
+            filename: {value:""},
+            inputs: {value:1}
         },
         color:"BurlyWood",
-        inputs:0,
+        inputs:1,
         outputs:1,
         icon: "file.png",
         label: function() {
@@ -58,6 +65,14 @@
                 if (this.value === "text") { $("#node-tail-split").show(); }
                 else { $("#node-tail-split").hide(); }
             });
-        }
+        },
+        oneditsave: function() {
+            var that = this;
+            if($("#node-input-filename").val()===""){
+                that.inputs = 1;
+            } else {
+               that.inputs = 0;
+           }
+       }
     });
 </script>
