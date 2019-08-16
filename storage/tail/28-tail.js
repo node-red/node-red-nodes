@@ -30,7 +30,6 @@ module.exports = function(RED) {
                         }
                         else {
                             msg.payload = Buffer.from(data,"binary");
-                            //msg.payload = data;
                             node.send(msg);
                         }
                     }
@@ -55,8 +54,6 @@ module.exports = function(RED) {
             node.on('input', function (msg) {
                 if (!msg.hasOwnProperty("filename")) {
                     node.error(RED._("tail.state.nofilename"));
-                }else if (msg.filename === node.filename) {
-                    node.warn(RED._("tail.state.nofilechange"));
                 } else if (msg.filename === "") {
                     node.filename = "";
                     if (node.tail) { node.tail.unwatch(); }
@@ -67,7 +64,7 @@ module.exports = function(RED) {
                     if (node.tail) { node.tail.unwatch(); }
                     if (!node.tout) { fileTail(); }
                     node.status({ fill: "green", text: node.filename });
-                } 
+                }
             });
         }
 

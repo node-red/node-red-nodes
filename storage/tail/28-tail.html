@@ -48,10 +48,10 @@
             filetype: {value:"text"},
             split: {value:"[\\r]{0,1}\\n"},
             filename: {value:""},
-            inputs: {value:1}
+            inputs: {value:0}
         },
         color:"BurlyWood",
-        inputs:1,
+        inputs:0,
         outputs:1,
         icon: "file.png",
         label: function() {
@@ -68,11 +68,8 @@
         },
         oneditsave: function() {
             var that = this;
-            if($("#node-input-filename").val()===""){
-                that.inputs = 1;
-            } else {
-               that.inputs = 0;
-           }
+            if ($("#node-input-filename").val()==="") { that.inputs = 1; }
+            else { that.inputs = 0; }
        }
     });
 </script>
