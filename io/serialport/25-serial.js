@@ -233,9 +233,9 @@ module.exports = function(RED) {
                                 else {
                                     payload = payload.toString();
                                 }
-                                if ((spliton === "char") && (addchar !== "")) { payload += addchar; }
+                                if (addchar !== "") { payload += addchar; }
                             }
-                            else if ((spliton === "char") && (addchar !== "")) {
+                            else if (addchar !== "") {
                                 payload = Buffer.concat([payload,addchar]);
                             }
                             return payload;
