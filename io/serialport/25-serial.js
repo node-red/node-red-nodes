@@ -214,7 +214,8 @@ module.exports = function(RED) {
                     splitc = new Buffer.from(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
                 }
                 if (addchar === true) { addchar = splitc; }
-
+                addchar = addchar.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+                if (addchar.substr(0,2) == "0x") { addchar = new Buffer.from([addchar]); }
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
