@@ -9,6 +9,7 @@ module.exports = function(RED) {
         if (this.round == "true") { this.round = 0; }
         this.count = Number(n.count);
         this.mult = n.mult || "single";
+        this.reduce = n.reduce || false;
         this.property = n.property || "payload";
         var node = this;
         var v = {};
@@ -61,8 +62,10 @@ module.exports = function(RED) {
                     if (node.round !== false) {
                         value = Math.round(value * Math.pow(10, node.round)) / Math.pow(10, node.round);
                     }
-                    RED.util.setMessageProperty(msg,node.property,value);
-                    node.send(msg);
+                    if (node.reduce == false || v[top].a.length == v[top].count) {
+                        RED.util.setMessageProperty(msg,node.property,value);
+                        node.send(msg);
+                    }
                 }
                 else { node.log("Not a number: "+value); }
             } // ignore msg with no payload property.

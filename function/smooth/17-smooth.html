@@ -32,6 +32,10 @@
             <option value="multi">Different msg.topic as individual streams.</option>
         </select>
     </div>
+    <div class="form-row" id="row-input-reduce">
+        <label for="node-input-reduce"><i class="fa fa-trash"></i> Reduce</label>
+        <input type="checkbox" id="node-input-reduce" style="display:inline-block; width:20px; vertical-align:baseline;">
+    </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -47,6 +51,7 @@
     <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is
     similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the
     time is based on events arriving.</p>
+    <p>Enabling the Reduce option causes the node to only emit one message per previous value window size (available for the Max, Min and Mean functions). E.g. if set to Mean over 10 values, there will only be one outgoing message per ten incoming ones.</p>
     <p>If <code>msg.reset</code> is received (with any value), all the counters and intermediate values are reset to an initial state.</p>
     <p><b>Note:</b> This only operates on <b>numbers</b>. Anything else will try to be made into a number and rejected if that fails.</p>
 </script>
@@ -61,7 +66,8 @@
             action: {value:"mean"},
             count: {value:"10",required:true,validate:RED.validators.number()},
             round: {value:""},
-            mult: {value:"single"}
+            mult: {value:"single"},
+            reduce: {value:false}
         },
         inputs: 1,
         outputs: 1,
@@ -87,10 +93,12 @@
                 if ((a === "high") ||  ( a === "low" )) {
                     $("#node-over").html("with a smoothing factor of ");
                     $("#node-over2").html("");
+                    $("#row-input-reduce").hide();
                 }
                 else {
                     $("#node-over").html("over the most recent ");
                     $("#node-over2").html(" values");
+                    $("#row-input-reduce").show();
                 }
             });
             $("#node-input-action").change();
