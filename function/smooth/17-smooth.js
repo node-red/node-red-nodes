@@ -17,6 +17,7 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             var value = RED.util.getMessageProperty(msg,node.property);
             var top = msg.topic || "_my_default_topic";
+            var reduce = node.reduce;
             if (this.mult === "single") { top = "a"; }
 
             if ((v.hasOwnProperty(top) !== true) || msg.hasOwnProperty("reset")) {
@@ -36,6 +37,7 @@ module.exports = function(RED) {
                         v[top].old = v[top].old + (n - v[top].old) / v[top].count;
                         if (node.action === "low") { value = v[top].old; }
                         else { value = n - v[top].old; }
+                        reduce = false;
                     }
                     else {
                         v[top].a.push(n);
@@ -62,7 +64,7 @@ module.exports = function(RED) {
                     if (node.round !== false) {
                         value = Math.round(value * Math.pow(10, node.round)) / Math.pow(10, node.round);
                     }
-                    if (node.reduce == false || v[top].a.length == v[top].count) {
+                    if (reduce == false || v[top].a.length == v[top].count) {
                         RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
                     }
