@@ -28,10 +28,12 @@ module.exports = function(RED) {
                 v[top].pop = 0;
                 v[top].old = null;
                 v[top].count = this.count;
+                v[top].iter = 0;
             }
             if (value !== undefined) {
                 var n = Number(value);
                 if (!isNaN(n)) {
+                    v[top].iter++;
                     if ((node.action === "low") || (node.action === "high")) {
                         if (v[top].old == null) { v[top].old = n; }
                         v[top].old = v[top].old + (n - v[top].old) / v[top].count;
@@ -64,7 +66,8 @@ module.exports = function(RED) {
                     if (node.round !== false) {
                         value = Math.round(value * Math.pow(10, node.round)) / Math.pow(10, node.round);
                     }
-                    if (reduce == false || v[top].a.length == v[top].count) {
+                    if (reduce == false || v[top].iter == v[top].count) {
+                        v[top].iter = 0;
                         RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
                     }
