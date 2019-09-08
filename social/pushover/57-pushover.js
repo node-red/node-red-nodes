@@ -101,8 +101,13 @@ module.exports = function(RED) {
             pusher.send( pushmsg, function(err, response) {
                 if (err) { node.error(err); }
                 else {
-                    response = JSON.parse(response);
-                    if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                    try {
+                        response = JSON.parse(response);
+                        if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                    }
+                    catch(e) {
+                        node.error("[57-pushover.js] Error: "+response);
+                    }
                 }
             });
         }
