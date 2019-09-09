@@ -328,7 +328,10 @@ module.exports = function(RED) {
                         });
                         obj.serial.on('close', function() {
                             if (!obj._closing) {
-                                RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                if (olderr !== "unexpected") {
+                                    olderr = "unexpected";
+                                    RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                }
                                 obj._emitter.emit('closed');
                                 if (obj.tout) { clearTimeout(obj.tout); }
                                 obj.tout = setTimeout(function() {

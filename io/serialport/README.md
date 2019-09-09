@@ -6,7 +6,7 @@ hardware serial ports.
 
 ## Install
 
-To install the stable version use the `Menu - Manage palette` option and search for node-red-node-serialport, or run the following command in your Node-RED user directory, typically `~/.node-red`
+To install the stable version use the `Menu - Manage palette - Install` option and search for node-red-node-serialport, or run the following command in your Node-RED user directory, typically `~/.node-red`
 
         npm i node-red-node-serialport
 
