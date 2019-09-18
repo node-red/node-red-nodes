@@ -72,7 +72,7 @@ module.exports = function(RED) {
                         node.send(msg);
                     }
                 }
-                else { node.log("Not a number: "+value); }
+                else { node.log("Not a number: " + value); }
             } // ignore msg with no payload property.
         });
     }

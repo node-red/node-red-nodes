@@ -337,11 +337,11 @@ describe('smooth node', function() {
             n1.emit("input", {payload:6});
             n1.emit("input", {payload:7});
             n1.emit("input", {payload:8});
-            n1.emit("input", {payload:9});
-            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:9})
+;            n1.emit("input", {payload:0});
         });
     });
-    it("should reduce the number of messages by max value if asked", function(done) {
+    it("should reduce the number of messages by max value, if asked", function(done) {
         var flow = [{"id":"n1", "type":"smooth", action:"max", count:"5", reduce:"true", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -366,7 +366,7 @@ describe('smooth node', function() {
             n1.emit("input", {payload:0});
         });
     });
-    it("should reduce the number of messages by min value if asked", function(done) {
+    it("should reduce the number of messages by min value, if asked", function(done) {
         var flow = [{"id":"n1", "type":"smooth", action:"min", count:"5", reduce:"true", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
