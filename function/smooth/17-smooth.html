@@ -77,6 +77,7 @@
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
         },
+        outputLabels: function() { return this.reduce === true ? (this.action+" of "+this.count) : (this.action); },
         oneditprepare: function() {
             if (this.property === undefined) {
                 $("#node-input-property").val("payload");
