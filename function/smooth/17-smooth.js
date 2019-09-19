@@ -9,6 +9,7 @@ module.exports = function(RED) {
         if (this.round == "true") { this.round = 0; }
         this.count = Number(n.count);
         this.mult = n.mult || "single";
+        this.reduce = n.reduce || false;
         this.property = n.property || "payload";
         var node = this;
         var v = {};
@@ -16,6 +17,7 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             var value = RED.util.getMessageProperty(msg,node.property);
             var top = msg.topic || "_my_default_topic";
+            var reduce = node.reduce;
             if (this.mult === "single") { top = "a"; }
 
             if ((v.hasOwnProperty(top) !== true) || msg.hasOwnProperty("reset")) {
@@ -26,15 +28,18 @@ module.exports = function(RED) {
                 v[top].pop = 0;
                 v[top].old = null;
                 v[top].count = this.count;
+                v[top].iter = 0;
             }
             if (value !== undefined) {
                 var n = Number(value);
                 if (!isNaN(n)) {
+                    v[top].iter++;
                     if ((node.action === "low") || (node.action === "high")) {
                         if (v[top].old == null) { v[top].old = n; }
                         v[top].old = v[top].old + (n - v[top].old) / v[top].count;
                         if (node.action === "low") { value = v[top].old; }
                         else { value = n - v[top].old; }
+                        reduce = false;
                     }
                     else {
                         v[top].a.push(n);
@@ -61,10 +66,13 @@ module.exports = function(RED) {
                     if (node.round !== false) {
                         value = Math.round(value * Math.pow(10, node.round)) / Math.pow(10, node.round);
                     }
-                    RED.util.setMessageProperty(msg,node.property,value);
-                    node.send(msg);
+                    if (reduce == false || v[top].iter == v[top].count) {
+                        v[top].iter = 0;
+                        RED.util.setMessageProperty(msg,node.property,value);
+                        node.send(msg);
+                    }
                 }
-                else { node.log("Not a number: "+value); }
+                else { node.log("Not a number: " + value); }
             } // ignore msg with no payload property.
         });
     }
