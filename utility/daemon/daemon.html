@@ -61,7 +61,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('daemon',{
-        category: 'advanced-function',
+        category: 'function',
         color:"darksalmon",
         defaults: {
             name: {value:""},
@@ -75,9 +75,9 @@
         },
         inputs:1,
         outputs:3,
+        inputLabels: "stdin",
         outputLabels: ["stdout","stderr","exit code"],
         icon: "arrow-in.png",
-        align: "right",
         label: function() {
             return this.name||this.command||"daemon";
         },
