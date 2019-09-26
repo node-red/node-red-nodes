@@ -33,7 +33,7 @@
             "odd": "Odd",
             "space": "Space"
         },
-        "pinstates": {
+        "linestates": {
             "high": "High",
             "low": "Low"
         },
