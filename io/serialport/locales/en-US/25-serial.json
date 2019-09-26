@@ -33,6 +33,10 @@
             "odd": "Odd",
             "space": "Space"
         },
+        "pinstates": {
+            "high": "High",
+            "low": "Low"
+        },
         "split": {
             "character": "on the character",
             "timeout": "after a timeout of",
