@@ -68,7 +68,7 @@
             "commandnotfound": "nrgpio command not found",
             "commandnotexecutable": "nrgpio command not executable",
             "error": "error: __error__",
-            "pythoncommandnotfound": "nrpgio python command not running"
+            "pythoncommandnotfound": "nrgpio python command not running"
         }
     }
 }
