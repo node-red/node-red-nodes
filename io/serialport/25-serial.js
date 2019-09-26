@@ -18,6 +18,8 @@ module.exports = function(RED) {
         this.databits = parseInt(n.databits) || 8;
         this.parity = n.parity || "none";
         this.stopbits = parseInt(n.stopbits) || 1;
+        this.dtr = n.dtr || "none";
+        this.rts = n.rts || "none";
         this.bin = n.bin || "false";
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
@@ -179,6 +181,8 @@ module.exports = function(RED) {
                     databits = serialConfig.databits,
                     parity = serialConfig.parity,
                     stopbits = serialConfig.stopbits,
+                    dtr = serialConfig.dtr,
+                    rts = serialConfig.rts,
                     newline = serialConfig.newline,
                     spliton = serialConfig.out,
                     waitfor = serialConfig.waitfor,
@@ -342,6 +346,8 @@ module.exports = function(RED) {
                         obj.serial.on('open',function() {
                             olderr = "";
                             RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
+                            if (dtr != "none") obj.serial.set({ dtr: dtr!="low"?true:false });
+                            if (rts != "none") obj.serial.set({ rts: rts!="low"?true:false });
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
