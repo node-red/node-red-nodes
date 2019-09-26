@@ -77,7 +77,7 @@ module.exports = function(RED) {
 
         this.on("input", function(msg, send, done) {
             if (msg.hasOwnProperty("payload")) {
-                send = send || node.send;
+                send = send || function() { node.send.apply(node,arguments) };
                 if (smtpTransport) {
                     node.status({fill:"blue",shape:"dot",text:"email.status.sending"});
                     if (msg.to && node.name && (msg.to !== node.name)) {
