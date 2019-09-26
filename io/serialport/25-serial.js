@@ -346,8 +346,11 @@ module.exports = function(RED) {
                         obj.serial.on('open',function() {
                             olderr = "";
                             RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
-                            if (dtr != "none") obj.serial.set({ dtr: dtr!="low"?true:false });
-                            if (rts != "none") obj.serial.set({ rts: rts!="low"?true:false });
+                            // Set flow control pins if necessary. Must be set all in same command.
+                            var flags = {};
+                            if (dtr != "none") flags.dtr = (dtr!="low");
+                            if (rts != "none") flags.dtr = (dtr!="low");
+                            if (rts != "none" || rts != "none") obj.serial.set(flags);
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
