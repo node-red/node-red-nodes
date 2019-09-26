@@ -350,7 +350,7 @@ module.exports = function(RED) {
                             var flags = {};
                             if (dtr != "none") { flags.dtr = (dtr!="low"); }
                             if (rts != "none") { flags.dtr = (dtr!="low"); }
-                            if (rts != "none" || rts != "none") obj.serial.set(flags);
+                            if (rts != "none" || rts != "none") { obj.serial.set(flags); }
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
