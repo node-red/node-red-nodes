@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial in',{
-        category: 'input',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -38,7 +38,8 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        }
+        },
+        outputLabels: function() { return RED.nodes.node(this.serial).bin === "bin" ? "buffer" : "string"; }
     });
 </script>
 
@@ -62,7 +63,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial out',{
-        category: 'output',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -121,7 +122,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial request',{
-        category: 'function',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -137,7 +138,8 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        }
+        },
+        outputLabels: function() { return RED.nodes.node(this.serial).bin === "bin" ? "buffer" : "string"; }
     });
 </script>
 
