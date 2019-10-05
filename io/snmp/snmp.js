@@ -193,7 +193,8 @@ module.exports = function (RED) {
                         node.error(error.toString(), msg);
                     }
                     else {
-                        msg.payload = response;
+                        // Clone the array
+                        msg.payload = response.slice(0);
                         node.send(msg);
                         //Clears response
                         response.length = 0;
@@ -243,7 +244,8 @@ module.exports = function (RED) {
                         node.error(error.toString(), msg);
                     }
                     else {
-                        msg.payload = response;
+                        // Clone the array
+                        msg.payload = response.slice(0);
                         node.send(msg);
                         //Clears response
                         response.length = 0;
