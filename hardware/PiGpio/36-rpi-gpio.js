@@ -45,7 +45,7 @@ module.exports = function(RED) {
             if (node.pin !== undefined) {
                 node.child = spawn(gpioCommand, ["in",node.pin,node.intype,node.debounce]);
                 node.running = true;
-                node.status({fill:"yellow",shape:"dot",text:"common.status.ok"});
+                node.status({fill:"yellow",shape:"dot",text:"rpi-gpio.status.ok"});
 
                 node.child.stdout.on('data', function (data) {
                     var d = data.toString().trim().split("\n");
@@ -156,7 +156,7 @@ module.exports = function(RED) {
                     node.status({fill:"green",shape:"dot",text:node.level});
                 } else {
                     node.child = spawn(gpioCommand, [node.out,node.pin,node.freq]);
-                    node.status({fill:"yellow",shape:"dot",text:"common.status.ok"});
+                    node.status({fill:"yellow",shape:"dot",text:"rpi-gpio.status.ok"});
                 }
                 node.running = true;
 
@@ -220,7 +220,7 @@ module.exports = function(RED) {
 
         if (allOK === true) {
             node.child = spawn(gpioCommand+".py", ["mouse",node.butt]);
-            node.status({fill:"green",shape:"dot",text:"common.status.ok"});
+            node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {
                 data = Number(data);
@@ -271,7 +271,7 @@ module.exports = function(RED) {
 
         if (allOK === true) {
             node.child = spawn(gpioCommand+".py", ["kbd","0"]);
-            node.status({fill:"green",shape:"dot",text:"common.status.ok"});
+            node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {
                 var b = data.toString().trim().split(",");

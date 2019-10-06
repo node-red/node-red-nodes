@@ -52,7 +52,8 @@
         "closed": "절단",
         "not-running": "정지중",
         "not-available": "이용불가",
-        "na": "N/A : __value__"
+        "na": "N/A : __value__",
+        "ok": "OK"
     },
     "errors": {
         "ignorenode": "Raspberry Pi고유의 노드를 무시했습니다",

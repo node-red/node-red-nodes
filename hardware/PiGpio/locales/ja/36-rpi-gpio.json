@@ -52,7 +52,8 @@
         "closed": "切断",
         "not-running": "停止中",
         "not-available": "利用不可",
-        "na": "N/A : __value__"
+        "na": "N/A : __value__",
+        "ok": "OK"
     },
     "errors": {
         "ignorenode": "Raspberry Pi固有のノードを無視しました",

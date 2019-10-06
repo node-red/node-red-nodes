@@ -53,7 +53,8 @@
             "closed": "closed",
             "not-running": "not running",
             "not-available": "not available",
-            "na": "N/A : __value__"
+            "na": "N/A : __value__",
+            "ok": "OK"
         },
         "errors": {
             "ignorenode": "Raspberry Pi specific node set inactive",
