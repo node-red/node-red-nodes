@@ -9,7 +9,8 @@
     }
     .rpi-gpio-pinTable input[type="radio"] {
         width: auto;
-        margin: 2px 2px;
+        margin: 3px 2px;
+        vertical-align: top;
     }
     .rpi-gpio-pinTable label {
         width: auto;
@@ -24,23 +25,31 @@
     .rpi-gpio-pinTable .pinTableRow {
         width: 340px;
         display: table-row;
-        height: 14px;
+        height: 20px;
     }
     .rpi-gpio-pinTable .pinTableCellL {
         width: 170px;
+        height: 20px;
         display: table-cell;
         text-align: right;
         padding-right: 4px;
-        vertical-align: top;
+        vertical-align: middle;
         border: 1px solid #444;
+    }
+    .rpi-gpio-pinTable .pinTableCellL label {
+        width: 170px;
     }
     .rpi-gpio-pinTable .pinTableCellR {
         width: 170px;
+        height: 22px;
         display: table-cell;
         text-align: left;
         padding-left: 4px;
-        vertical-align: top;
+        vertical-align: middle;
         border: 1px solid #000;
+    }
+    .rpi-gpio-pinTable .pinTableCellR label {
+        width: 170px;
     }
     .rpi-gpio-pinTable .pinColorPower {
         background-color:#FECBCE;
