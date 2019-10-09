@@ -1,6 +1,5 @@
 const should = require("should");
 const helper = require("node-red-node-test-helper");
-
 const feedParserNode = require("../../../social/feedparser/32-feedparse");
 
 describe("FeedParseNode", () => {
