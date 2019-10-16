@@ -121,7 +121,6 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        //console.log("query:",msg.topic);
                         var bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
@@ -129,7 +128,10 @@ module.exports = function(RED) {
                                 status = {fill:"red",shape:"ring",text:"Error"};
                             }
                             else {
-                                msg.payload = rows;
+                                if (rows.constructor.name === "OkPacket") {
+                                    msg.payload = JSON.parse(JSON.stringify(rows));
+                                }
+                                else { msg.payload = rows; }
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
                             }
