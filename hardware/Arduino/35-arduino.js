@@ -76,9 +76,11 @@ module.exports = function(RED) {
                 node.status({fill:"grey",shape:"ring",text:"node-red:common.status.connecting"});
                 var doit = function() {
                     node.running = true;
+                    if (node.state === "ANALOG") { node.board.pinMode(node.pin, 0x02); }
+                    if (node.state === "INPUT") { node.board.pinMode(node.pin, 0x00); }
+                    if (node.state === "PULLUP") { node.board.pinMode(node.pin, 0x0B); }
                     node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                     if (node.state === "ANALOG") {
-                        node.board.pinMode(node.pin, 0x02);
                         node.board.analogRead(node.pin, function(v) {
                             if (v !== node.oldval) {
                                 node.oldval = v;
@@ -87,7 +89,6 @@ module.exports = function(RED) {
                         });
                     }
                     if (node.state === "INPUT") {
-                        node.board.pinMode(node.pin, 0x00);
                         node.board.digitalRead(node.pin, function(v) {
                             if (v !== node.oldval) {
                                 node.oldval = v;
@@ -96,7 +97,6 @@ module.exports = function(RED) {
                         });
                     }
                     if (node.state === "PULLUP") {
-                        node.board.pinMode(node.pin, 0x0B);
                         node.board.digitalRead(node.pin, function(v) {
                             if (v !== node.oldval) {
                                 node.oldval = v;
@@ -149,11 +149,13 @@ module.exports = function(RED) {
                 node.status({fill:"grey",shape:"ring",text:"node-red:common.status.connecting"});
                 var doit = function() {
                     node.running = true;
+                    if (node.state === "OUTPUT") { node.board.pinMode(node.pin, 0x01); }
+                    if (node.state === "PWM") { node.board.pinMode(node.pin, 0x03); }
+                    if (node.state === "SERVO") { node.board.pinMode(node.pin, 0x04); }
                     node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
                     node.on("input", function(msg) {
                         if (node.board.isReady) {
                             if (node.state === "OUTPUT") {
-                                node.board.pinMode(node.pin, 0x01);
                                 if ((msg.payload === true)||(msg.payload.toString() == "1")||(msg.payload.toString().toLowerCase() == "on")) {
                                     node.board.digitalWrite(node.pin, node.board.HIGH);
                                 }
@@ -161,15 +163,13 @@ module.exports = function(RED) {
                                     node.board.digitalWrite(node.pin, node.board.LOW);
                                 }
                             }
-                            if (node.state === "PWM") {
-                                node.board.pinMode(node.pin, 0x03);
+                            if (node.state === "PWM") {  
                                 msg.payload = parseInt((msg.payload * 1) + 0.5);
                                 if ((msg.payload >= 0) && (msg.payload <= 255)) {
                                     node.board.analogWrite(node.pin, msg.payload);
                                 }
                             }
                             if (node.state === "SERVO") {
-                                node.board.pinMode(node.pin, 0x04);
                                 msg.payload = parseInt((msg.payload * 1) + 0.5);
                                 if ((msg.payload >= 0) && (msg.payload <= 180)) {
                                     node.board.servoWrite(node.pin, msg.payload);
