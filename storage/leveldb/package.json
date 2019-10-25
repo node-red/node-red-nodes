@@ -3,7 +3,7 @@
     "version"       : "0.1.0",
     "description"   : "A Node-RED node to read and write to a LevelDB database",
     "dependencies"  : {
-        "level"   : "^4.0.0"
+        "level"   : "^6.0.0"
     },
     "repository" : {
         "type":"git",
