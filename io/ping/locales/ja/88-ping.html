@@ -1,0 +1,8 @@
+<script type="text/x-red" data-help-name="ping">
+    <p>pingを送信し、<code>msg.payload</code>にラウンドトリップタイムをミリ秒で返します。</p>
+    <p>5秒以内にホスト名が解決できなかったり、レスポンスが得られなければ、<b>false</b>を返します。</p>
+    <p>デフォルトでは20秒ごとにpingを送りますが、設定で変更できます。</p>
+    <p><code>msg.topic</code>には対象に設定したホスト名やIPアドレスが含まれます。</p>
+    <p>補足: Ubuntu Snap内で実行している場合は、手動でnetwork-observeを開始する必要があります。
+        `snap connect node-red:network-observe`</p>
+</script>
