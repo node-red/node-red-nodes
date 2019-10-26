@@ -7,7 +7,7 @@ remote server, for use as a keep-alive check.
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Editor - Menu - Manage Palette - Import option or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-ping
 
@@ -30,6 +30,7 @@ Usage
 Pings a machine and returns the trip time in mS as `msg.payload`.
 
 Returns boolean `false` if no response received, or if the host is unresolveable.
+
 `msg.error` will contain any error message if necessary.
 
 `msg.topic` contains the ip address of the target host.
