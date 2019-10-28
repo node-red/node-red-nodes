@@ -1,4 +1,3 @@
-
 <script type="text/x-red" data-template-name="tail">
     <div class="form-row">
          <label for="node-input-filename"><i class="fa fa-file"></i> <span data-i18n="tail.label.filename"></span></label>
@@ -22,22 +21,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="tail.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]tail.label.name">
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="tail">
-    <p>Tails (watches for things to be added) to the configured file.</p>
-    <p>Note: On Windows you may need to close the file between writes for any updates to be registered.</p>
-    <h3>Input</h3>
-    <dl class="message-properties">
-        <dt class="optional">filename <span class="property-type">string</span></dt>
-        <dd>If not configured in the node, this optional property sets the name of the file to be tailed.
-        If an empty string <code>""</code> is received, the tailing will stop.</dd>
-    </dl>
-    <h3>Outputs</h3>
-    <ul>
-        <li>Text (UTF-8) files will be returned as strings.</li>
-        <li>Binary files will be returned as Buffer objects.</li>
-    </ul>
 </script>
 
 <script type="text/javascript">
