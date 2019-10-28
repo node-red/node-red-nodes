@@ -5,7 +5,7 @@
       "action": "動作"
     },
     "convert": {
-      "buffer": "Buffer <-> Base64の変換",
+      "buffer": "バッファ <-> Base64の変換",
       "encode": "Base64へエンコード",
       "decode": "Base64から文字列へデコード"
     },
@@ -13,7 +13,7 @@
       "nonbase64encode": "Base64文字列ではありませんが、変換します。"
     },
     "warn": {
-      "cannothandle": "このノードは文字列かBufferしか変換できません。",
+      "cannothandle": "このノードは文字列かバッファしか変換できません。",
       "noproperty": "処理するためのプロパティが見つかりません。"
     },
     "error": {
