@@ -7,7 +7,7 @@
     "convert": {
       "buffer": "バッファ <-> Base64の変換",
       "encode": "Base64へエンコード",
-      "decode": "Base64から文字列へデコード"
+      "decode": "Base64から文字列へ変換"
     },
     "log": {
       "nonbase64encode": "Base64文字列ではありませんが、変換します。"
