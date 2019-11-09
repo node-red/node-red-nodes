@@ -40,7 +40,7 @@
         "grunt-lint-inline": "^1.0.0",
         "grunt-simple-mocha": "^0.4.1",
         "imap": "^0.8.19",
-        "mailparser": "^2.7.3",
+        "mailparser": "^2.7.6",
         "markdown-it": "^10.0.0",
         "mocha": "~6.2.2",
         "msgpack-lite": "^0.1.26",
