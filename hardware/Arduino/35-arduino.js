@@ -204,8 +204,14 @@ module.exports = function(RED) {
     RED.nodes.registerType("arduino out",DuinoNodeOut);
 
     RED.httpAdmin.get("/arduinoports", RED.auth.needsPermission("arduino.read"), function(req,res) {
-        SP.list(function(error, ports) {
-            res.json(ports);
-        });
+        SP.list().then(
+            ports => {
+                const a = ports.map(p => p.comName);
+                res.json(a);
+            },
+            err => {
+                this.log('Error listing serial ports', err)
+            }
+        )
     });
 }
