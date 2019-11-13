@@ -147,7 +147,7 @@
     <div class="form-row">
         <label for="node-config-input-serialport"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-config-input-serialport" style="width:66%;" data-i18n="[placeholder]serial.placeholder.serialport">
-        <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+        <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
     </div>
     <div class="form-row">
         <table width="100%"><tr>
@@ -354,10 +354,7 @@
                 $("#node-config-lookup-serial").addClass('disabled');
                 $.getJSON('serialports',function(data) {
                     $("#node-config-lookup-serial").removeClass('disabled');
-                    var ports = [];
-                    $.each(data, function(i, port) {
-                        ports.push(port.comName);
-                    });
+                    var ports = data || [];
                     $("#node-config-input-serialport").autocomplete({
                         source:ports,
                         minLength:0,

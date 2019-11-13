@@ -444,8 +444,14 @@ module.exports = function(RED) {
     }());
 
     RED.httpAdmin.get("/serialports", RED.auth.needsPermission('serial.read'), function(req,res) {
-        serialp.list(function (err, ports) {
-            res.json(ports);
-        });
+        serialp.list().then(
+            ports => {
+                const a = ports.map(p => p.path);
+                res.json(a);
+            },
+            err => {
+                node.log('Error listing serial ports', err)
+            }
+        )
     });
 }
