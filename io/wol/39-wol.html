@@ -9,6 +9,10 @@
         <input type="text" id="node-input-host" placeholder="e.g. 192.168.1.255 or 10.255.255.255">
     </div>
     <div class="form-row">
+        <label for="node-input-udpport"><i class="fa fa-globe"></i> Target UDP Port</label>
+        <input type="number" id="node-input-udpport" placeholder="9">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -21,6 +25,7 @@
     <p>The address of the target machine can optionally be set using <code>msg.host</code></p>
     <p>Setting the target address to the broadcast address of the subnet that the target machine is attached to works best.
     For a class C address this is usually just the first three parts of the ip address followed by 255. eg 192.168.1.255.</p>
+    <p>You can specify the target UDP port, default is 9.</p>
 </script>
 
 <script type="text/javascript">
@@ -30,6 +35,7 @@
         defaults: {
             mac: {value:""},
             host: {value:""},
+            udpport: {value:9},
             name: {value:""}
         },
         inputs:1,

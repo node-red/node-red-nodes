@@ -8,15 +8,18 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mac = n.mac.trim();
         this.host = n.host;
+        this.udpport = n.udpport;
         var node = this;
 
         this.on("input", function(msg) {
             var mac = this.mac || msg.mac || null;
             var host = this.host || msg.host || '255.255.255.255';
+            var udpport = this.udpport;
+            if (udpport < 0 || udpport > 65535) { udpport = 9; }
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
-                        wol.wake(mac, {address: host}, function(error) {
+                        wol.wake(mac, {address: host, port: udpport}, function(error) {
                             if (error) {
                                 node.warn(error);
                                 node.status({fill:"red",shape:"ring",text:" "});
