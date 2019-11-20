@@ -14,8 +14,11 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
             var mac = this.mac || msg.mac || null;
             var host = this.host || msg.host || '255.255.255.255';
-            var udpport = this.udpport;
-            if (udpport < 0 || udpport > 65535) { udpport = 9; }
+            var udpport = Number(msg.udpport || this.udpport || '9');
+            if (udpport < 1 || udpport > 65535) {
+                node.warn("WOL: UDP port must be within 1 and 65535; it has been reset to 9.");
+                udpport = 9;
+            }            
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {

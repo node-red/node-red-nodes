@@ -16,13 +16,14 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">Tip: leave blank if you want to use <code>msg.mac</code> or <code>msg.host</code> to dynamically set target mac address.</div>
+    <div class="form-tips">Tip: leave blank if you want to use <code>msg.mac</code>, <code>msg.host</code> or <code>msg.udpport</code> to dynamically set target information.</div>
 </script>
 
 <script type="text/x-red" data-help-name="wake on lan">
     <p>Sends a Wake-On-LAN magic packet to the mac address specified.</p>
     <p>You may instead set <code>msg.mac</code> to dynamically set the target device mac to wake up.</p>
     <p>The address of the target machine can optionally be set using <code>msg.host</code></p>
+    <p>You can likewise set the destination UDP port using <code>msg.udpport</code></p>
     <p>Setting the target address to the broadcast address of the subnet that the target machine is attached to works best.
     For a class C address this is usually just the first three parts of the ip address followed by 255. eg 192.168.1.255.</p>
     <p>You can specify the target UDP port, default is 9.</p>
@@ -35,7 +36,7 @@
         defaults: {
             mac: {value:""},
             host: {value:""},
-            udpport: {value:9},
+            udpport: {value:9, validate:RED.validators.number()},
             name: {value:""}
         },
         inputs:1,
