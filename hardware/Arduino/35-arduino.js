@@ -72,6 +72,7 @@ module.exports = function(RED) {
         if (typeof this.serverConfig === "object") {
             var startup = function() {
                 node.board = node.serverConfig.board;
+                node.board.setMaxListeners(0);
                 node.oldval = "";
                 node.status({fill:"grey",shape:"ring",text:"node-red:common.status.connecting"});
                 var doit = function() {
@@ -146,6 +147,7 @@ module.exports = function(RED) {
         if (typeof node.serverConfig === "object") {
             var startup = function() {
                 node.board = node.serverConfig.board;
+                node.board.setMaxListeners(0);
                 node.status({fill:"grey",shape:"ring",text:"node-red:common.status.connecting"});
                 var doit = function() {
                     node.running = true;
