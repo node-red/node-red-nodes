@@ -33,6 +33,11 @@
             "odd": "Odd",
             "space": "Space"
         },
+        "linestates": {
+            "none": "",
+            "high": "High",
+            "low": "Low"
+        },
         "split": {
             "character": "on the character",
             "timeout": "after a timeout of",
