@@ -34,7 +34,7 @@
             "space": "Space"
         },
         "linestates": {
-            "none": "",
+            "none": "auto",
             "high": "High",
             "low": "Low"
         },

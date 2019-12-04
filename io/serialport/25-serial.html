@@ -149,65 +149,66 @@
         <input type="text" id="node-config-input-serialport" style="width:66%;" data-i18n="[placeholder]serial.placeholder.serialport">
         <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
     </div>
-    <div class="form-row">
-        <table width="100%"><tr>
-            <td width="100px"><i class="fa fa-wrench"></i> <span data-i18n="serial.label.settings"></span></td>
+    <div class="form-row" style="margin-bottom:8px;">
+        <table width="100%">
+        <tr style="line-height:10px;">
+            <td width="90px" style="font-size:14px;"><i class="fa fa-wrench"></i> <span data-i18n="serial.label.settings"></span></td>
             <td width="110px" data-i18n="serial.label.baudrate"></td>
             <td width="70px" data-i18n="serial.label.databits"></td>
             <td width="80px" data-i18n="serial.label.parity"></td>
-            <td data-i18n="serial.label.stopbits"></td>
-        </tr><tr><td>&nbsp;</td>
+            <td width="70px" data-i18n="serial.label.stopbits"></td>
+        </tr>
+        <tr>
+        <td>&nbsp;</td>
         <td>
             <input type="text" id="node-config-input-serialbaud" style="width:92%">
-        </td><td>
-        <select type="text" id="node-config-input-databits" style="width:90%;">
+        </td>
+        <td><select type="text" id="node-config-input-databits" style="width:90%;">
             <option value="8">8</option>
             <option value="7">7</option>
             <option value="6">6</option>
             <option value="5">5</option>
-        </select>
-        </td><td>
-        <select type="text" id="node-config-input-parity" style="width:90%;">
+        </select></td>
+        <td><select type="text" id="node-config-input-parity" style="width:90%;">
             <option value="none" data-i18n="serial.parity.none"></option>
             <option value="even" data-i18n="serial.parity.even"></option>
             <option value="mark" data-i18n="serial.parity.mark"></option>
             <option value="odd" data-i18n="serial.parity.odd"></option>
             <option value="space" data-i18n="serial.parity.space"></option>
-        </select>
-        </td><td>
-        <select type="text" id="node-config-input-stopbits" style="width:60px;">
+        </select></td>
+        <td><select type="text" id="node-config-input-stopbits" style="width:60px;">
             <option value="2">2</option>
             <option value="1">1</option>
-        </select>
-        </td></tr></table>
+        </select></td>
+        </tr></table>
     </div>
-    <div class="form-row">
+    <div class="form-row" style="margin-bottom:0px;">
         <table width="100%">
-            <tr>
-                <td width="100px"></td>
-                <td width="90px">DTR</td>
-                <td width="90px">RTS</td>
-                <td width="90px">CTS</td>
+            <tr style="line-height:4px;">
+                <td style="width:90px;">&nbsp;</td>
+                <td>DTR</td>
+                <td>RTS</td>
+                <td>CTS</td>
                 <td>DSR</td>
             </tr>
             <tr>
-                <td></td>
-                <td><select type="text" id="node-config-input-dtr" style="width:80px;">
+                <td>&nbsp;</td>
+                <td><select type="text" id="node-config-input-dtr" style="width:72px; height:28px;">
                     <option value="none" data-i18n="serial.linestates.none"></option>
                     <option value="high" data-i18n="serial.linestates.high"></option>
                     <option value="low" data-i18n="serial.linestates.low"></option>
                 </select></td>
-                <td><select type="text" id="node-config-input-rts" style="width:80px;">
+                <td><select type="text" id="node-config-input-rts" style="width:72px; height:28px;">
                     <option value="none" data-i18n="serial.linestates.none"></option>
                     <option value="high" data-i18n="serial.linestates.high"></option>
                     <option value="low" data-i18n="serial.linestates.low"></option>
                 </select></td>
-                <td><select type="text" id="node-config-input-cts" style="width:80px;">
+                <td><select type="text" id="node-config-input-cts" style="width:72px; height:28px;">
                     <option value="none" data-i18n="serial.linestates.none"></option>
                     <option value="high" data-i18n="serial.linestates.high"></option>
                     <option value="low" data-i18n="serial.linestates.low"></option>
                 </select></td>
-                <td><select type="text" id="node-config-input-dsr" style="width:80px;">
+                <td><select type="text" id="node-config-input-dsr" style="width:72px; height:28px;">
                     <option value="none" data-i18n="serial.linestates.none"></option>
                     <option value="high" data-i18n="serial.linestates.high"></option>
                     <option value="low" data-i18n="serial.linestates.low"></option>
@@ -215,7 +216,7 @@
             </tr>
         </table>
     </div>
-    <div class="form-row" style="margin-top:16px; margin-bottom:0;">
+    <div class="form-row" style="margin-top:12px; margin-bottom:0;">
         <label><i class="fa fa-sign-in"></i> <span data-i18n="serial.label.input"></span></label>
     </div>
     <div class="form-row" style="padding-left:18px; margin-bottom:4px;">

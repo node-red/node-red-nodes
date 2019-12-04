@@ -24,6 +24,11 @@
             "odd": "奇数",
             "space": "スペース"
         },
+        "linestates": {
+            "none": "auto",
+            "high": "High",
+            "low": "Low"
+        },
         "split": {
             "character": "文字列で区切る",
             "timeout": "タイムアウト後で区切る",
