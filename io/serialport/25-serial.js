@@ -20,6 +20,8 @@ module.exports = function(RED) {
         this.stopbits = parseInt(n.stopbits) || 1;
         this.dtr = n.dtr || "none";
         this.rts = n.rts || "none";
+        this.cts = n.cts || "none";
+        this.dsr = n.dsr || "none";
         this.bin = n.bin || "false";
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
@@ -183,6 +185,8 @@ module.exports = function(RED) {
                     stopbits = serialConfig.stopbits,
                     dtr = serialConfig.dtr,
                     rts = serialConfig.rts,
+                    cts = serialConfig.cts,
+                    dsr = serialConfig.dsr,
                     newline = serialConfig.newline,
                     spliton = serialConfig.out,
                     waitfor = serialConfig.waitfor,
@@ -349,8 +353,10 @@ module.exports = function(RED) {
                             // Set flow control pins if necessary. Must be set all in same command.
                             var flags = {};
                             if (dtr != "none") { flags.dtr = (dtr!="low"); }
-                            if (rts != "none") { flags.dtr = (dtr!="low"); }
-                            if (rts != "none" || rts != "none") { obj.serial.set(flags); }
+                            if (rts != "none") { flags.rts = (rts!="low"); }
+                            if (cts != "none") { flags.cts = (cts!="low"); }
+                            if (dsr != "none") { flags.dsr = (dsr!="low"); }
+                            if (dtr != "none" || rts != "none" || cts != "none" || dsr != "none") { obj.serial.set(flags); }
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
