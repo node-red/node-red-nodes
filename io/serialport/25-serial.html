@@ -155,7 +155,7 @@
             <td width="110px" data-i18n="serial.label.baudrate"></td>
             <td width="70px" data-i18n="serial.label.databits"></td>
             <td width="80px" data-i18n="serial.label.parity"></td>
-            <td width="70px" data-i18n="serial.label.stopbits"></td>
+            <td data-i18n="serial.label.stopbits"></td>
         </tr><tr><td>&nbsp;</td>
         <td>
             <input type="text" id="node-config-input-serialbaud" style="width:92%">
@@ -175,11 +175,45 @@
             <option value="space" data-i18n="serial.parity.space"></option>
         </select>
         </td><td>
-        <select type="text" id="node-config-input-stopbits" style="width:90%;">
+        <select type="text" id="node-config-input-stopbits" style="width:60px;">
             <option value="2">2</option>
             <option value="1">1</option>
         </select>
         </td></tr></table>
+    </div>
+    <div class="form-row">
+        <table width="100%">
+            <tr>
+                <td width="100px"></td>
+                <td width="90px">DTR</td>
+                <td width="90px">RTS</td>
+                <td width="90px">CTS</td>
+                <td>DSR</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><select type="text" id="node-config-input-dtr" style="width:80px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-rts" style="width:80px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-cts" style="width:80px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-dsr" style="width:80px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+            </tr>
+        </table>
     </div>
     <div class="form-row" style="margin-top:16px; margin-bottom:0;">
         <label><i class="fa fa-sign-in"></i> <span data-i18n="serial.label.input"></span></label>
@@ -239,6 +273,7 @@
     <p>Provides configuration options for a serial port.</p>
     <p>The search button should return a list of available serial ports to choose from, or you
     can type in the location if known.</p>
+    <p>The DTR, RTS, CTS and DSR switches can be used to permanently pull the corresponding flow control pin high or low, e.g. in order to power devices via those pins.</p>
     <p>The node can optionally wait until it matches a pre-defined character.
         The data can then be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
     <p>If using a character, it can be specified as either the character, the escaped shortcut (e.g. \n), or the hex code (e.g. 0x0d).</p>
@@ -255,6 +290,10 @@
             parity: {value:"none",required:true},
             stopbits: {value:1,required:true},
             waitfor: {value:""},
+            dtr: {value:"none"},
+            rts: {value:"none"},
+            cts: {value:"none"},
+            dsr: {value:"none"},
             newline: {value:"\\n"},
             bin: {value:"false"},
             out: {value:"char"},
