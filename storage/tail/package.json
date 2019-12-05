@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "A node to tail files for Node-RED",
     "dependencies": {
-        "tail": "^2.0.2"
+        "tail": "^2.0.3"
     },
     "repository": {
         "type": "git",

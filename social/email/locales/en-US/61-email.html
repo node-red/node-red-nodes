@@ -1,4 +1,4 @@
-<script type="text/x-red" data-help-name="e-mail">
+<script type="text/html" data-help-name="e-mail">
     <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
     <p>The default message recipient can be configured in the node, if it is left
     blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
@@ -19,7 +19,7 @@
     <p>Note: uses SMTP with SSL to port 465.</p>
 </script>
 
-<script type="text/x-red" data-help-name="e-mail in">
+<script type="text/html" data-help-name="e-mail in">
     <p>Repeatedly gets emails from an IMAP server and forwards on as a msg if not already seen.</p>
     <p>The subject is loaded into <code>msg.topic</code> and <code>msg.payload</code> is the plain text body.
        If there is text/html then that is returned in <code>msg.html</code>. <code>msg.from</code> and <code>msg.date</code> are also set if you need them.</p>
