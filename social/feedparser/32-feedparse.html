@@ -1,4 +1,3 @@
-
 <script type="text/x-red" data-template-name="feedparse">
     <div class="form-row">
         <label for="node-input-url"><i class="fa fa-globe"></i> <span data-i18n="feedparse.label.feedurl"></span></label>
@@ -12,14 +11,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="feedparse">
-    <p>Monitors an RSS/atom feed for new entries.</p>
-    <p>The <code>msg.topic</code> contains the original article link. The <code>msg.payload</code>
-    contains the description, and <code>msg.article</code> contains the complete article object,
-    which has properties such as <code>.title</code>, <code>.summary</code>, <code>.date</code> and so on.</p>
-    <p>The Refresh interval cannot be greater than 35790 minutes (approx 24.8 days).
 </script>
 
 <script type="text/javascript">
