@@ -7,7 +7,7 @@
         "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensehatsim"
     },
     "dependencies": {
-        "ws": "0.8.1"
+        "ws": "7.2.0"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "sensehat", "astropi" ],
