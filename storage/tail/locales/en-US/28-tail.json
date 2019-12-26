@@ -18,8 +18,7 @@
         },
         "state":{
             "stopped": "stopped",
-            "nofilename":"Missing filename on input",
-            "nofilechange":"No change of filename input"
+            "nofilename":"Missing filename on input"
         }
     }
 }
