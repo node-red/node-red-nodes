@@ -6,8 +6,8 @@ module.exports = function(RED) {
 
     function XMPPServerNode(n) {
         RED.nodes.createNode(this,n);
-        // this.server = n.server;
-        // this.port = n.port;
+        this.server = n.server;
+        this.port = n.port;
         this.nickname = n.nickname;
         this.username = n.user;
         var credentials = this.credentials;
@@ -24,8 +24,8 @@ module.exports = function(RED) {
                 that.client.connect({
                     jid : that.username,
                     password : that.password,
-                    // host : node.host,
-                    //port : node.port,
+                    host : that.server,
+                    port : that.port,
                     //skipPresence : true,
                     reconnect : true,
                     preferred : "PLAIN"
