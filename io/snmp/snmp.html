@@ -1,7 +1,7 @@
-<script type="text/x-red" data-template-name="snmp">
+<script type="text/html" data-template-name="snmp">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -9,10 +9,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OIDs</label>
@@ -25,11 +27,12 @@
     <div class="form-tips">Tip: Multiple OIDs can be separated by commas.</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp">
+<script type="text/html" data-help-name="snmp">
     <p>Simple SNMP oid or oid list fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain a comma separated list of oids to request. (no spaces)</p>
+    <p>OIDs must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -42,6 +45,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -54,13 +58,12 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
-<script type="text/x-red" data-template-name="snmp set">
+<script type="text/html" data-template-name="snmp set">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -68,10 +71,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-varbinds"><i class="fa fa-tags"></i> Varbinds</label>
@@ -82,9 +87,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips">Tip: Numeric inputs must be numbers not strings, e.g. 1 not "1".</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp set">
+<script type="text/html" data-help-name="snmp set">
     <p>Simple snmp Set node. Trigger by any input</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
@@ -97,8 +103,9 @@
     },
     {   "oid":   ... }
 ]</pre>
+    <p>Any numeric inputs must be numbers, not strings, e.g. 1  not "1".</p>
+    <p>OIDs must be numeric. iso. is the same a 1.</p>
     </p>
-
 </script>
 
 <script type="text/javascript">
@@ -110,6 +117,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             varbinds: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -122,13 +130,12 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
-<script type="text/x-red" data-template-name="snmp table">
+<script type="text/html" data-template-name="snmp table">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -136,10 +143,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -152,11 +161,12 @@
     <div class="form-tips">Tip: ONLY accepts a single OID.</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp table">
+<script type="text/html" data-help-name="snmp table">
     <p>Simple SNMP oid table fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -169,6 +179,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -181,13 +192,12 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
-<script type="text/x-red" data-template-name="snmp subtree">
+<script type="text/html" data-template-name="snmp subtree">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -195,10 +205,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -211,11 +223,12 @@
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp subtree">
+<script type="text/html" data-help-name="snmp subtree">
     <p>Simple SNMP oid subtree fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -228,6 +241,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -240,15 +254,13 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>
 
 
-
-<script type="text/x-red" data-template-name="snmp walker">
+<script type="text/html" data-template-name="snmp walker">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -256,10 +268,12 @@
     </div>
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
-        <select type="text" id="node-input-version" style="width: 150px;">
+        <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
         </select>
+        <span style="margin-left:50px;">Timeout</span>
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
@@ -272,11 +286,12 @@
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp walker">
+<script type="text/html" data-help-name="snmp walker">
     <p>Simple SNMP oid walker fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -289,6 +304,7 @@
             community: { value: "public" },
             version: { value: "1", required: true },
             oids: { value: "" },
+            timeout: { value: 5 },
             name: { value: "" }
         },
         inputs: 1,
@@ -301,5 +317,4 @@
             return this.name ? "node_label_italic" : "";
         }
     });
-
 </script>

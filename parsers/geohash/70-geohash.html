@@ -1,6 +1,10 @@
 
 <script type="text/x-red" data-template-name="geohash">
     <div class="form-row">
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -14,7 +18,6 @@
     <p>If the <code>msg.payload</code> is an object with properties lat or latitude and lon or longitude
     - it will add a <code>geohash</code> property to the payload.</p>
     <p>The precision can be set by <code>msg.payload.precision</code> from 1 to 9.
-    <p><b>Note:</b> If the msg contains a .location property it will operate on that in preference to the .payload.</p>
 </script>
 
 <script type="text/javascript">
@@ -22,16 +25,20 @@
         category: 'location',
         color:"#DEBD5C",
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            property: {value:"payload",required:true}
         },
         inputs:1,
         outputs:1,
-        icon: "arrow-in.png",
+        icon: "parser-geohash.png",
         label: function() {
             return this.name||"geohash";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
         }
     });
 </script>

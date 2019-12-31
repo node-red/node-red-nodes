@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-smaz",
+    "version"       : "0.0.2",
+    "description"   : "A Node-RED node to pack and unpack strings to smaz format",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/parsers/smaz"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "smaz" ],
+    "node-red" : {
+        "nodes" : {
+            "smaz": "70-smaz.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

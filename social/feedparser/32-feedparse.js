@@ -8,6 +8,7 @@ module.exports = function(RED) {
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
         this.url = n.url;
+        if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
         this.interval = (parseInt(n.interval)||15) * 60000;
         var node = this;
         this.interval_id = null;
@@ -18,10 +19,10 @@ module.exports = function(RED) {
         }
         else {
             var getFeed = function() {
-                var req = request(node.url, {timeout: 10000, pool: false});
+                var req = request(node.url, {timeout:10000, pool:false});
                 //req.setMaxListeners(50);
-                //req.setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
-                //req.setHeader('accept', 'text/html,application/xhtml+xml');
+                req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
+                req.setHeader('accept', 'application/rss+xml,text/html,application/xhtml+xml');
 
                 var feedparser = new FeedParser();
 

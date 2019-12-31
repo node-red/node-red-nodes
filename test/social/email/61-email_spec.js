@@ -1,6 +1,6 @@
 var should = require("should");
 var sinon = require("sinon");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var emailNode = require('../../../social/email/61-email.js');
 
 describe('email Node', function () {
@@ -88,7 +88,7 @@ describe('email Node', function () {
                     done(e);
                 }
                 //finally { smtpTransport.sendMail.restore(); }
-            }, 1000);
+            }, 1500);
         });
 
         it('should fail to send an email (invalid creds)', function (done) {
@@ -128,8 +128,9 @@ describe('email Node', function () {
                         //console.log(evt[0].msg);
                         return evt[0].type == "e-mail";
                     });
-                    //console.log(helper.log().args);
-                    //console.log(helper.log());
+                    // console.log(helper.log().args);
+                    // console.log(helper.log());
+                    // console.log(logEvents[0][0].msg.toString());
                     //logEvents.should.have.length(3);
                     logEvents[0][0].should.have.a.property('msg');
                     logEvents[0][0].msg.toString().should.startWith("Error:");
@@ -138,7 +139,7 @@ describe('email Node', function () {
                     done(e);
                 }
                 //finally { smtpTransport.sendMail.restore(); }
-            }, 1000);
+            }, 1900);
         })
 
         it('should fail to send an email (no creds provided)', function (done) {
@@ -183,7 +184,7 @@ describe('email Node', function () {
                     done(e);
                 }
                 //finally { smtpTransport.sendMail.restore(); }
-            }, 1000);
+            }, 1900);
         })
 
     });

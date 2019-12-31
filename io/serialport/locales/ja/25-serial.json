@@ -11,7 +11,7 @@
             "split": "入力の分割方法",
             "deliver": "分割後の配信データ",
             "output": "出力",
-            "serial": "シリアル",
+            "serial": "serial",
             "none": "なし"
         },
         "placeholder": {
@@ -23,6 +23,11 @@
             "mark": "マーク",
             "odd": "奇数",
             "space": "スペース"
+        },
+        "linestates": {
+            "none": "auto",
+            "high": "High",
+            "low": "Low"
         },
         "split": {
             "character": "文字列で区切る",

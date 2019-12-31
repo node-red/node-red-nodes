@@ -1,0 +1,8 @@
+{
+    "mlsentiment": {
+        "sentiment": "sentiment",
+        "label": {
+            "language": "Language"
+        }
+    }
+}

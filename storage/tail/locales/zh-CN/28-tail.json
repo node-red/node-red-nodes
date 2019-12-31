@@ -1,0 +1,17 @@
+{
+    "tail": {
+        "tail": "tail",
+        "label": {
+            "filename": "文件名",
+            "type": "文件类型",
+            "splitlines": "以\\n来拆分行?"
+        },
+        "action": {
+            "text": "文本 - 返回字符串",
+            "binary": "二进制 - 返回Buffer"
+        },
+        "errors": {
+            "windowsnotsupport": "Windows目前不支持."
+        }
+    }
+}

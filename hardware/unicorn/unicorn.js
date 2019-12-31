@@ -7,20 +7,26 @@ module.exports = function(RED) {
     var execSync = require('child_process').execSync;
 
     var hatCommand = __dirname+'/unihat';
+    var allOK = true;
 
-    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //RED.log.info(RED._("rpi-gpio.errors.ignorenode"));
-        throw "Info : "+RED._("rpi-gpio.errors.ignorenode");
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) {
+            RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+            allOK = false;
+        }
+        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+            RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
+            allOK = false;
+        }
+        else if (!(1 & parseInt ((fs.statSync(hatCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
+            RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:hatCommand}));
+            allOK = false;
+        }
     }
-
-    if (execSync('python -c "import neopixel"').toString() !== "") {
-        RED.log.warn("Can't find neopixel python library");
-        throw "Warning : Can't find neopixel python library";
-    }
-
-    if ( !(1 & parseInt ((fs.statSync(hatCommand).mode & parseInt ("777", 8)).toString (8)[0]) )) {
-        RED.log.error(hatCommand + " command is not executable");
-        throw "Error : "+RED._("rpi-gpio.errors.mustbeexecutable");
+    catch(err) {
+        RED.log.warn("rpi-unicorn : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+        allOK = false;
     }
 
     // the magic to make python print stuff immediately
@@ -208,52 +214,57 @@ module.exports = function(RED) {
             else { node.warn("Input not a string"); }
         }
 
-        node.child = spawn(hatCommand, [node.bright]);
-        node.status({fill:"green",shape:"dot",text:"ok"});
+        if (allOK === true) {
+            node.child = spawn(hatCommand, [node.bright]);
+            node.status({fill:"green",shape:"dot",text:"ok"});
 
-        node.on("input", inputlistener);
+            node.on("input", inputlistener);
 
-        node.child.stdout.on('data', function (data) {
-            if (RED.settings.verbose) { node.log("out: "+data+" :"); }
-        });
+            node.child.stdout.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("out: "+data+" :"); }
+            });
 
-        node.child.stderr.on('data', function (data) {
-            if (RED.settings.verbose) { node.log("err: "+data+" :"); }
-        });
+            node.child.stderr.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("err: "+data+" :"); }
+            });
 
-        node.child.on('close', function () {
-            node.child = null;
-            if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-            if (node.done) {
+            node.child.on('close', function () {
+                node.child = null;
+                if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
+                if (node.finished) {
+                    node.status({fill:"grey",shape:"ring",text:"closed"});
+                    node.finished();
+                }
+                else { node.status({fill:"red",shape:"ring",text:"stopped"}); }
+            });
+
+            node.child.on('error', function (err) {
+                if (err.errno === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")); }
+                else if (err.errno === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
+                else { node.error(RED._("rpi-gpio.errors.error")+': ' + err.errno); }
+            });
+
+            node.on("close", function(done) {
                 node.status({fill:"grey",shape:"ring",text:"closed"});
-                node.done();
+                if (node.tout) { clearTimeout(node.tout); }
+                if (node.child != null) {
+                    node.finished = done;
+                    node.child.kill('SIGKILL');
+                }
+                else { done(); }
+            });
+
+            var nowready = function() {
+                node.tout = setTimeout( function() {
+                    if (ready) { inputlistener({payload:"0"}); }
+                    else { nowready(); }
+                }, 100);
             }
-            else { node.status({fill:"red",shape:"ring",text:"stopped"}); }
-        });
-
-        node.child.on('error', function (err) {
-            if (err.errno === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")); }
-            else if (err.errno === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
-            else { node.error(RED._("rpi-gpio.errors.error")+': ' + err.errno); }
-        });
-
-        node.on("close", function(done) {
-            node.status({fill:"grey",shape:"ring",text:"closed"});
-            if (node.tout) { clearTimeout(node.tout); }
-            if (node.child != null) {
-                node.done = done;
-                node.child.kill('SIGKILL');
-            }
-            else { done(); }
-        });
-
-        var nowready = function() {
-            node.tout = setTimeout( function() {
-                if (ready) { inputlistener({payload:"0"}); }
-                else { nowready(); }
-            }, 100);
+            nowready();
         }
-        nowready();
+        else {
+            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+        }
     }
     RED.nodes.registerType("rpi-unicorn",UnicornHatNode);
 }

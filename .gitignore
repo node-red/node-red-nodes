@@ -5,3 +5,4 @@ coverage
 puball.sh
 setenv.sh
 /.project
+package-lock.json

@@ -66,3 +66,15 @@ where r, g and b are 0-255.
 
 A range of pixels from position `x` to `y` can be set by `msg.payload`
 with a CSV string `x,y,r,g,b`
+
+#### Brightness
+
+The overall brightness of the pixels can be set to a level in the 0-100 range (0 being off, 100 being full brightness).
+It can also be set via `msg.brightness`
+The default level is 100 (full brightness)
+
+#### Gamma correction
+
+The node uses gamma correction to display colours as naturally as possible.
+This can be disabled if required. (e.g when working with low brightness levels) 
+

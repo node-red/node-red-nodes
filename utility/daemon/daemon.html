@@ -11,12 +11,17 @@
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-cr" style="display: inline-block; width: auto; vertical-align: top;">
+        <input type="checkbox" id="node-input-autorun" style="display:inline-block; width: auto; vertical-align:baseline;">
+        <label for="node-input-autorun" style="width: 70%;">Auto-start daemon on deploy ?</label>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-cr" style="display:inline-block; width:auto; vertical-align:baseline;">
         <label for="node-input-cr" style="width: 70%;">Add [enter] to every message sent ?</label>
     </div>
         <div class="form-row">
         <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-redo" style="display: inline-block; width: auto; vertical-align: top;">
+        <input type="checkbox" id="node-input-redo" style="display:inline-block; width:auto; vertical-align:baseline;">
         <label for="node-input-redo" style="width: 70%;">Relaunch command on exit or error ?</label>
     </div>
     <div class="form-row">
@@ -26,6 +31,14 @@
             <option value="string">format reply as a string</option>
             <option value="lines">output lines of text</option>
             <option value="number">try to convert reply to a number</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-closer"> on close</label>
+        <select id="node-input-closer" style='width:70%'>
+            <option value="SIGKILL">kill process immediately</option>
+            <option value="SIGTERM">try to terminate process</option>
+            <option value="SIGINT">try to interrupt process</option>
         </select>
     </div>
     <div class="form-row">
@@ -48,26 +61,31 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('daemon',{
-        category: 'advanced-function',
+        category: 'function',
         color:"darksalmon",
         defaults: {
+            name: {value:""},
             command: {value:"",required:true},
             args: {value:""},
+            autorun: {value:true},
             cr: {value:false},
             redo: {value:true},
             op: {value:"string"},
-            name: {value:""}
+            closer: {value:"SIGKILL"}
         },
         inputs:1,
         outputs:3,
+        inputLabels: "stdin",
         outputLabels: ["stdout","stderr","exit code"],
         icon: "arrow-in.png",
-        align: "right",
         label: function() {
-            return this.name||this.command;
+            return this.name||this.command||"daemon";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.autorun === undefined) { $("#node-input-autorun").prop('checked', true); }
         }
     });
 </script>

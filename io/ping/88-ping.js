@@ -12,12 +12,13 @@ module.exports = function(RED) {
 
         node.tout = setInterval(function() {
             var ex;
-            if (plat == "linux") { ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); }
+            if (plat == "linux" || plat == "android") { ex = spawn('ping', ['-n', '-w', '5', '-c', '1', node.host]); }
             else if (plat.match(/^win/)) { ex = spawn('ping', ['-n', '1', '-w', '5000', node.host]); }
             else if (plat == "darwin" || plat == "freebsd") { ex = spawn('ping', ['-n', '-t', '5', '-c', '1', node.host]); }
             else { node.error("Sorry - your platform - "+plat+" - is not recognised."); }
             var res = false;
             var line = "";
+            var fail = false;
             //var regex = /from.*time.(.*)ms/;
             var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9\.]*)/;
             ex.stdout.on('data', function (data) {
@@ -26,7 +27,20 @@ module.exports = function(RED) {
             //ex.stderr.on('data', function (data) {
             //console.log('[ping] stderr: ' + data);
             //});
+            ex.on('error', function (err) {
+                fail = true;
+                if (err.code === "ENOENT") {
+                    node.error(err.code + " ping command not found");
+                }
+                else if (err.code === "EACCES") {
+                    node.error(err.code + " can't run ping command");
+                }
+                else {
+                    node.error(err.code);
+                }
+            });
             ex.on('close', function (code) {
+                if (fail) { fail = false; return; }
                 var m = regex.exec(line)||"";
                 if (m !== '') {
                     if (m[1]) { res = Number(m[1]); }

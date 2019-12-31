@@ -1,5 +1,6 @@
 {
     "rbe": {
+        "rbe": "rbe",
         "label": {
             "func": "Mode",
             "init": "Send initial value",

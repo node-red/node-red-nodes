@@ -145,43 +145,6 @@ module.exports = function(RED) {
                             break;
                         }
 
-                        //case "holiday" : {
-                            //if (DEBUG) {
-                              //hminnode.log("Hit the holiday case");
-                            //}
-                            //if (!('enabled' in message.payload[key]) && !('time' in message.payload[key])) {
-                                //hminnode.log("Warning: Unsupported 'holiday' value passed!");
-                                //eturn;
-                            //}
-                            //var time = message.payload[key].time;
-                            //// Ensure hminnode time is a date
-                            //if (typeof(time) == "string") {
-                                //hminnode.log("Typeof time was " +typeof(message.payload[key].time));
-                                //// message.payload[key].time = new Date(message.payload[key].time);
-                                //message.payload[key].time = new Date(2014, 02, 15, 12, 0, 0);
-                                //hminnode.log("Typeof time is now " +typeof(message.payload[key].time));
-                            //}
-                            //// Also add in away mode (for hot water) if we're on hols
-                            //if (message.payload[key].time) {
-                                //message.payload.away_mode = 1;
-                            //}
-                            //else {
-                                //message.payload.away_mode = 0;
-                            //}
-                            //break;
-                        // }
-
-                        //case "hotwater" : {
-                            //if (DEBUG) {
-                                //hminnode.log("Hit the hotwater case");
-                            //}
-                            //if (message.payload[key] !== "on" && message.payload[key] !== "boost" && message.payload[key] !== "off") {
-                                //hminnode.log("Warning: Unsupported 'hotwater' value passed!");
-                                //return;
-                            //}
-                            //break;
-                        // }
-
                         case "heating" : {
                             // Ensure heating stays last! It's got a multi write scenario
                             if (DEBUG) {

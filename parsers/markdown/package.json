@@ -1,0 +1,27 @@
+{
+    "name": "node-red-node-markdown",
+    "version": "0.1.3",
+    "description": "A Node-RED node to convert a markdown string to html.",
+    "dependencies": {
+        "markdown-it": "^10.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes/tree/master/parsers/markdown"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red",
+        "markdown"
+    ],
+    "node-red": {
+        "nodes": {
+            "markdown": "70-markdown.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

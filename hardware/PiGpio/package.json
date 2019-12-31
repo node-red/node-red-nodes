@@ -1,0 +1,28 @@
+{
+  "name": "node-red-node-pi-gpio",
+  "version": "1.0.6",
+  "description": "The basic Node-RED node for Pi GPIO",
+  "dependencies"  : {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/PiGpio"
+  },
+  "keywords": [
+    "node-red", "Pi", "GPIO", "PiGpio"
+  ],
+  "author": {
+      "name": "Dave Conway-Jones",
+      "email": "ceejay@vnet.ibm.com",
+      "url": "http://nodered.org"
+  },
+  "license": "Apache-2.0",
+  "node-red"     : {
+        "nodes": {
+            "rpi-gpio": "36-rpi-gpio.js"
+        }
+    }
+}

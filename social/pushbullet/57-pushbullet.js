@@ -491,7 +491,7 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else if (cred && cred.apikey) {
@@ -501,7 +501,7 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else if (req.query.apikey) {
@@ -511,13 +511,23 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else {
             res.send("[]");
         }
     });
+
+    function filterdActiveDevices(devices) {
+        var activeDevices = [];
+        for (var i=0; i<devices.length; i++) {
+            if (devices[i].active) {
+                activeDevices.push(devices[i]);
+            }
+        }
+        return activeDevices;
+    }
 
     function PushbulletIn(n) {
         RED.nodes.createNode(this, n);

@@ -2,7 +2,7 @@
 var should = require("should");
 var sinon = require('sinon');
 //var fs = require("fs");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var exifNode = require('../../../utility/exif/94-exif.js');
 
 describe('exif node', function() {
@@ -40,7 +40,7 @@ describe('exif node', function() {
             GPSProcessingMethod: 'ASCII\u0000\u0000\u0000FUSED',
             GPSDateStamp: '2014:06:10' }
         };
-        var spy = sinon.stub(exif, 'ExifImage', function(arg1,arg2) { arg2(null,gpsmsg); });
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(function(arg1,arg2) { arg2(null,gpsmsg); });
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -77,7 +77,7 @@ describe('exif node', function() {
             GPSProcessingMethod: 'ASCII\u0000\u0000\u0000FUSED',
             GPSDateStamp: '2014:06:10' }
         };
-        var spy = sinon.stub(exif, 'ExifImage', function(arg1,arg2) { arg2(null,gpsmsg); });
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(function(arg1,arg2) { arg2(null,gpsmsg); });
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -89,41 +89,6 @@ describe('exif node', function() {
                 exif.ExifImage.restore();
                 done();
             });
-
-            exifNode1.receive({payload:new Buffer.from("hello")});
-        });
-    });
-
-    it('should report if no data found', function(done) {
-        var exif = require('exif');
-        var ExifImage = exif.ExifImage;
-        // the jpg file is a single black dot but it was originally a photo taken at IBM Hursley
-        //console.log(process.cwd());
-        //var data = fs.readFileSync("test/utility/exif/exif_test_image2.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
-        //var data = fs.readFileSync("exif_test_image2.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
-        var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
-
-        var gpsmsg = {};
-        var spy = sinon.stub(exif, 'ExifImage',
-            function(arg1,arg2){
-                arg2(null,gpsmsg);
-            });
-
-        helper.load(exifNode, flow, function() {
-            var exifNode1 = helper.getNode("exifNode1");
-            var helperNode1 = helper.getNode("helperNode1");
-
-            setTimeout(function() {
-                var logEvents = helper.log().args.filter(function(evt) {
-                    return evt[0].type == "exif";
-                });
-                logEvents.should.have.length(1);
-                logEvents[0][0].should.have.a.property('msg');
-                logEvents[0][0].msg.toString().should.startWith("The incoming image did not contain Exif GPS");
-                exif.ExifImage.restore();
-                done();
-            },150);
 
             exifNode1.receive({payload:new Buffer.from("hello")});
         });
@@ -224,7 +189,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });
@@ -264,7 +229,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });
@@ -302,7 +267,7 @@ describe('exif node', function() {
             GPSAltitude: 50,
             GPSTimeStamp: [ 7, 32, 2 ] }
         };
-        var spy = sinon.stub(exif, 'ExifImage',
+        var spy = sinon.stub(exif, 'ExifImage').callsFake(
             function(arg1,arg2){
                 arg2(null,gpsmsg);
             });

@@ -1,6 +1,6 @@
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../parsers/msgpack/70-msgpack.js');
 
 describe('msgpack node', function() {

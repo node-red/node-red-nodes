@@ -2,22 +2,57 @@
 module.exports = function(RED) {
     "use strict";
     var XMPP = require('simple-xmpp');
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
     function XMPPServerNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
         this.port = n.port;
         this.nickname = n.nickname;
+        this.username = n.user;
         var credentials = this.credentials;
         if (credentials) {
-            this.username = credentials.user;
             this.password = credentials.password;
         }
+        this.client = new XMPP.SimpleXMPP();
+        this.connected = false;
+        var that = this;
+
+        this.client.con = function() {
+            if (that.connected === false ) {
+                that.connected = true;
+                that.client.connect({
+                    jid : that.username,
+                    password : that.password,
+                    host : that.server,
+                    port : that.port,
+                    //skipPresence : true,
+                    reconnect : true,
+                    preferred : "PLAIN"
+                });
+            }
+        }
+
+        that.client.on('online', function(data) {
+            that.connected = true;
+            that.client.setPresence('online', data.jid.user+' is online');
+            that.log('connected as '+data.jid.user+' to '+data.jid._domain+":5222");
+        });
+        that.client.on('close', function() {
+            that.connected = false;
+            that.log('connection closed');
+        });
+        this.on("close", function(done) {
+            that.client.setPresence('offline');
+            that.client.disconnect();
+            if (that.client.conn) { that.client.conn.end(); }
+            that.client = null;
+            done();
+        });
     }
 
     RED.nodes.registerType("xmpp-server",XMPPServerNode,{
         credentials: {
-            user: {type:"text"},
             password: {type: "password"}
         }
     });
@@ -25,43 +60,67 @@ module.exports = function(RED) {
     function XmppInNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
-
         this.serverConfig = RED.nodes.getNode(this.server);
-        this.host = this.serverConfig.server;
-        this.port = this.serverConfig.port;
-        this.nick = this.serverConfig.nickname || "Node-RED";
-        this.userid = this.serverConfig.username;
-        this.password = this.serverConfig.password;
-
+        this.nick = this.serverConfig.nickname || this.serverConfig.username.split("@")[0];
         this.join = n.join || false;
         this.sendAll = n.sendObject;
-        this.to = n.to || "";
+        this.from = n.to || "";
         var node = this;
 
-        var xmpp = new XMPP.SimpleXMPP();
+        var xmpp = this.serverConfig.client;
 
         xmpp.on('online', function(data) {
-            node.log('connected to '+node.host+":"+node.port);
             node.status({fill:"green",shape:"dot",text:"connected"});
-            //xmpp.setPresence('online', node.nick+' online');
-            if (node.join) {
-                xmpp.join(node.to+'/'+node.nick);
+            if ((node.join) && (node.from !== "")) {
+                // disable chat history
+                var to = node.to+'/'+node.nick;
+                var stanza = new xmpp.Element('presence', {"to": to}).
+                    c('x', { xmlns: 'http://jabber.org/protocol/muc' }).
+                    c('history', { maxstanzas:0, seconds:1 });
+                xmpp.conn.send(stanza);
+                xmpp.join(to);
             }
         });
 
-        xmpp.on('chat', function(from, message) {
-            var msg = { topic:from, payload:message };
-            node.send([msg,null]);
+        // xmpp.on('chat', function(from, message) {
+        //     var msg = { topic:from, payload:message };
+        //     if (!node.join && ((node.from === "") || (node.from === from))) {
+        //         node.send([msg,null]);
+        //     }
+        // });
+
+        xmpp.on('stanza', function(stanza) {
+            if (stanza.is('message')) {
+                if (stanza.attrs.type == 'chat') {
+                    //console.log(stanza);
+                    var body = stanza.getChild('body');
+                    if (body) {
+                        var msg = { payload:body.getText() };
+                        var ids = stanza.attrs.from.split('/');
+                        if (ids[1].length !== 36) {
+                            msg.topic = stanza.attrs.from
+                        }
+                        else { msg.topic = ids[0]; }
+                        if (!node.join && ((node.from === "") || (node.from === stanza.attrs.from))) {
+                            node.send([msg,null]);
+                        }
+                    }
+                }
+            }
         });
 
         xmpp.on('groupchat', function(conference, from, message, stamp) {
-            var msg = { topic:from, payload:message, room:conference, ts:stamp };
-            if (from != node.nick) { node.send([msg,null]); }
+            var msg = { topic:from, payload:message, room:conference };
+            if (from != node.nick) {
+                if ((node.join) && (node.from === conference)) {
+                    node.send([msg,null]);
+                }
+            }
         });
 
         //xmpp.on('chatstate', function(from, state) {
         //console.log('%s is currently %s', from, state);
-        //var msg = { topic:from, payload:state };
+        //var msg = { topic:from, payload: {presence:state} };
         //node.send([null,msg]);
         //});
 
@@ -71,22 +130,32 @@ module.exports = function(RED) {
             node.send([null,msg]);
         });
 
+        // xmpp.on('groupbuddy', function(conference, from, state, statusText) {
+        //     //console.log('%s: %s is in %s state - %s',conference, from, state, statusText);
+        //     var msg = { topic:from, payload: { presence:state, status:statusText}, room:conference };
+        // });
+
         xmpp.on('error', function(err) {
             if (RED.settings.verbose) { node.log(err); }
             if (err.hasOwnProperty("stanza")) {
                 if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
                 else { node.error(err.stanza.name,err); }
+                node.status({fill:"red",shape:"ring",text:"bad login"});
             }
             else {
-                if (err.errno === "ETIMEDOUT") { node.error("Timeout connecting to server",err); }
-                else { node.error(err.errno,err); }
+                if (err.errno === "ETIMEDOUT") {
+                    node.error("Timeout connecting to server",err);
+                    node.status({fill:"red",shape:"ring",text:"timeout"});
+                }
+                else if (err === "XMPP authentication failure") {
+                    node.error(err,err);
+                    node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
+                }
+                else {
+                    node.error(err.errno,err);
+                    node.status({fill:"red",shape:"ring",text:"error"});
+                }
             }
-            node.status({fill:"red",shape:"ring",text:"error"});
-        });
-
-        xmpp.on('close', function() {
-            node.log('connection closed');
-            //node.status({fill:"grey",shape:"ring",text:"not connected"});
         });
 
         xmpp.on('subscribe', function(from) {
@@ -96,55 +165,42 @@ module.exports = function(RED) {
         // Now actually make the connection
         try {
             node.status({fill:"grey",shape:"dot",text:"connecting"});
-            xmpp.connect({
-                jid : node.userid,
-                password : node.password,
-                host : node.host,
-                port : node.port,
-                skipPresence : true,
-                reconnect : false
-            });
+            xmpp.con();
         }
         catch(e) {
             node.error("Bad xmpp configuration");
             node.status({fill:"red",shape:"ring",text:"not connected"});
         }
 
-        node.on("close", function(done) {
-            xmpp.setPresence('offline');
-            xmpp.disconnect();
-            if (xmpp.conn) { xmpp.conn.end(); }
-            xmpp = null;
+        node.on("close", function() {
             node.status({});
-            done();
         });
     }
     RED.nodes.registerType("xmpp in",XmppInNode);
 
+
     function XmppOutNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
-
         this.serverConfig = RED.nodes.getNode(this.server);
-        this.host = this.serverConfig.server;
-        this.port = this.serverConfig.port;
-        this.nick = this.serverConfig.nickname || "Node-RED";
-        this.userid = this.serverConfig.username;
-        this.password = this.serverConfig.password;
-
+        this.nick = this.serverConfig.nickname || this.serverConfig.username.split("@")[0];
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         this.to = n.to || "";
         var node = this;
 
-        var xmpp = new XMPP.SimpleXMPP();
+        var xmpp = this.serverConfig.client;
 
         xmpp.on('online', function(data) {
             node.status({fill:"green",shape:"dot",text:"connected"});
-            node.log('connected to '+node.host+":"+node.port);
-            xmpp.setPresence('online', node.nick+' online');
-            if (node.join) {
-                xmpp.join(node.to+'/'+node.nick);
+            if ((node.join) && (node.from !== "")) {
+                // disable chat history
+                var to = node.to+'/'+node.nick;
+                var stanza = new xmpp.Element('presence', {"to": to}).
+                    c('x', { xmlns: 'http://jabber.org/protocol/muc' }).
+                    c('history', { maxstanzas:0, seconds:1 });
+                xmpp.conn.send(stanza);
+                xmpp.join(to);
             }
         });
 
@@ -153,34 +209,28 @@ module.exports = function(RED) {
             if (err.hasOwnProperty("stanza")) {
                 if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
                 else { node.error(err.stanza.name,err); }
+                node.status({fill:"red",shape:"ring",text:"bad login"});
             }
             else {
-                if (err.errno === "ETIMEDOUT") { node.error("Timeout connecting to server",err); }
-                else { node.error(err.errno,err); }
+                if (err.errno === "ETIMEDOUT") {
+                    node.error("Timeout connecting to server",err);
+                    node.status({fill:"red",shape:"ring",text:"timeout"});
+                }
+                else if (err === "XMPP authentication failure") {
+                    node.error(err,err);
+                    node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
+                }
+                else {
+                    node.error(err.errno,err);
+                    node.status({fill:"red",shape:"ring",text:"error"});
+                }
             }
-            node.status({fill:"red",shape:"ring",text:"error"});
-        });
-
-        xmpp.on('close', function() {
-            node.log('connection closed');
-            //node.status({fill:"grey",shape:"ring",text:"not connected"});
-        });
-
-        xmpp.on('subscribe', function(from) {
-            xmpp.acceptSubscription(from);
         });
 
         // Now actually make the connection
         try {
             node.status({fill:"grey",shape:"dot",text:"connecting"});
-            xmpp.connect({
-                jid : node.userid,
-                password : node.password,
-                host : node.host,
-                port : node.port,
-                skipPresence : true,
-                reconnect : false
-            });
+            xmpp.con();
         }
         catch(e) {
             node.error("Bad xmpp configuration");
@@ -189,35 +239,31 @@ module.exports = function(RED) {
 
         node.on("input", function(msg) {
             if (msg.presence) {
-                if (['away', 'dnd', 'xa','chat'].indexOf(msg.presence) > -1 ) {
+                if (['away', 'dnd', 'xa', 'chat'].indexOf(msg.presence) > -1 ) {
                     xmpp.setPresence(msg.presence, msg.payload);
                 }
-                else { node.warn("Can't set presence - invalid value"); }
+                else { node.warn("Can't set presence - invalid value: "+msg.presence); }
             }
             else {
-                var to = msg.topic;
-                if (node.to !== "") { to = node.to; }
-                if (node.sendAll) {
-                    xmpp.send(to, JSON.stringify(msg), node.join);
-                }
-                else if (msg.payload) {
-                    if (typeof(msg.payload) === "object") {
-                        xmpp.send(to, JSON.stringify(msg.payload), node.join);
+                var to = node.to || msg.topic || "";
+                if (to !== "") {
+                    if (node.sendAll) {
+                        xmpp.send(to, JSON.stringify(msg), node.join);
                     }
-                    else {
-                        xmpp.send(to, msg.payload.toString(), node.join);
+                    else if (msg.payload) {
+                        if (typeof(msg.payload) === "object") {
+                            xmpp.send(to, JSON.stringify(msg.payload), node.join);
+                        }
+                        else {
+                            xmpp.send(to, msg.payload.toString(), node.join);
+                        }
                     }
                 }
             }
         });
 
-        node.on("close", function(done) {
-            xmpp.setPresence('offline');
-            xmpp.disconnect();
-            if (xmpp.conn) { xmpp.conn.end(); }
-            xmpp = null;
+        node.on("close", function() {
             node.status({});
-            done();
         });
     }
     RED.nodes.registerType("xmpp out",XmppOutNode);

@@ -1,7 +1,7 @@
 {
     "twitter": {
         "label": {
-            "twitter-id":"Twitter ID",
+            "twitter-id": "Twitter ID",
             "search": "Search",
             "for": "for",
             "user": "User",
@@ -9,7 +9,14 @@
             "followers": "followed by",
             "tweetslabel": "tweets",
             "eventslabel": "events",
-            "clickhere": "Click here to authenticate with Twitter."
+            "create": "Create your own application at",
+            "copy-consumer": "From the 'Keys and tokens' section, copy the Consumer API keys",
+            "consumer_key": "API key",
+            "consumer_secret": "API secret key",
+            "copy-accessToken": "Create a new 'Access token & access token secret' and copy them",
+            "access_key": "Access token",
+            "access_secret": "Access token secret",
+            "enter-id": "Set your Twitter ID"
         },
         "placeholder": {
             "for": "comma-separated words, @ids, #tags",
@@ -26,25 +33,22 @@
         "status": {
             "using-geo": "Using geo location: __location__",
             "tweeting": "tweeting",
-            "failed":"failed"
+            "failed": "failed"
         },
         "warn": {
-            "nousers":"User option selected but no users specified",
-            "waiting":"Waiting for search term"
+            "nousers": "User option selected but no users specified",
+            "waiting": "Waiting for search term"
         },
         "errors": {
-            "ratelimit":"rate limit hit",
-            "limitrate":"limiting rate",
-            "streamerror":"stream error: __error__ (__rc__)",
-            "unexpectedend":"stream ended unexpectedly",
-            "invalidtag":"invalid tag property",
-            "missingcredentials":"missing twitter credentials",
-            "truncated":"truncated tweet greater than 140 characters",
-            "sendfail":"send tweet failed: __error__",
-            "nopayload":"no payload to tweet",
-            "oauthbroke":"something in twitter oauth broke.",
-            "oautherror": "<html><head></head><body><p>Something went wrong with the authentication process. The following error was returned:</p><p><b>__statusCode__</b>: __errorData__</p><p>One known cause of this type of failure is if the clock is wrong on system running Node-RED</p></body></html>",
-            "authorized": "<html><head></head><body><p>Authorised - you can close this window and return to Node-RED</p></body></html>"
+            "ratelimit": "rate limit hit",
+            "limitrate": "limiting rate",
+            "streamerror": "stream error: __error__ (__rc__)",
+            "unexpectedend": "stream ended unexpectedly",
+            "invalidtag": "invalid tag property",
+            "missingcredentials": "missing twitter credentials",
+            "truncated": "truncated tweet greater than 280 characters",
+            "sendfail": "send tweet failed: __error__",
+            "nopayload": "no payload to tweet"
         }
     }
 }
