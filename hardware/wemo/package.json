@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-wemo",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Input and Output nodes for Belkin WeMo devices",
   "repository": "https://github.com/node-red/node-red-nodes/tree/master/hardware",
   "main": "WeMoNG.js",
