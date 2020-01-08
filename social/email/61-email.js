@@ -103,7 +103,7 @@ module.exports = function(RED) {
                             if ((msg.payload[0] === 0x89)&&(msg.payload[1] === 0x50)) { fe = "png"; } //4E
                             msg.filename = "attachment."+fe;
                         }
-                        var fname = msg.filename.replace(/^.*[\\\/]/, '') || "file.bin";
+                        var fname = msg.filename.replace(/^.*[\\\/]/, '') || "attachment.bin";
                         sendopts.attachments = [ { content:msg.payload, filename:fname } ];
                         if (msg.hasOwnProperty("headers") && msg.headers.hasOwnProperty("content-type")) {
                             sendopts.attachments[0].contentType = msg.headers["content-type"];
