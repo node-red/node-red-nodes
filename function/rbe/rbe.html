@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="rbe">
+<script type="text/html" data-template-name="rbe">
     <div class="form-row">
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="rbe.label.func"></span></label>
         <select type="text" id="node-input-func" style="width:70%;">
@@ -70,7 +70,7 @@
                 } else {
                     $("#node-bandgap").show();
                 }
-                if ($("#node-input-func").val() === "narrowband") {
+                if (($("#node-input-func").val() === "narrowband")||($("#node-input-func").val() === "narrowbandEq")) {
                     $("#node-startvalue").show();
                 } else {
                     $("#node-startvalue").hide();
