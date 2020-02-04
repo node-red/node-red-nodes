@@ -3,7 +3,7 @@
     "version"       : "0.0.21",
     "description"   : "A Node-RED node that uses Bonjour / Avahi to discover nearby services.",
     "dependencies"  : {
-        "mdns"   : "^2.4.0"
+        "mdns"   : "^2.4.1"
     },
     "repository" : {
         "type":"git",
