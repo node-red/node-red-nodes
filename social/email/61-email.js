@@ -447,6 +447,7 @@ module.exports = function(RED) {
         }  // End of checkEmail
 
         if (node.protocol === "IMAP") {
+            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
             imap = new Imap({
                 user: node.userid,
                 password: node.password,
@@ -454,8 +455,8 @@ module.exports = function(RED) {
                 port: node.inport,
                 tls: node.useSSL,
                 tlsOptions: { rejectUnauthorized: false },
-                connTimeout: node.repeat - 500,
-                authTimeout: node.repeat - 500
+                connTimeout: tout,
+                authTimeout: tout
             });
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
