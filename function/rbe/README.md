@@ -5,8 +5,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node that
 provides report-by-exception (RBE) and deadband capability.
 
 The node blocks unless the incoming value changes - RBE mode, or
-changes by more than a certain amount (absolute value or percentage) - deadband
-mode.
+changes by more than a certain amount (absolute value or percentage) - bandgap modes.
 
 Install
 -------
@@ -19,7 +18,7 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 Usage
 -----
 
-A simple node to provide report by exception (RBE) and deadband function
+A simple node to provide report by exception (RBE) and bandgap functions
 - only passes on data if it has changed.
 
 This works on a per `msg.topic` basis. This means that a single rbe node can
@@ -31,12 +30,13 @@ The node doesn't send any output until the `msg.payload` is different to the pre
 Works on numbers and strings. Useful for filtering out repeated messages of the
 same value. Saves bandwidth, etc...
 
-### Deadband modes
+### Deadband and Narrowband modes
 
-In deadband mode the incoming payload should contain a parseable *number* and is
+In deadband modes the incoming payload should contain a parseable *number* and is
 output only if greater than + or - the *band gap* away from the previous output.
-It can also be set to block values more than a certain distance away from the present value.
-This can be used to remove outliers or unexpected readings.
+
+The narrowband modes will block if the incoming value change is greater than + or - the band gap
+away from the previous value. Useful for ignoring outliers from a faulty sensor for example.
 
 You can specify compare with *previous valid output value* or *previous input value*.
 The former ignores any values outside the valid range, whereas the latter allows

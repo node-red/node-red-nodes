@@ -1,11 +1,11 @@
 {
   "name": "node-red-node-email",
-  "version": "1.7.3",
+  "version": "1.7.7",
   "description": "Node-RED nodes to send and receive simple emails",
   "dependencies": {
     "imap": "^0.8.19",
-    "mailparser": "^2.7.6",
-    "nodemailer": "^6.4.0",
+    "mailparser": "^2.7.7",
+    "nodemailer": "^6.4.2",
     "poplib": "^0.1.7"
   },
   "repository": {

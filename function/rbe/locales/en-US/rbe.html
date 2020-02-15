@@ -1,6 +1,6 @@
 <script type="text/html" data-help-name="rbe">
     <p>Report by Exception node - only passes on data if the payload has changed.</p>
-    <p>It can also block until the value changes by a specified amount - deadband modes.</p>
+    <p>It can also block unless, or ignore if the value changes by a specified amount.</p>
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload
@@ -22,12 +22,13 @@
         <dd>If triggered the output will be the same as the input.</dd>
     </dl>
     <h3>Details</h3>
-    <p>In RBE mode this node will block until the <code>msg.payload</code> is
-    different to the previous one. </p>
-    <p>In Deadband modes the incoming payload must contain a parseable number and is
-    output only if greater than + or - the band gap away from a previous value.</p>
+    <p>In RBE mode this node will block until the <code>msg.payload</code>,
+    (or selected property) value is different to the previous one. If required 
+    it can ignore the intial value, so as not to send anything at start.</p>
+    <p>In the Deadband modes the incoming value must contain a parseable number and will block
+    unless the change is greater than + or - the band gap away from a previous value.</p>
     <p>Deadband also supports % - only sends if the input differs by more than x% of the original value.</p>
-    <p>In Narrowband mode the incoming payload is blocked if it is more than + or - the band gap
+    <p>The Narrowband modes will block if the incoming value change is greater than + or - the band gap
     away from the previous value. Useful for ignoring outliers from a faulty sensor for example.</p>
     <p>Both Deadband and Narrowband allow comparison against either the previous valid output value, thus
     ignoring any values out of range; or the previous input value, which resets the set point, thus allowing

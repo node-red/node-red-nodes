@@ -6,7 +6,7 @@
 
 <!-- First, the content of the edit dialog is defined.                       -->
 
-<script type="text/x-red" data-template-name="sample">
+<script type="text/html" data-template-name="sample">
    <!-- data-template-name identifies the node type this is for              -->
 
    <!-- Each of the following divs creates a field in the edit dialog.       -->
@@ -30,7 +30,7 @@
 
 
 <!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="sample">
+<script type="text/html" data-help-name="sample">
    <!-- data-help-name identifies the node type this help is for             -->
    <!-- This content appears in the Info sidebar when a node is selected     -->
    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->

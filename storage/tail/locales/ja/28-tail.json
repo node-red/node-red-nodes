@@ -13,7 +13,12 @@
             "binary": "バイナリバッファ"
         },
         "errors": {
-            "windowsnotsupport": "現在Windows上での動作は対応していません"
+            "windowsnotsupport": "現在Windows上での動作は対応していません",
+            "filenotfound": "ファイルが見つかりませんでした"
+        },
+        "state":{
+            "stopped": "停止",
+            "nofilename":"ファイル名の指定がありません"
         }
     }
 }

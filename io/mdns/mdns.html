@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="discovery">
+<script type="text/html" data-template-name="discovery">
     <div class="form-row">
         <label for="node-input-service"><i class="fa fa-gear"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="_http._tcp">
@@ -15,7 +15,7 @@
     <div class="form-tips">The service <i>must</i> start with an underscore _ and end ._tcp or ._udp</div>
 </script>
 
-<script type="text/x-red" data-help-name="discovery">
+<script type="text/html" data-help-name="discovery">
     <p>Provides a Bonjour / Avahi / Zeroconf discovery node.</p>
     <p><code>msg.payload</code> contains the service object on both arrival and leaving.</p>
     <p><code>msg.payload.state</code> contains boolean <i>true</i> or <i>false</i> depending
@@ -51,7 +51,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="announce">
+<script type="text/html" data-template-name="announce">
     <div class="form-row">
         <label for="node-input-service"><i class="fa fa-gear"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="_http._tcp">
@@ -71,7 +71,7 @@
     <div class="form-tips">%h in the name will be replaced by the machine hostname.</div>
 </script>
 
-<script type="text/x-red" data-help-name="announce">
+<script type="text/html" data-help-name="announce">
     <p>Provides a Bonjour / Avahi / Zeroconf announcement node.</p>
     <p>If <code>msg.payload</code> is <code>false</code> - the announcement is stopped. Any other value starts the announcement process.</p>
     <p>The announcement can be customised by the msg if not configured in the edit panel.</p>

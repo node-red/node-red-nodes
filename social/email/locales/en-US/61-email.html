@@ -26,9 +26,9 @@
     <p>Additionally <code>msg.header</code> contains the complete header object including
     <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
     <p>It can optionally mark the message as Read (default), Delete it, or leave unmarked (None).</p>
-    <p>Uses the imap module.</p>
-    <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
-    <p>Note: uses IMAP with SSL to port 993.</p>
+    <p>Uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a> - see that page for 
+        information on the <code>msg.criteria</code> format if needed.</p>
+    <p><b>Note</b>: uses IMAP with SSL to port 993.</p>
     <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property. This will be an array of objects where
     each object represents a specific attachments.  The format of the object is:</p>
 
