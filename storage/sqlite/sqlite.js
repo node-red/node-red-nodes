@@ -14,7 +14,8 @@ module.exports = function(RED) {
         var node = this;
 
         node.doConnect = function() {
-            node.db = node.db || new sqlite3.Database(node.dbname,node.mode);
+            if (node.db) { return; }
+            node.db = new sqlite3.Database(node.dbname,node.mode);
             node.db.on('open', function() {
                 if (node.tick) { clearTimeout(node.tick); }
                 node.log("opened "+node.dbname+" ok");
