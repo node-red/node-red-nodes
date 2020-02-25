@@ -1,12 +1,12 @@
 
-<script type="text/x-red" data-template-name="markdown">
+<script type="text/html" data-template-name="markdown">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="markdown">
+<script type="text/html" data-help-name="markdown">
     <p>A function that converts the <code>msg.payload</code> in markdown format to html.</p>
     <p>If the input is a string it converts it to html.</p>
     <p>All other message types are ignored.</p>
@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('markdown',{
-        category: 'function',
+        category: 'parser',
         color:"#DEBD5C",
         defaults: {
             name: {value:""}
