@@ -215,6 +215,10 @@ WeMoNG.prototype.start = function start() {
                 });
               });
 
+              post_request.on('timeout', function(){
+                post_request.abort();
+              });
+
               post_request.write(util.format(getenddevs.body, udn));
               post_request.end();
 
@@ -291,9 +295,9 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
       console.log("%j", postoptions);
     });
 
-    post_request.on('timeout', function (e) {
-      console.log(e);
-      console.log("%j");
+    post_request.on('timeout', function () {
+      console.log("Timeout");
+      post_request.abort();
     });
 
     var body = [
@@ -344,6 +348,11 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
   post_request.on('error', function (e) {
     console.log(e);
     console.log("%j", postoptions);
+    def.reject();
+  });
+
+  post_request.on('timeout', function(){
+    post_request.abort();
     def.reject();
   });
 
@@ -409,9 +418,9 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
     def.reject();
   });
 
-  post_request.on('timeout', function (e) {
-    console.log(e);
-    console.log("%j");
+  post_request.on('timeout', function () {
+    console.log("Timeout");
+    post_request.abort();
     def.reject();
   });
 
@@ -451,9 +460,9 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
     console.log("%j", postoptions);
   });
 
-  post_request.on('timeout', function (e) {
-    console.log(e);
-    console.log("%j");
+  post_request.on('timeout', function () {
+    console.log("Timeout");
+    post_request.abort();
   });
 
   //console.log(util.format(setdevstatus.body, light.id, capability, value));
@@ -493,9 +502,11 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
         def.resolve(msg);
       } else {
         console.log("unhandled wemo event type \n%s", util.inspect(prop, {depth:null}));
+        
       }
     } else {
       //error
+      def.reject();
     }
   });
 
