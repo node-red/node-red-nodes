@@ -5,7 +5,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to read and write
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the `Node-RED Menu - Manage Palette - Install`, or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-mysql
 
