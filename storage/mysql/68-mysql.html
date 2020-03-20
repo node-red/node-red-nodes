@@ -24,12 +24,17 @@
         <label for="node-config-input-tz"><i class="fa fa-clock-o"></i> Timezone</label>
         <input type="text" id="node-config-input-tz">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('MySQLdatabase',{
         category: 'config',
         defaults: {
+            name: {value:""},
             host: {value:"127.0.0.1",required:true},
             port: {value:"3306",required:true},
             //user: {value:"",required:true},
@@ -42,7 +47,7 @@
             password: {type: "password"}
         },
         label: function() {
-            return this.db;
+            return this.name || this.db;
         }
     });
 </script>
@@ -86,7 +91,7 @@
             var levelNode = RED.nodes.node(this.mydb);
             return this.name||(levelNode?levelNode.label():"mysql");
         },
-            labelStyle: function() {
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
         }
     });
