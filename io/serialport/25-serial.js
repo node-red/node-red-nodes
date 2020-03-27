@@ -465,7 +465,7 @@ module.exports = function(RED) {
                 res.json(a);
             },
             err => {
-                node.log('Error listing serial ports', err)
+                res.json([RED._("serial.errors.list")]);
             }
         )
     });
