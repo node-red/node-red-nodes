@@ -87,15 +87,15 @@ module.exports = function(RED) {
         this.timer = n.timer * 1000;
         var node = this;
 
-        function clearTimer(){
-            if (node.tout) { clearTimeout(node.tout); }
+        function clearPingInterval(){
+            if (node.tout) { clearInterval(node.tout); }
         }
 
         if(node.mode === "triggered"){
-            clearTimer();
+            clearPingInterval();
         }
         else if(node.timer){
-            node.tout = setTimeout(function() {
+            node.tout = setInterval(function() {
                 doPing(node, node.host)
             }, node.timer);
         }
@@ -114,7 +114,7 @@ module.exports = function(RED) {
         });
 
         this.on("close", function() {
-            clearTimer();
+            clearPingInterval();
         });
     }
     RED.nodes.registerType("ping",PingNode);
