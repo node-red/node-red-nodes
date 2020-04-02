@@ -1,27 +1,76 @@
 
 <script type="text/html" data-template-name="ping">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-wrench"></i> <span data-i18n="ping.label.mode"></label>
+        <select type="text" id="node-input-mode">
+            <option value="timed" data-i18n="ping.label.mode_option.timed"></option>
+            <option value="triggered" data-i18n="ping.label.mode_option.triggered"></option>
+        </select>
+    </div>
+    <div class="form-row" id="div-node-input-host">
         <label for="node-input-host"><i class="fa fa-dot-circle-o"></i> <span data-i18n="ping.label.target"></span></label>
         <input type="text" id="node-input-host" placeholder="www.google.com">
     </div>
-    <div class="form-row">
+    <div class="form-row" id="div-node-input-timer">
         <label for="node-input-timer"><i class="fa fa-repeat"></i> <span data-i18n="ping.label.ping"></label>
         <input type="text" id="node-input-timer" placeholder="20">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 
 <script type="text/javascript">
+
+    var timerParameterValidator = function(node,v){
+        var mode = getMode(node)
+        //console.log(`timerParameterValidator('${mode}')...`)
+        if(mode === "triggered"){
+            //console.log("timerParameterValidator mode === triggered -- returning true")
+            return true;
+        }
+        if(v == ""){
+            //console.log("timerParameterValidator v == \"\" -- returning false")
+            return false;
+        }
+        debugger
+        //console.log("timerParameterValidator RED.validators.number()(" + v + ") ? -- returning " + RED.validators.number()(v))
+        return RED.validators.number()(v);
+    }
+    var hostParameterValidator = function(node,v){
+        var mode = getMode(node)
+        //console.log(`hostParameterValidator('${mode}')...`)
+        if(mode === "triggered"){
+            //console.log("hostParameterValidator mode === triggered -- returning true")
+            return true;
+        }
+        //console.log("hostParameterValidator v != \"\" ?   -- " + " returning " + (v != ""))
+        return v != ""
+    }
+    var getMode = function(node){
+        if(node){
+            return node.mode
+        } else {
+            let $mode = $( "#node-input-mode" );
+            return $mode.val();
+        }        
+    }
+
     RED.nodes.registerType('ping',{
         category: 'network-input',
         color:"#fdf0c2",
         defaults: {
+            mode: {value:"timed"},
             name: {value:""},
-            host: {value:"",required:true},
-            timer: {value:"20", required:true, validate:RED.validators.number()}
+            host: {value:"", validate: function(v){
+                    return hostParameterValidator(this,v) ;
+                }
+            },
+            timer: {value:"20", validate: function(v){
+                    return timerParameterValidator(this,v) ;
+                } 
+            },
         },
         inputs:0,
         outputs:1,
@@ -34,6 +83,29 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function () {
+            let node = this;
+            let $timer = $("#div-node-input-timer");
+            $("#node-input-mode").val(node.mode);
+            let $mode = $( "#node-input-mode" );
+            function updateControlsVisibility(){   
+                node.mode = $mode.val();          
+                switch (node.mode) {
+                    case "triggered":
+                        node.inputs = 1;
+                        node._def.inputs = 1
+                        $timer.hide();
+                        break;
+                    default:
+                        node.inputs = 0;
+                        node._def.inputs = 0;
+                        $timer.show();
+                        break;
+                }
+            }
+            $mode.change(updateControlsVisibility);
+            updateControlsVisibility();
         }
     });
 </script>
