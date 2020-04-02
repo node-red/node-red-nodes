@@ -1,11 +1,19 @@
 <script type="text/html" data-help-name="ping">
     <p>Pings a machine and returns the trip time in mS as <code>msg.payload</code>.</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">number</span></dt>
+        <dd> the trip time in mS.</dd>
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd> the target host/ip</dd>
+        <dt>ping <span class="property-type">object</span></dt>
+        <dd> an object containing <code>host</code> and any other properties sent in the array object</dd>
+    </dl>
+    <h3>Details</h3>
     <p>Returns <b>false</b> if no response received, or if the host is unresolveable.</p>
-    <p>Additionally, <code>msg.ping</code> will contain details and options you sent in the input <code>msg</code> (see below for details) </p>
-    <p><code>msg.topic</code> contains the target host ip.</p>
     <p>Default ping is every 20 seconds but can be configured.</p>
 
-    <h3>Mode...</h3>
+    <h4>Mode...</h4>
     <ul>
         <li><b>Timed</b><br>
             In <code>Timed</code> mode, the fields <code>Target</code> and <code>Ping (S)</code> must be populated.
@@ -17,7 +25,18 @@
             <ul>
                 <li><code>string</code> - a host name or IP address</li>
                 <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. You can add whatever properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
-                <li>Example payload input: <code>["192.168.0.99", {"host":"192.168.0.1", "name":"The router"}, {"host":"myapiserver.com", "name":"external API", "support":"support@myapiserver.com"}]</code></li>
+                <li>Example payload input: <pre>[
+    "192.168.0.99",
+    {
+        "host":"192.168.0.1", 
+        "name":"The router"
+    },  
+    {
+        "host":"myapiserver.com", 
+        "name":"external API", 
+        "support":"support@myapiserver.com"
+    }
+]</pre></li>
             </ul>
         </li>
     </ul>
