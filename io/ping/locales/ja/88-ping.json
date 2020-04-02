@@ -4,7 +4,7 @@
         "label": {
             "target": "対象",
             "ping": "Ping (秒)",
-            "mode": "動作モード",
+            "mode": "モード",
             "mode_option": {
                 "timed": "時限",
                 "triggered": "引き金になった"

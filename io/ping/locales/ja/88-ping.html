@@ -1,8 +1,27 @@
 <script type="text/html" data-help-name="ping">
     <p>pingを送信し、<code>msg.payload</code>にラウンドトリップタイムをミリ秒で返します。</p>
     <p>5秒以内にホスト名が解決できなかったり、レスポンスが得られなければ、<b>false</b>を返します。</p>
-    <p>デフォルトでは20秒ごとにpingを送りますが、設定で変更できます。</p>
+    <p>Additionally, <code>msg.ping</code> will contain details and options you sent in the input <code>msg</code> (see below for details) </p>
     <p><code>msg.topic</code>には対象に設定したホスト名やIPアドレスが含まれます。</p>
+    <p>デフォルトでは20秒ごとにpingを送りますが、設定で変更できます。</p>
+
+    <h3>モード...</h3>
+    <ul>
+        <li><b>時限</b><br>
+            In <code>時限</code> mode, the fields <code>Target</code> and <code>Ping (S)</code> must be populated.
+        </li>
+        <li><b>引き金になった</b><br>
+            In <code>引き金になった</code> mode, you must connect an input wire and pass a <code>msg</code> in to triger the ping operation.
+            If <code>対象</code> is populated, this will be used as the host/ip.
+            Alternatively, If <code>対象</code> is left empty, you can pass a string or an array in
+            <ul>
+                <li><code>string</code> - a host name or IP address</li>
+                <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. You can add whatever properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
+                <li>Example payload input: <code>["192.168.0.99", {"host":"192.168.0.1", "name":"The router"}, {"host":"myapiserver.com", "name":"external API", "support":"support@myapiserver.com"}]</code></li>
+            </ul>
+        </li>
+    </ul>
+
     <p>補足: Ubuntu Snap内で実行している場合は、手動でnetwork-observeを開始する必要があります。
         `snap connect node-red:network-observe`</p>
 </script>
