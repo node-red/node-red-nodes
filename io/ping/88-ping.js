@@ -88,16 +88,22 @@ module.exports = function(RED) {
         this.timer = n.timer * 1000;
         var node = this;
 
+        function generatePingList(str) {
+            return (str + "").split(",").map((e) => (e + "").trim()).filter((e) => e != "");
+        }
         function clearPingInterval(){
             if (node.tout) { clearInterval(node.tout); }
         }
 
         if(node.mode === "triggered"){
             clearPingInterval();
-        }
-        else if(node.timer){
+        } else if(node.timer){
             node.tout = setInterval(function() {
-                doPing(node, node.host, false)
+                let pingables = generatePingList(node.host);
+                for (let index = 0; index < pingables.length; index++) {
+                    const element = pingables[index];
+                    if(element){ doPing(node, element, false); }
+                }
             }, node.timer);
         }
 
@@ -105,7 +111,7 @@ module.exports = function(RED) {
             let node = this;
             let payload = node.host || msg.payload;
             if(typeof payload == "string"){
-                let pingables = payload.split(",").map((e) => (e+"").trim()).filter((e) => e != "")
+                let pingables = generatePingList(payload)
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
                     if(element){ doPing(node, element, false); }
@@ -121,6 +127,8 @@ module.exports = function(RED) {
         this.on("close", function() {
             clearPingInterval();
         });
+
+
     }
     RED.nodes.registerType("ping",PingNode);
 }
