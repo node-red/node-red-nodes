@@ -3,7 +3,12 @@
         "ping": "ping",
         "label": {
             "target": "Target",
-            "ping": "Ping (S)"
+            "ping": "Ping (S)",
+            "mode": "Mode",
+            "mode_option": {
+                "timed": "Timed",
+                "triggered": "Triggered"
+            }            
         }
     }
 }
