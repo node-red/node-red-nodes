@@ -16,17 +16,19 @@
     <h4>Mode...</h4>
     <ul>
         <li><b>Timed</b><br>
-            In <code>Timed</code> mode, the fields <code>Target</code> and <code>Ping (S)</code> must be populated.
+            <P>In <code>Timed</code> mode, the fields <code>Target</code> and <code>Ping (S)</code> must be populated.</P>
+            <p><code>Target</code> must be a CSV list of hosts / IPs e.g. <code>"192.168.0.1"</code> or <code>"192.168.0.1, www.google.com"</code></p>
+            <p><code>Ping (S)</code> is the number of seconds between pings</p>
         </li>
         <li><b>Triggered</b><br>
-            In <code>Triggered</code> mode, you must connect an input wire and pass a <code>msg</code> in to triger the ping operation.
-            If <code>Target</code> is populated, this will be used as the host/ip. The Target can be a single host (e.g. `"192.168.0.1"`) or a CSV string of hosts  (e.g. `"192.168.0.1, www.google.com")`
-            <br>
-            If <code>Target</code> is left empty, you can pass a string or an array of hosts in `msg.payload`
-            <ul>
-                <li><code>string</code> - a CSV list of hosts / IPs e.g. `"192.168.0.1"` or `"192.168.0.1, www.google.com"` </li>
-                <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. Optionally, you can add a <code>timeout</code> property between 1000 & 30000 (default is 5000 / 5 seconds).  Additionally, you can add whatever other properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
-                <li>Example payload input: <pre>[
+            <p>In <code>Triggered</code> mode, you must connect an input wire and pass a <code>msg</code> in to trigger the ping operation.</p>
+            <p>If <code>Target</code> is populated, this will be used as the host/ip. The Target must be is a CSV list of hosts / IPs e.g. <code>"192.168.0.1"</code> or <code>"192.168.0.1, www.google.com"</code></p>
+            
+            <p>If <code>Target</code> is left empty, you can pass a CSV string or an array of hosts in `msg.payload`
+                <ul>
+                    <li><code>string</code> - a CSV list of hosts / IPs e.g. <code>"192.168.0.1"</code> or <code>"192.168.0.1, www.google.com"</code> </li>
+                    <li><code>array</code> - an array of hosts as string or object. NOTE: The object must contain at minimum <code>.host</code>. Optionally, you can add a <code>timeout</code> property between 1000 & 30000 (default is 5000 / 5 seconds).  Additionally, you can add whatever other properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
+                    <li>Example array payload input: <pre>[
     "192.168.0.99",
     {
         "host":"192.168.0.1", 
@@ -38,8 +40,9 @@
         "timeout": 20000,
         "support":"support@myapiserver.com"
     }
-]</pre></li>
-            </ul>
+]</pre>         </li>
+                </ul>
+            </p>
         </li>
     </ul>
 
