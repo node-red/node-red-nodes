@@ -53,7 +53,7 @@
             Alternatively, If <code>Target</code> is left empty, you can pass a string or an array in
             <ul>
                 <li><code>string</code> - a host name or IP address</li>
-                <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. You can add whatever properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
+                <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. Optionally, you can add a <code>timeout</code> property between 1000 & 30000 (default is 5000 / 5 seconds).  Additionally, you can add whatever other properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
                 <li>Example payload input: <pre>[
     "192.168.0.99",
     {
@@ -63,6 +63,7 @@
     {
         "host":"myapiserver.com", 
         "name":"external API", 
+        "timeout": 20000,
         "support":"support@myapiserver.com"
     }
 ]</pre></li>
