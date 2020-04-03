@@ -36,7 +36,7 @@
         <dt>topic <span class="property-type">string</span></dt>
         <dd> the target host/ip</dd>
         <dt>ping <span class="property-type">object</span></dt>
-        <dd> an object containing <code>host</code> and any other properties sent in the array object</dd>
+        <dd> an object containing <code>host</code> and any other properties sent in the array object. <br>NOTE: This object is only appended when using triggered mode and an array for input payload. It is intended for adavanced users and permits scenarios where you need additional properties to be tagged into your result for use downstream.</dd>
     </dl>
     <h3>Details</h3>
     <p>5秒以内にホスト名が解決できなかったり、レスポンスが得られなければ、<b>false</b>を返します。</p>

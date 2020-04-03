@@ -4,7 +4,7 @@ module.exports = function(RED) {
     var spawn = require("child_process").spawn;
     var plat = require("os").platform();
 
-    function doPing(node, host){
+    function doPing(node, host, arrayMode){
         const defTimeout = 5000;
         var ex, hostOptions, commandLineOptions;
         if(typeof host === "string"){
@@ -20,7 +20,11 @@ module.exports = function(RED) {
         hostOptions.timeout = hostOptions.timeout < 1000 ? 1000 : hostOptions.timeout;
         hostOptions.timeout = hostOptions.timeout > 30000 ? 30000 : hostOptions.timeout;
         var timeoutS = Math.round(hostOptions.timeout / 1000); //whole numbers only
-        var msg = { payload:false, topic:host, ping:hostOptions };
+        var msg = { payload:false, topic:hostOptions.host };
+        //only include the extra msg object if operating in advance/array mode.
+        if(arrayMode){
+            msg.ping = hostOptions
+        }
         if (plat == "linux" || plat == "android") { 
             commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"]
         } else if (plat.match(/^win/)) { 
@@ -93,7 +97,7 @@ module.exports = function(RED) {
         }
         else if(node.timer){
             node.tout = setInterval(function() {
-                doPing(node, node.host)
+                doPing(node, node.host, false)
             }, node.timer);
         }
 
@@ -104,12 +108,12 @@ module.exports = function(RED) {
                 let pingables = payload.split(",").map((e) => (e+"").trim()).filter((e) => e != "")
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if(element){ doPing(node, element); }
+                    if(element){ doPing(node, element, false); }
                 }
             } else if (Array.isArray(payload) ) {
                 for (let index = 0; index < payload.length; index++) {
                     const element = payload[index];
-                    if(element){ doPing(node, element); }
+                    if(element){ doPing(node, element, true); }
                 }
             }
         });
