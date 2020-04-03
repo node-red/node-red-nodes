@@ -74,8 +74,8 @@ var timerParameterValidator = function(node,v){
         },
         label: function() {
             let lbl = this.name||this.host||this._("ping.ping");
-            if(lbl.length > 20){
-                lbl = lbl.substring(0,17) + "..."
+            if (lbl.split(',').length > 1){
+                lbl = this._("ping.ping");
             }
             return lbl;
         },
