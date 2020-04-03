@@ -1,8 +1,8 @@
 
 <script type="text/html" data-template-name="ping">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    <div class="form-row" id="div-node-input-host">
+        <label for="node-input-host"><i class="fa fa-dot-circle-o"></i> <span data-i18n="ping.label.target"></span></label>
+        <input type="text" id="node-input-host" placeholder="www.google.com">
     </div>
     <div class="form-row">
         <label for="node-input-mode"><i class="fa fa-wrench"></i> <span data-i18n="ping.label.mode"></label>
@@ -11,13 +11,13 @@
             <option value="triggered" data-i18n="ping.label.mode_option.triggered"></option>
         </select>
     </div>
-    <div class="form-row" id="div-node-input-host">
-        <label for="node-input-host"><i class="fa fa-dot-circle-o"></i> <span data-i18n="ping.label.target"></span></label>
-        <input type="text" id="node-input-host" placeholder="www.google.com">
-    </div>
     <div class="form-row" id="div-node-input-timer">
         <label for="node-input-timer"><i class="fa fa-repeat"></i> <span data-i18n="ping.label.ping"></label>
         <input type="text" id="node-input-timer" placeholder="20">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 
