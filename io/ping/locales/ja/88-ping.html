@@ -49,10 +49,11 @@
         </li>
         <li><b>Triggered</b><br>
             In <code>Triggered</code> mode, you must connect an input wire and pass a <code>msg</code> in to triger the ping operation.
-            If <code>Target</code> is populated, this will be used as the host/ip.
-            Alternatively, If <code>Target</code> is left empty, you can pass a string or an array in
+            If <code>Target</code> is populated, this will be used as the host/ip. The Target can be a single host (e.g. `"192.168.0.1"`) or a CSV string of hosts  (e.g. `"192.168.0.1, www.google.com")`
+            <br>
+            If <code>Target</code> is left empty, you can pass a string or an array of hosts in `msg.payload`
             <ul>
-                <li><code>string</code> - a host name or IP address</li>
+                <li><code>string</code> - a CSV list of hosts / IPs e.g. `"192.168.0.1"` or `"192.168.0.1, www.google.com"` </li>
                 <li><code>array</code> - an array of host names (string) or objects. NOTE: The object must contain at minimum <code>.host</code>. Optionally, you can add a <code>timeout</code> property between 1000 & 30000 (default is 5000 / 5 seconds).  Additionally, you can add whatever other properties you wish to this object and when the ping result is returned, it will be passed to the next node in <code>msg.ping</code> for use downstream</li>
                 <li>Example payload input: <pre>[
     "192.168.0.99",

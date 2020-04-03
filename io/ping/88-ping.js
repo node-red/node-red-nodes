@@ -104,7 +104,11 @@ module.exports = function(RED) {
             let node = this;
             let payload = node.host || msg.payload;
             if(typeof payload == "string"){
-                doPing(node, payload)
+                let pingables = payload.split(",").map((e) => (e+"").trim()).filter((e) => e != "")
+                for (let index = 0; index < pingables.length; index++) {
+                    const element = pingables[index];
+                    if(element){ doPing(node, element); }
+                }
             } else if (Array.isArray(payload) ) {
                 for (let index = 0; index < payload.length; index++) {
                     const element = payload[index];
