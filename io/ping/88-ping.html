@@ -19,6 +19,7 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
+    <div class="form-tips" id="node-ping-tip"><span data-i18n="ping.label.tip"></span></div>
 </script>
 
 <script type="text/javascript">
@@ -46,7 +47,7 @@ var timerParameterValidator = function(node,v){
         } else {
             let $mode = $( "#node-input-mode" );
             return $mode.val();
-        }        
+        }
     }
 
     RED.nodes.registerType("ping",{
@@ -61,7 +62,7 @@ var timerParameterValidator = function(node,v){
             },
             timer: {value:"20", validate: function(v){
                     return timerParameterValidator(this,v) ;
-                } 
+                }
             },
             inputs: {value:0}
         },
@@ -84,20 +85,23 @@ var timerParameterValidator = function(node,v){
         oneditprepare: function () {
             let node = this;
             let $timer = $("#div-node-input-timer");
+            let $tip = $("#node-ping-tip");
             $("#node-input-mode").val(node.mode);
             let $mode = $( "#node-input-mode" );
-            function updateControlsVisibility(){   
-                node.mode = $mode.val();          
+            function updateControlsVisibility(){
+                node.mode = $mode.val();
                 switch (node.mode) {
                     case "triggered":
                         node.inputs = 1;
                         node._def.inputs = 1
                         $timer.hide();
+                        $tip.show();
                         break;
                     default:
                         node.inputs = 0;
                         node._def.inputs = 0;
                         $timer.show();
+                        $tip.hide();
                         break;
                 }
             }

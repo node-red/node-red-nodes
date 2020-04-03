@@ -8,7 +8,8 @@
             "mode_option": {
                 "timed": "Timed",
                 "triggered": "Triggered"
-            }            
+            },
+            "tip": "Note: Leave Target field blank to allow msg.payload to set hosts dynamically."
         }
     }
 }
