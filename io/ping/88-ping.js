@@ -1,8 +1,8 @@
 
 module.exports = function(RED) {
     "use strict";
-    var spawn = require('child_process').spawn;
-    var plat = require('os').platform();
+    var spawn = require("child_process").spawn;
+    var plat = require("os").platform();
 
     function doPing(node, host){
         const defTimeout = 5000;
@@ -22,23 +22,23 @@ module.exports = function(RED) {
         var timeoutS = Math.round(hostOptions.timeout / 1000); //whole numbers only
         var msg = { payload:false, topic:host, ping:hostOptions };
         if (plat == "linux" || plat == "android") { 
-            commandLineOptions = ['-n', '-w', timeoutS, '-c', '1']
+            commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"]
         } else if (plat.match(/^win/)) { 
-            commandLineOptions = ['-n', '1', '-w', hostOptions.timeout]
+            commandLineOptions = ["-n", "1", "-w", hostOptions.timeout]
         } else if (plat == "darwin" || plat == "freebsd") { 
-            commandLineOptions = ['-n', '-t', timeoutS, '-c', '1']
+            commandLineOptions = ["-n", "-t", timeoutS, "-c", "1"]
         } else { 
             node.error("Sorry - your platform - "+plat+" - is not recognised.", msg); 
             return; //dont pass go - just return!
         }
 
         //spawn with timeout in case of os issue
-        ex = spawn('ping', [...commandLineOptions, hostOptions.host]); 
+        ex = spawn("ping", [...commandLineOptions, hostOptions.host]); 
 
         //monitor every spawned process & SIGINT if too long
         var spawnTout = setTimeout(() => {
             node.log(`ping - Host '${hostOptions.host}' process timeout - sending SIGINT`)
-            try{if(ex && ex.pid){ ex.kill('SIGINT'); }} catch{}
+            try{if(ex && ex.pid){ ex.kill("SIGINT"); }} catch(e){console.warn(e)}
         }, hostOptions.timeout+1000); //add 1s for grace
 
         var res = false;
@@ -46,16 +46,13 @@ module.exports = function(RED) {
         var fail = false;
         //var regex = /from.*time.(.*)ms/;
         var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9\.]*)/;
-        ex.stdout.on('data', function (data) {
+        ex.stdout.on("data", function (data) {
             line += data.toString();
         });
-        //ex.stderr.on('data', function (data) {
-        //console.log('[ping] stderr: ' + data);
-        //});
-        ex.on('exit', function (err) {
+        ex.on("exit", function (err) {
             clearTimeout(spawnTout);
         });
-        ex.on('error', function (err) {
+        ex.on("error", function (err) {
             fail = true;
             if (err.code === "ENOENT") {
                 node.error(err.code + " ping command not found", msg);
@@ -67,16 +64,16 @@ module.exports = function(RED) {
                 node.error(err.code, msg);
             }
         });
-        ex.on('close', function (code) {
+        ex.on("close", function (code) {
             if (fail) { fail = false; return; }
             var m = regex.exec(line)||"";
-            if (m !== '') {
+            if (m !== "") {
                 if (m[1]) { res = Number(m[1]); }
                 if (m[2]) { res = Number(m[2]); }
             }
             if (code === 0) { msg.payload = res }
             try { node.send(msg); }
-            catch(e) {}
+            catch(e) {console.warn(e)}
         });
     }
 

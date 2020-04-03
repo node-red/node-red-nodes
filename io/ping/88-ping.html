@@ -23,29 +23,21 @@
 
 <script type="text/javascript">
 
-    var timerParameterValidator = function(node,v){
+var timerParameterValidator = function(node,v){
         var mode = getMode(node)
-        //console.log(`timerParameterValidator('${mode}')...`)
         if(mode === "triggered"){
-            //console.log("timerParameterValidator mode === triggered -- returning true")
             return true;
         }
         if(v == ""){
-            //console.log("timerParameterValidator v == \"\" -- returning false")
             return false;
         }
-        debugger
-        //console.log("timerParameterValidator RED.validators.number()(" + v + ") ? -- returning " + RED.validators.number()(v))
         return RED.validators.number()(v);
     }
     var hostParameterValidator = function(node,v){
         var mode = getMode(node)
-        //console.log(`hostParameterValidator('${mode}')...`)
         if(mode === "triggered"){
-            //console.log("hostParameterValidator mode === triggered -- returning true")
             return true;
         }
-        //console.log("hostParameterValidator v != \"\" ?   -- " + " returning " + (v != ""))
         return v != ""
     }
     var getMode = function(node){
@@ -57,8 +49,8 @@
         }        
     }
 
-    RED.nodes.registerType('ping',{
-        category: 'network-input',
+    RED.nodes.registerType("ping",{
+        category: "network-input",
         color:"#fdf0c2",
         defaults: {
             mode: {value:"timed"},
@@ -80,7 +72,11 @@
             return this._("ping.ping");
         },
         label: function() {
-            return this.name||this.host||"ping";
+            let lbl = this.name||this.host||this._("ping.ping");
+            if(lbl.length > 20){
+                lbl = lbl.substring(0,17) + "..."
+            }
+            return lbl;
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
