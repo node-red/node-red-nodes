@@ -19,8 +19,8 @@ module.exports = function(RED) {
 
         function checkVer() {
             node.connection.query("SELECT version();", [], function(err, rows) {
+                node.connection.release();
                 if (err) {
-                    node.connection.release();
                     node.error(err);
                     node.status({fill:"red",shape:"ring",text:"Bad Ping"});
                     doConnect();
@@ -86,6 +86,7 @@ module.exports = function(RED) {
             if (this.tick) { clearTimeout(this.tick); }
             if (this.check) { clearInterval(this.check); }
             node.connected = false;
+            node.connection.release();
             node.emit("state"," ");
             node.pool.end(function (err) { done(); });
         });
@@ -124,8 +125,9 @@ module.exports = function(RED) {
                         var bind = Array.isArray(msg.payload) ? msg.payload : [];
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
+                                status = {fill:"red",shape:"ring",text:"Error: "+err.code};
+                                node.status(status);
                                 node.error(err,msg);
-                                status = {fill:"red",shape:"ring",text:"Error"};
                             }
                             else {
                                 if (rows.constructor.name === "OkPacket") {
@@ -134,6 +136,7 @@ module.exports = function(RED) {
                                 else { msg.payload = rows; }
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
+                                node.status(status);
                             }
                         });
                     }
