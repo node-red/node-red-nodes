@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-sentiment",
-    "version"       : "0.1.4",
+    "version"       : "0.1.6",
     "description"   : "A Node-RED node that uses the AFINN-165 wordlists for sentiment analysis of words.",
     "dependencies"  : {
         "sentiment" : "2.1.0"

@@ -13,7 +13,8 @@ Useful for monitoring command line based processes.
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Editor - Menu - Manage Palette - Install option or
+run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i node-red-node-daemon
 

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-daemon",
-    "version"       : "0.0.24",
+    "version"       : "0.1.0",
     "description"   : "A Node-RED node that runs and monitors a long running system command.",
     "dependencies"  : {
     },

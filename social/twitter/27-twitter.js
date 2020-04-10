@@ -505,7 +505,7 @@ module.exports = function(RED) {
                         var missingUsernames = Object.keys(missingUsers).join(",");
                         return node.twitterConfig.getUsers(missingUsernames).then(function() {
                             var len = tweets.length;
-                            for (var i = 0;i < len; i++) {
+                            for (var i = 0; i < len; i++) {
                                 var tweet = messages[i];
                                 var output = tweets[i];
                                 output.sender = userObjectCache[tweet.message_create.sender_id];

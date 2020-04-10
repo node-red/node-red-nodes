@@ -1,11 +1,11 @@
 
-<script type="text/x-red" data-template-name="base64">
+<script type="text/html" data-template-name="base64">
     <div class="form-row">
-        <label for="node-input-action"><i class="fa fa-dot-circle-o"></i> Action</label>
+        <label for="node-input-action"><i class="fa fa-dot-circle-o"></i> <span data-i18n="base64.label.action"></span></label>
         <select style="width:70%" id="node-input-action">
-            <option value="">Convert Buffer <-> Base64</option>
-            <option value="str">Encode as Base64</option>
-            <option value="b64">Convert Base64 to String</option>
+            <option value="" data-i18n="base64.convert.buffer"></option>
+            <option value="str" data-i18n="base64.convert.encode"></option>
+            <option value="b64" data-i18n="base64.convert.decode"></option>
         </select>
     </div>
     <div class="form-row">
@@ -18,17 +18,9 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="base64">
-    <p>A function that converts the chosen property (default <code>msg.payload</code>) to and from base64 format.</p>
-    <p>If the input is a buffer it converts it to a Base64 encoded string.</p>
-    <p>If the input is a Base64 string it converts it back to a binary buffer.</p>
-    <p>You can also fix coding into base64, and base64 to buffer if required.</p>
-    <p>Note: Using "Encode to Base64" will encode an already encoded string.</p>
-</script>
-
 <script type="text/javascript">
     RED.nodes.registerType('base64',{
-        category: 'function',
+        category: 'parser',
         color:"#DEBD5C",
         defaults: {
             name: {value:""},

@@ -44,10 +44,13 @@ module.exports = function(RED) {
                                 sensorTag.enableIrTemperature(function() {});
                                 sensorTag.on('irTemperatureChange',
                                 function(objectTemperature, ambientTemperature) {
-                                    var msg = {'topic': node.topic + '/temperature'};
-                                    msg.payload = {'object': +objectTemperature.toFixed(1),
-                                    'ambient': +ambientTemperature.toFixed(1)
-                                    };
+                                    var msg = {
+                                        'topic': node.topic + '/temperature',
+                                        'payload': {
+                                            'object': +objectTemperature.toFixed(1),
+                                            'ambient': +ambientTemperature.toFixed(1)
+                                        }
+                                    }
                                     node.send(msg);
                                 });
                                 sensorTag.enableBarometricPressure(function() {});
@@ -59,8 +62,9 @@ module.exports = function(RED) {
                                 sensorTag.enableHumidity(function() {});
                                 sensorTag.on('humidityChange', function(temp, humidity) {
                                     var msg = {'topic': node.topic + '/humidity'};
-                                    msg.payload = {'temperature': +temp.toFixed(1),
-                                    'humidity': +humidity.toFixed(1)
+                                    msg.payload = {
+                                        'temperature': +temp.toFixed(1),
+                                        'humidity': +humidity.toFixed(1)
                                     };
                                     if ((temp !== -40) || (humidity !== 100)) {
                                         node.send(msg);

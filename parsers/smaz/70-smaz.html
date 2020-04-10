@@ -7,9 +7,11 @@
 </script>
 
 <script type="text/x-red" data-help-name="smaz">
-    <p>A function that converts the <code>msg.payload</code> to and from smaz format.</p>
+    <p>A function that converts the <code>msg.payload</code> to and from the
+    <a href="https://github.com/antirez/smaz/blob/master/README" target="_new">smaz</a>
+    compression format.</p>
     <p>If the input is a string it tries to convert it to a smaz buffer.</p>
-    <p>If the input is a smaz buffer it tries to decode it back to a string./</p>
+    <p>If the input is a smaz buffer it tries to decode it back to a string.</p>
     <p>All other message types are dropped.</p>
 </script>
 

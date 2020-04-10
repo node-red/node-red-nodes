@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="sqlitedb">
+<script type="text/html" data-template-name="sqlitedb">
     <div class="form-row">
         <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-config-input-db" placeholder="/tmp/sqlite">
@@ -30,7 +30,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="sqlite">
+<script type="text/html" data-template-name="sqlite">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -59,7 +59,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="sqlite">
+<script type="text/html" data-help-name="sqlite">
     <p>Allows access to a Sqlite database.</p>
     <p>SQL Query sets how the query is passed to the node.</p>
     <p>SQL Query <i>Via msg.topic</i> and <i>Fixed Statement</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
@@ -74,7 +74,8 @@
     &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
     }</code><br />
     Parameter object names must match parameters set up in the Prepared Statement. If you get the error <code>SQLITE_RANGE: bind or column index out of range</code>
-    be sure to include $ on the parameter object key.</p>
+    be sure to include $ on the parameter object key.<br />
+    The sql query for the example above could be: <code>insert into user_table (user_id, user) VALUES ($id, $name);</code></p>
     <p>Using any SQL Query, the result is returned in <code>msg.payload</code></p>
     <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
     <p>You can load sqlite extensions by inputting a <code>msg.extension</code> property containing the full
@@ -83,7 +84,7 @@
     <pre>sqliteReconnectTime: 20000,</pre></p>
 </script>
 
-<script type="text/x-red" data-help-name="sqlitedb">
+<script type="text/html" data-help-name="sqlitedb">
     <p>The default directory for the database file is the user's home directory through which the NR process was started. You can specify absolute path to change it.</p>
 </script>
 

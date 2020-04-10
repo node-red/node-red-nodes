@@ -9,7 +9,8 @@
     }
     .rpi-gpio-pinTable input[type="radio"] {
         width: auto;
-        margin: 2px 2px;
+        margin: 3px 2px;
+        vertical-align: top;
     }
     .rpi-gpio-pinTable label {
         width: auto;
@@ -24,23 +25,31 @@
     .rpi-gpio-pinTable .pinTableRow {
         width: 340px;
         display: table-row;
-        height: 14px;
+        height: 20px;
     }
     .rpi-gpio-pinTable .pinTableCellL {
         width: 170px;
+        height: 20px;
         display: table-cell;
         text-align: right;
         padding-right: 4px;
-        vertical-align: top;
+        vertical-align: middle;
         border: 1px solid #444;
+    }
+    .rpi-gpio-pinTable .pinTableCellL label {
+        width: 170px;
     }
     .rpi-gpio-pinTable .pinTableCellR {
         width: 170px;
+        height: 22px;
         display: table-cell;
         text-align: left;
         padding-left: 4px;
-        vertical-align: top;
+        vertical-align: middle;
         border: 1px solid #000;
+    }
+    .rpi-gpio-pinTable .pinTableCellR label {
+        width: 170px;
     }
     .rpi-gpio-pinTable .pinColorPower {
         background-color:#FECBCE;
@@ -58,7 +67,7 @@
         background-color:#FFFDD0;
     }
 </style>
-<script type="text/x-red" data-template-name="rpi-gpio in">
+<script type="text/html" data-template-name="rpi-gpio in">
 
     <div class="form-row" style="min-width: 540px">
         <label><i class="fa fa-circle"></i> <span data-i18n="rpi-gpio.pinname"></span></label>
@@ -164,8 +173,8 @@
         <label for="node-input-read" style="width:70%;"><span data-i18n="rpi-gpio.label.readinitial"></span></label>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="pin-tip"><span data-i18n="[html]rpi-gpio.tip.pin"></span></div>
     <div class="form-tips"><span data-i18n="[html]rpi-gpio.tip.in"></span></div>
@@ -244,7 +253,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="rpi-gpio out">
+<script type="text/html" data-template-name="rpi-gpio out">
     <div class="form-row" style="min-width: 540px">
         <label><i class="fa fa-circle"></i> <span data-i18n="rpi-gpio.pinname"></span></label>
         <input type="text" id="node-input-pin" style="display:none;">
@@ -357,8 +366,8 @@
         <input type="text" id="node-input-freq" placeholder="100"> Hz
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="pin-tip"><span data-i18n="[html]rpi-gpio.tip.pin"></span></div>
     <div class="form-tips" id="dig-tip"><span data-i18n="[html]rpi-gpio.tip.dig"></span></div>
@@ -476,7 +485,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="rpi-mouse">
+<script type="text/html" data-template-name="rpi-mouse">
     <div class="form-row">
         <label for="node-input-butt"><i class="fa fa-circle"></i> <span data-i18n="rpi-gpio.label.button"></span></label>
         <select type="text" id="node-input-butt" style="width: 250px;">
@@ -488,8 +497,8 @@
     </div>
     <br/>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 
@@ -517,10 +526,10 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="rpi-keyboard">
+<script type="text/html" data-template-name="rpi-keyboard">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 

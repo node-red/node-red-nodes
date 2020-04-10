@@ -33,6 +33,11 @@
             "odd": "Odd",
             "space": "Space"
         },
+        "linestates": {
+            "none": "auto",
+            "high": "High",
+            "low": "Low"
+        },
         "split": {
             "character": "on the character",
             "timeout": "after a timeout of",
@@ -60,7 +65,8 @@
             "error": "serial port __port__ error: __error__",
             "unexpected-close": "serial port __port__ closed unexpectedly",
             "disconnected": "serial port __port__ disconnected",
-            "closed": "serial port __port__ closed"
+            "closed": "serial port __port__ closed",
+            "list": "Failed to list ports. Please enter manually."
         }
     }
 }

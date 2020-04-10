@@ -52,7 +52,8 @@
         "closed": "절단",
         "not-running": "정지중",
         "not-available": "이용불가",
-        "na": "N/A : __value__"
+        "na": "N/A : __value__",
+        "ok": "OK"
     },
     "errors": {
         "ignorenode": "Raspberry Pi고유의 노드를 무시했습니다",
@@ -67,6 +68,6 @@
         "commandnotfound": "nrgpio 커맨드를 찾을수 없습니다",
         "commandnotexecutable": "nrgpio 커맨드가 실행가능상태가 아닙니다",
         "error": "에러: __error__",
-        "pythoncommandnotfound": "nrpgio python 커맨드가 실행되지 않았습니다"
+        "pythoncommandnotfound": "nrgpio python 커맨드가 실행되지 않았습니다"
     }
 }

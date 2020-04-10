@@ -90,7 +90,7 @@ module.exports = function(RED) {
         }
         else {
             node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
-            node.on("input", function(msg){
+            node.on("input", function(msg) {
                 node.status({fill:"grey",shape:"dot",text:RED._("node-red:rpi-gpio.status.na",{value:msg.payload.toString()})});
             });
         }

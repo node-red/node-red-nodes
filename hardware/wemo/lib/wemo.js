@@ -291,6 +291,11 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
       console.log("%j", postoptions);
     });
 
+    post_request.on('timeout', function (e) {
+      console.log(e);
+      console.log("%j");
+    });
+
     var body = [
       postbodyheader,
       '<u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">',
@@ -404,6 +409,12 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
     def.reject();
   });
 
+  post_request.on('timeout', function (e) {
+    console.log(e);
+    console.log("%j");
+    def.reject();
+  });
+
   post_request.write(util.format(getDevStatus.body, light.id));
   post_request.end();
 
@@ -438,6 +449,11 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
   post_request.on('error', function (e) {
     console.log(e);
     console.log("%j", postoptions);
+  });
+
+  post_request.on('timeout', function (e) {
+    console.log(e);
+    console.log("%j");
   });
 
   //console.log(util.format(setdevstatus.body, light.id, capability, value));

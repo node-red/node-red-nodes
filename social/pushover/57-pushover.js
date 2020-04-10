@@ -76,7 +76,7 @@ module.exports = function(RED) {
                     // Is it base64 encoded or binary?
                     var attachmentString = attachment.toString();
                     var attachmentBuffer = Buffer.from(attachmentString,'base64');
-                    if(attachmentString === attachmentBuffer.toString('base64')) {
+                    if (attachmentString === attachmentBuffer.toString('base64')) {
                         // If converts back to same, then it was base64 so set to binary
                         // https://stackoverflow.com/a/48770228
                         attachment = attachmentBuffer;
@@ -101,8 +101,13 @@ module.exports = function(RED) {
             pusher.send( pushmsg, function(err, response) {
                 if (err) { node.error(err); }
                 else {
-                    response = JSON.parse(response);
-                    if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                    try {
+                        response = JSON.parse(response);
+                        if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                    }
+                    catch(e) {
+                        node.error("[57-pushover.js] Error: "+response);
+                    }
                 }
             });
         }

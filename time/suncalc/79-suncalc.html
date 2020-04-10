@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="sunrise">
+<script type="text/html" data-template-name="sunrise">
   <div class="form-row">
     <label for="node-input-lat"><i class="fa fa-globe"></i> Latitude</label>
     <input type="text" id="node-input-lat" placeholder="51.025">
@@ -11,20 +11,20 @@
   <div class="form-row">
     <label for="node-input-start"><i class="fa fa-clock-o"></i> Start</label>
     <select id="node-input-start" style='width:70%'>
+      <option value="nightEnd">Morning astronomical twilight starts</option>
+      <option value="nauticalDawn">Morning nautical twilight starts</option>
+      <option value="dawn">Dawn, morning civil twilight starts</option>
       <option value="sunrise">Sunrise</option>
       <option value="sunriseEnd">Sunrise end</option>
-      <option value="dawn">Dawn, morning civil twilight starts</option>
       <option value="goldenHourEnd">End of morning golden hour</option>
-      <option value="nauticalDawn">Morning nautical twilight starts</option>
-      <option value="nightEnd">Morning astronomical twilight starts</option>
     </select>
   </div>
   <div class="form-row">
     <label for="node-input-end"><i class="fa fa-clock-o"></i> End</label>
     <select id="node-input-end" style='width:70%'>
-      <option value="sunset">Sunset, civil twilight starts</option>
-      <option value="sunsetStart">Sunset start</option>
       <option value="goldenHour">Start of evening golden hour</option>
+      <option value="sunsetStart">Sunset start</option>
+      <option value="sunset">Sunset, civil twilight starts</option>
       <option value="dusk">Dusk, Evening astronomical twilight starts</option>
       <option value="nauticalDusk">Evening nautical twilight starts</option>
       <option value="night">Dark enough for astronomy</option>
@@ -36,7 +36,7 @@
   </div>
 </script>
 
-<script type="text/x-red" data-help-name="sunrise">
+<script type="text/html" data-help-name="sunrise">
     <p>Uses the suncalc module to generate an output at sunrise and sunset based on a specified location.</p>
     <p>Several choices of definition of sunrise and sunset are available, see the <i><a href = "https://github.com/mourner/suncalc" target="_new">suncalc</a></i> module for details.</p>
     <p>The first output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending if in between selected times or not.
@@ -46,7 +46,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('sunrise',{
-        category: 'advanced-input',
+        category: 'time',
         color:"#ffcc66",
         defaults: {
             name: {value:""},

@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-discovery",
-    "version"       : "0.0.21",
+    "version"       : "0.0.22",
     "description"   : "A Node-RED node that uses Bonjour / Avahi to discover nearby services.",
     "dependencies"  : {
-        "mdns"   : "^2.4.0"
+        "mdns"   : "^2.5.1"
     },
     "repository" : {
         "type":"git",

@@ -16,7 +16,7 @@ module.exports = function(RED) {
             var value = RED.util.getMessageProperty(msg,node.property);
             if (value !== undefined) {
                 if (typeof value === "string") {
-                // try to decode it...
+                    // try to decode it...
                     var regexp = new RegExp('^[a-z0-9]{1,9}$'); // can only contain a-z or 0-9 and length 1-9
                     if (regexp.test(value)) {
                         var po = geohash.decode(value);

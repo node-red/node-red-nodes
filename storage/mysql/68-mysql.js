@@ -86,6 +86,7 @@ module.exports = function(RED) {
             if (this.tick) { clearTimeout(this.tick); }
             if (this.check) { clearInterval(this.check); }
             node.connected = false;
+            node.connection.release();
             node.emit("state"," ");
             node.pool.end(function (err) { done(); });
         });
@@ -102,6 +103,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+        this.status({});
 
         if (this.mydbConfig) {
             this.mydbConfig.connect();
@@ -137,18 +139,21 @@ module.exports = function(RED) {
                                 return txt;
                                 }.bind(this));
                             };          
-                            
                         }
-
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
+                                status = {fill:"red",shape:"ring",text:"Error: "+err.code};
+                                node.status(status);
                                 node.error(err,msg);
-                                status = {fill:"red",shape:"ring",text:"Error"};
                             }
                             else {
-                                msg.payload = rows;
+                                if (rows.constructor.name === "OkPacket") {
+                                    msg.payload = JSON.parse(JSON.stringify(rows));
+                                }
+                                else { msg.payload = rows; }
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
+                                node.status(status);
                             }
                         });
                     }

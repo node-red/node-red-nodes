@@ -14,7 +14,8 @@ module.exports = function(RED) {
         var node = this;
 
         node.doConnect = function() {
-            node.db = node.db || new sqlite3.Database(node.dbname,node.mode);
+            if (node.db) { return; }
+            node.db = new sqlite3.Database(node.dbname,node.mode);
             node.db.on('open', function() {
                 if (node.tick) { clearTimeout(node.tick); }
                 node.log("opened "+node.dbname+" ok");
@@ -49,7 +50,7 @@ module.exports = function(RED) {
             var bind = [];
 
             var doQuery = function(msg) {
-                if (node.sqlquery == "msg.topic"){
+                if (node.sqlquery == "msg.topic") {
                     if (typeof msg.topic === 'string') {
                         if (msg.topic.length > 0) {
                             bind = Array.isArray(msg.payload) ? msg.payload : [];
@@ -84,7 +85,7 @@ module.exports = function(RED) {
                         node.status({fill:"red", shape:"dot",text:"msg.topic error"});
                     }
                 }
-                if (node.sqlquery == "fixed"){
+                if (node.sqlquery == "fixed") {
                     if (typeof node.sql === 'string') {
                         if (node.sql.length > 0) {
                             node.mydbConfig.db.all(node.sql, bind, function(err, row) {
@@ -96,14 +97,14 @@ module.exports = function(RED) {
                             });
                         }
                     }
-                    else{
+                    else {
                         if (node.sql === null || node.sql == "") {
                             node.error("SQL statement config not set up",msg);
                             node.status({fill:"red",shape:"dot",text:"SQL config not set up"});
                         }
                     }
                 }
-                if (node.sqlquery == "prepared"){
+                if (node.sqlquery == "prepared") {
                     if (typeof node.sql === 'string' && typeof msg.params !== "undefined" && typeof msg.params === "object") {
                         if (node.sql.length > 0) {
                             node.mydbConfig.db.all(node.sql, msg.params, function(err, row) {

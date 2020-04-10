@@ -18,6 +18,10 @@ module.exports = function(RED) {
         this.databits = parseInt(n.databits) || 8;
         this.parity = n.parity || "none";
         this.stopbits = parseInt(n.stopbits) || 1;
+        this.dtr = n.dtr || "none";
+        this.rts = n.rts || "none";
+        this.cts = n.cts || "none";
+        this.dsr = n.dsr || "none";
         this.bin = n.bin || "false";
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
@@ -174,16 +178,20 @@ module.exports = function(RED) {
         return {
             get:function(serialConfig) {
                 // make local copy of configuration -- perhaps not needed?
-                var port      = serialConfig.serialport,
-                    baud      = serialConfig.serialbaud,
-                    databits  = serialConfig.databits,
-                    parity    = serialConfig.parity,
-                    stopbits  = serialConfig.stopbits,
-                    newline   = serialConfig.newline,
-                    spliton   = serialConfig.out,
-                    waitfor   = serialConfig.waitfor,
+                var port = serialConfig.serialport,
+                    baud = serialConfig.serialbaud,
+                    databits = serialConfig.databits,
+                    parity = serialConfig.parity,
+                    stopbits = serialConfig.stopbits,
+                    dtr = serialConfig.dtr,
+                    rts = serialConfig.rts,
+                    cts = serialConfig.cts,
+                    dsr = serialConfig.dsr,
+                    newline = serialConfig.newline,
+                    spliton = serialConfig.out,
+                    waitfor = serialConfig.waitfor,
                     binoutput = serialConfig.bin,
-                    addchar   = serialConfig.addchar,
+                    addchar = serialConfig.addchar,
                     responsetimeout = serialConfig.responsetimeout;
                 var id = port;
                 // just return the connection object if already have one
@@ -214,7 +222,8 @@ module.exports = function(RED) {
                     splitc = new Buffer.from(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
                 }
                 if (addchar === true) { addchar = splitc; }
-
+                addchar = addchar.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+                if (addchar.substr(0,2) == "0x") { addchar = new Buffer.from([addchar]); }
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
@@ -232,9 +241,9 @@ module.exports = function(RED) {
                                 else {
                                     payload = payload.toString();
                                 }
-                                if ((spliton === "char") && (addchar !== "")) { payload += addchar; }
+                                if (addchar !== "") { payload += addchar; }
                             }
-                            else if ((spliton === "char") && (addchar !== "")) {
+                            else if (addchar !== "") {
                                 payload = Buffer.concat([payload,addchar]);
                             }
                             return payload;
@@ -320,14 +329,19 @@ module.exports = function(RED) {
                         obj.serial.on('error', function(err) {
                             RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
                             obj._emitter.emit('closed');
+                            if (obj.tout) { clearTimeout(obj.tout); }
                             obj.tout = setTimeout(function() {
                                 setupSerial();
                             }, settings.serialReconnectTime);
                         });
                         obj.serial.on('close', function() {
                             if (!obj._closing) {
-                                RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                if (olderr !== "unexpected") {
+                                    olderr = "unexpected";
+                                    RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                }
                                 obj._emitter.emit('closed');
+                                if (obj.tout) { clearTimeout(obj.tout); }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
                                 }, settings.serialReconnectTime);
@@ -336,6 +350,13 @@ module.exports = function(RED) {
                         obj.serial.on('open',function() {
                             olderr = "";
                             RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
+                            // Set flow control pins if necessary. Must be set all in same command.
+                            var flags = {};
+                            if (dtr != "none") { flags.dtr = (dtr!="low"); }
+                            if (rts != "none") { flags.rts = (rts!="low"); }
+                            if (cts != "none") { flags.cts = (cts!="low"); }
+                            if (dsr != "none") { flags.dsr = (dsr!="low"); }
+                            if (dtr != "none" || rts != "none" || cts != "none" || dsr != "none") { obj.serial.set(flags); }
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
@@ -438,8 +459,14 @@ module.exports = function(RED) {
     }());
 
     RED.httpAdmin.get("/serialports", RED.auth.needsPermission('serial.read'), function(req,res) {
-        serialp.list(function (err, ports) {
-            res.json(ports);
-        });
+        serialp.list().then(
+            ports => {
+                const a = ports.map(p => p.path);
+                res.json(a);
+            },
+            err => {
+                res.json([RED._("serial.errors.list")]);
+            }
+        )
     });
 }

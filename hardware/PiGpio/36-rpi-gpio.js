@@ -45,7 +45,7 @@ module.exports = function(RED) {
             if (node.pin !== undefined) {
                 node.child = spawn(gpioCommand, ["in",node.pin,node.intype,node.debounce]);
                 node.running = true;
-                node.status({fill:"yellow",shape:"dot",text:"common.status.ok"});
+                node.status({fill:"yellow",shape:"dot",text:"rpi-gpio.status.ok"});
 
                 node.child.stdout.on('data', function (data) {
                     var d = data.toString().trim().split("\n");
@@ -87,12 +87,12 @@ module.exports = function(RED) {
             }
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"rpi-gpio.status.not-available"});
             if (node.read === true) {
                 var val;
                 if (node.intype == "up") { val = 1; }
                 if (node.intype == "down") { val = 0; }
-                setTimeout(function(){
+                setTimeout(function() {
                     node.send({ topic:"pi/"+node.pin, payload:val });
                     node.status({fill:"grey",shape:"dot",text:RED._("rpi-gpio.status.na",{value:val})});
                 },250);
@@ -156,7 +156,7 @@ module.exports = function(RED) {
                     node.status({fill:"green",shape:"dot",text:node.level});
                 } else {
                     node.child = spawn(gpioCommand, [node.out,node.pin,node.freq]);
-                    node.status({fill:"yellow",shape:"dot",text:"common.status.ok"});
+                    node.status({fill:"yellow",shape:"dot",text:"rpi-gpio.status.ok"});
                 }
                 node.running = true;
 
@@ -193,8 +193,8 @@ module.exports = function(RED) {
             }
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
-            node.on("input", function(msg){
+            node.status({fill:"grey",shape:"dot",text:"rpi-gpio.status.not-available"});
+            node.on("input", function(msg) {
                 node.status({fill:"grey",shape:"dot",text:RED._("rpi-gpio.status.na",{value:msg.payload.toString()})});
             });
         }
@@ -220,7 +220,7 @@ module.exports = function(RED) {
 
         if (allOK === true) {
             node.child = spawn(gpioCommand+".py", ["mouse",node.butt]);
-            node.status({fill:"green",shape:"dot",text:"common.status.ok"});
+            node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {
                 data = Number(data);
@@ -260,7 +260,7 @@ module.exports = function(RED) {
             });
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"rpi-gpio.status.not-available"});
         }
     }
     RED.nodes.registerType("rpi-mouse",PiMouseNode);
@@ -271,7 +271,7 @@ module.exports = function(RED) {
 
         if (allOK === true) {
             node.child = spawn(gpioCommand+".py", ["kbd","0"]);
-            node.status({fill:"green",shape:"dot",text:"common.status.ok"});
+            node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {
                 var b = data.toString().trim().split(",");
@@ -303,17 +303,17 @@ module.exports = function(RED) {
             });
 
             node.on("close", function(done) {
-            node.status({});
-            if (node.child != null) {
-                node.finished = done;
-                node.child.kill('SIGINT');
-                node.child = null;
-            }
-            else { done(); }
-        });
+                node.status({});
+                if (node.child != null) {
+                    node.finished = done;
+                    node.child.kill('SIGINT');
+                    node.child = null;
+                }
+                else { done(); }
+            });
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"rpi-gpio.status.not-available"});
         }
     }
     RED.nodes.registerType("rpi-keyboard",PiKeyboardNode);

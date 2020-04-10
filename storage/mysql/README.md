@@ -5,9 +5,9 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to read and write
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the `Node-RED Menu - Manage Palette - Install`, or run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-mysql
+    npm i node-red-node-mysql
 
 
 Usage
@@ -17,7 +17,7 @@ Allows basic access to a MySQL database.
 
 This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
 
-By it's very nature it allows SQL injection... so <i>be careful out there...</i>
+By its very nature it allows SQL injection... so <i>be careful out there...</i>
 
 The `msg.topic` must hold the <i>query</i> for the database, and the result is returned in `msg.payload`.
 

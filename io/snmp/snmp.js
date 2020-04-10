@@ -67,6 +67,7 @@ module.exports = function (RED) {
         this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
         this.varbinds = n.varbinds;
         this.timeout = Number(n.timeout || 5) * 1000;
+        if (this.varbinds && this.varbinds.trim().length === 0) { delete this.varbinds; }
         var node = this;
         this.on("input", function (msg) {
             var host = node.host || msg.host;
@@ -193,7 +194,8 @@ module.exports = function (RED) {
                         node.error(error.toString(), msg);
                     }
                     else {
-                        msg.payload = response;
+                        // Clone the array
+                        msg.payload = response.slice(0);
                         node.send(msg);
                         //Clears response
                         response.length = 0;
@@ -243,7 +245,8 @@ module.exports = function (RED) {
                         node.error(error.toString(), msg);
                     }
                     else {
-                        msg.payload = response;
+                        // Clone the array
+                        msg.payload = response.slice(0);
                         node.send(msg);
                         //Clears response
                         response.length = 0;

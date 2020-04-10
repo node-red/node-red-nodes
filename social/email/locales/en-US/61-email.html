@@ -1,0 +1,53 @@
+<script type="text/html" data-help-name="e-mail">
+    <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
+    <p>The default message recipient can be configured in the node, if it is left
+    blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
+ you can also specify any or all of: <code>msg.cc</code>, <code>msg.bcc</code>, <code>msg.replyTo</code>, <code>msg.inReplyTo</code>, <code>msg.references</code> properties.</p>
+    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
+    default value.</p>
+    <h3>GMail users</h3>
+    <p>If you are accessing GMail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
+    or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
+    <h3>Details</h3>
+    <p>The payload can be html format.</p>
+    <p>If the payload is a binary buffer then it will be converted to an attachment.
+    The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
+    <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
+    more attachments in <a href="https://nodemailer.com/message/attachments/" target="_new">nodemailer</a> format.</p>
+    <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
+    <p>If you have own signed certificates, Nodemailer can complain about that and refuse sending the message. In this case you can try switching off TLS.</p>
+    <p>Note: uses SMTP with SSL to port 465.</p>
+</script>
+
+<script type="text/html" data-help-name="e-mail in">
+    <p>Repeatedly gets emails from an IMAP server and forwards on as a msg if not already seen.</p>
+    <p>The subject is loaded into <code>msg.topic</code> and <code>msg.payload</code> is the plain text body.
+       If there is text/html then that is returned in <code>msg.html</code>. <code>msg.from</code> and <code>msg.date</code> are also set if you need them.</p>
+    <p>Additionally <code>msg.header</code> contains the complete header object including
+    <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
+    <p>It can optionally mark the message as Read (default), Delete it, or leave unmarked (None).</p>
+    <p>Uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a> - see that page for 
+        information on the <code>msg.criteria</code> format if needed.</p>
+    <p><b>Note</b>: uses IMAP with SSL to port 993.</p>
+    <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property. This will be an array of objects where
+    each object represents a specific attachments.  The format of the object is:</p>
+
+<pre>
+{
+  contentType:        // The MIME content description
+  fileName:           // A suggested file name associated with this attachment
+  transferEncoding:   // How was the original email attachment encodded?
+  contentDisposition: // Unknown
+  generatedFileName:  // A suggested file name associated with this attachment
+  contentId:          // A unique generated ID for this attachment
+  checksum:           // A checksum against the data
+  length:             // Size of data in bytes
+  content:            // The actual content of the data contained in a Node.js Buffer object
+                      // We can turn this into a base64 data string with content.toString('base64')
+}
+</pre>
+<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+<p>The maximum refresh interval is 2147483 seconds (24.8 days).</p>
+
+</script>
+

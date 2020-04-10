@@ -7,16 +7,16 @@ data values from a template. Useful for building test-cases.
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Manage Palette option in the Node-RED Editor menu, or run the following command in your Node-RED user directory - typically `~/.node-red`
 
-        npm install node-red-node-data-generator
+        npm i node-red-node-data-generator
 
 Usage
 -----
 
 Creates dummy data based on a handlebars-style template.
 
-Uses the <i><a href="https://github.com/webroo/dummy-json" target="_new">dummy-json</a></i>
+Uses the <i><a href="https://github.com/webroo/dummy-json/blob/master/README.md" target="_new">dummy-json</a></i>
 module, which can create rich sets of dummy data for testing or other uses.
 
 It will build a **string**, or a **parsed JSON object**, creating values based

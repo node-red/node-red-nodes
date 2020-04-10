@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="arduino in">
+<script type="text/html" data-template-name="arduino in">
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
         <input type="text" id="node-input-arduino">
@@ -24,7 +24,7 @@
     <div class="form-tips"><span data-i18n="[html]arduino.tip.io"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="arduino in">
+<script type="text/html" data-help-name="arduino in">
     <p>Arduino input node. Connects to a local Arduino and monitors the selected pin for changes. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
     <p>You can select either Digital or Analogue input. Outputs the value read as <code>msg.payload</code> and the pin number as <code>msg.topic</code>.</p>
@@ -60,7 +60,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="arduino out">
+<script type="text/html" data-template-name="arduino out">
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
         <input type="text" id="node-input-arduino">
@@ -85,7 +85,7 @@
     <div class="form-tips"><span data-i18n="[html]arduino.tip.io"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="arduino out">
+<script type="text/html" data-help-name="arduino out">
     <p>Arduino output node. Connects to local Arduino and writes to the selected digital
     pin. Uses <a href="http://firmata.org/" target="_new"><i>Firmata</i>.</a></p>
     <p>The Arduino must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
@@ -121,11 +121,11 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="arduino-board">
+<script type="text/html" data-template-name="arduino-board">
     <div class="form-row">
         <label for="node-config-input-device"><i class="fa fa-random"></i> <span data-i18n="arduino.label.port"></span></label>
         <input type="text" id="node-config-input-device" style="width:60%;" data-i18n="[placeholder]arduino.placeholder.port"/>
-        <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+        <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
     </div>
     <div class="form-tips"><span data-i18n="[html]arduino.tip.conf"></span></div>
 </script>
@@ -152,10 +152,7 @@
                     $("#node-config-lookup-serial-icon").addClass('fa-search');
                     $("#node-config-lookup-serial-icon").removeClass('spinner');
                     $("#node-config-lookup-serial").removeClass('disabled');
-                    var ports = [];
-                    $.each(data, function(i, port) {
-                        ports.push(port.comName);
-                    });
+                    var ports = data || [];
                     $("#node-config-input-device").autocomplete({
                         source:ports,
                         minLength:0,
