@@ -74,7 +74,8 @@
     &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
     }</code><br />
     Parameter object names must match parameters set up in the Prepared Statement. If you get the error <code>SQLITE_RANGE: bind or column index out of range</code>
-    be sure to include $ on the parameter object key.</p>
+    be sure to include $ on the parameter object key.<br />
+    The sql query for the example above could be: <code>insert into user_table (user_id, user) VALUES ($id, $name);</code></p>
     <p>Using any SQL Query, the result is returned in <code>msg.payload</code></p>
     <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
     <p>You can load sqlite extensions by inputting a <code>msg.extension</code> property containing the full

@@ -86,6 +86,7 @@ module.exports = function(RED) {
             if (this.tick) { clearTimeout(this.tick); }
             if (this.check) { clearInterval(this.check); }
             node.connected = false;
+            node.connection.release();
             node.emit("state"," ");
             node.pool.end(function (err) { done(); });
         });
@@ -102,6 +103,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mydb = n.mydb;
         this.mydbConfig = RED.nodes.getNode(this.mydb);
+        this.status({});
 
         if (this.mydbConfig) {
             this.mydbConfig.connect();
@@ -121,11 +123,28 @@ module.exports = function(RED) {
             node.on("input", function(msg) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
-                        var bind = Array.isArray(msg.payload) ? msg.payload : [];
+                        //console.log("query:",msg.topic);
+                        var bind = [];
+                        if (Array.isArray(msg.payload)) { bind = msg.payload; }
+                        else if (typeof msg.payload === 'object' && msg.payload !== null) {
+                            bind=msg.payload;
+                            node.mydbConfig.connection.config.queryFormat = function (query, values) {
+                                if (!values){
+                                    return query;
+                                }
+                                return query.replace(/\:(\w+)/g, function (txt, key) {
+                                    if (values.hasOwnProperty(key)) {
+                                        return this.escape(values[key]);
+                                    }
+                                return txt;
+                                }.bind(this));
+                            };          
+                        }
                         node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
+                                status = {fill:"red",shape:"ring",text:"Error: "+err.code};
+                                node.status(status);
                                 node.error(err,msg);
-                                status = {fill:"red",shape:"ring",text:"Error"};
                             }
                             else {
                                 if (rows.constructor.name === "OkPacket") {
@@ -134,6 +153,7 @@ module.exports = function(RED) {
                                 else { msg.payload = rows; }
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
+                                node.status(status);
                             }
                         });
                     }

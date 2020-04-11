@@ -60,8 +60,10 @@ module.exports = function(RED) {
                         line += data.toString();
                         var bits = line.split("\n");
                         while (bits.length > 1) {
-                            lastmsg.payload = bits.shift();
-                            node.send([lastmsg,null,null]);
+                            var m = RED.util.cloneMessage(lastmsg);
+                            m.payload = bits.shift();
+                            console.log(m);
+                            node.send([m,null,null]);
                         }
                         line = bits[0];
                     }

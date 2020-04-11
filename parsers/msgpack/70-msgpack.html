@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="msgpack">
+<script type="text/html" data-template-name="msgpack">
     <div class="form-row">
         <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
         <input type="text" id="node-input-property" style="width:70%;"/>
@@ -10,7 +10,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="msgpack">
+<script type="text/html" data-help-name="msgpack">
     <p>A function that converts the <code>msg.payload</code> to and from <a href = "https://github.com/msgpack/msgpack-node"><i>msgpack</i></a> format.</p>
     <p>If the input is NOT a buffer it tries to convert it to a msgpack buffer.</p>
     <p>If the input is a msgpack buffer it tries to decode it back.</p>
@@ -19,7 +19,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('msgpack',{
-        category: 'function',
+        category: 'parser',
         color:"#DEBD5C",
         defaults: {
             name: {value:""},

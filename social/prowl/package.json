@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-prowl",
-    "version"       : "0.0.9",
+    "version"       : "0.0.10",
     "description"   : "A Node-RED node to send alerts via Prowl",
     "dependencies"  : {
-        "node-prowl"   : "0.1.7"
+        "node-prowl"   : "0.1.8"
     },
     "repository" : {
         "type":"git",

@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-markdown",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "A Node-RED node to convert a markdown string to html.",
     "dependencies": {
         "markdown-it": "^10.0.0"

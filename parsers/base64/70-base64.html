@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="base64">
+<script type="text/html" data-template-name="base64">
     <div class="form-row">
         <label for="node-input-action"><i class="fa fa-dot-circle-o"></i> <span data-i18n="base64.label.action"></span></label>
         <select style="width:70%" id="node-input-action">
@@ -20,7 +20,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('base64',{
-        category: 'function',
+        category: 'parser',
         color:"#DEBD5C",
         defaults: {
             name: {value:""},
