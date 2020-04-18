@@ -9,6 +9,8 @@ module.exports = function(RED) {
         this.lon = n.lon;
         this.start = n.start;
         this.end = n.end;
+        this.soff = (n.soff || 0) * 60000;  // minutes
+        this.eoff = (n.eoff || 0) * 60000;  // minutes
 
         var node = this;
         var oldval = null;
@@ -19,12 +21,14 @@ module.exports = function(RED) {
             var nowMillis = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),now.getUTCHours(),now.getUTCMinutes());
             var startMillis = Date.UTC(times[node.start].getUTCFullYear(),times[node.start].getUTCMonth(),times[node.start].getUTCDate(),times[node.start].getUTCHours(),times[node.start].getUTCMinutes());
             var endMillis = Date.UTC(times[node.end].getUTCFullYear(),times[node.end].getUTCMonth(),times[node.end].getUTCDate(),times[node.end].getUTCHours(),times[node.end].getUTCMinutes());
-            var e1 = nowMillis - startMillis;
-            var e2 = nowMillis - endMillis;
+            var e1 = nowMillis - startMillis - node.soff;
+            var e2 = nowMillis - endMillis - node.eoff;
+            var s1 = new Date(startMillis + node.soff);
+            var s2 = new Date(endMillis + node.eoff);
             if (isNaN(e1)) { e1 = 1; }
             if (isNaN(e2)) { e2 = -1; }
             var moon = parseInt(SunCalc.getMoonIllumination(now).fraction * 100 + 0.5) / 100;
-            var msg = {payload:0, topic:"sun", moon:moon};
+            var msg = {payload:0, topic:"sun", moon:moon, start:s1, end:s2, now:now};
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
             if (oldval == null) { oldval = msg.payload; }
             if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"day"}); }

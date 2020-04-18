@@ -31,6 +31,11 @@
     </select>
   </div>
   <div class="form-row">
+    <label><i class="fa fa-arrows-h"></i> Offset</label>
+    <span style="margin-right:4px">start</span> <input type="text" id="node-input-soff" placeholder="minutes" style='width:60px;'> mins
+    <span style="margin-left:14px; margin-right:4px">end</span> <input type="text" id="node-input-eoff" placeholder="minutes" style='width:60px;'> mins
+  </div>
+  <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
@@ -39,9 +44,11 @@
 <script type="text/html" data-help-name="sunrise">
     <p>Uses the suncalc module to generate an output at sunrise and sunset based on a specified location.</p>
     <p>Several choices of definition of sunrise and sunset are available, see the <i><a href = "https://github.com/mourner/suncalc" target="_new">suncalc</a></i> module for details.</p>
+    <p>The start and end times can be offset by a number of minutes before (minus) or after (plus) the chosen event time.</p>
     <p>The first output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending if in between selected times or not.
     The second output emits only on the transition between night to day (<i>-> 1</i>) or day to night (<i>-> 0</i>).</p>
-    <p>Also sets <code>msg.topic</code> to <i>sun</i> and <code>msg.moon</code> to the fraction of the moon between 0 and 1.</p>
+    <p>It also outputs <code>msg.start</code>, <code>msg.end</code> and <code>msg.now</code> which are todays start and end times, with offsets applied, in ISO format, and the current ISO time.</p>
+    <p><code>msg.topic</code> is set to <i>sun</i>, and <code>msg.moon</code> to the fraction of the moon between 0 and 1.</p>
 </script>
 
 <script type="text/javascript">
@@ -53,7 +60,9 @@
             lat: {value:"", required:true, validate:RED.validators.number()},
             lon: {value:"", required:true, validate:RED.validators.number()},
             start: {value:"sunrise", required:true},
-            end: {value:"sunset", required:true}
+            end: {value:"sunset", required:true},
+            soff: {value:0, validate:RED.validators.number()},
+            eoff: {value:0, validate:RED.validators.number()},
         },
         inputs:0,
         outputs:2,
@@ -74,6 +83,10 @@
                     });
                 }
             }
+            if ($("#node-input-soff").val() === "") { $("#node-input-soff").val(0) }
+            if ($("#node-input-eoff").val() === "") { $("#node-input-eoff").val(0) }
+            $("#node-input-soff").spinner({});
+            $("#node-input-eoff").spinner({});
         }
     });
 </script>
