@@ -9,6 +9,7 @@ module.exports = function(RED) {
         this.host = n.host;
         this.port = n.port;
         this.tz = n.tz || "local";
+        this.charset = (n.charset || "UTF8_GENERAL_CI").toUpperCase();
 
         this.connected = false;
         this.connecting = false;
@@ -41,7 +42,8 @@ module.exports = function(RED) {
                     timezone : node.tz,
                     insecureAuth: true,
                     multipleStatements: true,
-                    connectionLimit: 25
+                    connectionLimit: 25,
+                    charset: node.charset
                 });
             }
 
@@ -136,7 +138,7 @@ module.exports = function(RED) {
                                     if (values.hasOwnProperty(key)) {
                                         return this.escape(values[key]);
                                     }
-                                return txt;
+                                    return txt;
                                 }.bind(this));
                             };          
                         }
