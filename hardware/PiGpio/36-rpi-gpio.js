@@ -139,9 +139,7 @@ module.exports = function(RED) {
                 if (RED.settings.verbose) { node.log("out: "+out); }
                 if (node.child !== null) {
                     node.child.stdin.write(out+"\n", () => {
-                        if (done) {
-                            done();
-                        }
+                        if (done) { done(); }
                     });
                     node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
                 }
