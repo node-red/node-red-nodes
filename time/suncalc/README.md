@@ -10,6 +10,8 @@ Either use the `Node-RED Menu - Manage Palette - Install`, or run the following 
 
     npm install node-red-node-suncalc
 
+**Breaking Change** - in version 1.0 the `msg.moon` property is now an object not a number - containing a lot more information.
+
 Usage
 -----
 
@@ -27,5 +29,4 @@ The second output emits only on the transition between night to day (<i>-> 1</i>
 
 It also outputs <code>msg.start</code>, <code>msg.end</code> and <code>msg.now</code> which are todays start and end times, with offsets applied, in ISO format, and the current ISO time.
 
-The `msg.topic` is set to <i>sun</i>, and `msg.moon` to the fraction of the moon currently visible
-(a value between 0 for no moon and 1 for full moon).</p>
+`msg.sun` is an object containing the azimuth and altitude, in degrees, of the current sun position. `msg.moon` is an object containing its position, phase, illumination and icon.
