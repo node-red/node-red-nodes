@@ -118,11 +118,12 @@ if len(sys.argv) > 2:
         else:
             GPIO.setup(pin,GPIO.IN)
 
-        print(GPIO.input(pin))
         if bounce > 0:
             GPIO.add_event_detect(pin, GPIO.BOTH, callback=handle_callback, bouncetime=int(bounce))
         else :
             GPIO.add_event_detect(pin, GPIO.BOTH, callback=handle_callback)
+        sleep(0.1)
+        print(GPIO.input(pin))
 
         while True:
             try:
