@@ -100,7 +100,7 @@ module.exports = function(RED) {
 
         function pushMessage(pushmsg) {
             pusher.send( pushmsg, function(err, response) {
-                if (err) { node.error(err); }
+                if (err) { node.error(err,pushmsg); }
                 else {
                     try {
                         response = JSON.parse(response);
