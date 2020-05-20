@@ -91,16 +91,16 @@ module.exports = function(RED) {
                     node.error("[57-pushover.js] Error: attachment property must be a path to a local file or a Buffer containing an image");
                     return;
                 }
-                pushMessage(pushmsg);
+                pushMessage(pushmsg,msg);
             }
             else {
                 node.warn("Pushover credentials not set.");
             }
         });
 
-        function pushMessage(pushmsg) {
+        function pushMessage(pushmsg,msg) {
             pusher.send( pushmsg, function(err, response) {
-                if (err) { node.error(err); }
+                if (err) { node.error(err,msg); }
                 else {
                     try {
                         response = JSON.parse(response);
