@@ -381,7 +381,7 @@ module.exports = function(RED) {
                                 var c = d[z];
                                 if (c === waitfor) { active = true; }
                                 // handle the trivial case first -- single char buffer
-                                if (!active) { return; }
+                                if (!active) { continue; }
                                 if ((newline === 0)||(newline === "")) {
                                     emitData(new Buffer.from([c]));
                                     continue;
