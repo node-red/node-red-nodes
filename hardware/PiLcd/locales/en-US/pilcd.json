@@ -1,0 +1,19 @@
+{
+    "pilcd": {
+        "label": {
+            "pins": "Pins"
+        },
+        "tip": {
+            "tip": "<b>Tip</b>: Pins MUST be a comma separated list of the 6 GPIO connector pin numbers that are connected to the RS, E, D4, D5, D6 and D7 pins of the LCD."
+        },
+        "status": {
+            "not-available": "not available",
+            "na": "N/A : __value__"
+        },
+        "errors": {
+            "ignorenode": "Raspberry Pi specific node set inactive",
+            "libnotfound": "Cannot find Pi RPi.GPIO python library",
+            "needtobeexecutable": "__command__ needs to be executable"
+        }
+    }
+}
