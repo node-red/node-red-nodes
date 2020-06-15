@@ -1,0 +1,19 @@
+{
+    "pilcd": {
+        "label": {
+            "pins": "ピン"
+        },
+        "tip": {
+            "tip": "<b>注釈</b>: LCDのRS、E、D4、D5、D6、およびD7ピンに接続されている6つのGPIOコネクタのピン番号を、コンマで区切りでピンに入力する必要があります。"
+        },
+        "status": {
+            "not-available": "利用不可",
+            "na": "N/A : __value__"
+        },
+        "errors": {
+            "ignorenode": "Raspberry Pi固有のノードを無視しました",
+            "libnotfound": "RPi.GPIO pythonライブラリを見つけられませんでした",
+            "needtobeexecutable": "__command__ は実行可能である必要があります"
+        }
+    }
+}
