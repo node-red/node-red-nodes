@@ -380,8 +380,8 @@ module.exports = function(RED) {
                             for (var z=0; z<d.length; z++) {
                                 var c = d[z];
                                 if (c === waitfor) { active = true; }
-                                // handle the trivial case first -- single char buffer
                                 if (!active) { continue; }
+                                // handle the trivial case first -- single char buffer
                                 if ((newline === 0)||(newline === "")) {
                                     emitData(new Buffer.from([c]));
                                     continue;
