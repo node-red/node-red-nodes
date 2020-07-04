@@ -47,7 +47,7 @@
         "multilang-sentiment": "^1.2.0",
         "ngeohash": "^0.6.3",
         "node-red": "^1.0.6",
-        "node-red-node-test-helper": "~0.2.3",
+        "node-red-node-test-helper": "~0.2.5",
         "nodemailer": "^6.4.6",
         "poplib": "^0.1.7",
         "proxyquire": "^2.1.3",
