@@ -73,7 +73,7 @@ module.exports = function(RED) {
             node.status({fill:"green",shape:"dot",text:"connected"});
             if ((node.join) && (node.from !== "")) {
                 // disable chat history
-                var to = node.to+'/'+node.nick;
+                var to = node.from+'/'+node.nick;
                 var stanza = new xmpp.Element('presence', {"to": to}).
                     c('x', { xmlns: 'http://jabber.org/protocol/muc' }).
                     c('history', { maxstanzas:0, seconds:1 });
