@@ -133,8 +133,8 @@
     RED.nodes.registerType('xmpp-server',{
         category: 'config',
         defaults: {
-            // server: {required:true},
-            // port: {value:5222,required:true,validate:RED.validators.number()},
+            server: {required:false},
+            port: {value:5222,required:false,validate:RED.validators.number()},
             user: {type:"text"},
             nickname: {value:""}
         },

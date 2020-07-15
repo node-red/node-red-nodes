@@ -1,18 +1,21 @@
 {
-    "name"          : "node-red-node-xmpp",
-    "version"       : "0.2.4",
-    "description"   : "A Node-RED node to talk to an XMPP server",
-    "dependencies"  : {
-        "simple-xmpp"   : "^1.3.1"
+    "name": "node-red-node-xmpp",
+    "version": "0.2.4",
+    "description": "A Node-RED node to talk to an XMPP server",
+    "dependencies": {
+        "@xmpp/client": "^0.11.1"
     },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/xmpp"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes/tree/master/social/xmpp"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "xmpp" ],
-    "node-red"      : {
-        "nodes"     : {
+    "keywords": [
+        "node-red",
+        "xmpp"
+    ],
+    "node-red": {
+        "nodes": {
             "xmpp": "92-xmpp.js"
         }
     },
