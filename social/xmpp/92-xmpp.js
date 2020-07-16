@@ -506,7 +506,7 @@ module.exports = function(RED) {
                         message = xml(
                             "message",
                             { type: type, to: to },
-                            xml("body", {}, JSON.stringify(msg)),
+                            xml("body", {}, JSON.stringify(msg))
                         );
 
                     }
@@ -515,14 +515,14 @@ module.exports = function(RED) {
                             message = xml(
                                 "message",
                                 { type: type, to: to },
-                                xml("body", {}, JSON.stringify(msg.payload)),
+                                xml("body", {}, JSON.stringify(msg.payload))
                             );
                         }
                         else {
                             message = xml(
                                 "message",
                                 { type: type, to: to },
-                                xml("body", {}, msg.payload.toString()),
+                                xml("body", {}, msg.payload.toString())
                             );
                         }
                     }
