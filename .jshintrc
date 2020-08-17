@@ -11,5 +11,5 @@
     "shadow": true,
     "sub": true,
     "proto": true,
-    "esversion": 6   
+    "esversion": 8
 }

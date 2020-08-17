@@ -129,7 +129,7 @@ module.exports = function(RED) {
             }
         }
 
-        function inputlistener(msg) {
+        function inputlistener(msg, send, done) {
             if (msg.payload === "true") { msg.payload = true; }
             if (msg.payload === "false") { msg.payload = false; }
             var out = Number(msg.payload);
@@ -138,7 +138,9 @@ module.exports = function(RED) {
             if ((out >= 0) && (out <= limit)) {
                 if (RED.settings.verbose) { node.log("out: "+out); }
                 if (node.child !== null) {
-                    node.child.stdin.write(out+"\n");
+                    node.child.stdin.write(out+"\n", () => {
+                        if (done) { done(); }
+                    });
                     node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
                 }
                 else {

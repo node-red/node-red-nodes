@@ -107,7 +107,7 @@ Values depends on the oids being requested.
 
 ### snmp-subtree
 
-Simple SNMP oid subtree fetcher. Triggered by any input.
+Simple SNMP oid subtree fetcher. Triggered by any input. Reads from OID specified and any below it.
 
 `msg.host` may contain the host.
 
@@ -127,7 +127,7 @@ Values depends on the oids being requested.
 
 ### snmp-walker
 
-Simple SNMP oid walker fetcher. Triggered by any input.
+Simple SNMP oid walker fetcher. Triggered by any input. Reads from OID specified to the end of the table.
 
 `msg.host` may contain the host.
 

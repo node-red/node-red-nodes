@@ -7,7 +7,7 @@ module.exports = function(RED) {
     function doPing(node, host, arrayMode){
         const defTimeout = 5000;
         var ex, hostOptions, commandLineOptions;
-        if(typeof host === "string"){
+        if (typeof host === "string") {
             hostOptions = {
                 host: host,
                 timeout: defTimeout
@@ -22,7 +22,7 @@ module.exports = function(RED) {
         var timeoutS = Math.round(hostOptions.timeout / 1000); //whole numbers only
         var msg = { payload:false, topic:hostOptions.host };
         //only include the extra msg object if operating in advance/array mode.
-        if(arrayMode){
+        if (arrayMode) {
             msg.ping = hostOptions
         }
         if (plat == "linux" || plat == "android") { 
@@ -42,7 +42,13 @@ module.exports = function(RED) {
         //monitor every spawned process & SIGINT if too long
         var spawnTout = setTimeout(() => {
             node.log(`ping - Host '${hostOptions.host}' process timeout - sending SIGINT`)
-            try{if(ex && ex.pid){ ex.kill("SIGINT"); }} catch(e){console.warn(e)}
+            try {
+                if (ex && ex.pid) { 
+                    ex.removeAllListeners();
+                    ex.kill("SIGINT"); 
+                }
+            } 
+            catch(e) { console.warn(e) }
         }, hostOptions.timeout+1000); //add 1s for grace
 
         var res = false;
@@ -50,9 +56,11 @@ module.exports = function(RED) {
         var fail = false;
         //var regex = /from.*time.(.*)ms/;
         var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9\.]*)/;
-        ex.stdout.on("data", function (data) {
-            line += data.toString();
-        });
+        if (ex && ex.hasOwnProperty("stdout")) {
+            ex.stdout.on("data", function (data) {
+                line += data.toString();
+            });
+        }
         ex.on("exit", function (err) {
             clearTimeout(spawnTout);
         });
@@ -95,14 +103,14 @@ module.exports = function(RED) {
             if (node.tout) { clearInterval(node.tout); }
         }
 
-        if(node.mode === "triggered"){
+        if (node.mode === "triggered") {
             clearPingInterval();
-        } else if(node.timer){
+        } else if (node.timer) {
             node.tout = setInterval(function() {
                 let pingables = generatePingList(node.host);
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if(element){ doPing(node, element, false); }
+                    if (element) { doPing(node, element, false); }
                 }
             }, node.timer);
         }
@@ -110,16 +118,16 @@ module.exports = function(RED) {
         this.on("input", function (msg) {
             let node = this;
             let payload = node.host || msg.payload;
-            if(typeof payload == "string"){
+            if (typeof payload == "string") {
                 let pingables = generatePingList(payload)
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if(element){ doPing(node, element, false); }
+                    if (element) { doPing(node, element, false); }
                 }
             } else if (Array.isArray(payload) ) {
                 for (let index = 0; index < payload.length; index++) {
                     const element = payload[index];
-                    if(element){ doPing(node, element, true); }
+                    if (element) { doPing(node, element, true); }
                 }
             }
         });
@@ -127,8 +135,6 @@ module.exports = function(RED) {
         this.on("close", function() {
             clearPingInterval();
         });
-
-
     }
     RED.nodes.registerType("ping",PingNode);
 }

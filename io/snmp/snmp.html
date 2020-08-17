@@ -224,7 +224,7 @@
 </script>
 
 <script type="text/html" data-help-name="snmp subtree">
-    <p>Simple SNMP oid subtree fetcher. Triggered by any input.</p>
+    <p>Simple SNMP oid subtree fetcher. Triggered by any input. Reads all OIDS at and below the current base OID.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
@@ -287,12 +287,15 @@
 </script>
 
 <script type="text/html" data-help-name="snmp walker">
-    <p>Simple SNMP oid walker fetcher. Triggered by any input.</p>
+    <p>Simple SNMP oid walker fetcher. Triggered by any input. 
+    Fetches all nodes from this OID to the end of the table.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
+    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to 
+    the typical snmpwalk command line app.</p>
 </script>
 
 <script type="text/javascript">

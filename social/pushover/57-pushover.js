@@ -42,6 +42,7 @@ module.exports = function(RED) {
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
+            if (!msg.payload) { msg.payload = ""; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
@@ -90,16 +91,16 @@ module.exports = function(RED) {
                     node.error("[57-pushover.js] Error: attachment property must be a path to a local file or a Buffer containing an image");
                     return;
                 }
-                pushMessage(pushmsg);
+                pushMessage(pushmsg,msg);
             }
             else {
                 node.warn("Pushover credentials not set.");
             }
         });
 
-        function pushMessage(pushmsg) {
+        function pushMessage(pushmsg,msg) {
             pusher.send( pushmsg, function(err, response) {
-                if (err) { node.error(err); }
+                if (err) { node.error(err,msg); }
                 else {
                     try {
                         response = JSON.parse(response);

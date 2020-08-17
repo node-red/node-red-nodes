@@ -58,8 +58,10 @@ Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 The default message recipient can be configured in the node, if it is left
 blank it should be set using the `msg.to` property of the incoming message.
 
-You may optionally override the *from* email address by setting `msg.from`,
-otherwise the node will use the `userid` setting from the server connection.
+The email *from* can be set using `msg.from` but not all mail services allow 
+this unless `msg.from` is also a valid userid or email address associated with 
+the password. Note: if `userid` or msg.from does not contain a valid email 
+address (userxx@some_domain.com), you may see (No Sender) in the email.
 
 The payload can be html format.
 

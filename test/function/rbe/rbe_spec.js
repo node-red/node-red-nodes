@@ -286,9 +286,12 @@ describe('rbe node', function() {
             n2.on("input", function(msg) {
                 c = c + 1;
                 if (c === 1) {
-                    msg.should.have.a.property("payload", 120);
+                    msg.should.have.a.property("payload", 100);
                 }
                 else if (c === 2) {
+                    msg.should.have.a.property("payload", 111);
+                }
+                else if (c === 3) {
                     msg.should.have.a.property("payload", 135);
                     done();
                 }
@@ -296,8 +299,8 @@ describe('rbe node', function() {
             n1.emit("input", {payload:100});
             n1.emit("input", {payload:95});
             n1.emit("input", {payload:105});
+            n1.emit("input", {payload:111});
             n1.emit("input", {payload:120});
-            n1.emit("input", {payload:130});
             n1.emit("input", {payload:135});
         });
     });

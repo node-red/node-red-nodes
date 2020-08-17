@@ -32,7 +32,8 @@
 <p>Raspberry Pi Sense HAT Simulator input node.</p>
 <p>This node simulates readings from the various sensors on the Sense HAT,
 grouped into three sets; motion events, environment events and joystick events.</p>
-<p>Once deployed, the simulator can be accessed <a href="sensehat-simulator" target="_new">here</a>.</p>
+<p>Once deployed, click this button to open the simulator:</p>
+<p style="text-align: center"><a href="sensehat-simulator" target="_new" class="red-ui-button">Open Simulator <i class="fa fa-external-link"></i></a></p>
 <p><b>Motion events</b> - <i>not currently supported by the simulator</i></p>
 <p>Motion events include readings from the accelerometer, gyroscope and magnetometer,
 as well as the current compass heading. They are sent at a rate of approximately 10
@@ -73,7 +74,8 @@ is an object with the following values:</p>
 <script type="text/x-red" data-help-name="rpi-sensehatsim out">
 <p>Raspberry Pi Sense HAT Simulator output node.</p>
 <p>This node sends commands to the 8x8 LED display on the Sense HAT simulator.</p>
-<p>Once deployed, the simulator can be accessed <a href="sensehat-simulator" target="_new">here</a>.</p>
+<p>Once deployed, click this button to open the simulator:</p>
+<p style="text-align: center"><a href="sensehat-simulator" target="_new" class="red-ui-button">Open Simulator <i class="fa fa-external-link"></i></a></p>
 <p>Commands are sent to the node in <code>msg.payload</code>. Multiple commands can
 be sent in a single message by separating them with newline (\n) characters.<p>
 
@@ -108,7 +110,7 @@ be sent in a single message by separating them with newline (\n) characters.<p>
 <p><code>axis</code> must be either <code>H</code> or <code>V</code> to flip on
 the horizontal or vertical axis respectively.</p>
 
-<p><b>Scroll a message</b> - <i>not currently supported by the simulator</i></p>
+<p><b>Scroll a message</b></p>
 <p>If <code>msg.payload</code> is not recognised as any of the above commands,
 it is treated as a text message to be scrolled across the screen.</p>
 <p>If the text is a single character, it will be displayed without scrolling.
@@ -120,7 +122,7 @@ To scroll a single character, append a blank space after it - <code>"A "</code>.
     <li><code>msg.speed</code> - the scroll speed. A value in the range 1 (slower) to 5 (faster), default: <code>3</code></li>
 </ul>
 
-<p><b>Set the screen brightness</b> - <i>not currently supported by the simulator</i></p>
+<p><b>Set the screen brightness</b></p>
 <p>Format: <code>D&lt;level&gt;</code></p>
 <p><code>level</code> must be 0 (low) or 1 (high).</p>
 </script>
