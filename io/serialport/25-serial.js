@@ -43,7 +43,7 @@ module.exports = function(RED) {
             node.on("input",function(msg) {
 				if (msg.hasOwnProperty("baudrate")) {
 					var baud = parseInt(msg.baudrate);
-					if (baud == NaN) {
+					if (isNaN(baud)) {
 						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
 						node.error(errmsg,"Cannot parse baudrate property");
 					} else {
@@ -137,7 +137,7 @@ module.exports = function(RED) {
             node.on("input",function(msg) {
                 if (msg.hasOwnProperty("baudrate")) {
 					var baud = parseInt(msg.baudrate);
-					if (baud == NaN) {
+					if (isNaN(baud)) {
 						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
 						node.error(errmsg,"Cannot parse baudrate property");
 					} else {
