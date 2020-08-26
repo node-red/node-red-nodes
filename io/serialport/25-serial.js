@@ -45,7 +45,7 @@ module.exports = function(RED) {
 					var baud = parseInt(msg.baudrate);
 					if (isNaN(baud)) {
 						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-						node.error(errmsg,"Cannot parse baudrate property");
+						node.error(errmsg,msg);
 					} else {
 						node.port.update({baudRate: baud},function(err,res) {
 							if (err) {
@@ -139,7 +139,7 @@ module.exports = function(RED) {
 					var baud = parseInt(msg.baudrate);
 					if (isNaN(baud)) {
 						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-						node.error(errmsg,"Cannot parse baudrate property");
+						node.error(errmsg,msg);
 					} else {
 						node.port.update({baudRate: baud},function(err,res) {
 							if (err) {
