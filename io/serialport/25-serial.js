@@ -44,8 +44,7 @@ module.exports = function(RED) {
 				if (msg.hasOwnProperty("baudrate")) {
 					var baud = parseInt(msg.baudrate);
 					if (isNaN(baud)) {
-						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-						node.error(errmsg,msg);
+                        node.error(RED._("serial.errors.badbaudrate"),msg);
 					} else {
 						node.port.update({baudRate: baud},function(err,res) {
 							if (err) {
@@ -138,8 +137,7 @@ module.exports = function(RED) {
                 if (msg.hasOwnProperty("baudrate")) {
 					var baud = parseInt(msg.baudrate);
 					if (isNaN(baud)) {
-						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-						node.error(errmsg,msg);
+						node.error(RED._("serial.errors.badbaudrate"),msg);
 					} else {
 						node.port.update({baudRate: baud},function(err,res) {
 							if (err) {
