@@ -135,6 +135,20 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
             // Serial Out
             node.on("input",function(msg) {
+                if (msg.hasOwnProperty("baudrate")) {
+					var baud = parseInt(msg.baudrate);
+					if (baud == NaN) {
+						var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+						node.error(errmsg,"Cannot parse baudrate property");
+					} else {
+						node.port.update({baudRate: baud},function(err,res) {
+							if (err) {
+								var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+								node.error(errmsg,msg);
+							}
+						});
+					}
+				}
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
                 if (msg.hasOwnProperty("count") && (typeof msg.count === "number") && (node.serialConfig.out === "count")) {
                     node.serialConfig.newline = msg.count;
