@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-pushover",
-    "version"       : "0.0.13",
+    "version"       : "0.0.20",
     "description"   : "A Node-RED node to send alerts via Pushover",
     "dependencies"  : {
-        "pushover-notifications"   : "~0.2.4"
+        "pushover-notifications"   : "^1.2.2"
     },
     "repository" : {
         "type":"git",
@@ -20,5 +20,12 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [
+        {
+            "name": "Damien Clark",
+            "email": "damo.clarky@gmail.com",
+            "url": "https://damos.world"
+        }
+    ]
 }

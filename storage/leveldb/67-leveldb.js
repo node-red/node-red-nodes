@@ -6,9 +6,10 @@ module.exports = function(RED) {
     function LevelNode(n) {
         RED.nodes.createNode(this,n);
         this.dbname = n.db;
+        this.encoding = n.encoding || "utf8";
         this.ready = false;
         var node = this;
-        lvldb(this.dbname, function(err, db) {
+        lvldb(this.dbname, {valueEncoding:this.encoding}, function(err, db) {
             if (err) { node.error(err); }
             node.db = db;
             node.db.on('ready', function() { node.ready = true; });

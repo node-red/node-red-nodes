@@ -99,32 +99,41 @@ module.exports = function(RED) {
         var PiGPIO;
 
         function inputlistener(msg) {
-            if (msg.payload === "true") { msg.payload = true; }
-            if (msg.payload === "false") { msg.payload = false; }
-            var out = Number(msg.payload);
-            var limit = 1;
-            if (node.out !== "out") { limit = 100; }
-            var pre = "";
-            if ((out >= 0) && (out <= limit)) {
-                if (RED.settings.verbose) { node.log("out: "+msg.payload); }
+            if (node.out === "ser" && (msg.payload === null || msg.payload === "")) {
                 if (!inerror) {
-                    if (node.out === "out") {
-                        PiGPIO.write(node.pin, msg.payload);
-                    }
-                    if (node.out === "pwm") {
-                        PiGPIO.set_PWM_dutycycle(node.pin, parseInt(msg.payload * 2.55));
-                    }
-                    if (node.out === "ser") {
-                        var r = (node.sermax - node.sermin) * 100;
-                        PiGPIO.setServoPulsewidth(node.pin, parseInt(1500 - (r/2) + (msg.payload * r / 100)));
-                    }
-                    node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
+                    PiGPIO.setServoPulsewidth(node.pin, 0);
+                    node.status({fill:"green",shape:"dot",text:""});
                 }
-                else {
-                    node.status({fill:"grey",shape:"ring",text:"N/C: " + msg.payload.toString()});
-                }
+                else { node.status({fill:"grey",shape:"ring",text:"N/C: " + msg.payload.toString()}); }
             }
-            else { node.warn(RED._("pi-gpiod:errors.invalidinput")+": "+out); }
+            else {
+                if (msg.payload === "true") { msg.payload = true; }
+                if (msg.payload === "false") { msg.payload = false; }
+                var out = Number(msg.payload);
+                var limit = 1;
+                if (node.out !== "out") { limit = 100; }
+                var pre = "";
+                if ((out >= 0) && (out <= limit)) {
+                    if (RED.settings.verbose) { node.log("out: "+msg.payload); }
+                    if (!inerror) {
+                        if (node.out === "out") {
+                            PiGPIO.write(node.pin, out);
+                        }
+                        if (node.out === "pwm") {
+                            PiGPIO.set_PWM_dutycycle(node.pin, parseInt(out * 2.55));
+                        }
+                        if (node.out === "ser") {
+                            var r = (node.sermax - node.sermin) * 100;
+                            PiGPIO.setServoPulsewidth(node.pin, parseInt(1500 - (r/2) + (out * r / 100)));
+                        }
+                        node.status({fill:"green",shape:"dot",text:out.toString()});
+                    }
+                    else {
+                        node.status({fill:"grey",shape:"ring",text:"N/C: " + out.toString()});
+                    }
+                }
+                else { node.warn(RED._("pi-gpiod:errors.invalidinput")+": "+out); }
+            }
         }
 
         if (node.pin !== undefined) {

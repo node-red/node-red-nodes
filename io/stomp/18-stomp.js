@@ -66,15 +66,14 @@ module.exports = function(RED) {
         node.client.connect(function(sessionId) {
             node.log('subscribing to: '+node.topic);
             node.client.subscribe(node.topic, function(body, headers) {
+                var newmsg={"headers":headers,"topic":node.topic}
                 try {
-                    msg.payload = JSON.parse(body);
+                    newmsg.payload = JSON.parse(body);
                 }
                 catch(e) {
-                    msg.payload = body;
+                    newmsg.payload = body;
                 }
-                msg.headers = headers;
-                msg.topic = node.topic;
-                node.send(msg);
+                node.send(newmsg);
             });
         }, function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"});

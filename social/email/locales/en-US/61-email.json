@@ -2,13 +2,16 @@
     "email": {
         "email": "email",
         "label": {
+            "getmail":"Get mail",
+            "auto": "automatically",
+            "trigger": "when triggered",
             "to": "To",
             "server": "Server",
             "port": "Port",
             "useSecureConnection": "Use secure connection.",
             "userid": "Userid",
             "password": "Password",
-            "repeat": "Refresh",
+            "repeat": "every",
             "seconds": "seconds",
             "folder": "Folder",
             "protocol": "Protocol",
@@ -17,7 +20,16 @@
             "disposition": "Disposition",
             "none": "None",
             "read": "Mark Read",
-            "delete": "Delete"
+            "delete": "Delete",
+            "criteria": "Criteria",
+            "criteriaFromMsg": "- set from msg.criteria -",
+            "all": "All",
+            "answered": "Answered",
+            "flagged": "Flagged",
+            "seen": "Seen",
+            "unanswered": "Unanswered",
+            "unflagged": "Unflagged",
+            "unseen": "Unseen"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {

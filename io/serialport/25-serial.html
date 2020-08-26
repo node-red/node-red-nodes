@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="serial in">
+<script type="text/html" data-template-name="serial in">
     <div class="form-row node-input-serial">
         <label for="node-input-serial"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-input-serial">
@@ -10,7 +10,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="serial in">
+<script type="text/html" data-help-name="serial in">
     <p>Reads data from a local serial port.</p>
     <p>Can either <ul><li>wait for a "split" character (default \n). Also accepts hex notation (0x0d).</li>
     <li>Wait for a timeout in milliseconds from the first character received</li>
@@ -23,7 +23,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial in',{
-        category: 'input',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -38,11 +38,12 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        }
+        },
+        outputLabels: function() { return RED.nodes.node(this.serial).bin === "bin" ? "buffer" : "string"; }
     });
 </script>
 
-<script type="text/x-red" data-template-name="serial out">
+<script type="text/html" data-template-name="serial out">
     <div class="form-row node-input-serial">
         <label for="node-input-serial"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-input-serial">
@@ -53,7 +54,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="serial out">
+<script type="text/html" data-help-name="serial out">
     <p>Provides a connection to an outbound serial port.</p>
     <p>Only the <code>msg.payload</code> is sent.</p>
     <p>Optionally the new line character used to split the input can be appended to every message sent out to the serial port.</p>
@@ -62,7 +63,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial out',{
-        category: 'output',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -82,7 +83,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="serial request">
+<script type="text/html" data-template-name="serial request">
     <div class="form-row node-input-serial">
         <label for="node-input-serial"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-input-serial">
@@ -93,13 +94,13 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="serial request">
+<script type="text/html" data-help-name="serial request">
     <p>Provides a connection to a request/response serial port.</p>
     <p>This node behaves as a tightly coupled combination of <code>serial in</code> and <code>serial out</code> nodes,
     with which it shares the configuration.</p>
     <p>Send the request message in <code>msg.payload</code> as you would do with a <code>serial out</code> node.
     The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request.
-    Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is produced to the output (see Outputs below),
+    Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is sent to the output (see Outputs below),
     with <code>msg.payload</code> containing the received response (or missing in case if timeout) and all other fields preserved.</p>
     <p>For consistency with the <code>serial in</code> node, <code>msg.port</code> is set to the name of the port selected.</p>
     <h3>Inputs</h3>
@@ -108,7 +109,8 @@
     <code>msg.timeout</code> is the timeout (in ms) after which the incoming message is propagated to the output with <code>msg.status</code> set to <code>"ERR_TIMEOUT"</code> and missing payload.
     If not present, the default value is 10000 (10s).
     </li>
-    <li>Any other field will be propagated to the output so to allow to match responses with requests.</li>
+    <li><code>msg.count</code> if set this will override the configured number of characters as long as it is less than the number configured.</li>
+    <li><code>msg.waitfor</code> single character, escape code, or hex code. If set, the node will wait until it matches that character in the stream and then start the output.</li>
     </ul>
     <h3>Outputs</h3>
     <ul>
@@ -120,7 +122,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('serial request',{
-        category: 'function',
+        category: 'network',
         defaults: {
             name: {name:""},
             serial: {type:"serial-port",required:true}
@@ -136,101 +138,145 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        }
+        },
+        outputLabels: function() { return RED.nodes.node(this.serial).bin === "bin" ? "buffer" : "string"; }
     });
 </script>
 
-<script type="text/x-red" data-template-name="serial-port">
+<script type="text/html" data-template-name="serial-port">
     <div class="form-row">
         <label for="node-config-input-serialport"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-config-input-serialport" style="width:66%;" data-i18n="[placeholder]serial.placeholder.serialport">
-        <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+        <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
     </div>
-    <div class="form-row">
-        <table width="100%"><tr>
-            <td width="100px"><i class="fa fa-wrench"></i> <span data-i18n="serial.label.settings"></span></td>
+    <div class="form-row" style="margin-bottom:8px;">
+        <table width="100%">
+        <tr style="line-height:10px;">
+            <td width="90px" style="font-size:14px;"><i class="fa fa-wrench"></i> <span data-i18n="serial.label.settings"></span></td>
             <td width="110px" data-i18n="serial.label.baudrate"></td>
             <td width="70px" data-i18n="serial.label.databits"></td>
             <td width="80px" data-i18n="serial.label.parity"></td>
             <td width="70px" data-i18n="serial.label.stopbits"></td>
-        </tr><tr><td>&nbsp;</td>
+        </tr>
+        <tr>
+        <td>&nbsp;</td>
         <td>
             <input type="text" id="node-config-input-serialbaud" style="width:92%">
-        </td><td>
-        <select type="text" id="node-config-input-databits" style="width:90%;">
+        </td>
+        <td><select type="text" id="node-config-input-databits" style="width:90%;">
             <option value="8">8</option>
             <option value="7">7</option>
             <option value="6">6</option>
             <option value="5">5</option>
-        </select>
-        </td><td>
-        <select type="text" id="node-config-input-parity" style="width:90%;">
+        </select></td>
+        <td><select type="text" id="node-config-input-parity" style="width:90%;">
             <option value="none" data-i18n="serial.parity.none"></option>
             <option value="even" data-i18n="serial.parity.even"></option>
             <option value="mark" data-i18n="serial.parity.mark"></option>
             <option value="odd" data-i18n="serial.parity.odd"></option>
             <option value="space" data-i18n="serial.parity.space"></option>
-        </select>
-        </td><td>
-        <select type="text" id="node-config-input-stopbits" style="width:90%;">
+        </select></td>
+        <td><select type="text" id="node-config-input-stopbits" style="width:60px;">
             <option value="2">2</option>
             <option value="1">1</option>
-        </select>
-        </td></tr></table>
+        </select></td>
+        </tr></table>
     </div>
-    <br/>
-    <div class="form-row">
+    <div class="form-row" style="margin-bottom:0px;">
+        <table width="100%">
+            <tr style="line-height:4px;">
+                <td style="width:90px;">&nbsp;</td>
+                <td>DTR</td>
+                <td>RTS</td>
+                <td>CTS</td>
+                <td>DSR</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><select type="text" id="node-config-input-dtr" style="width:72px; height:28px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-rts" style="width:72px; height:28px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-cts" style="width:72px; height:28px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+                <td><select type="text" id="node-config-input-dsr" style="width:72px; height:28px;">
+                    <option value="none" data-i18n="serial.linestates.none"></option>
+                    <option value="high" data-i18n="serial.linestates.high"></option>
+                    <option value="low" data-i18n="serial.linestates.low"></option>
+                </select></td>
+            </tr>
+        </table>
+    </div>
+    <div class="form-row" style="margin-top:12px; margin-bottom:0;">
         <label><i class="fa fa-sign-in"></i> <span data-i18n="serial.label.input"></span></label>
     </div>
-    <div class="form-row" style="padding-left:10px;">
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
+        <span data-i18n="serial.label.start"></span>
+        <input type="text" id="node-config-input-waitfor" style="width:50px; height:28px;">
+        <span data-i18n="serial.label.startor"></span>
+    </div>
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
         <span data-i18n="serial.label.split"></span>
-        <select type="text" id="node-config-input-out" style="margin-left:5px; width:200px;">
+        <select type="text" id="node-config-input-out" style="margin-left:11px; width:200px; height:28px;">
             <option value="char" data-i18n="serial.split.character"></option>
             <option value="time" data-i18n="serial.split.timeout"></option>
             <option value="interbyte" data-i18n="serial.split.silent"></option>
             <option value="count" data-i18n="serial.split.lengths"></option>
         </select>
-        <input type="text" id="node-config-input-newline" style="width:50px;">
+        <input type="text" id="node-config-input-newline" style="width:50px; height:28px;">
         <span id="node-units"></span>
     </div>
-    <div class="form-row" style="padding-left:10px;">
+    <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
         <span data-i18n="serial.label.deliver"></span>
-        <select type="text" id="node-config-input-bin" style="margin-left:5px; width:150px;">
+        <select type="text" id="node-config-input-bin" style="margin-left:5px; width:150px; height:28px;">
             <option value="false" data-i18n="serial.output.ascii"></option>
             <option value="bin" data-i18n="serial.output.binary"></option>
         </select>
     </div>
-    <br/>
     <div id="node-config-addchar">
-        <div class="form-row">
+        <div class="form-row" style="margin-top:16px; margin-bottom:0;">
             <label><i class="fa fa-sign-out"></i> <span data-i18n="serial.label.output"></span></label>
         </div>
-        <div class="form-row">
-            <input style="width:30px; margin-left:10px; vertical-align:top;" type="checkbox" id="node-config-input-addchar"><label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
+        <div class="form-row" style="padding-left:18px; margin-bottom:4px;">
+            <label style="width:auto;" for="node-config-input-addchar"><span data-i18n="serial.addsplit"></span></label>
+            <input type="text" id="node-config-input-addchar" style="width:50px; height:28px;">
         </div>
     </div>
-    <br/>
-    <div id="node-config-addchar">
-        <div class="form-row">
+    <div id="node-config-req">
+        <div class="form-row" style="margin-top:16px; margin-bottom:0;">
             <label><i class="fa fa-exchange"></i> <span data-i18n="serial.label.request"></span></label>
         </div>
-        <div class="form-row" style="padding-left:10px;">
+        <div class="form-row" style="padding-left:18px; margin-bottom:18px;">
             <span data-i18n="serial.label.responsetimeout"></span>
-            <input type="text" id="node-config-input-responsetimeout" style="width:60px;">
+            <input type="text" id="node-config-input-responsetimeout" style="width:60px; height:28px;">
             <span data-i18n="serial.label.ms"></span>
         </div>
     </div>
+    <div class="form-tips" id="tip-waitfor" hidden><span data-i18n="serial.tip.waitfor"></span></div>
+    <div class="form-tips" id="tip-addchar" hidden><span data-i18n="serial.tip.addchar"></span></div>
     <div class="form-tips" id="tip-responsetimeout" hidden><span data-i18n="serial.tip.responsetimeout"></span></div>
     <div class="form-tips" id="tip-split"><span data-i18n="serial.tip.split"></span></div>
     <div class="form-tips" id="tip-timeout" hidden><span data-i18n="serial.tip.timeout"></span></div>
     <div class="form-tips" id="tip-silent" hidden><span data-i18n="serial.tip.silent"></span></div>
+    <div class="form-tips" id="tip-count" hidden><span data-i18n="serial.tip.count"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="serial-port">
+<script type="text/html" data-help-name="serial-port">
     <p>Provides configuration options for a serial port.</p>
     <p>The search button should return a list of available serial ports to choose from, or you
     can type in the location if known.</p>
-    <p>The input can be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
+    <p>The DTR, RTS, CTS and DSR switches can be used to permanently pull the corresponding flow control pin high or low, e.g. in order to power devices via those pins.</p>
+    <p>The node can optionally wait until it matches a pre-defined character.
+        The data can then be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
     <p>If using a character, it can be specified as either the character, the escaped shortcut (e.g. \n), or the hex code (e.g. 0x0d).</p>
 </script>
 
@@ -244,10 +290,15 @@
             databits: {value:8,required:true},
             parity: {value:"none",required:true},
             stopbits: {value:1,required:true},
+            waitfor: {value:""},
+            dtr: {value:"none"},
+            rts: {value:"none"},
+            cts: {value:"none"},
+            dsr: {value:"none"},
             newline: {value:"\\n"},
             bin: {value:"false"},
             out: {value:"char"},
-            addchar: {value:false},
+            addchar: {value:""},
             responsetimeout: {value: 10000}
         },
         label: function() {
@@ -290,41 +341,50 @@
                 if ($("#node-config-input-out").val() == "char") {
                     if (previous != "char") { $("#node-config-input-newline").val("\\n"); }
                     $("#node-units").text("");
-                    $("#node-config-addchar").show();
+                    // $("#node-config-addchar").show();
                     $("#tip-split").show();
                     $("#tip-timeout").hide();
                     $("#tip-silent").hide();
+                    $("#tip-count").hide();
                 }
                 else if ($("#node-config-input-out").val() == "time") {
                     if (previous != "time") { $("#node-config-input-newline").val("0"); }
                     $("#node-units").text("ms");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").show();
                     $("#tip-silent").hide();
+                    $("#tip-count").hide();
                 }
                 else if ($("#node-config-input-out").val() == "interbyte") {
                     if (previous != "interbyte") { $("#node-config-input-newline").val("0"); }
                     $("#node-units").text("ms");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").hide();
                     $("#tip-silent").show();
+                    $("#tip-count").hide();
                 }
                 else {
                     if (previous != "count") { $("#node-config-input-newline").val(""); }
                     $("#node-units").text("chars");
-                    $("#node-config-addchar").hide();
-                    $("#node-config-input-addchar").val("false");
+                    // $("#node-config-addchar").hide();
+                    // $("#node-config-input-addchar").val("false");
                     $("#tip-split").hide();
                     $("#tip-timeout").hide();
                     $("#tip-silent").hide();
+                    $("#tip-count").show();
                 }
             });
 
             $("#node-config-input-responsetimeout").on('focus', function () { $("#tip-responsetimeout").show(); });
+            $("#node-config-input-responsetimeout").on('blur', function () { $("#tip-responsetimeout").hide(); });
+            $("#node-config-input-waitfor").on('focus', function () { $("#tip-waitfor").show(); });
+            $("#node-config-input-waitfor").on('blur', function () { $("#tip-waitfor").hide(); });
+            $("#node-config-input-addchar").on('focus', function () { $("#tip-addchar").show(); });
+            $("#node-config-input-addchar").on('blur', function () { $("#tip-addchar").hide(); });
 
             try {
                 $("#node-config-input-serialport").autocomplete( "destroy" );
@@ -334,10 +394,7 @@
                 $("#node-config-lookup-serial").addClass('disabled');
                 $.getJSON('serialports',function(data) {
                     $("#node-config-lookup-serial").removeClass('disabled');
-                    var ports = [];
-                    $.each(data, function(i, port) {
-                        ports.push(port.comName);
-                    });
+                    var ports = data || [];
                     $("#node-config-input-serialport").autocomplete({
                         source:ports,
                         minLength:0,

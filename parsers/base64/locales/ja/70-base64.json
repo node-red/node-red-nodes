@@ -1,0 +1,24 @@
+{
+  "base64": {
+    "base64": "base64",
+    "label": {
+      "action": "動作"
+    },
+    "convert": {
+      "buffer": "バッファ <-> Base64の変換",
+      "encode": "Base64へエンコード",
+      "decode": "Base64から文字列へ変換"
+    },
+    "log": {
+      "nonbase64encode": "Base64文字列ではありませんが、変換します。"
+    },
+    "warn": {
+      "cannothandle": "このノードは文字列かバッファしか変換できません。",
+      "noproperty": "処理するためのプロパティが見つかりません。"
+    },
+    "error": {
+      "invalid": "不正なBase64文字列です。",
+      "nonbase64": "Base64文字列ではありません。"
+    }
+  }
+}

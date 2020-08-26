@@ -24,9 +24,9 @@ module.exports = function(RED) {
                             RED.util.setMessageProperty(msg,node.property,value);
                             node.send(msg);
                         }
-                        else { node.error("Invalid Base64 string",msg); }
+                        else { node.error(RED._("base64.error.invalid"),msg); }
                     }
-                    else { node.error("Not a Base64 string",msg); }
+                    else { node.error(RED._("base64.error.nonbase64"),msg); }
                 }
                 else {
                     if (Buffer.isBuffer(value)) {
@@ -46,18 +46,18 @@ module.exports = function(RED) {
                             node.send(msg);
                         }
                         else {
-                            node.log("Not a Base64 string - maybe we should encode it...");
+                            node.log(RED._("base64.log.nonbase64encode"));
                             value = Buffer.from(value).toString('base64');
                             RED.util.setMessageProperty(msg,node.property,value);
                             node.send(msg);
                         }
                     }
                     else {
-                        node.warn("This node only handles strings or buffers.");
+                        node.warn(RED._("base64.warn.cannothandle"));
                     }
                 }
             }
-            else { node.warn("No property found to process"); }
+            else { node.warn(RED._("base64.warn.noproperty")); }
         });
     }
     RED.nodes.registerType("base64",Base64Node);

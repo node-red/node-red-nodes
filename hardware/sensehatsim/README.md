@@ -1,8 +1,7 @@
 node-red-node-pi-sense-hat-simulator
 ====================================
 
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to simulate a
-Raspberry Pi Sense HAT.
+A node to simulate a Raspberry Pi Sense HAT.
 
 This allows you to create flows that interact with a virtual Sense HAT without the actual
 hardware - whether you're running on a Raspberry Pi, a laptop or elsewhere.
@@ -104,8 +103,6 @@ Format: `R<axis>`
 `axis` must be either `H` or `V` to flip on the horizontal or vertical axis respectively.
 
 #### Scroll a message
-
-**The current version of the simulator does not support displaying text**
 
 If `msg.payload` is not recognised as any of the above commands, it is treated
 as a text message to be scrolled across the screen.

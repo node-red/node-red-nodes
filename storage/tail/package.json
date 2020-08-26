@@ -1,0 +1,27 @@
+{
+    "name": "node-red-node-tail",
+    "version": "0.1.1",
+    "description": "A node to tail files for Node-RED",
+    "dependencies": {
+        "tail": "^2.0.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes/storage/tail/"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red",
+        "tail"
+    ],
+    "node-red": {
+        "nodes": {
+            "tail": "28-tail.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

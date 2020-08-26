@@ -62,10 +62,15 @@ def setPixel(strip, i, color):
 
 def setPixels(strip, s, e, color, wait_ms=30):
     """Set pixels from s(tart) to e(nd)"""
-    for i in range(s, e+1):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 def setBrightness(strip, brightness, wait_ms=30):
     """Set overall brighness"""
@@ -75,36 +80,55 @@ def setBrightness(strip, brightness, wait_ms=30):
 
 def colorWipe(strip, color, wait_ms=30):
     """Wipe color across display a pixel at a time."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 def shiftUp(strip, color, wait_ms=30):
     """Shift all pixels one way."""
     oldcolour = strip.getPixelColor(0)
     strip.setPixelColor(0, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(1,LED_COUNT):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def shiftDown(strip, color, wait_ms=30):
     """Shift all pixels the other way."""
     oldcolour = strip.getPixelColor(LED_COUNT-1)
     strip.setPixelColor(LED_COUNT-1, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(LED_COUNT-2,-1,-1):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""

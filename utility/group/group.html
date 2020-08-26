@@ -1,0 +1,39 @@
+<script type="text/html" data-template-name="group">
+    <div class="form-row">
+        <div class="form-tips">
+            <p>The current flow was created in a newer version of Node-RED and contains
+                <code>groups</code>.</p>
+            <p>This version of Node-RED does not support <code>groups</code> and
+                they have been replaced by this placeholder node by the
+                <code>node-red-node-group</code> module.</p>
+            <p>To use <code>groups</code>, upgrade to Node-RED 1.1.0 or later.</p>
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" data-i18n="[append]editor:common.label.name"><i class="fa fa-tag"></i> </label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]editor:common.label.name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="group">
+    <p>A placeholder node for the grouping feature added in Node-RED 1.1.0.</p>
+    <p>This version of Node-RED does not support <code>groups</code> and
+        they have been replaced by this placeholder node by the
+        <code>node-red-node-group</code> module.</p>
+    <p>To use <code>groups</code>, upgrade to Node-RED 1.1.0 or later.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('group',{
+        category: 'config',
+        defaults: {
+            name:{value:""},
+            style:{value:{}},
+            nodes:{value:[]}
+        },
+        label: function() {
+            return this.name||"group";
+        },
+        labelStyle: "node_label_italic"
+    });
+</script>

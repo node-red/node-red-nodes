@@ -1,37 +1,28 @@
-
-<script type="text/x-red" data-template-name="random">
+<script type="text/html" data-template-name="random">
     <div class="form-row">
         <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
         <input type="text" id="node-input-property" style="width:70%;"/>
     </div>
     <div class="form-row">
-        <label for="node-input-inte"><i class="fa fa-random"></i> Generate</label>
+        <label for="node-input-inte"><i class="fa fa-random"></i> <span data-i18n="random.label.generate"></label>
         <select type="text" id="node-input-inte" style="width:70%;">
-            <option value="true">a whole number - integer</option>
-            <option value="false">a real number - floating point</option>
+            <option value="true" data-i18n="random.label.wholeNumber"></option>
+            <option value="false" data-i18n="random.label.realNumber"></option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-low"><i class="fa fa-arrow-down"></i> From</label>
-        <input type="text" id="node-input-low" placeholder="lowest number" style="width:70%;">
+        <label for="node-input-low"><i class="fa fa-arrow-down"></i> <span data-i18n="random.label.from"></label>
+        <input type="text" id="node-input-low" data-i18n="[placeholder]random.label.lowestNumber" style="width:70%;">
     </div>
     <div class="form-row">
-        <label for="node-input-high"><i class="fa fa-arrow-up"></i> To</label>
-        <input type="text" id="node-input-high" placeholder="highest number" style="width:70%;">
+        <label for="node-input-high"><i class="fa fa-arrow-up"></i> <span data-i18n="random.label.to"></label>
+        <input type="text" id="node-input-high" data-i18n="[placeholder]random.label.highestNumber" style="width:70%;">
     </div>
     <br/>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name" style="width:70%;">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name" style="width:70%;">
     </div>
-</script>
-70%
-<script type="text/x-red" data-help-name="random">
-    <p>Generates a random number between a low and high value.</p>
-    <p>If you return an integer it can <i>include</i> both the low and high values.
-    <code>min <= n <= max</code></p>
-    <p>If you return a floating point value it will be from the low value, up to, but
-    not including the high value. <code>min <= n < max</code></p>
 </script>
 
 <script type="text/javascript">

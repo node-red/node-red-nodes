@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="smooth">
+<script type="text/html" data-template-name="smooth">
     <div class="form-row">
         <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
         <input type="text" id="node-input-property" style="width:70%;"/>
@@ -32,6 +32,11 @@
             <option value="multi">Different msg.topic as individual streams.</option>
         </select>
     </div>
+    <div class="form-row" id="row-input-reduce">
+        <label for="node-input-reduce"><i class="fa fa-compress"></i> Reduce</label>
+        <input type="checkbox" id="node-input-reduce" style="display:inline-block; width:20px; vertical-align:baseline;">
+        only emit one message per most recent N values
+    </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -40,13 +45,12 @@
     <div class="form-tips" id="node-tip">Tip: This node ONLY works with numbers.</div>
 </script>
 
-<script type="text/x-red" data-help-name="smooth">
+<script type="text/html" data-help-name="smooth">
     <p>A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.</p>
     <p>Messages arriving with different <code>msg.topic</code> can be treated as separate streams if so configured.</p>
     <p>Max, Min and Mean work over a specified number of previous values.</p>
-    <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is
-    similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the
-    time is based on events arriving.</p>
+    <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the time is based on events arriving.</p>
+    <p>Enabling the Reduce option causes the node to only emit one message per N values (available for the Max, Min and Mean functions). E.g. if set to Mean over 10 values, there will only be one outgoing message per 10 incoming ones.</p>
     <p>If <code>msg.reset</code> is received (with any value), all the counters and intermediate values are reset to an initial state.</p>
     <p><b>Note:</b> This only operates on <b>numbers</b>. Anything else will try to be made into a number and rejected if that fails.</p>
 </script>
@@ -61,7 +65,8 @@
             action: {value:"mean"},
             count: {value:"10",required:true,validate:RED.validators.number()},
             round: {value:""},
-            mult: {value:"single"}
+            mult: {value:"single"},
+            reduce: {value:false}
         },
         inputs: 1,
         outputs: 1,
@@ -72,6 +77,7 @@
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
         },
+        outputLabels: function() { return this.reduce === true ? (this.action+" of "+this.count) : (this.action); },
         oneditprepare: function() {
             if (this.property === undefined) {
                 $("#node-input-property").val("payload");
@@ -87,10 +93,12 @@
                 if ((a === "high") ||  ( a === "low" )) {
                     $("#node-over").html("with a smoothing factor of ");
                     $("#node-over2").html("");
+                    $("#row-input-reduce").hide();
                 }
                 else {
                     $("#node-over").html("over the most recent ");
                     $("#node-over2").html(" values");
+                    $("#row-input-reduce").show();
                 }
             });
             $("#node-input-action").change();

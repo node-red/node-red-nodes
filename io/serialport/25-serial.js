@@ -13,13 +13,18 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.serialport = n.serialport;
         this.newline = n.newline; /* overloaded: split character, timeout, or character count */
-        this.addchar = n.addchar || "false";
+        this.addchar = n.addchar || "";
         this.serialbaud = parseInt(n.serialbaud) || 57600;
         this.databits = parseInt(n.databits) || 8;
         this.parity = n.parity || "none";
         this.stopbits = parseInt(n.stopbits) || 1;
+        this.dtr = n.dtr || "none";
+        this.rts = n.rts || "none";
+        this.cts = n.cts || "none";
+        this.dsr = n.dsr || "none";
         this.bin = n.bin || "false";
         this.out = n.out || "char";
+        this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
     }
     RED.nodes.registerType("serial-port",SerialPortNode);
@@ -131,6 +136,10 @@ module.exports = function(RED) {
             // Serial Out
             node.on("input",function(msg) {
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
+                if (msg.hasOwnProperty("count") && (typeof msg.count === "number") && (node.serialConfig.out === "count")) {
+                    node.serialConfig.newline = msg.count;
+                }
+                if (msg.hasOwnProperty("flush") && msg.flush === true) { node.port.serial.flush(); }
                 node.status({fill:"yellow",shape:"dot",text:"serial.status.waiting"});
                 node.port.enqueue(msg,node,function(err,res) {
                     if (err) {
@@ -183,15 +192,20 @@ module.exports = function(RED) {
         return {
             get:function(serialConfig) {
                 // make local copy of configuration -- perhaps not needed?
-                var port      = serialConfig.serialport,
-                    baud      = serialConfig.serialbaud,
-                    databits  = serialConfig.databits,
-                    parity    = serialConfig.parity,
-                    stopbits  = serialConfig.stopbits,
-                    newline   = serialConfig.newline,
-                    spliton   = serialConfig.out,
+                var port = serialConfig.serialport,
+                    baud = serialConfig.serialbaud,
+                    databits = serialConfig.databits,
+                    parity = serialConfig.parity,
+                    stopbits = serialConfig.stopbits,
+                    dtr = serialConfig.dtr,
+                    rts = serialConfig.rts,
+                    cts = serialConfig.cts,
+                    dsr = serialConfig.dsr,
+                    newline = serialConfig.newline,
+                    spliton = serialConfig.out,
+                    waitfor = serialConfig.waitfor,
                     binoutput = serialConfig.bin,
-                    addchar   = serialConfig.addchar,
+                    addchar = serialConfig.addchar,
                     responsetimeout = serialConfig.responsetimeout;
                 var id = port;
                 // just return the connection object if already have one
@@ -205,18 +219,25 @@ module.exports = function(RED) {
                 //   "time"  : a msg will be sent after .newline milliseconds
                 //   "count" : a msg will be sent after .newline characters
                 // if we use "count", we already know how big the buffer will be
-                var bufSize = spliton == "count" ? Number(newline): bufMaxSize;
-                var buf = new Buffer(bufSize);
+                var bufSize = (spliton === "count") ? Number(newline): bufMaxSize;
+
+                waitfor = waitfor.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+                if (waitfor.substr(0,2) == "0x") { waitfor = parseInt(waitfor,16); }
+                if (waitfor.length === 1) { waitfor = waitfor.charCodeAt(0); }
+                var active = (waitfor === "") ? true : false;
+                var buf = new Buffer.alloc(bufSize);
 
                 var splitc; // split character
                 // Parse the split character onto a 1-char buffer we can immediately compare against
                 if (newline.substr(0,2) == "0x") {
-                    splitc = new Buffer([parseInt(newline)]);
+                    splitc = new Buffer.from([newline]);
                 }
                 else {
-                    splitc = new Buffer(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
+                    splitc = new Buffer.from(newline.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0")); // jshint ignore:line
                 }
-
+                if (addchar === true) { addchar = splitc; }
+                addchar = addchar.replace("\\n","\n").replace("\\r","\r").replace("\\t","\t").replace("\\e","\e").replace("\\f","\f").replace("\\0","\0"); // jshint ignore:line
+                if (addchar.substr(0,2) == "0x") { addchar = new Buffer.from([addchar]); }
                 connections[id] = (function() {
                     var obj = {
                         _emitter: new events.EventEmitter(),
@@ -234,10 +255,10 @@ module.exports = function(RED) {
                                 else {
                                     payload = payload.toString();
                                 }
-                                if ((spliton === "char") && (addchar === true)) { payload += splitc; }
+                                if (addchar !== "") { payload += addchar; }
                             }
-                            else if ((spliton === "char") && (addchar === true) && (splitc !== "")) {
-                                payload = Buffer.concat([payload,splitc]);
+                            else if (addchar !== "") {
+                                payload = Buffer.concat([payload,addchar]);
                             }
                             return payload;
                         },
@@ -323,14 +344,19 @@ module.exports = function(RED) {
                         obj.serial.on('error', function(err) {
                             RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}));
                             obj._emitter.emit('closed');
+                            if (obj.tout) { clearTimeout(obj.tout); }
                             obj.tout = setTimeout(function() {
                                 setupSerial();
                             }, settings.serialReconnectTime);
                         });
                         obj.serial.on('close', function() {
                             if (!obj._closing) {
-                                RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                if (olderr !== "unexpected") {
+                                    olderr = "unexpected";
+                                    RED.log.error(RED._("serial.errors.unexpected-close",{port:port}));
+                                }
                                 obj._emitter.emit('closed');
+                                if (obj.tout) { clearTimeout(obj.tout); }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
                                 }, settings.serialReconnectTime);
@@ -339,6 +365,13 @@ module.exports = function(RED) {
                         obj.serial.on('open',function() {
                             olderr = "";
                             RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
+                            // Set flow control pins if necessary. Must be set all in same command.
+                            var flags = {};
+                            if (dtr != "none") { flags.dtr = (dtr!="low"); }
+                            if (rts != "none") { flags.rts = (rts!="low"); }
+                            if (cts != "none") { flags.cts = (cts!="low"); }
+                            if (dsr != "none") { flags.dsr = (dsr!="low"); }
+                            if (dtr != "none" || rts != "none" || cts != "none" || dsr != "none") { obj.serial.set(flags); }
                             if (obj.tout) { clearTimeout(obj.tout); obj.tout = null; }
                             //obj.serial.flush();
                             obj._emitter.emit('ready');
@@ -346,23 +379,26 @@ module.exports = function(RED) {
 
                         obj.serial.on('data',function(d) {
                             function emitData(data) {
-                                var m = Buffer.from(data);
-                                var last_sender = null;
-                                if (obj.queue.length) { last_sender = obj.queue[0].sender; }
-                                if (binoutput !== "bin") { m = m.toString(); }
-                                var msgout = obj.dequeue() || {};
-                                msgout.payload = m;
-                                msgout.port = port;
-                                obj._emitter.emit('data',
-                                    msgout,
-                                    last_sender);
+                                if (active === true) {
+                                    var m = Buffer.from(data);
+                                    var last_sender = null;
+                                    if (obj.queue.length) { last_sender = obj.queue[0].sender; }
+                                    if (binoutput !== "bin") { m = m.toString(); }
+                                    var msgout = obj.dequeue() || {};
+                                    msgout.payload = m;
+                                    msgout.port = port;
+                                    obj._emitter.emit('data', msgout, last_sender);
+                                }
+                                active = (waitfor === "") ? true : false;
                             }
 
                             for (var z=0; z<d.length; z++) {
                                 var c = d[z];
+                                if (c === waitfor) { active = true; }
+                                if (!active) { continue; }
                                 // handle the trivial case first -- single char buffer
                                 if ((newline === 0)||(newline === "")) {
-                                    emitData(new Buffer([c]));
+                                    emitData(new Buffer.from([c]));
                                     continue;
                                 }
 
@@ -391,6 +427,7 @@ module.exports = function(RED) {
                                 }
                                 // count bytes into a buffer...
                                 else if (spliton === "count") {
+                                    newline = serialConfig.newline;
                                     if ( i >= parseInt(newline)) {
                                         emitData(buf.slice(0,i));
                                         i=0;
@@ -437,8 +474,14 @@ module.exports = function(RED) {
     }());
 
     RED.httpAdmin.get("/serialports", RED.auth.needsPermission('serial.read'), function(req,res) {
-        serialp.list(function (err, ports) {
-            res.json(ports);
-        });
+        serialp.list().then(
+            ports => {
+                const a = ports.map(p => p.path);
+                res.json(a);
+            },
+            err => {
+                res.json([RED._("serial.errors.list")]);
+            }
+        )
     });
 }

@@ -118,7 +118,7 @@ module.exports = function(RED) {
                 node.running = false;
                 node.status({fill:"red",shape:"circle",text:""});
                 if (RED.settings.verbose) { node.log("closed"); }
-                if (node.done) { node.done(); }
+                if (node.finished) { node.finished(); }
             });
 
             node.child.on('error', function (err) {
@@ -131,7 +131,7 @@ module.exports = function(RED) {
                 LedBorgInUse = false;
                 node.status({fill:"red",shape:"circle",text:""});
                 if (node.child != null) {
-                    node.done = done;
+                    node.fisnished = done;
                     node.child.stdin.write(" close 11");
                     node.child.kill('SIGKILL');
                 }

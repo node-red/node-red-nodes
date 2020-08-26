@@ -1,0 +1,13 @@
+{
+    "random": {
+        "label": {
+            "generate": "Generate",
+            "wholeNumber": "a whole number - integer",
+            "realNumber": "a real number - floating point",
+            "from": "From",
+            "lowestNumber": "lowest number",
+            "to": "To",
+            "highestNumber": "highest number"
+        }
+    }
+}

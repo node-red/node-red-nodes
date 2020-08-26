@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="xmpp in">
+<script type="text/html" data-template-name="xmpp in">
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-bookmark"></i> Connect as</label>
         <input type="text" id="node-input-server">
@@ -19,7 +19,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="xmpp in">
+<script type="text/html" data-help-name="xmpp in">
     <p>Connects to an XMPP server to receive messages.</p>
     <p>The <b>Buddy</b> field is the jid of the buddy or room you want to receive messages from. Leave blank to receive from anyone.</p>
     <p>Incoming messages will appear as <code>msg.payload</code> on the first output, while <code>msg.topic</code> will contain who it is from.
@@ -50,7 +50,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="xmpp out">
+<script type="text/html" data-template-name="xmpp out">
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-bookmark"></i> Connect as</label>
         <input type="text" id="node-input-server">
@@ -76,7 +76,7 @@
     <div class="form-tips">The <b>To</b> field is optional. If not set uses the <code>msg.topic</code> property of the message.</div>
 </script>
 
-<script type="text/x-red" data-help-name="xmpp out">
+<script type="text/html" data-help-name="xmpp out">
     <p>Connects to an XMPP server to send messages.</p>
     <p>The <b>To</b> field is optional. If not set the <code>msg.topic</code> property of the message is used.</p>
     <p>If you are joining a room then the <b>To</b> field must be supplied.</p>
@@ -108,13 +108,13 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="xmpp-server">
-<!--    <div class="form-row node-input-server">
+<script type="text/html" data-template-name="xmpp-server">
+    <div class="form-row node-input-server">
         <label for="node-config-input-server"><i class="fa fa-bookmark"></i> Server</label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="blah.im" style="width: 40%;" >
         <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
         <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
-    </div> -->
+    </div>
     <div class="form-row">
         <label for="node-config-input-user"><i class="fa fa-user"></i> JID</label>
         <input type="text" id="node-config-input-user" placeholder="joe@blah.im">
@@ -133,8 +133,8 @@
     RED.nodes.registerType('xmpp-server',{
         category: 'config',
         defaults: {
-            // server: {required:true},
-            // port: {value:5222,required:true,validate:RED.validators.number()},
+            server: {required:false},
+            port: {value:5222,required:false,validate:RED.validators.number()},
             user: {type:"text"},
             nickname: {value:""}
         },
@@ -147,7 +147,7 @@
     });
 </script>
 
-<script type="text/x-red" data-help-name="xmpp-server">
+<script type="text/html" data-help-name="xmpp-server">
     <p>The connection to an XMPP server to send and receive messages.</p>
     <p>Connects to the standard C2S port 5222 on the server.</p>
     <p>The JID is the full username of the client used to connect to the server

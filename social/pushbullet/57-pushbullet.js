@@ -3,9 +3,7 @@ module.exports = function(RED) {
     "use strict";
     var PushBullet = require('pushbullet');
     var fs = require('fs');
-    var util = require('util');
     var when = require('when');
-    var nodefn = require('when/node');
     var EventEmitter = require('events').EventEmitter;
 
     function onError(err, node) {
@@ -129,7 +127,7 @@ module.exports = function(RED) {
                 if (!closing) {
                     tout = setTimeout(function() {
                         stream.connect();
-                    },15000);
+                    }, 15000);
                 }
             });
             stream.on('error', function(err) {
@@ -137,7 +135,7 @@ module.exports = function(RED) {
                 if (!closing) {
                     tout = setTimeout(function() {
                         stream.connect();
-                    },15000);
+                    }, 15000);
                 }
             });
             stream.connect();
@@ -229,9 +227,13 @@ module.exports = function(RED) {
             msg.payload = incoming.body;
         }
         else if (incoming.type === 'dismissal') {
-            msg.topic = "dismissal";
             msg.topic = "Push dismissed";
             msg.payload = incoming.iden;
+        }
+        else if (incoming.type === 'sms_changed') {
+            msg.topic = "SMS: "+ incoming.notifications[0].title;
+            msg.payload = incoming.notifications[0].body;
+            msg.message = incoming;
         }
         else {
             this.error("unknown push type: " + incoming.type + " content: " + JSON.stringify(incoming));
@@ -257,8 +259,7 @@ module.exports = function(RED) {
             try {
                 pushkeys = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
             }
-            catch(err) {
-            }
+            catch(err) { }
 
             var cred = RED.nodes.getCredentials(n.id);
             // get old apikey
@@ -327,7 +328,7 @@ module.exports = function(RED) {
             try {
                 this.deviceid = this.credentials.deviceid;
             }
-            catch(err) {}
+            catch(err) { }
         }
 
         if (configNode) {
@@ -491,7 +492,7 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else if (cred && cred.apikey) {
@@ -501,7 +502,7 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else if (req.query.apikey) {
@@ -511,13 +512,23 @@ module.exports = function(RED) {
                     res.send("[]");
                     return onError(err, config);
                 }
-                res.send(JSON.stringify(chans.devices));
+                res.send(JSON.stringify(filterdActiveDevices(chans.devices)));
             });
         }
         else {
             res.send("[]");
         }
     });
+
+    function filterdActiveDevices(devices) {
+        var activeDevices = [];
+        for (var i=0; i<devices.length; i++) {
+            if (devices[i].active) {
+                activeDevices.push(devices[i]);
+            }
+        }
+        return activeDevices;
+    }
 
     function PushbulletIn(n) {
         RED.nodes.createNode(this, n);

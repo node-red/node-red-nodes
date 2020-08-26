@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="MySQLdatabase">
+<script type="text/html" data-template-name="MySQLdatabase">
     <div class="form-row">
         <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-config-input-host">
@@ -24,31 +24,45 @@
         <label for="node-config-input-tz"><i class="fa fa-clock-o"></i> Timezone</label>
         <input type="text" id="node-config-input-tz">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-charset"><i class="fa fa-language"></i> Charset</label>
+        <input type="text" id="node-config-input-charset">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('MySQLdatabase',{
         category: 'config',
         defaults: {
+            name: {value:""},
             host: {value:"127.0.0.1",required:true},
             port: {value:"3306",required:true},
-            //user: {value:"",required:true},
-            //pass: {value:"",required:true},
             db: {value:"",required:true},
-            tz: {value:""}
+            tz: {value:""},
+            charset: {value:"UTF8"}
         },
         credentials: {
             user: {type: "text"},
             password: {type: "password"}
         },
         label: function() {
-            return this.db;
+            return this.name || this.db;
         }
     });
 </script>
 
+<script type="text/html" data-help-name="MySQLdatabase">
+    <p>Add the credentials for accessing your database here.</p>
+    <p>Timezone can be set like GMT, EST5EDT, UTC, etc</p>
+    <p>The Charset defaults to the "old" 3 byte Mysql UTF8. If you need support for emojis etc then use UTF8MB4.</p>
+</script>
 
-<script type="text/x-red" data-template-name="mysql">
+
+<script type="text/html" data-template-name="mysql">
     <div class="form-row">
         <label for="node-input-mydb"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-input-mydb">
@@ -59,7 +73,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="mysql">
+<script type="text/html" data-help-name="mysql">
     <p>Allows basic access to a MySQL database.</p>
     <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
     By its very nature it allows SQL injection... so <i>be careful out there...</i></p>
@@ -86,7 +100,7 @@
             var levelNode = RED.nodes.node(this.mydb);
             return this.name||(levelNode?levelNode.label():"mysql");
         },
-            labelStyle: function() {
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
         }
     });

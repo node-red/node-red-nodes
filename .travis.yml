@@ -1,9 +1,13 @@
 sudo: false
 language: node_js
 matrix:
+  # allow_failures:
+  #   - node_js: 14
   include:
-    - node_js: 8
+    - node_js: 14
+    - node_js: 12
     - node_js: 10
+    - node_js: 8
     - python: 2.7
       language: python
       before_script: pip install flake8

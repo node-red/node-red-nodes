@@ -11,20 +11,20 @@ module.exports = function(RED) {
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) {
-            RED.log.warn("rpi-lcd : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+            RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.ignorenode"));
             allOK = false;
         }
         else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
-            RED.log.warn("rpi-lcd : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
+            RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.libnotfound"));
             allOK = false;
         }
         else if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
-            RED.log.warn("rpi-lcd : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
+            RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.needtobeexecutable",{command:gpioCommand}));
             allOK = false;
         }
     }
     catch(err) {
-        RED.log.warn("rpi-lcd : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+        RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.ignorenode"));
         allOK = false;
     }
 
@@ -89,9 +89,9 @@ module.exports = function(RED) {
             });
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"pilcd.status.not-available"});
             node.on("input", function(msg){
-                node.status({fill:"grey",shape:"dot",text:RED._("node-red:rpi-gpio.status.na",{value:msg.payload.toString()})});
+                node.status({fill:"grey",shape:"dot",text:RED._("pilcd.status.na",{value:msg.payload.toString()})});
             });
         }
     }

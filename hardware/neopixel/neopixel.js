@@ -130,9 +130,9 @@ module.exports = function(RED) {
             node.child.on('close', function () {
                 node.child = null;
                 if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                if (node.done) {
+                if (node.finished) {
                     node.status({fill:"grey",shape:"ring",text:"closed"});
-                    node.done();
+                    node.finished();
                 }
                 else { node.status({fill:"red",shape:"ring",text:"stopped"}); }
             });
@@ -146,7 +146,7 @@ module.exports = function(RED) {
             node.on("close", function(done) {
                 node.status({fill:"grey",shape:"ring",text:"closed"});
                 if (node.child != null) {
-                    node.done = done;
+                    node.finished = done;
                     node.child.kill('SIGKILL');
                 }
                 else { done(); }

@@ -3,6 +3,7 @@ module.exports = function(RED) {
     "use strict";
     var path = require("path");
     var ws = require("ws");
+    var url = require("url");
     var colours = require('./colours');
 
     // Xaccel.x,y,z,gyro.x,y,z,orientation.roll,pitch,yaw,compass
@@ -25,7 +26,7 @@ module.exports = function(RED) {
     var currentDisplay = [];
     var HAT = (function() {
         var hatWS = null;
-        var wsServerListeners = {};
+        var wsServerListener;
         var wsConnections = {};
         var currentEnvironment = {temperature: 20, humidity: 80, pressure: 1000};
         var hat = null;
@@ -56,19 +57,15 @@ module.exports = function(RED) {
                         wsServerListeners[event] = listener;
                     }
                 }
-                RED.server.addListener('newListener',storeListener);
                 // Create a WebSocket Server
-                hatWS = new ws.Server({
-                    server:RED.server,
-                    path:wsPath,
-                    // Disable the deflate option due to this issue
-                    //  https://github.com/websockets/ws/pull/632
-                    // that is fixed in the 1.x release of the ws module
-                    // that we cannot currently pickup as it drops node 0.10 support
-                    perMessageDeflate: false
-                });
-                RED.server.removeListener('newListener',storeListener);
+                hatWS = new ws.Server({noServer: true});
+                hatWS.on('error', function(err) {
+
+                })
                 hatWS.on('connection', function(socket) {
+                    socket.on('error', function(err) {
+                        delete wsConnections[id];
+                    });
                     var id = (1+Math.random()*4294967295).toString(16);
                     wsConnections[id] = socket;
                     socket.send("Y"+currentEnvironment.temperature+","+currentEnvironment.humidity+","+currentEnvironment.pressure);
@@ -119,25 +116,27 @@ module.exports = function(RED) {
                         }
 
                     });
-                    socket.on('error', function(err) {
-                        delete wsConnections[id];
-                    });
+
                 });
+
+                wsServerListener = function upgrade(request, socket, head) {
+                    const pathname = url.parse(request.url).pathname;
+                    if (pathname === wsPath) {
+                        hatWS.handleUpgrade(request, socket, head, function done(ws) {
+                            hatWS.emit('connection', ws, request);
+                        });
+                    }
+                    // Don't destroy the socket as other listeners may want to handle the
+                    // event.
+                };
+                RED.server.on('upgrade', wsServerListener)
+
             }
         }
 
         var disconnect = function(done) {
             if (hatWS !== null) {
-                var listener = null;
-                for (var event in wsServerListeners) {
-                    if (wsServerListeners.hasOwnProperty(event)) {
-                        listener = wsServerListeners[event];
-                        if (typeof listener === "function") {
-                            RED.server.removeListener(event,listener);
-                        }
-                    }
-                }
-                wsServerListeners = {};
+                RED.server.removeListener('upgrade', wsServerListener)
                 wsConnections = {};
                 hatWS.close();
                 hatWS = null;
