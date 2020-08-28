@@ -348,10 +348,10 @@ module.exports = function(RED) {
                     //console.log("> Inbox err : %j", err);
                     //console.log("> Inbox open: %j", box);
                         if (err) {
-                            s = false;
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                             imap.end();
+                            s = false;
                             setInputRepeatTimeout();
                             return;
                         }
@@ -412,6 +412,7 @@ module.exports = function(RED) {
                                         var cleanup = function() {
                                             imap.end();
                                             s = false;
+                                            setInputRepeatTimeout();
                                         };
                                         if (this.disposition === "Delete") {
                                             imap.addFlags(results, "\Deleted", cleanup);
@@ -420,11 +421,12 @@ module.exports = function(RED) {
                                         } else {
                                             cleanup();
                                         }
-                                        setInputRepeatTimeout();
                                     });
 
                                     fetch.once('error', function(err) {
                                         console.log('Fetch error: ' + err);
+                                        imap.end();
+                                        s = false;
                                         setInputRepeatTimeout();
                                     });
                                 }
@@ -442,7 +444,7 @@ module.exports = function(RED) {
             if (node.protocol === "POP3") {
                 checkPOP3(msg);
             } else if (node.protocol === "IMAP") {
-                if (s === false) { checkIMAP(msg); }
+                if (s === false && ss == false) { checkIMAP(msg); }
             }
         }  // End of checkEmail
 
