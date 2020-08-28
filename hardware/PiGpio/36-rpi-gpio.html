@@ -70,9 +70,7 @@
 <script type="text/html" data-template-name="rpi-gpio in">
 
     <div class="form-row" style="min-width: 540px">
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="rpi-gpio.pinname"></span></label>
-        <input type="text" id="node-input-pin">
-        <div><p></p><div><label></label>
+		<label><i class="fa fa-circle"></i> <span data-i18n="rpi-gpio.pinname"></span></label>
         <div class="rpi-gpio-pinTable">
             <div class="pinTableBody" id="pinform">
                 <div class="pinTableRow">
@@ -158,7 +156,10 @@
             </div>
         </div>
     </div>
-    <div><p></p><div><label></label>
+    <div class="form-row">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <input type="text" id="node-input-pin" style="width: 352px">
+    </div>
     <div class="form-row">
         <label for="node-input-intype"><i class="fa fa-level-up"></i> <span data-i18n="rpi-gpio.label.resistor"></span></label>
         <select type="text" id="node-input-intype" style="width:100px;">
@@ -189,20 +190,23 @@
         "5":"29", "6":"31", "12":"32", "13":"33", "19":"35", "16":"36", "26":"37", "20":"38", "21":"40"
     };
     var pinsInUse = {};
+    var validPinValues = Object.values(bcm2pin);
     var isEnvVar = function (value) {
-        var re = /^\s*\${\s*([0-9a-zA-Z_]+)\s*}\s*/;
+        var re = /^\${([0-9a-zA-Z_]+)}$/;
         var match = value.match(re);
-        if (match) {
-            return "${" + match[1] + "}";
-        }
-        return "";
+        return Boolean(match);
     };
     var isInt = function (value) {
         return parseInt(value).toString() === value.trim();
+    };
+    var uncheckAll = function() {
+        for (var i=0; i< validPinValues.length; i++) {
+            $("#pinform input[value="+validPinValues[i]+"]").prop('checked', false);
+        }
     }
     var validatePin = function (value) {
-        return isEnvVar(value) || isInt(value);
-    }
+        return isEnvVar(value) || (isInt(value) && validPinValues.includes(value));
+    };
     RED.nodes.registerType('rpi-gpio in',{
         category: 'Raspberry Pi',
         color:"#c6dbef",
@@ -243,16 +247,20 @@
                 pinsInUse = data || {};
                 $('#pin-tip').html(pintip + Object.keys(data));
             });
+
+            for (var i=0; i< validPinValues.length; i++) {
+                $("#pinform input[value="+validPinValues[i]+"]").on("change", function (evt) {
+                    $("#node-input-pin").val(evt.currentTarget.value);
+                    $("#node-input-pin").removeClass("input-error");
+                });
+            }
             $("#node-input-pin").on("change", function() {
-                if ($("#node-input-pin").val() && isInt($("#node-input-pin").val())) {
-                    $("#pinform input[value="+$("#node-input-pin").val()+"]").prop('checked', true);
-                } else {
-                    var values = Object.values(bcm2pin);
-                    for (var i=0; i< values.length; i++) {
-                        $("#pinform input[value="+values[i]+"]").prop('checked', false);
-                    }
-                }
                 var pinnew = $("#node-input-pin").val();
+                if (pinnew && isInt(pinnew) && validPinValues.includes(pinnew)) {
+                    $("#pinform input[value="+pinnew+"]").prop('checked', true);
+                } else {
+                    uncheckAll();
+                }
                 if ((pinnew) && (pinnew !== pinnow)) {
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify(pinname+" "+pinnew+" "+alreadyuse,"warn");
@@ -276,9 +284,7 @@
 
 <script type="text/html" data-template-name="rpi-gpio out">
     <div class="form-row" style="min-width: 540px">
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="rpi-gpio.pinname"></span></label>
-        <input type="text" id="node-input-pin">
-        <div><p></p><div><label></label>
+        <label><i class="fa fa-circle"></i> <span data-i18n="rpi-gpio.pinname"></span></label>
         <div class="rpi-gpio-pinTable">
             <div class="pinTableBody" id="pinform">
                 <div class="pinTableRow">
@@ -364,7 +370,10 @@
             </div>
         </div>
     </div>
-    <div><p></p><div><label></label>
+    <div class="form-row">
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <input type="text" id="node-input-pin" style="width: 352px">
+    </div>
     <div class="form-row" id="node-set-pwm">
         <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="rpi-gpio.label.type"></span></label>
         <select id="node-input-out" style="width: 250px;">
@@ -404,20 +413,23 @@
         "5":"29", "6":"31", "12":"32", "13":"33", "19":"35", "16":"36", "26":"37", "20":"38", "21":"40"
     };
     var pinsInUse = {};
+    var validPinValues = Object.values(bcm2pin);
     var isEnvVar = function (value) {
-        var re = /^\s*\${\s*([0-9a-zA-Z_]+)\s*}\s*/;
+        var re = /^\${([0-9a-zA-Z_]+)}$/;
         var match = value.match(re);
-        if (match) {
-            return "${" + match[1] + "}";
-        }
-        return "";
+        return Boolean(match);
     };
     var isInt = function (value) {
         return parseInt(value).toString() === value.trim();
+    };
+    var uncheckAll = function() {
+        for (var i=0; i< validPinValues.length; i++) {
+            $("#pinform input[value="+validPinValues[i]+"]").prop('checked', false);
+        }
     }
     var validatePin = function (value) {
-        return isEnvVar(value) || isInt(value);
-    }
+        return isEnvVar(value) || (isInt(value) && validPinValues.includes(value));
+    };
     RED.nodes.registerType('rpi-gpio out',{
         category: 'Raspberry Pi',
         color:"#c6dbef",
@@ -465,16 +477,19 @@
                 $('#pin-tip').html(pintip + Object.keys(data));
             });
 
+            for (var i=0; i< validPinValues.length; i++) {
+                $("#pinform input[value="+validPinValues[i]+"]").on("change", function (evt) {
+                    $("#node-input-pin").val(evt.currentTarget.value);
+                    $("#node-input-pin").removeClass("input-error");
+                });
+            }
             $("#node-input-pin").on("change", function() {
-                if ($("#node-input-pin").val() && isInt($("#node-input-pin").val())) {
-                    $("#pinform input[value="+$("#node-input-pin").val()+"]").prop('checked', true);
-                } else {
-                    var values = Object.values(bcm2pin);
-                    for (var i=0; i< values.length; i++) {
-                        $("#pinform input[value="+values[i]+"]").prop('checked', false);
-                    }
-                }
                 var pinnew = $("#node-input-pin").val();
+                if (pinnew && isInt(pinnew) && validPinValues.includes(pinnew)) {
+                    $("#pinform input[value="+pinnew+"]").prop('checked', true);
+                } else {
+                    uncheckAll();
+                }
                 if ((pinnew) && (pinnew !== pinnow)) {
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify(pinname+" "+pinnew+" "+alreadyuse,"warn");
