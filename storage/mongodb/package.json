@@ -3,7 +3,7 @@
     "version"       : "0.0.14",
     "description"   : "Node-RED nodes to talk to an Mongo database",
     "dependencies"  : {
-        "mongodb"   : "^2.2.34"
+        "mongodb"   : "^3.6.1"
     },
     "repository" : {
         "type":"git",
