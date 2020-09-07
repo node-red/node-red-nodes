@@ -3,6 +3,7 @@
         "label": {
             "host": "Host",
             "port": "Port",
+            "clustered": "Clustered",
             "database": "Database",
             "username": "Username",
             "password": "Password",
