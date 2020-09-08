@@ -2,6 +2,8 @@
     "mongodb": {
         "label": {
             "host": "Host",
+            "clustered": "Clustered",
+            "clusteredVersion":"MongoDB databases in sharded cluster (>=3.4)",
             "port": "Port",
             "database": "Database",
             "username": "Username",
