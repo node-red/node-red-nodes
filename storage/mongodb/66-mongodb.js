@@ -40,7 +40,7 @@ module.exports = function(RED) {
           url += this.hostname + "/" + this.db + "?retryWrites=true&w=majority";
         } else {
           url += this.hostname + ":" + this.port + "/" + this.db;
-        };
+        }
 
         console.log(url);
         this.url = url;
