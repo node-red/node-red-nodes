@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-mongodb",
-    "version"       : "0.0.14",
+    "version"       : "0.1.0",
     "description"   : "Node-RED nodes to talk to an Mongo database",
     "dependencies"  : {
-        "mongodb"   : "^2.2.34"
+        "mongodb"   : "^3.6.1"
     },
     "repository" : {
         "type":"git",
@@ -20,5 +20,11 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
+    },
+    "contributors": [
+    {
+      "name": "Ross Cruickshank",
+      "email": "ross@vnet.ibm.com"
     }
+  ]
 }

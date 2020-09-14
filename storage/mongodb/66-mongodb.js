@@ -1,4 +1,5 @@
 
+
 module.exports = function(RED) {
     "use strict";
     var mongo = require('mongodb');
@@ -11,13 +12,37 @@ module.exports = function(RED) {
         this.port = n.port;
         this.db = n.db;
         this.name = n.name;
+        this.clustered = n.clustered;
 
-        var url = "mongodb://";
-        if (this.credentials && this.credentials.user && this.credentials.password) {
-            url += this.credentials.user+":"+this.credentials.password+"@";
+        // if(n.user && n.password){
+        //     this.credentials.user = n.user;
+        //     this.credentials.password= n.password;
+        // }
+
+        //console.log(this);
+        //console.log("\n\n\n\n\n",n);
+
+        var url = "mongodb+srv://";
+        if (!this.clustered) {
+          url = "mongodb://";
         }
-        url += this.hostname+":"+this.port+"/"+this.db;
+        if (this.credentials && this.credentials.user && this.credentials.password) {
+            this.user = this.credentials.user;
+            this.password =  this.credentials.password;
+        } else {
+            this.user = n.user;
+            this.password = n.password;
+        }
+        if (this.user) {
+          url += this.user+":"+this.password+"@";
+        }
+        if (this.clustered) {
+          url += this.hostname + "/" + this.db + "?retryWrites=true&w=majority";
+        } else {
+          url += this.hostname + ":" + this.port + "/" + this.db;
+        }
 
+        console.log(url);
         this.url = url;
     }
 
@@ -49,7 +74,7 @@ module.exports = function(RED) {
         var noerror = true;
 
         var connectToDB = function() {
-            MongoClient.connect(node.mongoConfig.url, function(err, db) {
+            MongoClient.connect(node.mongoConfig.url, function(err, client) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     if (noerror) { node.error(err); }
@@ -58,9 +83,12 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = db;
+                    node.clientDb = client.db();
+                    var db = client.db();
+                    console.log( db);
                     noerror = true;
                     var coll;
+
                     if (node.collection) {
                         coll = db.collection(node.collection);
                     }
@@ -174,7 +202,8 @@ module.exports = function(RED) {
         var noerror = true;
 
         var connectToDB = function() {
-            MongoClient.connect(node.mongoConfig.url, function(err,db) {
+            console.log("connecting:" + node.mongoConfig.url);
+            MongoClient.connect(node.mongoConfig.url, function(err,client) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     if (noerror) { node.error(err); }
@@ -183,7 +212,8 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = db;
+                    node.clientDb = client.db();
+                    var db = client.db();
                     noerror = true;
                     var coll;
                     node.on("input", function(msg) {
