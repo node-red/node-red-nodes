@@ -12,37 +12,37 @@ module.exports = function(RED) {
         this.port = n.port;
         this.db = n.db;
         this.name = n.name;
-        this.clustered = n.clustered;
-
-        // if(n.user && n.password){
-        //     this.credentials.user = n.user;
-        //     this.credentials.password= n.password;
-        // }
+        this.connectOptions= n.connectOptions;
+        this.topology = n.topology;
 
         //console.log(this);
-        //console.log("\n\n\n\n\n",n);
 
-        var url = "mongodb+srv://";
-        if (!this.clustered) {
-          url = "mongodb://";
+        var clustered = !(this.topology === "direct") || false;
+
+        var url = "mongodb://";
+        if (this.topology === "dnscluster") {
+          url = "mongodb+srv://";
         }
         if (this.credentials && this.credentials.user && this.credentials.password) {
-            this.user = this.credentials.user;
-            this.password =  this.credentials.password;
+          this.user = this.credentials.user;
+          this.password =  this.credentials.password;
         } else {
-            this.user = n.user;
-            this.password = n.password;
+          this.user = n.user;
+          this.password = n.password;
         }
         if (this.user) {
           url += this.user+":"+this.password+"@";
         }
-        if (this.clustered) {
-          url += this.hostname + "/" + this.db + "?retryWrites=true&w=majority";
+        if (clustered) {
+          url += this.hostname + "/" + this.db
         } else {
           url += this.hostname + ":" + this.port + "/" + this.db;
         }
+        if (this.connectOptions){
+          url += "?" + this.connectOptions;
+        }
 
-        console.log(url);
+        console.log("MongoDB URL: " + url);
         this.url = url;
     }
 
@@ -85,7 +85,7 @@ module.exports = function(RED) {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.clientDb = client.db();
                     var db = client.db();
-                    console.log( db);
+                    //console.log( db);
                     noerror = true;
                     var coll;
 
@@ -202,7 +202,7 @@ module.exports = function(RED) {
         var noerror = true;
 
         var connectToDB = function() {
-            console.log("connecting:" + node.mongoConfig.url);
+            console.log("connecting:  " + node.mongoConfig.url);
             MongoClient.connect(node.mongoConfig.url, function(err,client) {
                 if (err) {
                     node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
