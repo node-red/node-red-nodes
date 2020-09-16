@@ -6,17 +6,23 @@
         <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost">
     </div>
 
-    <div class="form-row node-config-input-clustered">
-      <label for="node-config-input-clustered"><i class="fa fa-sitemap"></i><span data-i18n="mongodb.label.clustered"></span></label>
-      <input type="checkbox" id="node-config-input-clustered" style="width:20px;">
+    <div class="form-row node-config-input-topology">
+      <label for="node-config-input-topology"><span data-i18n="mongodb.label.topology"></span></label>
+          <select id="node-config-input-topology">
+            <option type="button" class="red-ui-button toggle topology-group" selected  value="direct">Direct (mongodb://)</button>
+            <option type="button" class="red-ui-button toggle topology-group" value="replicaset">RelicaSet/Cluster (mongodb://)</button>
+            <option type="button" class="red-ui-button toggle topology-group" value="dnscluster">DNS Cluster (mongodb+srv://)</button>
+          </select>
     </div>
+
+    <div class="form-row node-config-connectOptions">
+        <label for="node-config-input-connectOptions"><i class="fa fa-wrench"></i><span data-i18n="mongodb.label.connectOptions"></span></label>
+        <input type="text" id="node-config-input-connectOptions">
+    </div>
+
     <div class="form-row node-config-input-port">
         <label for="node-config-input-port"><i class="fa fa-plug"></i><span data-i18n="mongodb.label.port"></span></label>
         <input type="text" id="node-config-input-port" style="width:55px;">
-    </div>
-    <div class="form-row node-config-clusterVersion">
-        <label> &nbsp; </label>
-        <span data-i18n="mongodb.label.clusteredVersion"></span>
     </div>
 
     <div class="form-row">
@@ -43,7 +49,8 @@
         color: "rgb(218, 196, 180)",
         defaults: {
             hostname: {value: "127.0.0.1", required: true},
-            clustered: {value: true, required: true},
+            topology: {value: "direct", required: true},
+            connectOptions: {value: "", required: false},
             port: {value: 27017, required: true},
             db: {value: "", required: true},
             name: {value: ""}
@@ -56,19 +63,55 @@
             return this.name || this.db + "@" + this.hostname;
         },
         oneditprepare: function() {
-          $("#node-config-input-clustered").on("change",function () {
-            if ( $("#node-config-input-clustered").is(":checked") ) {
-              $(".node-config-input-port").hide();
-              $(".node-config-clusterVersion").show();
-            } else {
+          $("#node-config-input-topology").on("change", function() {
+            var topology = $("#node-config-input-topology option:selected").val();
+            if (topology === "direct") {
               $(".node-config-input-port").show();
-              $(".node-config-clusterVersion").hide();
+            } else {
+              $(".node-config-input-port").hide();
             }
-          })
+          });
         },
     });
 </script>
 
+<script type="text/x-red" data-help-name="mongodb">
+    <p>Define a connection method to your MongoDB server instance.</p>
+    <p>There are 3 supported options:
+        <details><summary>Standard/direct</summary>
+            For databases that request connections in the form
+            <code>
+              mongodb://[username]:[password]@[hostname]:[port]/[dbname]
+            </code>
+            Most often used for local MongoDB instances (localhost:27017), and other stand-alone instances.
+        </details>
+        <details><summary>Standard/replicaset</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb://[username]:[password]@[hostnameA]:[port],[hostnameB]:[port]/[dbname]?replicaSet=[replsetname]
+            </code>
+            Often used with <q>database as a service</q> offerings,
+            or on-premises instances that have been configured for availability and resilience
+        </details>
+        <details><summary>Clustered by DNS seedlist</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb+srv://[username]:[password]@[clustername]/[dbname]?retryWrites=true&w=majority
+            </code>
+            A configuration of MongoDB instances that provide availability and performance
+            through replication and sharding, accessed through a cluster alias name, rather than
+            by specific host:port connections. This is the default for MongoDB instances in the
+            <a href="https://www.mongodb.com/cloud/atlas" target="_blank">Atlas cloud service</a>.
+        </details>
+      <p><strong>Connect options</strong> is where you add the optional parameters required by your MongoDB instance.
+        This might include:
+        <ul><li>w=majority</li><li>replicaSet=replset</li><li>authSource=admin</li></ul> and any other options appropriate -
+        full set available at <a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">
+        Connection String URI Format — MongoDB Manual</a>.
+      <p>If you are connecting to <a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb-group" target="_blank">
+        IBM Databases for MongoDB</a>, as a replica-set, be sure to append <code>ssl=true&tlsAllowInvalidCertificates=true </code>
+        to the <strong>Connect options</strong>.
+</script>
 
 <script type="text/x-red" data-template-name="mongodb out">
     <div class="form-row">
