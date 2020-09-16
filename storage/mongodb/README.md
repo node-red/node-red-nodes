@@ -30,7 +30,7 @@ Usage
 -----
 
 Nodes to save and retrieve data in a MongoDB instance - the database server can be local (mongodb//:localhost:27017), remote (mongodb://hostname.network:27017), 
-and sharded cluster (mongodb+srv://clustername.network).  
+replica-set or cluster (mongodb://hostnameA.network:27017,hostnameB.network:27017), and DNS seedlist cluster (mongodb+srv://clustername.network).  
 
 Reference [MongoDB docs](https://docs.mongodb.com/manual/reference/connection-string/) to see which connection method (host or clustered) to use for your MongoDB instance. 
 
