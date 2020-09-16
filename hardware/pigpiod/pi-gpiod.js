@@ -46,13 +46,13 @@ module.exports = function(RED) {
                         PiGPIO.set_glitch_filter(node.pin,node.debounce);
                         node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
                         node.cb = PiGPIO.callback(node.pin, PiGPIO.EITHER_EDGE, function(gpio, level, tick) {
-                            node.send({ topic:"pi/"+node.pio, payload:Number(level) });
+                            node.send({ topic:"pi/"+node.pio, payload:Number(level), host:node.host });
                             node.status({fill:"green",shape:"dot",text:level});
                         });
                         if (node.read) {
                             setTimeout(function() {
                                 PiGPIO.read(node.pin, function(err, level) {
-                                    node.send({ topic:"pi/"+node.pio, payload:Number(level) });
+                                    node.send({ topic:"pi/"+node.pio, payload:Number(level), host:node.host });
                                     node.status({fill:"green",shape:"dot",text:level});
                                 });
                             }, 20);
