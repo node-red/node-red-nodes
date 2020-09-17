@@ -1,6 +1,5 @@
 
-
-<script type="text/x-red" data-template-name="mongodb">
+<script type="text/html" data-template-name="mongodb">
     <div class="form-row">
         <label for="node-config-input-hostname"><i class="fa fa-bookmark"></i><span data-i18n="mongodb.label.host"></span></label>
         <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost">
@@ -75,7 +74,7 @@
     });
 </script>
 
-<script type="text/x-red" data-help-name="mongodb">
+<script type="text/html" data-help-name="mongodb">
     <p>Define a connection method to your MongoDB server instance.</p>
     <p>There are 3 supported options:
         <details><summary>Standard/direct</summary>
@@ -113,7 +112,7 @@
         to the <strong>Connect options</strong>.
 </script>
 
-<script type="text/x-red" data-template-name="mongodb out">
+<script type="text/html" data-template-name="mongodb out">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
@@ -153,7 +152,7 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mongodb out">
+<script type="text/html" data-help-name="mongodb out">
     <p>A simple MongoDB output node. Can save, insert, update and remove objects from a chosen collection.</p>
     <p>Save will update an existing object or insert a new object if one does not already exist.</p>
     <p>Insert will insert a new object.</p>
@@ -175,7 +174,6 @@
 </script>
 
 <script type="text/javascript">
-
     function oneditprepare() {
         $("#node-input-operation").change(function () {
             var id = $("#node-input-operation option:selected").val();
@@ -228,7 +226,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="mongodb in">
+<script type="text/html" data-template-name="mongodb in">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
@@ -252,7 +250,7 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mongodb in">
+<script type="text/html" data-help-name="mongodb in">
     <p>Calls a MongoDB collection method based on the selected operator.</p>
     <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
     Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
@@ -268,7 +266,6 @@
 </script>
 
 <script type="text/javascript">
-
     RED.nodes.registerType('mongodb in', {
         category: 'storage-input',
         color: "rgb(218, 196, 180)",
