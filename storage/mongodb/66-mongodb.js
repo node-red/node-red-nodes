@@ -17,7 +17,7 @@ module.exports = function(RED) {
 
         //console.log(this);
 
-        var clustered = !(this.topology === "direct") || false;
+        var clustered = (this.topology !== "direct") || false;
 
         var url = "mongodb://";
         if (this.topology === "dnscluster") {
