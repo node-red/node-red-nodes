@@ -341,15 +341,27 @@ module.exports = function(RED) {
                 ss = true;
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 //console.log("> ready");
-                // Open the inbox folder
+                // Open the folder
                 imap.openBox(node.box, // Mailbox name
                     false, // Open readonly?
                     function(err, box) {
                     //console.log("> Inbox err : %j", err);
                     //console.log("> Inbox open: %j", box);
                         if (err) {
+                            var boxs = [];
+                            imap.getBoxes(function(err,boxes) {
+                                if (err) { return; }
+                                for (var prop in boxes) {
+                                    if (boxes.hasOwnProperty(prop)) {
+                                        if (boxes[prop].children) {
+                                            boxs.push(prop+"/{"+Object.keys(boxes[prop].children)+'}');
+                                        }
+                                        else { boxs.push(prop); }
+                                    }
+                                }
+                                node.error(RED._("email.errors.fetchfail", {folder:node.box+".  Folders - "+boxs.join(', ')}),err);
+                            });
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
-                            node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                             imap.end();
                             s = false;
                             setInputRepeatTimeout();
