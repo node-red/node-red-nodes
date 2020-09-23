@@ -414,9 +414,9 @@ module.exports = function(RED) {
                                             s = false;
                                             setInputRepeatTimeout();
                                         };
-                                        if (this.disposition === "Delete") {
+                                        if (node.disposition === "Delete") {
                                             imap.addFlags(results, "\Deleted", cleanup);
-                                        } else if (this.disposition === "Read") {
+                                        } else if (node.disposition === "Read") {
                                             imap.addFlags(results, "\Seen", cleanup);
                                         } else {
                                             cleanup();
