@@ -279,8 +279,16 @@ module.exports = function(RED) {
                                     node.error(err);
                                 }
                                 else {
-                                    msg.payload = result;
-                                    node.send(msg);
+                                     cursor.toArray(function(cursorError, cursorDocs) {
+                                       console.log(cursorDocs);
+                                       if (cursorError) {
+                                         node.error(cursorError);
+                                       }
+                                       else {
+                                         msg.payload = cursorDocs;
+                                         node.send(msg);
+                                       }
+                                     });
                                 }
                             });
                         }
