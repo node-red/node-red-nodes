@@ -246,7 +246,7 @@ module.exports = function(RED) {
                                 skip = 0;
                             }
 
-                            coll.find(selector,msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
+                            coll.find(selector).project(msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
                                 if (err) {
                                     node.error(err);
                                 }
