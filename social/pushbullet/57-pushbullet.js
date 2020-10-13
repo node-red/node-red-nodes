@@ -125,6 +125,7 @@ module.exports = function(RED) {
             stream.on('close', function() {
                 self.emitter.emit('stream_disconnected');
                 if (!closing) {
+                    if (tout) { clearTimeout(tout); }
                     tout = setTimeout(function() {
                         stream.connect();
                     }, 15000);
@@ -133,6 +134,7 @@ module.exports = function(RED) {
             stream.on('error', function(err) {
                 self.emitter.emit('stream_error', err);
                 if (!closing) {
+                    if (tout) { clearTimeout(tout); }
                     tout = setTimeout(function() {
                         stream.connect();
                     }, 15000);
