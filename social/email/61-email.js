@@ -518,7 +518,7 @@ module.exports = function(RED) {
     });
 
 
-    function emailMtaNode(n) {
+    function EmailMtaNode(n) {
         RED.nodes.createNode(this,n);
         this.port = n.port;
         var node = this;
@@ -573,6 +573,6 @@ module.exports = function(RED) {
             node.mta.close();
         });
     }
-    RED.nodes.registerType("e-mail mta",emailMtaNode);
+    RED.nodes.registerType("e-mail mta",EmailMtaNode);
 
 };
