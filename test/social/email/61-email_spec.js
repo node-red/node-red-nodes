@@ -225,13 +225,18 @@ describe('email Node', function () {
 
                 n2.on("input", function(msg) {
                     //console.log("GOT",msg);
-                    msg.should.have.a.property("payload",'Hello World\n');
-                    msg.should.have.a.property("topic","Test");
-                    msg.should.have.a.property("from",'foo@example.com');
-                    msg.should.have.a.property("to",'bar@example.com');
-                    msg.should.have.a.property("attachments");
-                    msg.should.have.a.property("header");
-                    done();
+                    try {
+                        msg.should.have.a.property("payload",'Hello World\n');
+                        msg.should.have.a.property("topic","Test");
+                        msg.should.have.a.property("from",'foo@example.com');
+                        msg.should.have.a.property("to",'bar@example.com');
+                        msg.should.have.a.property("attachments");
+                        msg.should.have.a.property("header");
+                        done();
+                    }
+                    catch(e) {
+                        done(e)
+                    }
                 });
 
                 n3.emit("input", {
