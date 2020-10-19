@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
@@ -11,11 +12,13 @@
 
 module.exports = function(RED) {
     "use strict";
-    var nodemailer = require("nodemailer");
+    var util = require("util");
     var Imap = require('imap');
     var POP3Client = require("poplib");
-    var SimpleParser = require("mailparser").simpleParser;
-    var util = require("util");
+    var nodemailer = require("nodemailer");
+    var simpleParser = require("mailparser").simpleParser;
+    var SMTPServer = require("smtp-server").SMTPServer;
+    //var microMTA = require("micromta").microMTA;
 
     if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
         throw "Error : Requires nodejs version >= 8.";
@@ -291,8 +294,8 @@ module.exports = function(RED) {
 
                     // We have now received a new email message.  Create an instance of a mail parser
                     // and pass in the email message.  The parser will signal when it has parsed the message.
-                    SimpleParser(data, {}, function(err, parsed) {
-                        //node.log(util.format("SimpleParser: on(end): %j", mailObject));
+                    simpleParser(data, {}, function(err, parsed) {
+                        //node.log(util.format("simpleParser: on(end): %j", mailObject));
                         if (err) {
                             node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
                             node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
@@ -406,7 +409,7 @@ module.exports = function(RED) {
                                     //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                                         imapMessage.on('body', function(stream, info) {
                                         //console.log("> message - body - stream=?, info=%j", info);
-                                            SimpleParser(stream, {}, function(err, parsed) {
+                                            simpleParser(stream, {}, function(err, parsed) {
                                                 if (err) {
                                                     node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
                                                     node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
@@ -513,4 +516,63 @@ module.exports = function(RED) {
             global: { type:"boolean" }
         }
     });
+
+
+    function emailMtaNode(n) {
+        RED.nodes.createNode(this,n);
+        this.port = n.port;
+        var node = this;
+
+        node.mta = new SMTPServer({
+            secure: false,
+            logger: false,
+            disabledCommands: ['AUTH', 'STARTTLS'],
+
+            onData: function (stream, session, callback) {
+                simpleParser(stream, {
+                    skipTextToHtml: true,
+                    skipTextLinks: true
+                })
+                .then(parsed => {
+                    node.status({fill:"green", shape:"dot", text:""});
+                    var msg = {}
+                    msg.payload = parsed.text;
+                    msg.topic = parsed.subject;
+                    msg.date = parsed.date;
+                    msg.header = {};
+                    parsed.headers.forEach((v, k) => {msg.header[k] = v;});
+                    if (parsed.html) { msg.html = parsed.html; }
+                    if (parsed.to) {
+                        if (typeof(parsed.to) === "string" && parsed.to.length > 0) { msg.to = parsed.to; }
+                        else if (parsed.to.hasOwnProperty("text") && parsed.to.text.length > 0) { msg.to = parsed.to.text; }
+                    }
+                    if (parsed.cc) {
+                        if (typeof(parsed.cc) === "string" && parsed.cc.length > 0) { msg.cc = parsed.cc; }
+                        else if (parsed.cc.hasOwnProperty("text") && parsed.cc.text.length > 0) { msg.cc = parsed.cc.text; }
+                    }
+                    if (parsed.cc && parsed.cc.length > 0) { msg.cc = parsed.cc; }
+                    if (parsed.bcc && parsed.bcc.length > 0) { msg.bcc = parsed.bcc; }
+                    if (parsed.from && parsed.from.value && parsed.from.value.length > 0) { msg.from = parsed.from.value[0].address; }
+                    if (parsed.attachments) { msg.attachments = parsed.attachments; }
+                    else { msg.attachments = []; }
+                    node.send(msg); // Propagate the message down the flow
+                    setTimeout(function() { node.status({})}, 500);
+                })
+                .catch(err => { node.error(RED._("email.errors.parsefail"),err); })
+                .finally(callback);
+            }
+        });
+
+        node.mta.listen(node.port);
+
+        node.mta.on("error", err => {
+            node.error("Error: " + err.message, err);
+        });
+
+        node.on("close", function() {
+            node.mta.close();
+        });
+    }
+    RED.nodes.registerType("e-mail mta",emailMtaNode);
+
 };

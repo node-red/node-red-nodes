@@ -21,7 +21,8 @@
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
         "tip": {
             "cred": "<b>注釈:</b> emailkeys.jsファイルから認証情報をコピーしました。",
-            "recent": "注釈: 最新のメールを1件のみ取得します。"
+            "recent": "注釈: 最新のメールを1件のみ取得します。",
+            "mta": "<b>注釈:</b> 1024未満のポートを使用するには、昇格された(root)特権が必要です。ヘルプサイドバーを参照してください。"
         },
         "status": {
             "messagesent": "メッセージを送信しました: __response__",
@@ -34,6 +35,7 @@
             "inboxzero": "受信トレイにメールがありません",
             "sending": "送信中",
             "sendfail": "送信が失敗しました",
+            "parseerror": "メッセージのパースに失敗",
             "connecterror": "接続エラー"
         },
         "errors": {
@@ -43,6 +45,7 @@
             "nosmtptransport": "SMTP転送が設定されていません。「情報」タブを参照してください",
             "nopayload": "送信するペイロードがありません",
             "fetchfail": "フォルダの受信に失敗しました: __folder__",
+            "parsefail": "メッセージのパースに失敗",
             "messageerror": "メッセージ受信エラー: __error__"
         }
     }

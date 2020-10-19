@@ -34,7 +34,8 @@
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {
             "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
-            "recent": "Tip: Only retrieves the single most recent email."
+            "recent": "Tip: Only retrieves the single most recent email.",
+            "mta": "<b>Note:</b> To use ports below 1024 you may need elevated (root) privileges. See help sidebar."
         },
         "status": {
             "messagesent": "Message sent: __response__",
@@ -47,6 +48,7 @@
             "inboxzero": "you have achieved Inbox Zero",
             "sending": "sending",
             "sendfail": "send failed",
+            "parseerror": "Failed to parse message",
             "connecterror": "connect error"
         },
         "errors": {
@@ -56,6 +58,7 @@
             "nosmtptransport": "No SMTP transport. See info panel.",
             "nopayload": "No payload to send",
             "fetchfail": "Failed to fetch folder: __folder__",
+            "parsefail": "Failed to parse message",
             "messageerror": "Fetch message error: __error__",
             "refreshtoolarge": "Refresh interval too large. Limiting to 2147483 seconds"
         }

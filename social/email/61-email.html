@@ -86,7 +86,7 @@
             return this._("email.email");
         },
         label: function() {
-            return this.dname||this.name||"email";
+            return this.dname||this.name||this._("email.email");
         },
         labelStyle: function() {
             return (this.dname)?"node_label_italic":"";
@@ -279,4 +279,38 @@
         }
     });
 })();
+</script>
+
+
+<script type="text/html" data-template-name="e-mail mta">
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
+        <input type="text" id="node-input-port" style="width:70%;"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.mta"></span></div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('e-mail mta',{
+        category: 'social',
+        color:"#c7e9c0",
+        defaults: {
+            name: {value:""},
+            port: {value:"1025",required:true},
+        },
+        inputs:0,
+        outputs:1,
+        icon: "envelope.png",
+        paletteLabel: function() { return this._("email.email") + " MTA" },
+        label: function() {
+            return this.name||this._("email.email") + " MTA";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
 </script>
