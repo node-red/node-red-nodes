@@ -57,7 +57,7 @@ module.exports = function(RED) {
         this.register = function(xmppThat) {
             if (RED.settings.verbose || LOGITALL) {that.log("registering "+xmppThat.id);}
             that.users[xmppThat.id] = xmppThat;
-            // So we could start the connection here, but we already have the logic in the thats.
+            // So we could start the connection here, but we already have the logic in the nodes that takes care of that.
             // if (Object.keys(that.users).length === 1) {
             //   this.client.start();
             // }
@@ -177,7 +177,6 @@ module.exports = function(RED) {
             // provide some presence so people can see we're online
             that.connected = true;
             await that.client.send(xml('presence'));
-            //      await that.client.send(xml('presence', {type: 'available'},xml('status', {}, 'available')));
             if (RED.settings.verbose || LOGITALL) {that.log('connected as '+that.username+' to ' +that.server+':'+that.port);}
         });
 
@@ -304,9 +303,10 @@ module.exports = function(RED) {
                     node.status({fill:"red",shape:"ring",text:"XMPP authorization failure"});
                 }
                 else if (err == "TimeoutError") {
-                    // Suppress it!
+                    // Suppress it! This seems to happen with OpenFire servers and doesn't actually stop us from working
                     node.warn("Timed out! ");
                     node.status({fill:"grey",shape:"dot",text:"opening"});
+                    // uncomment if you want it to be an error
                     //node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
                 }
                 else {
@@ -318,7 +318,6 @@ module.exports = function(RED) {
 
         // Meat of it, a stanza object contains chat messages (and other things)
         xmpp.on('stanza', async (stanza) =>{
-            //      node.log("Received stanza");
             if (RED.settings.verbose || LOGITALL) {node.log(stanza);}
             if (stanza.is('message')) {
                 if (stanza.attrs.type == 'chat') {
@@ -330,7 +329,6 @@ module.exports = function(RED) {
                             msg.topic = stanza.attrs.from
                         }
                         else { msg.topic = ids[0]; }
-//                        if (RED.settings.verbose || LOGITALL) {node.log("Received a message from "+stanza.attrs.from);}
                         if (!node.join && ((node.from === "") || (node.from === stanza.attrs.to))) {
                             node.send([msg,null]);
                         }
@@ -385,12 +383,6 @@ module.exports = function(RED) {
             }
         });
 
-
-
-        // xmpp.on('subscribe', from => {
-        //   xmpp.acceptSubscription(from);
-        // });
-
         //register with config
         this.serverConfig.register(this);
         // Now actually make the connection
@@ -410,7 +402,6 @@ module.exports = function(RED) {
         }
         catch(e) {
             node.error("Bad xmpp configuration; service: "+xmpp.options.service+" jid: "+node.serverConfig.jid);
-//            node.warn(e);
             node.warn(e.stack);
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
         }
@@ -511,7 +502,7 @@ module.exports = function(RED) {
                     node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
                 }
                 else if (err == "TimeoutError") {
-                    // OK, this happens with OpenFire, suppress it.
+                    // OK, this happens with OpenFire, suppress it. The connection seems to still work
                     node.status({fill:"grey",shape:"dot",text:"opening"});
                     node.log("Timed out! ",err);
 //                    node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
