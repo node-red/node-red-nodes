@@ -155,7 +155,7 @@ module.exports = function(RED) {
                     }
                 }
                 else if(stanza.attrs.type === 'result'){
-                    // AM To-Do check for 'bind' result with our current jid
+                    // To-Do check for 'bind' result with our current jid
                     var query = stanza.getChild('query');
                     if (RED.settings.verbose || LOGITALL) {that.log("result!");}
                     if (RED.settings.verbose || LOGITALL) {that.log(query);}
@@ -164,7 +164,6 @@ module.exports = function(RED) {
             }
         });
 
-        
         // We shouldn't have any errors here that the input/output nodes can't handle
         //   if you need to see everything though; uncomment this block
         // this.client.on('error', err => {
@@ -494,6 +493,10 @@ module.exports = function(RED) {
                     node.status({fill:"red",shape:"ring",text:"timeout"});
                 } 
                 else if (err.errno === "ENOTFOUND") {
+                    node.error("Server doesn't exist "+xmpp.options.service,err);
+                    node.status({fill:"red",shape:"ring",text:"bad address"});
+                }
+                if (err.errno === "ENOTFOUND") {
                     node.error("Server doesn't exist "+xmpp.options.service,err);
                     node.status({fill:"red",shape:"ring",text:"bad address"});
                 }

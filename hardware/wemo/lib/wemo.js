@@ -336,10 +336,12 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
 
     res.on('end', function(){
       xml2js.parseString(data, function(err, result){
-        if (!err) {
+        if (!err && result["s:Envelope"]) {
           var status = result["s:Envelope"]["s:Body"][0]["u:GetBinaryStateResponse"][0]["BinaryState"][0];
           status = parseInt(status);
           def.resolve(status);
+        } else {
+          def.reject();
         }
       });
     });
@@ -401,12 +403,14 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
                 };
                 def.resolve(obj);
               } else {
+                def.reject();
                 console.log("err");
               }
             });
           }
         } else {
           console.log("err");
+          def.reject();
         }
       });
     });
@@ -489,6 +493,8 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
             msg.capabilityName = capabilityMap[msg.capability];
             msg.value = res['StateEvent']['Value'][0];
             def.resolve(msg);
+          } else {
+            def.reject();
           }
         });
       } else if (prop.hasOwnProperty('BinaryState')) {

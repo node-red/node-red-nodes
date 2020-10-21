@@ -51,7 +51,8 @@
             "unexpected-close": "serial port __port__ closed unexpectedly",
             "disconnected": "serial port __port__ disconnected",
             "closed": "serial port __port__ closed",
-            "list": "ポートのリスト化に失敗しました。手動で入力してください。"
+            "list": "ポートのリスト化に失敗しました。手動で入力してください。",
+            "badbaudrate": "ボーレートが不正です"
         }
     }
 }

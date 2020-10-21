@@ -66,7 +66,8 @@
             "unexpected-close": "serial port __port__ closed unexpectedly",
             "disconnected": "serial port __port__ disconnected",
             "closed": "serial port __port__ closed",
-            "list": "Failed to list ports. Please enter manually."
+            "list": "Failed to list ports. Please enter manually.",
+            "badbaudrate": "Baudrate is invalid"
         }
     }
 }

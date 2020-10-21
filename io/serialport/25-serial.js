@@ -41,6 +41,19 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
 
             node.on("input",function(msg) {
+                if (msg.hasOwnProperty("baudrate")) {
+                    var baud = parseInt(msg.baudrate);
+                    if (isNaN(baud)) {
+                        node.error(RED._("serial.errors.badbaudrate"),msg);
+                    } else {
+                        node.port.update({baudRate: baud},function(err,res) {
+                            if (err) {
+                                var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+                                node.error(errmsg,msg);
+                            }
+                        });
+                    }
+                }
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
                 var payload = node.port.encodePayload(msg.payload);
                 node.port.write(payload,function(err,res) {
@@ -121,6 +134,19 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
             // Serial Out
             node.on("input",function(msg) {
+                if (msg.hasOwnProperty("baudrate")) {
+                    var baud = parseInt(msg.baudrate);
+                    if (isNaN(baud)) {
+                        node.error(RED._("serial.errors.badbaudrate"),msg);
+                    } else {
+                        node.port.update({baudRate: baud},function(err,res) {
+                            if (err) {
+                                var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+                                node.error(errmsg,msg);
+                            }
+                        });
+                    }
+                }
                 if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
                 if (msg.hasOwnProperty("count") && (typeof msg.count === "number") && (node.serialConfig.out === "count")) {
                     node.serialConfig.newline = msg.count;
@@ -249,6 +275,7 @@ module.exports = function(RED) {
                             return payload;
                         },
                         write: function(m,cb) { this.serial.write(m,cb); },
+                        update: function(m,cb) { this.serial.update(m,cb); },
                         enqueue: function(msg,sender,cb) {
                             var payload = this.encodePayload(msg.payload);
                             var qobj = {

@@ -43,6 +43,7 @@ describe('email Node', function () {
                 id: "n1",
                 type: "e-mail",
                 name: "emailout",
+                port: 1025,
                 wires: [
                     []
                 ]
@@ -187,5 +188,65 @@ describe('email Node', function () {
             }, 1900);
         })
 
+    });
+
+    describe('email mta', function () {
+
+        it('should catch an email send to localhost 1025', function (done) {
+            var flow = [{
+                id: "n1",
+                type: "e-mail mta",
+                name: "emailmta",
+                port: 1025,
+                wires: [
+                    ["n2"]
+                ]
+            },
+            {
+                id:"n2",
+                type:"helper"
+            },
+            {
+                id: "n3",
+                type: "e-mail",
+                dname: "testout",
+                server: "localhost",
+                secure: false,
+                port: 1025,
+                wires: [
+                    []
+                ]
+            }];
+            helper.load(emailNode, flow, function () {
+                var n1 = helper.getNode("n1");
+                var n2 = helper.getNode("n2");
+                var n3 = helper.getNode("n3");
+                n1.should.have.property('port', 1025);
+
+                n2.on("input", function(msg) {
+                    //console.log("GOT",msg);
+                    try {
+                        msg.should.have.a.property("payload",'Hello World\n');
+                        msg.should.have.a.property("topic","Test");
+                        msg.should.have.a.property("from",'foo@example.com');
+                        msg.should.have.a.property("to",'bar@example.com');
+                        msg.should.have.a.property("attachments");
+                        msg.should.have.a.property("header");
+                        done();
+                    }
+                    catch(e) {
+                        done(e)
+                    }
+                });
+
+                n3.emit("input", {
+                    payload: "Hello World",
+                    topic: "Test",
+                    from: "foo@example.com",
+                    to: "bar@example.com"
+                });
+                //done();
+            });
+        });
     });
 });

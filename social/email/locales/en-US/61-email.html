@@ -26,7 +26,7 @@
     <p>Additionally <code>msg.header</code> contains the complete header object including
     <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
     <p>It can optionally mark the message as Read (default), Delete it, or leave unmarked (None).</p>
-    <p>Uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a> - see that page for 
+    <p>Uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a> - see that page for
         information on the <code>msg.criteria</code> format if needed.</p>
     <p><b>Note</b>: uses IMAP with SSL to port 993.</p>
     <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property. This will be an array of objects where
@@ -51,3 +51,13 @@
 
 </script>
 
+<script type="text/html" data-help-name="e-mail mta">
+    <p>Mail Transfer Agent - listens on a port for incoming SMTP mail.</p>
+    <p><b>Note</b>: "NOT for production use" as there is no security built in.
+    This is primarily for local testing of outbound mail sending, but could be used
+    as a mail forwarder to a real email service if required.</p>
+    <p>To use ports below 1024, for example 25 or 465, you may need to get privileged access.
+    On linux systems this can be done by running
+    <pre>sudo setcap 'cap_net_bind_service=+eip' $(which node)</pre>
+    and restarting Node-RED. Be aware - this gives all node applications access to all ports.</p>
+</script>

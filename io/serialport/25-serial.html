@@ -57,6 +57,7 @@
 <script type="text/html" data-help-name="serial out">
     <p>Provides a connection to an outbound serial port.</p>
     <p>Only the <code>msg.payload</code> is sent.</p>
+    <p>Optionally the baudrate can be changed using <code>msg.baudrate</code></p>
     <p>Optionally the new line character used to split the input can be appended to every message sent out to the serial port.</p>
     <p>Binary payloads can be sent by using a Buffer object.</p>
 </script>
@@ -111,6 +112,7 @@
     </li>
     <li><code>msg.count</code> if set this will override the configured number of characters as long as it is less than the number configured.</li>
     <li><code>msg.waitfor</code> single character, escape code, or hex code. If set, the node will wait until it matches that character in the stream and then start the output.</li>
+    <li>Optionally the baudrate can be changed using <code>msg.baudrate</code></li>
     </ul>
     <h3>Outputs</h3>
     <ul>

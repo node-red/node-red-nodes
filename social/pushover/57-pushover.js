@@ -103,8 +103,8 @@ module.exports = function(RED) {
                 if (err) { node.error(err,msg); }
                 else {
                     try {
-                        response = JSON.parse(response);
-                        if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                        var responseObject = JSON.parse(response);
+                        if (responseObject.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
                     }
                     catch(e) {
                         node.error("[57-pushover.js] Error: "+response);
