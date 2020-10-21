@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
     const {client, xml, jid} = require('@xmpp/client')
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    const LOGITALL=true;
+    const LOGITALL=false;
 
     function XMPPServerNode(n) {
         RED.nodes.createNode(this,n);
@@ -22,7 +22,7 @@ module.exports = function(RED) {
             this.port = 5222;
         }
         else{
-            this.port = n.port;
+            this.port = parseInt(n.port);
         }
 
         // The password is obfuscated and stored in a separate location
@@ -32,11 +32,15 @@ module.exports = function(RED) {
         }
         // The basic xmpp client object, this will be referred to as "xmpp" in the nodes.
         // note we're not actually connecting here.
+        var proto = "xmpp";
+        if(this.port === 5223){
+            proto = "xmpps";
+        }
         if (RED.settings.verbose || LOGITALL) {
-            this.log("Setting up connection xmpp: {service: xmpp://"+this.server+":"+this.port+", username: "+this.username+", password: "+this.password+"}");
+            this.log("Setting up connection xmpp: {service: "+proto+"://"+this.server+":"+this.port+", username: "+this.username+", password: "+this.password+"}");
         }
         this.client = client({
-            service: 'xmpp://' + this.server + ':' + this.port,
+            service: proto+'://' + this.server + ':' + this.port,
             username: this.username,
             password: this.password
         });
@@ -214,6 +218,7 @@ module.exports = function(RED) {
         this.nick = this.serverConfig.nickname || this.serverConfig.username.split("@")[0];
         this.join = n.join || false;
         this.sendAll = n.sendObject;
+        // Yes, it's called "from", don't ask me why; I don't know why
         this.from = n.to || "";
         var node = this;
 
@@ -275,7 +280,7 @@ module.exports = function(RED) {
         
         // Should we listen on other's status (chatstate) or a chatroom state (groupbuddy)?
         xmpp.on('error', err => {
-            if (RED.settings.verbose || LOGITALL) { node.log(err); }
+            if (RED.settings.verbose || LOGITALL) { node.log("XMPP Error: "+err); }
             if (err.hasOwnProperty("stanza")) {
                 if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
                 else { node.error(err.stanza.name,err); }
@@ -293,6 +298,10 @@ module.exports = function(RED) {
                 else if (err === "XMPP authentication failure") {
                     node.error("Authentication failure! "+err,err);
                     node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
+                }
+                else if (err.name === "SASLError") {
+                    node.error("Authorization error! "+err.condition,err);
+                    node.status({fill:"red",shape:"ring",text:"XMPP authorization failure"});
                 }
                 else if (err == "TimeoutError") {
                     // Suppress it!
@@ -321,7 +330,8 @@ module.exports = function(RED) {
                             msg.topic = stanza.attrs.from
                         }
                         else { msg.topic = ids[0]; }
-                        if (!node.join && ((node.from === "") || (node.from === stanza.attrs.from))) {
+//                        if (RED.settings.verbose || LOGITALL) {node.log("Received a message from "+stanza.attrs.from);}
+                        if (!node.join && ((node.from === "") || (node.from === stanza.attrs.to))) {
                             node.send([msg,null]);
                         }
                     }
@@ -400,7 +410,7 @@ module.exports = function(RED) {
         }
         catch(e) {
             node.error("Bad xmpp configuration; service: "+xmpp.options.service+" jid: "+node.serverConfig.jid);
-            node.warn(e);
+//            node.warn(e);
             node.warn(e.stack);
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
         }
