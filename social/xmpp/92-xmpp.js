@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
     const {client, xml, jid} = require('@xmpp/client')
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    const LOGITALL=false;
+    const LOGITALL=true;
 
     function XMPPServerNode(n) {
         RED.nodes.createNode(this,n);
@@ -32,6 +32,9 @@ module.exports = function(RED) {
         }
         // The basic xmpp client object, this will be referred to as "xmpp" in the nodes.
         // note we're not actually connecting here.
+        if (RED.settings.verbose || LOGITALL) {
+            this.log("Setting up connection xmpp: {service: xmpp://"+this.server+":"+this.port+", username: "+this.username+", password: "+this.password+"}");
+        }
         this.client = client({
             service: 'xmpp://' + this.server + ':' + this.port,
             username: this.username,
@@ -67,7 +70,6 @@ module.exports = function(RED) {
                 if (that.client && that.client.connected) {
                     return that.client.stop(done);
                 } else {
-                    that.client.stop();
                     return done();
                 }
             }
@@ -101,11 +103,22 @@ module.exports = function(RED) {
                         if("undefined" !== typeof textObj){
                             text = textObj.getText();
                         }
+                        else{
+                            textObj = err.getChild('code');
+                            if("undefined" !== typeof textObj){
+                                text = textObj.getText();
+                            }
+                        }
                         if (RED.settings.verbose || LOGITALL) {that.log("Culprit: "+that.lastUsed);}
                         if("undefined" !== typeof that.lastUsed){
                             that.lastUsed.status({fill:"red",shape:"ring",text:text});
                             that.lastUsed.warn(text);
                         }
+                        if (RED.settings.verbose || LOGITALL) {
+                            that.log("We did wrong: "+text);
+                            that.log(stanza);
+                        }
+                        
                         // maybe throw the message or summit
                         //that.error(text);
                     }
@@ -128,7 +141,26 @@ module.exports = function(RED) {
                     }
                 }
             }
+            else if(stanza.is('iq')){
+                if (RED.settings.verbose || LOGITALL) {that.log("got an iq query");}
+                if(stanza.attrs.type === 'error'){
+                    if (RED.settings.verbose || LOGITALL) {that.log("oh noes, it's an error");}
+                    if(stanza.attrs.id === that.lastUsed.id){
+                        that.lastUsed.status({fill:"red", shape:"ring", text:stanza.getChild('error')});
+                        that.lastUsed.warn(stanza.getChild('error'));
+                    }
+                }
+                else if(stanza.attrs.type === 'result'){
+                    // AM To-Do check for 'bind' result with our current jid
+                    var query = stanza.getChild('query');
+                    if (RED.settings.verbose || LOGITALL) {that.log("result!");}
+                    if (RED.settings.verbose || LOGITALL) {that.log(query);}
+
+                }                
+            }
         });
+
+        
         // We shouldn't have any errors here that the input/output nodes can't handle
         //   if you need to see everything though; uncomment this block
         // this.client.on('error', err => {
@@ -153,11 +185,18 @@ module.exports = function(RED) {
 
         // gets called when the node is destroyed, e.g. if N-R is being stopped.
         this.on("close", async done => {
-            if(that.connected){
+            if(that.client.connected){
                 await that.client.send(xml('presence', {type: 'unavailable'}));
-            }
-            that.client.stop().catch(that.error);
-            
+                try{
+                    if (RED.settings.verbose || LOGITALL) {
+                        that.log("Calling stop() after close, status is "+that.client.status);
+                    }
+                    await that.client.stop().then(that.log("XMPP client stopped")).catch(error=>{that.warn("Got an error whilst closing xmpp session: "+error)});
+                }
+                catch(e){
+                    that.warn(e);
+                }
+            }            
             done();
         });
     }
@@ -207,7 +246,7 @@ module.exports = function(RED) {
                                  { maxstanzas:0, seconds:1 }
                                 );
                 node.serverConfig.used(node);
-                xmpp.send(stanza);
+                xmpp.send(stanza).catch(error => {node.warn("Got error when sending presence: "+error)});
             }
         });
 
@@ -252,11 +291,17 @@ module.exports = function(RED) {
                     node.status({fill:"red",shape:"ring",text:"bad address"});
                 }
                 else if (err === "XMPP authentication failure") {
-                    node.error(err,err);
+                    node.error("Authentication failure! "+err,err);
                     node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
                 }
+                else if (err == "TimeoutError") {
+                    // Suppress it!
+                    node.warn("Timed out! ");
+                    node.status({fill:"grey",shape:"dot",text:"opening"});
+                    //node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+                }
                 else {
-                    node.error(err.errno,err);
+                    node.error(err,err);
                     node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
                 }
             }
@@ -346,7 +391,10 @@ module.exports = function(RED) {
             else{
                 node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
                 if(xmpp.status === "offline"){
-                    xmpp.start();
+                    if (RED.settings.verbose || LOGITALL) {
+                        node.log("starting xmpp client");
+                    }
+                    xmpp.start().catch(error => {node.warn("Got error on start: "+error); node.warn("XMPP Status is now: "+xmpp.status)});;
                 }
             }
         }
@@ -392,7 +440,7 @@ module.exports = function(RED) {
 
         xmpp.on('online', function(data) {
             node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-            if ((node.join) && (node.from !== "")) {
+            if ((node.join) && (node.to !== "")) {
                 // disable chat history
                 var to = node.to+'/'+node.nick;
                 // the presence with the muc x element signifies we want to join the muc
@@ -443,8 +491,8 @@ module.exports = function(RED) {
                 if (err.errno === "ETIMEDOUT") {
                     node.error("Timeout connecting to server",err);
                     node.status({fill:"red",shape:"ring",text:"timeout"});
-                }
-                if (err.errno === "ENOTFOUND") {
+                } 
+                else if (err.errno === "ENOTFOUND") {
                     node.error("Server doesn't exist "+xmpp.options.service,err);
                     node.status({fill:"red",shape:"ring",text:"bad address"});
                 }
@@ -452,8 +500,14 @@ module.exports = function(RED) {
                     node.error(err,err);
                     node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
                 }
+                else if (err == "TimeoutError") {
+                    // OK, this happens with OpenFire, suppress it.
+                    node.status({fill:"grey",shape:"dot",text:"opening"});
+                    node.log("Timed out! ",err);
+//                    node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+                }
                 else {
-                    node.error(err.errno,err);
+                    node.error("Unknown error: "+err,err);
                     node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
                 }
             }
@@ -496,6 +550,17 @@ module.exports = function(RED) {
                     node.serverConfig.used(node);
                     xmpp.send(stanza);
                 }
+                else if(msg.command === "get"){
+                    var to = node.to || msg.topic || "";
+                    var stanza = xml('iq',
+                                     {type:'get', id:node.id, to: to},
+                                     xml('query', 'http://jabber.org/protocol/muc#admin',
+                                         xml('item',{affiliation:msg.payload})));
+                    node.serverConfig.used(node);
+                    if (RED.settings.verbose || LOGITALL) {node.log("sending stanza "+stanza.toString());}
+                    xmpp.send(stanza);
+                }
+                                         
             }
             else {
                 var to = node.to || msg.topic || "";
