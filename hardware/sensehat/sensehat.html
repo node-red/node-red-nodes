@@ -1,30 +1,30 @@
 
 <script type="text/x-red" data-template-name="rpi-sensehat in">
 <div class="form-row">
-    <label><i class="fa fa-arrow-right"></i> Outputs</label>
-    <label style="width: auto" for="node-input-motion"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-motion"> Motion events</label>
-    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">accelerometer, gyroscope, magnetometer, compass</div>
+    <label><i class="fa fa-arrow-right"></i> <span data-i18n="sensehat.label.outputs"></label>
+    <label style="width: auto" for="node-input-motion"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-motion"> <span data-i18n="sensehat.label.motionEvents"></label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;" data-i18n="sensehat.label.motionEventsExamples"></div>
 </div>
 <div class="form-row">
     <label></label>
-    <label style="width: auto" for="node-input-env"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-env"> Environment events</label>
-    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;">temperature, humidity, pressure</div>
+    <label style="width: auto" for="node-input-env"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-env"> <span data-i18n="sensehat.label.environmentEvents"></label>
+    <div style="padding-left: 125px; margin-top: -5px; color: #bbb;" data-i18n="sensehat.label.environmentEventsExamples"></div>
 </div>
 <div class="form-row">
     <label></label>
-    <label style="width: auto" for="node-input-stick"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-stick"> Joystick events</label>
+    <label style="width: auto" for="node-input-stick"><input style="vertical-align: top; width: auto; margin-right: 5px;" type="checkbox" id="node-input-stick"> <span data-i18n="sensehat.label.joystickEvents"></label>
 </div>
 
 <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
 </div>
 </script>
 
 <script type="text/x-red" data-template-name="rpi-sensehat out">
 <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
 </div>
 </script>
 
