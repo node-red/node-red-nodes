@@ -1,0 +1,38 @@
+{
+    "mongodb": {
+        "label": {
+            "host": "ホスト",
+            "topology":"接続トポロジ",
+            "connectOptions":"接続オプション",
+            "port": "ポート",
+            "database": "データベース",
+            "username": "ユーザ",
+            "password": "パスワード",
+            "server": "サーバ",
+            "collection": "コレクション",
+            "operation": "操作",
+            "onlystore": "msg.payloadオブジェクトのみ保存",
+            "createnew": "一致しなければ新しいドキュメントを作成",
+            "updateall": "合致する全ドキュメントを更新"
+        },
+        "operation": {
+            "save": "save",
+            "insert": "insert",
+            "update": "update",
+            "remove": "remove",
+            "find": "find",
+            "count": "count",
+            "aggregate": "aggregate"
+        },
+        "status": {
+            "connecting": "接続中",
+            "connected": "接続しました",
+            "error": "エラー"
+        },
+        "tip": "<b> Tip:</b> コレクションが設定されていない場合、 <code>msg.collection</code>がコレクション名として使われます。",
+        "errors": {
+            "nocollection": "コレクションが定義されていません",
+            "missingconfig": "mongodbの設定がみつかりません"
+        }
+    }
+}
