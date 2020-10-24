@@ -6,3 +6,5 @@ puball.sh
 setenv.sh
 /.project
 package-lock.json
+social/xmpp/92-xmpp.old
+*.tgz
