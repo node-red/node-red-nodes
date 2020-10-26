@@ -2,7 +2,8 @@
     <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
     <p>The default message recipient can be configured in the node, if it is left
     blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
- you can also specify any or all of: <code>msg.cc</code>, <code>msg.bcc</code>, <code>msg.replyTo</code>, <code>msg.inReplyTo</code>, <code>msg.references</code> properties.</p>
+    you can also specify any or all of: <code>msg.cc</code>, <code>msg.bcc</code>, <code>msg.replyTo</code>,
+    <code>msg.inReplyTo</code>, <code>msg.references</code>, <code>msg.headers</code>, or <code>msg.priority</code> properties.</p>
     <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
     default value.</p>
     <h3>GMail users</h3>
