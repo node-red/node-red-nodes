@@ -16,8 +16,7 @@ module.exports = function(RED) {
             if (node.low === "") {
                 node.low = 1
                 if ('from' in msg) {
-                    if ( (typeof msg.from === 'number') 
-                    || ( (typeof msg.from === 'string') && (!isNaN(Number(msg.from)) ) )) {
+                    if ( (typeof msg.from === 'number') || ( (typeof msg.from === 'string') && (!isNaN(Number(msg.from)) ) )) {
                         node.low = Number(msg.from)
                     }
                 } 
@@ -26,8 +25,7 @@ module.exports = function(RED) {
             if (node.high === "") {
                 node.high = 10 
                 if ('to' in msg) {
-                    if ( (typeof msg.to === 'number') 
-                    || ( (typeof msg.to === 'string') && (!isNaN(Number(msg.to)) ) )) {
+                    if ( (typeof msg.to === 'number') || ( (typeof msg.to === 'string') && (!isNaN(Number(msg.to)) ) )) {
                         node.high = Number(msg.to)
                     }
                 } 
