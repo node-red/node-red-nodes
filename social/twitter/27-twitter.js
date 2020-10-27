@@ -642,7 +642,12 @@ module.exports = function(RED) {
                                     node.status({});
                                 } else {
                                     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                    node.error(result.body.errors[0].message,msg);
+                                    
+                                    if ('error' in result.body && typeof result.body.error === 'string') {
+                                        node.error(result.body.error,msg);
+                                    } else {
+                                        node.error(result.body.errors[0].message,msg);
+                                    }
                                 }
                             }).catch(function(err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
