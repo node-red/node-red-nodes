@@ -69,7 +69,7 @@ module.exports = function(RED) {
         this.multi = n.multi || false;
         this.operation = n.operation;
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
-        this.status({fill:"grey",shape:"ring",text:RED._("mongodbstatus.connecting")});
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
         var noerror = true;
 
