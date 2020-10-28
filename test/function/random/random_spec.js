@@ -21,8 +21,8 @@ describe('random node', function() {
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
             //console.log(n1);
-            n1.should.have.property("low", 1);
-            n1.should.have.property("high", 10);
+            n1.should.have.property("low", "");
+            n1.should.have.property("high", "");
             n1.should.have.property("inte", false);
             done();
         });
