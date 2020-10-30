@@ -1,5 +1,9 @@
 {
     "serial": {
+        "status": {
+            "waiting": "waiting",
+            "timeout": "timeout"
+        },
         "label": {
             "serialport": "シリアルポート",
             "settings": "設定",
@@ -11,8 +15,13 @@
             "split": "入力の分割方法",
             "deliver": "分割後の配信データ",
             "output": "出力",
+            "request": "リクエスト",
+            "responsetimeout": "デフォルトの応答タイムアウト",
+            "ms": "ミリ秒",
             "serial": "serial",
-            "none": "なし"
+            "none": "なし",
+            "start": "オプションで開始文字",
+            "startor": "を待ちます。"
         },
         "placeholder": {
             "serialport": "例: /dev/ttyUSB0/"
@@ -25,13 +34,14 @@
             "space": "スペース"
         },
         "linestates": {
-            "none": "auto",
-            "high": "High",
-            "low": "Low"
+            "none": "自動",
+            "high": "高",
+            "low": "低"
         },
         "split": {
             "character": "文字列で区切る",
             "timeout": "タイムアウト後で区切る",
+            "silent": "一定の待ち時間後に区切る",
             "lengths": "一定の文字数で区切る"
         },
         "output": {
@@ -40,19 +50,24 @@
         },
         "addsplit": "出力メッセージに分割文字を追加する",
         "tip": {
+            "responsetimeout": "Tip: デフォルトの応答タイムアウトは msg.timeout の設定で上書きすることができます。",
             "split": "Tip: \"区切り\" 文字は、入力を別々のメッセージに分割するために使用され、シリアルポートに送信されるすべてのメッセージに追加することもできます。",
-            "timeout": "Tip: タイムアウトモードでのタイムアウトは最初の文字が到着したときから始まります。"
+            "silent": "Tip: In line-silent mode timeout is restarted upon arrival of any character (i.e. inter-byte timeout).",
+            "timeout": "Tip: タイムアウトモードでのタイムアウトは最初の文字が到着したときから始まります。",
+            "count": "Tip: カウントモードでは msg.count 設定は、構成された値よりも小さいときに限り、構成されたカウントを上書きすることができます。",
+            "waitfor": "Tip: オプションです。すべてのデータを受信するには、空白のままにします。文字($)・エスケープコード(\\n)・16進コード(0x02)を受け入れることができます。" ,
+            "addchar": "Tip: この文字は、シリアルポートに送信されるすべてのメッセージに追加されます。通常は \\r や \\n です。"
         },
-        "onopen": "serial port __port__ opened at __baud__ baud __config__",
+        "onopen": "シリアルポート __port__ が __baud__ ボー __config__ で開かれました",
         "errors": {
-            "missing-conf": "missing serial config",
-            "serial-port": "serial port",
-            "error": "serial port __port__ error: __error__",
-            "unexpected-close": "serial port __port__ closed unexpectedly",
-            "disconnected": "serial port __port__ disconnected",
-            "closed": "serial port __port__ closed",
+            "missing-conf": "シリアル設定がありません。",
+            "serial-port": "シリアルポート",
+            "error": "シリアルポート __port__ エラー: __error__",
+            "unexpected-close": "シリアルポート __port__ が予期せず閉じられました",
+            "disconnected": "シリアルポート __port__ 切断",
+            "closed": "シリアルポート __port__ 閉じられました",
             "list": "ポートのリスト化に失敗しました。手動で入力してください。",
-            "badbaudrate": "ボーレートが不正です"
+            "badbaudrate": "ボーレートが不正です。"
         }
     }
 }
