@@ -45,6 +45,11 @@ module.exports = function(RED) {
                             ctx.lineWidth = annotation.lineWidth || defaultLineWidth;
                             ctx.lineJoin = 'bevel';
                             let x,y,r,w,h;
+
+                            if (!annotation.type && annotation.bbox) {
+                                annotation.type = 'rect';
+                            }
+
                             switch(annotation.type) {
                                 case 'rect':
                                     if (annotation.bbox) {

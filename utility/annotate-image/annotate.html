@@ -1,22 +1,22 @@
 
 <script type="text/x-red" data-template-name="annotate-image">
     <div class="form-row">
+        <span id="node-input-row-stroke">
+            <label for="node-input-stroke">Line Color</label>
+        </span>
+        <label style="margin-left: 20px" for="node-input-lineWidth">Line Width</label>
+        <input style="width: 50px" type="text" id="node-input-lineWidth">
+    </div>
+    <div class="form-row">
+        <span id="node-input-row-fontColor">
+            <label for="node-input-fontColor">Font Color</label>
+        </span>
+        <label style="margin-left: 20px" for="node-input-fontSize">Font Size</label>
+        <input style="width: 50px" type="text" id="node-input-fontSize">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div id="node-input-row-stroke" class="form-row">
-        <label for="node-input-stroke">Stroke</label>
-    </div>
-    <div class="form-row">
-        <label for="node-input-lineWidth">Line Width</label>
-        <input type="text" id="node-input-lineWidth">
-    </div>
-    <div class="form-row">
-        <label for="node-input-fontSize">Font Size</label>
-        <input type="text" id="node-input-fontSize">
-    </div>
-    <div id="node-input-row-fontColor" class="form-row">
-        <label for="node-input-fontColor">Font Color</label>
     </div>
 </script>
 
@@ -52,11 +52,12 @@
             <dd>The radius of a <code>circle</code> annotation.</dd>
             <dt>bbox <span class="property-type">array</span></dt>
             <dd>This can be used instead of <code>x</code>,<code>y</code>,<code>w</code>,<code>h</code> and <code>r</code>. It should
-                be an array of four values giving the bounding box of the annotation: <code>[x, y, w, h]</code>.</dd>
+                be an array of four values giving the bounding box of the annotation: <code>[x, y, w, h]</code>.<br>
+                If this property is set and <code>type</code> is not set, it will default to <code>rect</code>.</dd>
             <dt>label <span class="property-type">string</span></dt>
             <dd>An optional piece of text to label the annotation with</dd>
             <dt>stroke <span class="property-type">string</span></dt>
-            <dd>Set the color of the annotation. Default: <code>"#ffC000"</code></dd>
+            <dd>The line color of the annotation. Default: <code>"#ffC000"</code></dd>
             <dt>lineWidth <span class="property-type">number</span></dt>
             <dd>The stroke width used to draw the annotation. Default: <code>5</code></dd>
             <dt>fontSize <span class="property-type">number</span></dt>
@@ -135,7 +136,7 @@
         outputs:1,
         icon: "font-awesome/fa-object-group",
         label: function() {
-            return this.name||"Annotate Image";
+            return this.name||"annotate image";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
