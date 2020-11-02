@@ -642,7 +642,13 @@ module.exports = function(RED) {
                                     node.status({});
                                 } else {
                                     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                    node.error(result.body.errors[0].message,msg);
+                                    if (result.body.errors && result.body.errors[0] && result.body.errors[0].message) {
+                                      node.error(result.body.errors[0].message,msg);
+                                    } else if (result.body.error) {
+                                      node.error(result.body.error,msg);
+                                    } else {
+                                      node.error("Twitter gave status: "+result.status+", unexpected body: "+JSON.stringify(result.body),msg);
+                                    }
                                 }
                             }).catch(function(err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
