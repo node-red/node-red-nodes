@@ -31,8 +31,8 @@
         color:"#E2D96E",
         defaults: {
             name: {value:""},
-            low: {value:""},
-            high: {value:""},
+            low:  {value:"",validate:function(v) { return  !isNaN(v) || v.length === 0;} },
+            high: {value:"",validate:function(v) { return  !isNaN(v) || v.length === 0;} },
             inte: {value:"true"},
             property: {value:"payload",required:true}
         },
