@@ -4,62 +4,57 @@ module.exports = function(RED) {
     function RandomNode(n) {
         RED.nodes.createNode(this,n);
 
-        this.status({}); // blank status on a deploy
-
+        this.low = n.low
+        this.high = n.high
         this.inte = n.inte || false;
         this.property = n.property||"payload";
         var node = this;
-
+        var tmp = {};  
 
         this.on("input", function(msg) {
- 
-           if (n.low !== "") {this.low  = parseFloat(n.low)}
-              else {this.low = n.low}; 
-           if (n.high !== "") {this.high  = parseFloat(n.high)}
-              else {this.high = n.high}; 
-      
+
            if (node.low === "") {
-               node.low = 1;
-               if ('from' in msg) {node.low = msg.from} 
+               tmp.low = 1;
+               if ('from' in msg) {
+                 tmp.low = msg.from} 
            }
                 
            if (node.high === "") {
-               node.high = 10; 
-               if ('to' in msg) {node.high = msg.to} 
+               tmp.high = 10; 
+               if ('to' in msg) {tmp.high = msg.to} 
            }
-
-           // if returning an interger, do a parseInt() on the low and high values
-           if ( (node.inte == "true") || (node.inte === true) ) {
-               node.low  = parseInt(node.low);
-               node.high = parseInt(node.high);
-           }
+           
+          // if tmp.low or tmp.high is not a number flag an error and do not send out a msg
+          if ( (isNaN(tmp.low)) || (isNaN(tmp.high)) ) {
+              this.error({node:"random",text:"one of the input values is not a number"})
+          } 
+          else {
+          // force tmp.high/low to Numbers since they may be a string
+             tmp.low = Number(tmp.low)
+             tmp.high = Number(tmp.high)
 
            // flip the values if low > high so random will work
-           var value;
-           if (node.low > node.high) {  
-               value = node.low
-               node.low = node.high
-               node.high = value
-           }
-           // generate the random number
-           if ( (node.inte == "true") || (node.inte === true) ) {
-               node.low  = Math.round(node.low)
-               node.high = Math.round(node.high)
-               value = Math.round(Math.random() * (node.high - node.low + 1) + node.low - 0.5);
-           } else {
-               value = Math.random() * (node.high - node.low) + node.low;
-           }
-            
-           RED.util.setMessageProperty(msg,node.property,value);
+             var value = 0;
+             if (tmp.low > tmp.high) {  
+                 value = tmp.low
+                 tmp.low = tmp.high
+                 tmp.high = value
+             }
 
-           // output a status under the node
-           var color = "grey";
-           if ( (isNaN(node.low)) || (isNaN(node.high)) ) {
-              this.status({fill:"red",shape:"dot",text:"random: from " + node.low + " to " + node.high})
-              this.error({node:"random",text:"one of the input values is not a number"})
-           } else {
-              this.status({fill:"grey",shape:"dot",text:"random: from " + node.low + " to " + node.high + " value=" + value});
-              node.send(msg);
+           // if returning an integer, do a parseInt() on the low and high values
+           // before generate the random number. This must be done to insure the rounding
+           // doesn't go up if using something like 4.7 or you can end up with 5
+             if ( (node.inte == "true") || (node.inte === true) ) {
+                 tmp.low  = parseInt(tmp.low);
+                 tmp.high = parseInt(tmp.high);
+                 value = Math.round(Math.random() * (tmp.high - tmp.low + 1) + tmp.low - 0.5);
+             } else {
+                 value = (Math.random() * (tmp.high - tmp.low)) + tmp.low;
+             }
+            
+             RED.util.setMessageProperty(msg,node.property,value);
+
+             node.send(msg);
            }
         });
     }
