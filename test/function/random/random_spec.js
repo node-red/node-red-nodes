@@ -140,50 +140,10 @@ describe('random node', function() {
         });
     });
 
-// ============================================================
-
-   it ("Test i4 (integer) - node From = 2 To = '-2', values will flip", function(done) {  
-        var flow = [{id:"n1", type:"random", low: 2, high: "-2", inte:true, wires:[["n2"]] },  
-            {id:"n2", type:"helper"} ];
-        helper.load(testNode, flow, function() { 
-            var n1 = helper.getNode("n1");
-            var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {  
-                try {
-                    //console.log(msg);    
-                    msg.should.have.a.property("payload");       
-                    msg.payload.should.be.within(-2,2);     
-                    msg.payload.toString().indexOf(".").should.equal(-1); 
-                    done(); 
-                }
-                catch(err) { done(err); }   
-            });
-            n1.emit("input", {"test":"Test i4"});  
-        });
-    });
-
-   it ("Test f4 (float)   - node From = 2 To = '-2', values will flip", function(done) {  
-        var flow = [{id:"n1", type:"random", low: 2, high: "-2", inte:false, wires:[["n2"]] },  
-            {id:"n2", type:"helper"} ];
-        helper.load(testNode, flow, function() { 
-            var n1 = helper.getNode("n1");
-            var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {  
-                try {
-                    //console.log(msg);    
-                    msg.should.have.a.property("payload");       
-                    msg.payload.should.be.within(-2.0,2.0);     
-                    done(); 
-                }
-                catch(err) { done(err); }   
-            });
-            n1.emit("input", {"test":"Test 44"});  
-        });
-    });
 
  // ============================================================
 
-  it ("Test i5 (integer) - value in msg From = 2, node From = 5 To = '' - node overides From = 5 To defaults to 10", function(done) {  
+  it ("Test i4 (integer) - value in msg From = 2, node From = 5 To = '' - node overides From = 5 To defaults to 10", function(done) {  
         var flow = [{id:"n1", type:"random", low: 5, high:"", inte:true, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -199,11 +159,11 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test i5", "from": 2});  
+            n1.emit("input", {"test":"Test i4", "from": 2});  
         });
     });
 
-  it ("Test f5 (float)   - value in msg From = 2, node From = 5 To = '' - node wins 'To' defaults to 10", function(done) {  
+  it ("Test f4 (float)   - value in msg From = 2, node From = 5 To = '' - node wins 'To' defaults to 10", function(done) {  
         var flow = [{id:"n1", type:"random", low: 5, high:"", inte:false, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -218,13 +178,13 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test f5", "from": 2});  
+            n1.emit("input", {"test":"Test f4", "from": 2});  
         });
     });
 
 // ============================================================
 
-  it ("Test i6 (integer) - msg From = '6' To = '9' node no entries", function(done) {  
+  it ("Test i5 (integer) - msg From = '6' To = '9' node no entries", function(done) {  
         var flow = [{id:"n1", type:"random", low: "", high: "", inte:true, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -240,11 +200,11 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test i6", "from": '6', "to": '9'});  
+            n1.emit("input", {"test":"Test i5", "from": '6', "to": '9'});  
         });
     });
 
-  it ("Test f6 (float)   - msg From = '6' To = '9' node no entries", function(done) {  
+  it ("Test f5 (float)   - msg From = '6' To = '9' node no entries", function(done) {  
         var flow = [{id:"n1", type:"random", low: "", high: "", inte:false, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -259,13 +219,13 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test f6", "from": '6', "to": '9'});  
+            n1.emit("input", {"test":"Test f5", "from": '6', "to": '9'});  
         });
     });
 
 // ============================================================
 
-  it ("Test i7 (integer) - msg From = 2.4 To = '7.3' node no entries", function(done) {  
+  it ("Test i6 (integer) - msg From = 2.4 To = '7.3' node no entries", function(done) {  
         var flow = [{id:"n1", type:"random", low: "", high: "", inte:true, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -281,11 +241,11 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test i7", "from": 2.4, "to": '7.3'});  
+            n1.emit("input", {"test":"Test i6", "from": 2.4, "to": '7.3'});  
         });
     });
 
-  it ("Test f7 (float)   - msg From = 2.4 To = '7.3' node no entries", function(done) {  
+  it ("Test f6 (float)   - msg From = 2.4 To = '7.3' node no entries", function(done) {  
         var flow = [{id:"n1", type:"random", low: "", high: "", inte:false, wires:[["n2"]] },  
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() { 
@@ -300,10 +260,12 @@ describe('random node', function() {
                 }
                 catch(err) { done(err); }   
             });
-            n1.emit("input", {"test":"Test f7", "from": 2.4, "to": '7.3'});  
+            n1.emit("input", {"test":"Test f6", "from": 2.4, "to": '7.3'});  
         });
     });
 
 // ============================================================
+
+
    
 });
