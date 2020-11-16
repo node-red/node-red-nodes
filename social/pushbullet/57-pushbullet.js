@@ -34,23 +34,11 @@ module.exports = function(RED) {
     });
 
     PushbulletConfig.prototype.initialise = function() {
-        if (this.initialised) {
-            return;
-        }
+        if (this.initialised) { return; }
         this.emitter = new EventEmitter();
-
         this.initialised = true;
         var self = this;
-
-        // sort migration from old node
-        var apikey;
-        if (this.n._migrate) {
-            apikey = this.n._apikey;
-            this.credentials = {apikey:apikey};
-        }
-        else if (this.credentials) {
-            apikey = this.credentials.apikey;
-        }
+        var apikey = this.credentials.apikey;
 
         if (apikey) {
             try {
@@ -254,84 +242,23 @@ module.exports = function(RED) {
         this._inputNodes.push(handler);
     };
 
-    function migrateOldSettings(n) {
-        if (n.config === undefined) {
-            var newid, config, apikey, deviceid, pushkeys;
-
-            try {
-                pushkeys = RED.settings.pushbullet || require(process.env.NODE_RED_HOME+"/../pushkey.js");
-            }
-            catch(err) { }
-
-            var cred = RED.nodes.getCredentials(n.id);
-            // get old apikey
-            if (cred && cred.hasOwnProperty("pushkey")) {
-                apikey = cred.pushkey;
-            }
-            else if (pushkeys) {
-                apikey = pushkeys.pushbullet;
-            }
-            // get old device
-            if (cred && cred.hasOwnProperty("deviceid")) {
-                deviceid = cred.deviceid;
-            }
-            else if (pushkeys) {
-                deviceid = pushkeys.deviceid;
-            }
-
-            if (apikey) {
-                newid = (1+Math.random()*4294967295).toString(16);
-                config = new PushbulletConfig({
-                    id: newid,
-                    type: 'pushbullet-config',
-                    name: n.name,
-                    _migrate: true,
-                    _apikey: apikey,
-                });
-            }
-
-            if (!(apikey || deviceid)) {
-                return false;
-            }
-
-            // override configuration properties to compatible migrated ones
-            n.pushtype = "note";
-            n.deviceid = deviceid;
-            return {
-                deviceid: deviceid,
-                apikey: apikey,
-                config: config,
-                id: newid
-            };
-        }
-        return false;
-    }
-
     function PushbulletOut(n) {
         RED.nodes.createNode(this, n);
         var self = this;
 
-        this.migrated = migrateOldSettings(n);
         this.title = n.title;
         this.chan = n.chan;
         this.pushtype = n.pushtype;
         this.pusher = null;
 
         var configNode;
-        if (this.migrated) {
-            this.warn('Settings migrated from previous version of Pushbullet Node, please edit node to update settings.');
-            this.status({fill: 'yellow', shape: 'ring', text: 'Node migrated'});
-            this.deviceid = this.migrated.deviceid;
-            configNode = this.migrated.config;
+
+        this.status({});
+        configNode = RED.nodes.getNode(n.config);
+        try {
+            this.deviceid = this.credentials.deviceid;
         }
-        else {
-            this.status({});
-            configNode = RED.nodes.getNode(n.config);
-            try {
-                this.deviceid = this.credentials.deviceid;
-            }
-            catch(err) { }
-        }
+        catch(err) { }
 
         if (configNode) {
             configNode.initialise();
@@ -461,27 +388,6 @@ module.exports = function(RED) {
             self.error("Pushbullet credentials not set/found.");
         }
     };
-
-    RED.httpAdmin.get('/pushbullet/:id/migrate', RED.auth.needsPermission('pushbullet.read'), function(req, res) {
-        var node = RED.nodes.getNode(req.params.id);
-        if (node && node.migrated) {
-            if (req.query.save) {
-                var promise;
-                if (node.migrated.apikey) {
-                    promise = RED.nodes.addCredentials(node.migrated.id, {apikey: node.migrated.apikey});
-                }
-                if (node.migrated.deviceid) {
-                    when(promise).then(function() {
-                        RED.nodes.addCredentials(req.params.id, {deviceid: node.migrated.deviceid});
-                    });
-                }
-            }
-            res.send(JSON.stringify({migrated: true, config: node.migrated.id}));
-        }
-        else {
-            res.send("{}");
-        }
-    });
 
     RED.httpAdmin.get('/pushbullet/:id/devices', RED.auth.needsPermission('pushbullet.read'), function(req, res) {
         var config = RED.nodes.getNode(req.params.id);
