@@ -274,13 +274,13 @@ module.exports = function(RED) {
                         }
                         else if (node.operation === "aggregate") {
                             msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
-                            coll.aggregate(msg.payload, function(err, result) {
+                            coll.aggregate(msg.payload, function(err, cursor) {
                                 if (err) {
                                     node.error(err);
                                 }
                                 else {
                                      cursor.toArray(function(cursorError, cursorDocs) {
-                                       console.log(cursorDocs);
+                                       //console.log(cursorDocs);
                                        if (cursorError) {
                                          node.error(cursorError);
                                        }
