@@ -12,7 +12,6 @@ module.exports = function(RED) {
         var tmp = {};
 
         this.on("input", function(msg) {
-          this.status({}); // blank out the status on a deploy
 
           tmp.low = 1                 // set this as the default low value
           tmp.low_e = ""
@@ -69,7 +68,6 @@ module.exports = function(RED) {
              }
             
              RED.util.setMessageProperty(msg,node.property,value);
-             this.status({fill:"grey",shape:"dot",text:"random: from " + tmp.low + " to " + tmp.high});
              node.send(msg);
           }
         });
