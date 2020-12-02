@@ -15,31 +15,34 @@ module.exports = function(RED) {
           this.status({}); // blank out the status on a deploy
 
           tmp.low = 1                 // set this as the default low value
+          tmp.low_e = ""
           if (node.low) {             // if the the node has a value use it
               tmp.low = node.low
           } else if ('from' in msg) { // else see if a 'from' is in the msg
               if (Number(msg.from)) { // if it is, and is a number, use it
                   tmp.low = Number(msg.from);
               } else {                // otherwise setup NaN error
-                  tmp.low = NaN
+                  tmp.low = NaN;
+                  tmp.low_e = " From: " + msg.from; // setup to show bad incoming msg.from
               }
           } 
               
           tmp.high = 10               // set this as the default high value  
-          if (node.high) {            // if the the node has a value use it
+          tmp.high_e = "";
+          if (node.high) {            // if the the node has a value use it 
               tmp.high = node.high
           } else if ('to' in msg) {   // else see if a 'to' is in the msg
               if (Number(msg.to)) {   // if it is, and is a number, use it
                   tmp.high = Number(msg.to);
               } else {                // otherwise setup NaN error 
                   tmp.high = NaN
+                  tmp.high_e = " To: " + msg.to // setup to show bad incoming msg.to
               }
           } 
                            
-          // if tmp.low or high are not numbers, send an error msg
+          // if tmp.low or high are not numbers, send an error msg with bad values
           if ( (isNaN(tmp.low)) || (isNaN(tmp.high)) ) {
-              this.status({fill:"red",shape:"dot",text:"random: from " + Number(tmp.low) + " to " + Number(tmp.high)})
-              this.error("Random: one of the input values is not a number")
+              this.error("Random: one of the input values is not a number. " + tmp.low_e + tmp.high_e);
           } else {
           // at this point we have valid values so now to generate the random number! 
 
