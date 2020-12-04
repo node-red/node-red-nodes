@@ -271,7 +271,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
 
-        if (allOK === true) {
+        var doConnect = function() {
             node.child = spawn(gpioCommand+".py", ["kbd","0"]);
             node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
@@ -300,7 +300,10 @@ module.exports = function(RED) {
                     node.status({fill:"grey",shape:"ring",text:"rpi-gpio.status.closed"});
                     node.finished();
                 }
-                else { node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"}); }
+                else {
+                    node.status({fill:"red",shape:"ring",text:"rpi-gpio.status.stopped"});
+                    setTimeout(function() { doConnect(); },2000)
+                }
             });
 
             node.child.on('error', function (err) {
@@ -308,6 +311,10 @@ module.exports = function(RED) {
                 else if (err.errno === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
                 else { node.error(RED._("rpi-gpio.errors.error")+': ' + err.errno); }
             });
+        }
+
+        if (allOK === true) {
+            doConnect();
 
             node.on("close", function(done) {
                 node.status({});
