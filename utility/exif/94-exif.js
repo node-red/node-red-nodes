@@ -11,7 +11,9 @@ module.exports = function(RED) {
 
     function ExifNode(n) {
         RED.nodes.createNode(this,n);
-        this.property = n.property || "payload";
+        this.mode = n.mode || "normal";
+        if (this.mode === "worldmap") { this.property = "payload.content"; }
+        else { this.property = n.property || "payload"; }
         var node = this;
 
         /***
@@ -72,10 +74,12 @@ module.exports = function(RED) {
             else if (msg.hasOwnProperty("filename")) { na = msg.filename.split('/').pop(); }
             else { na = msg.exif.image.Make+"_"+msg.exif.image.ModifyDate; }
             msg.location.name = na;
+            msg.location.layer = "Images";
             msg.location.popup = '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
         }
 
         this.on("input", function(msg) {
+            if (node.mode === "worldmap" && (msg.payload.action !== "file" || msg.payload.type.indexOf("image") === -1)) { return; } // in case worldmap-in not filtered.
             try {
                 var value = RED.util.getMessageProperty(msg,node.property);
                 if (value !== undefined) {
@@ -87,7 +91,13 @@ module.exports = function(RED) {
                     if (Buffer.isBuffer(value)) { // or a proper jpg buffer
                         new ExifImage({ image:value }, function (error, exifData) {
                             if (error) {
-                                node.log(error.toString());
+                                if (node.mode !== "worldmap") {
+                                    node.log(error.toString());
+                                }
+                                else {
+                                    msg.location = {name:msg.payload.name, lat:msg.payload.lat, lon:msg.payload.lon, layer:"Images", icon:"fa-camera", draggable:true};
+                                    msg.location.popup = '<img width="280" src="data:image\/png;base64,'+msg.payload.content.toString('base64')+'"/><br/>';
+                                }
                             }
                             else {
                                 if (exifData) {
@@ -100,6 +110,10 @@ module.exports = function(RED) {
                                 else {
                                     node.warn("The incoming image did not contain any Exif data, nothing to do.");
                                 }
+                            }
+                            if (node.mode === "worldmap") {
+                                msg.payload = msg.location;
+                                delete msg.location;
                             }
                             node.send(msg);
                         });
