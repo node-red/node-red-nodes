@@ -53,6 +53,8 @@
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name">
 </div>
+<div class="form-tips"><b>Note</b>: pins 12 and 32 are on channel 0, and 33 and 35 are on channel 1.
+    You can only use one pin from each channel.</div>
 </script>
 
 <script type="text/html" data-help-name="rpi-neopixels">
@@ -72,8 +74,10 @@
     with a CSV string <i>x,y,r,g,b</i>
     <p>By default, gamma correction is enabled but it can disabled which can be useful for working with low brightness levels</p>
     <p><code>msg.brightness</code> can be used to dynamically set brightness level</p>
-    <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
-    this may conflict with audio playback.</p>
+    <p>The pixels data line should be connected to Pi physical pin 12, 32, 33 or 35. <b>Note:</b>
+    pins 12 and 32 are on the same channel, as are 33 and 35. If you want connect two neopixels then use pins
+    from different channels.</p>
+    <p>Note: this node may also conflict with audio playback.</p>
     <p align="right"><a href="http://flows.nodered.org/node/node-red-node-pi-neopixel#usage">More info&nbsp;&nbsp;</a></p>
 </script>
 
