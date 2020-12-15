@@ -11,8 +11,10 @@
       "mode": "モード",
       "readWriteCreate": "読み取り-書き込み-作成",
       "readWrite": "読み取り-書き込み",
-      "readOnly": "読み取りのみ",
-      "tips": "<b>注釈</b>: データベース名に <code>:memory:</code> を設定すると、非永続的なメモリデータベースを作成します。"
+      "readOnly": "読み取りのみ"
+    },
+    "tips": {
+      "memoryDb": "<b>注釈</b>: データベース名に <code>:memory:</code> を設定すると、非永続的なメモリデータベースを作成します。"
     }
   }
 }

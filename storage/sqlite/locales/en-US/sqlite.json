@@ -11,8 +11,10 @@
       "mode": "Mode",
       "readWriteCreate": "Read-Write-Create",
       "readWrite": "Read-Write",
-      "readOnly": "Read-Only",
-      "tips": "<b>Note</b>: Setting the database name to <code>:memory:</code> will create a non-persistant in memory database."
+      "readOnly": "Read-Only"
+    },
+    "tips": {
+      "memoryDb": "<b>Note</b>: Setting the database name to <code>:memory:</code> will create a non-persistant in memory database."
     }
   }
 }
