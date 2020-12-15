@@ -1,0 +1,28 @@
+<script type="text/html" data-help-name="sqlite">
+    <p>Allows access to a SQLite database.</p>
+    <p>SQL Query sets how the query is passed to the node.</p>
+    <p>SQL Query <i>Via msg.topic</i> and <i>Fixed Statement</i> uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
+    By its very nature it is SQL injection... so <i>be careful out there...</i></p>
+    <p>SQL Type <i>Prepared Statement</i> also uses <b>db.all</b> but sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
+    <p>SQL Type <i>Batch without response</i> uses <b>db.exec</b> which runs all SQL statements in the provided string. No result rows are returned.</p>
+    <p>When using <i>Via msg.topic</i> or <i>Batch without response</i> <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
+    <p>When using Normal or Prepared Statement, the <i>query</i> must be entered in the node config.</p>
+    <p>Pass in the parameters as an object in <code>msg.params</code> for Prepared Statement. Ex:<br />
+    <code>msg.params = {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$id:1,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
+    }</code><br />
+    Parameter object names must match parameters set up in the Prepared Statement. If you get the error <code>SQLITE_RANGE: bind or column index out of range</code>
+    be sure to include $ on the parameter object key.<br />
+    The SQL query for the example above could be: <code>insert into user_table (user_id, user) VALUES ($id, $name);</code></p>
+    <p>Using any SQL Query, the result is returned in <code>msg.payload</code></p>
+    <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
+    <p>You can load SQLite extensions by inputting a <code>msg.extension</code> property containing the full
+    path and filename.</p>
+    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
+    <pre>sqliteReconnectTime: 20000,</pre></p>
+</script>
+
+<script type="text/html" data-help-name="sqlitedb">
+    <p>The default directory for the database file is the user's home directory through which the Node-RED process was started. You can specify absolute path to change it.</p>
+</script>
