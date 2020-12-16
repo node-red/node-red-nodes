@@ -84,38 +84,31 @@ module.exports = function(RED) {
                                         ctx.textBaseline = "top";
                                         ctx.textAlign = "left";
                                         //set offset value so txt is above or below image
-                                        if (annotation.labelLocation)
-                                        {
-                                          if (annotation.labelLocation === "top")
-                                          {
+                                        if (annotation.labelLocation) {
+                                          if (annotation.labelLocation === "top") {
                                             y = y - (20+((defaultLineWidth*0.5)+(Number(defaultFontSize))));
                                             if (y < 0)
                                             {
                                               y = 0;
                                             }
                                           }
-                                          else if (annotation.labelLocation === "bottom")
-                                          {
+                                          else if (annotation.labelLocation === "bottom") {
                                             y = y + (10+h+(((defaultLineWidth*0.5)+(Number(defaultFontSize)))));
                                             ctx.textBaseline = "bottom";
 
                                           }
                                         }
                                         //if not user defined make best guess for top or bottom based on location
-                                        else
-                                        {
+                                        else {
                                           //not enought room above imagebox, put label on the bottom
-                                          if (y < 0 + (20+((defaultLineWidth*0.5)+(Number(defaultFontSize)))))
-                                          {
+                                          if (y < 0 + (20+((defaultLineWidth*0.5)+(Number(defaultFontSize))))) {
                                             y = y + (10+h+(((defaultLineWidth*0.5)+(Number(defaultFontSize)))));
                                             ctx.textBaseline = "bottom";
                                           }
                                           //else put the label on the top
-                                          else
-                                          {
+                                          else {
                                             y = y - (20+((defaultLineWidth*0.5)+(Number(defaultFontSize))));
-                                            if (y < 0)
-                                            {
+                                            if (y < 0) {
                                               y = 0;
                                             }
                                           }
