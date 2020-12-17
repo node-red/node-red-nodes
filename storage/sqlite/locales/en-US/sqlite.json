@@ -1,0 +1,20 @@
+{
+  "sqlite": {
+    "label": {
+      "database": "Database",
+      "sqlQuery": "SQL Query",
+      "viaMsgTopic": "Via msg.topic",
+      "fixedStatement": "Fixed Statement",
+      "preparedStatement": "Prepared Statement",
+      "batchWithoutResponse": "Batch without response",
+      "sqlStatement": "SQL Statement",
+      "mode": "Mode",
+      "readWriteCreate": "Read-Write-Create",
+      "readWrite": "Read-Write",
+      "readOnly": "Read-Only"
+    },
+    "tips": {
+      "memoryDb": "<b>Note</b>: Setting the database name to <code>:memory:</code> will create a non-persistant in memory database."
+    }
+  }
+}
