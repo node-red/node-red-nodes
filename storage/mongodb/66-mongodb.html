@@ -55,8 +55,8 @@
             name: {value: ""}
         },
         credentials: {
-            user: { type: "text" },
-            password: { type: "password" }
+            user: {type: "text"},
+            password: {type: "password"}
         },
         label: function() {
             return this.name || this.db + "@" + this.hostname;
@@ -190,7 +190,7 @@
         });
 
         $("#node-input-collection").change(function () {
-            if ($("#node-input-collection").val() === "") {
+            if($("#node-input-collection").val() === "") {
                 $("#node-warning").show();
             } else {
                 $("#node-warning").hide();
@@ -202,23 +202,23 @@
         category: 'storage-output',
         color: "rgb(218, 196, 180)",
         defaults: {
-            mongodb: { type: "mongodb", required: true },
-            name: { value: "" },
-            collection: { value: "" },
-            payonly: { value: false },
-            upsert: { value: false },
-            multi: { value: false },
-            operation: { value: "store" }
+            mongodb: {type: "mongodb", required: true},
+            name: {value: ""},
+            collection: {value: ""},
+            payonly: {value: false},
+            upsert: {value: false},
+            multi: {value: false},
+            operation: {value: "store"}
         },
         inputs: 1,
         outputs: 0,
         icon: "mongodb.png",
         align: "right",
-        label: function () {
+        label: function() {
             var mongoNode = RED.nodes.node(this.mongodb);
             return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
         },
-        labelStyle: function () {
+        labelStyle: function() {
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: oneditprepare
@@ -270,19 +270,19 @@
         category: 'storage-input',
         color: "rgb(218, 196, 180)",
         defaults: {
-            mongodb: { type: "mongodb", required: true },
-            name: { value: "" },
-            collection: { value: "" },
-            operation: { value: "find" }
+            mongodb: {type: "mongodb", required: true},
+            name: {value: ""},
+            collection: {value: ""},
+            operation: {value: "find"}
         },
         inputs: 1,
         outputs: 1,
         icon: "mongodb.png",
-        label: function () {
+        label: function() {
             var mongoNode = RED.nodes.node(this.mongodb);
             return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
         },
-        labelStyle: function () {
+        labelStyle: function() {
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: oneditprepare
