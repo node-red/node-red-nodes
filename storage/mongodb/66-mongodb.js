@@ -76,7 +76,7 @@ module.exports = function(RED) {
         var connectToDB = function() {
             MongoClient.connect(node.mongoConfig.url, function(err, client) {
                 if (err) {
-                    node.status({ fill: "red", shape: "ring", text: RED._("mongodb.status.error") });
+                    node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     if (noerror) { node.error(err); }
                     noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
