@@ -1,0 +1,53 @@
+<script type="text/html" data-help-name="ping">
+    <p>pingを送信し、<code>msg.payload</code>にラウンドトリップタイムをミリ秒で返します。</p>
+    <h3>出力</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">数値</span></dt>
+        <dd> ミリ秒で表したトリップタイム。レスポンスが無い場合、ブール値<i>false</i>。</dd>
+        <dt>topic <span class="property-type">文字列</span></dt>
+        <dd> ターゲットホスト名もしくはIPアドレス。</dd>
+        <dt>[ping] <span class="property-type">オブジェクト</span></dt>
+        <dd>要素が<code>host</code>およびその他のプロパティ を含むオブジェクトの配列。<br>
+            <b>注</b>: トリガーモードでペイロードに配列を指定した場合のみオブジェクトを出力に追加します。この機能は上級ユーザ向けで、後続ノードで利用する結果に追加プロパティを指定する必要があるケースに対応するものです。</dd>
+    </dl>
+
+    <h3>詳細</h3>
+    <p>ホスト名が解決できなかったり、レスポンスが得られなければ、<b>false</b>を返します。</p>
+    <p>デフォルトでは20秒ごとにpingを送りますが、設定で変更できます。</p>
+
+    <h4>モード...</h4>
+    <ul>
+        <li><b>時間</b><br>
+            <P><code>時間</code>モードでは<code>Target</code>フィールドと<code>Ping(秒)</code>フィールドを指定してください。</P>
+    <p><code>ターゲット</code>はホスト名/IPアドレスをカンマで区切ったものです。例: <code>"192.168.0.1"</code> あるいは <code>"192.168.0.1, www.google.com"</code></p>
+            <p><code>Ping(秒)</code>にはpingの間隔を秒数で指定します。</p>
+        </li>
+        <li><b>トリガー</b><br>
+            <p><code>トリガー</code>モードでは、入力ワイヤを結線し、<code>msg</code>入力によってping処理を起動します。
+    <p><code>ターゲット</code>フィールドに入力した値はホスト名もしくはIPアドレスとして使用します。 ターゲットはホスト名/IPアドレスをカンマで区切ったものです。例: <code>"192.168.0.1"</code> あるいは <code>"192.168.0.1, www.google.com"</code></p>
+    
+            <p><code>ターゲット</code>を空にした場合、カンマ区切り文字列、もしくは、ホストの配列を<code>msg.payload</code>に指定します。
+                <ul>
+                    <li><code>文字列</code> - カンマ区切りのホスト名/IPアドレス 例: <code>"192.168.0.1"</code> あるいは <code>"192.168.0.1, www.google.com"</code> </li>
+    <li><code>配列</code> - 文字列もしくはオブジェクト形式のホスト配列。注: オブジェクトは最小限<code>.host</code>を含む必要があります。<code>timeout</code>プロパティ を追加で指定可能です。その値は1000から30000の間で指定します(デフォルトは5000/5秒)。さらに、適当なプロパティ をこのオブジェクトに追加できます。pingの結果を返却した場合、後続ノードで利用できるよう次のノードの<code>msg.ping</code>に渡されます。</li>
+                <li>配列ペイロードの例: <pre>[
+    "192.168.0.99",
+    {
+        "host":"192.168.0.1", 
+        "name":"ルータ"
+    },  
+    {
+        "host":"myapiserver.com", 
+        "name":"拡張API", 
+        "timeout": 20000,
+        "support":"support@myapiserver.com"
+    }
+]</pre>         </li>
+                </ul>
+            </p>
+        </li>
+    </ul>
+
+    <p><b>補足</b>: Ubuntu Snap内で実行している場合は、手動でnetwork-observeインターフェイスを開始する必要があります。
+        <code>snap connect node-red:network-observe</code></p>
+</script>

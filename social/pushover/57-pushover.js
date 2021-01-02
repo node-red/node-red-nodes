@@ -42,6 +42,7 @@ module.exports = function(RED) {
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
+            if (!msg.payload) { msg.payload = ""; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }
@@ -76,7 +77,7 @@ module.exports = function(RED) {
                     // Is it base64 encoded or binary?
                     var attachmentString = attachment.toString();
                     var attachmentBuffer = Buffer.from(attachmentString,'base64');
-                    if(attachmentString === attachmentBuffer.toString('base64')) {
+                    if (attachmentString === attachmentBuffer.toString('base64')) {
                         // If converts back to same, then it was base64 so set to binary
                         // https://stackoverflow.com/a/48770228
                         attachment = attachmentBuffer;
@@ -90,18 +91,25 @@ module.exports = function(RED) {
                     node.error("[57-pushover.js] Error: attachment property must be a path to a local file or a Buffer containing an image");
                     return;
                 }
-                pushMessage(pushmsg);
+                pushMessage(pushmsg,msg);
             }
             else {
                 node.warn("Pushover credentials not set.");
             }
         });
 
-        function pushMessage(pushmsg) {
+        function pushMessage(pushmsg,msg) {
             pusher.send( pushmsg, function(err, response) {
-                if (err) { node.error("[57-pushover.js] Error: "+err); }
-                response = JSON.parse(response);
-                if (response.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                if (err) { node.error(err,msg); }
+                else {
+                    try {
+                        var responseObject = JSON.parse(response);
+                        if (responseObject.status !== 1) { node.error("[57-pushover.js] Error: "+response); }
+                    }
+                    catch(e) {
+                        node.error("[57-pushover.js] Error: "+response);
+                    }
+                }
             });
         }
     }

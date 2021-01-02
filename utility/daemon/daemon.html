@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<script type="text/x-red" data-template-name="daemon">
+<script type="text/html" data-template-name="daemon">
     <div class="form-row">
         <label for="node-input-command"><i class="fa fa-file"></i> Command</label>
         <input type="text" id="node-input-command" placeholder="command">
@@ -49,7 +49,7 @@
     All parameters should be passed in as arguments.</div>
 </script>
 
-<script type="text/x-red" data-help-name="daemon">
+<script type="text/html" data-help-name="daemon">
     <p>Calls out to a long running system command. Sends <code>msg.payload</code> to stdin of the process.</p>
     <p>Provides 3 outputs... stdout, stderr, and return code , from the running command.</p>
     <p>If the called program stops (i.e. a return code is produced), this node can attempt to restart the command.</p>
@@ -61,7 +61,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('daemon',{
-        category: 'advanced-function',
+        category: 'function',
         color:"darksalmon",
         defaults: {
             name: {value:""},
@@ -75,11 +75,11 @@
         },
         inputs:1,
         outputs:3,
+        inputLabels: "stdin",
         outputLabels: ["stdout","stderr","exit code"],
         icon: "arrow-in.png",
-        align: "right",
         label: function() {
-            return this.name||this.command||"daemon";
+            return this.name||this.command.replace(/\\n /g,"\\\\n ")||"daemon";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

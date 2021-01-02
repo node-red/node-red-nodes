@@ -30,7 +30,7 @@ module.exports = function(RED) {
         this.on("input", function(msg) {
 
             // setup the data for the URI
-            if (this.datatype == "legacy"){
+            if (this.datatype == "legacy") {
                 this.url = this.baseurl + '/input/post.json?';
                 if (typeof(msg.payload) !== "string") {
                     this.url += 'json=' + JSON.stringify(msg.payload);
@@ -44,15 +44,15 @@ module.exports = function(RED) {
                     }
                 }
             }
-            else if (this.datatype == "fulljson"){
+            else if (this.datatype == "fulljson") {
                 this.url = this.baseurl + '/input/post?';
                 this.url += 'fulljson=' + encodeURIComponent(JSON.stringify(msg.payload));
             }
-            else if (this.datatype == "json"){
+            else if (this.datatype == "json") {
                 this.url = this.baseurl + '/input/post?';
                 this.url += 'json={' + encodeURIComponent(msg.payload) + '}';
             }
-            else if (this.datatype == "CSV"){
+            else if (this.datatype == "CSV") {
                 this.url = this.baseurl + '/input/post?';
                 this.url += 'csv=' + msg.payload;
             }
@@ -80,7 +80,7 @@ module.exports = function(RED) {
                 // node.warn("WARN: Time object undefined, no time set");
             }
             else {
-                if (!isNaN(msg.time)) { 
+                if (!isNaN(msg.time)) {
                     this.url += '&time=' + msg.time;
                 }
                 else {
@@ -113,7 +113,7 @@ module.exports = function(RED) {
                     try {
                         msg.payload = JSON.parse(body);
                     }
-                    catch (e) { 
+                    catch (e) {
                         msg.payload = body;
                     }
 

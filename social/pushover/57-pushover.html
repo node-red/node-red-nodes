@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="pushover">
+<script type="text/html" data-template-name="pushover">
     <div class="form-row">
         <label for="node-input-title"><i class="fa fa-flag"></i> Title</label>
         <input type="text" id="node-input-title" placeholder="Node-RED">
@@ -55,7 +55,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-user"></i> User key</label>
-        <input type="text" id="node-input-deviceid">
+        <input type="password" id="node-input-deviceid">
     </div>
     <div class="form-row">
         <label for="node-input-pushkey"><i class="fa fa-key"></i> API token</label>
@@ -72,7 +72,7 @@
     Leave sound blank to use the default, or set using <code>msg.sound</code>.</div>
 </script>
 
-<script type="text/x-red" data-help-name="pushover">
+<script type="text/html" data-help-name="pushover">
     <p>Uses Pushover to push the msg.payload to a device that has the Pushover app installed.</p>
 	<br>
     <p>Optionally uses msg.topic to set the configuration:</p>

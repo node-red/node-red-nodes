@@ -8,19 +8,21 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mac = n.mac.trim();
         this.host = n.host;
+        this.udpport = n.udpport;
         var node = this;
 
         this.on("input", function(msg) {
             var mac = this.mac || msg.mac || null;
             var host = this.host || msg.host || '255.255.255.255';
-            var h = host.split('.');
-            h.pop();
-            h.push('255');
-            host = h.join('.');
+            var udpport = Number(msg.udpport || this.udpport || '9');
+            if (udpport < 1 || udpport > 65535) {
+                node.warn("WOL: UDP port must be within 1 and 65535; it has been reset to 9.");
+                udpport = 9;
+            }            
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
-                        wol.wake(mac, {address: host}, function(error) {
+                        wol.wake(mac, {address: host, port: udpport}, function(error) {
                             if (error) {
                                 node.warn(error);
                                 node.status({fill:"red",shape:"ring",text:" "});

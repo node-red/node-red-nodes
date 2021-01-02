@@ -1,4 +1,3 @@
-
 <script type="text/x-red" data-template-name="tail">
     <div class="form-row">
          <label for="node-input-filename"><i class="fa fa-file"></i> <span data-i18n="tail.label.filename"></span></label>
@@ -24,24 +23,15 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="tail">
-    <p>Tails (watches for things to be added) to the configured file. (Linux/Mac ONLY)</p>
-    <p>This will not work on Windows filesystems, as it relies on the <b>tail -F</b> command.</p>
-    <h3>Outputs</h3>
-    <ul>
-        <li>Text (UTF-8) files will be returned as strings.</li>
-        <li>Binary files will be returned as Buffer objects.</li>
-    </ul>
-</script>
-
 <script type="text/javascript">
     RED.nodes.registerType('tail',{
         category: 'storage-input',
         defaults: {
             name: {value:""},
             filetype: {value:"text"},
-            split: {value:"[\r]{0,1}\n"},
-            filename: {value:"",required:true}
+            split: {value:"[\\r]{0,1}\\n"},
+            filename: {value:""},
+            inputs: {value:0}
         },
         color:"BurlyWood",
         inputs:0,
@@ -58,6 +48,11 @@
                 if (this.value === "text") { $("#node-tail-split").show(); }
                 else { $("#node-tail-split").hide(); }
             });
-        }
+        },
+        oneditsave: function() {
+            var that = this;
+            if ($("#node-input-filename").val()==="") { that.inputs = 1; }
+            else { that.inputs = 0; }
+       }
     });
 </script>

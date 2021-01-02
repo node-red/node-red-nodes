@@ -1,0 +1,13 @@
+{
+    "random": {
+        "label": {
+            "generate": "生成",
+            "wholeNumber": "整数 - 整数値",
+            "realNumber": "実数 - 浮動小数点",
+            "from": "最小",
+            "lowestNumber": "最小値",
+            "to": "最大",
+            "highestNumber": "最大値"
+        }
+    }
+}

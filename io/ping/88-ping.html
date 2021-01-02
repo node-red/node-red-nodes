@@ -1,10 +1,17 @@
 
-<script type="text/x-red" data-template-name="ping">
-    <div class="form-row">
+<script type="text/html" data-template-name="ping">
+    <div class="form-row" id="div-node-input-host">
         <label for="node-input-host"><i class="fa fa-dot-circle-o"></i> <span data-i18n="ping.label.target"></span></label>
-        <input type="text" id="node-input-host" placeholder="www.google.com">
+        <input type="text" id="node-input-host" placeholder="192.168.0.1, www.google.com">
     </div>
     <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-wrench"></i> <span data-i18n="ping.label.mode"></label>
+        <select type="text" id="node-input-mode" style="width: 70%">
+            <option value="timed" data-i18n="ping.label.mode_option.timed"></option>
+            <option value="triggered" data-i18n="ping.label.mode_option.triggered"></option>
+        </select>
+    </div>
+    <div class="form-row" id="div-node-input-timer">
         <label for="node-input-timer"><i class="fa fa-repeat"></i> <span data-i18n="ping.label.ping"></label>
         <input type="text" id="node-input-timer" placeholder="20">
     </div>
@@ -12,25 +19,52 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="ping">
-    <p>Pings a machine and returns the trip time in mS as <code>msg.payload</code>.</p>
-    <p>Returns <b>false</b> if no response received within 5 seconds, or if the host is unresolveable.</p>
-    <p>Default ping is every 20 seconds but can be configured.</p>
-    <p><code>msg.topic</code> contains the target host ip.</p>
-    <p>Note: if running inside Ubuntu Snap you will need to manually start the network-observe interface.
-        `snap connect node-red:network-observe`</p>
+    <div class="form-tips" id="node-ping-tip"><span data-i18n="ping.label.tip"></span></div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('ping',{
-        category: 'network-input',
+
+var timerParameterValidator = function(node,v){
+        var mode = getMode(node)
+        if(mode === "triggered"){
+            return true;
+        }
+        if(v == ""){
+            return false;
+        }
+        return RED.validators.number()(v);
+    }
+    var hostParameterValidator = function(node,v){
+        var mode = getMode(node)
+        if(mode === "triggered"){
+            return true;
+        }
+        return v != ""
+    }
+    var getMode = function(node){
+        if(node){
+            return node.mode
+        } else {
+            let $mode = $( "#node-input-mode" );
+            return $mode.val();
+        }
+    }
+
+    RED.nodes.registerType("ping",{
+        category: "network-input",
         color:"#fdf0c2",
         defaults: {
+            mode: {value:"timed"},
             name: {value:""},
-            host: {value:"",required:true},
-            timer: {value:"20", required:true, validate:RED.validators.number()}
+            host: {value:"", validate: function(v){
+                    return hostParameterValidator(this,v) ;
+                }
+            },
+            timer: {value:"20", validate: function(v){
+                    return timerParameterValidator(this,v) ;
+                }
+            },
+            inputs: {value:0}
         },
         inputs:0,
         outputs:1,
@@ -39,10 +73,40 @@
             return this._("ping.ping");
         },
         label: function() {
-            return this.name||this.host;
+            let lbl = this.name||this.host||this._("ping.ping");
+            if (lbl.split(',').length > 1){
+                lbl = this._("ping.ping");
+            }
+            return lbl;
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function () {
+            let node = this;
+            let $timer = $("#div-node-input-timer");
+            let $tip = $("#node-ping-tip");
+            $("#node-input-mode").val(node.mode);
+            let $mode = $( "#node-input-mode" );
+            function updateControlsVisibility(){
+                node.mode = $mode.val();
+                switch (node.mode) {
+                    case "triggered":
+                        node.inputs = 1;
+                        node._def.inputs = 1
+                        $timer.hide();
+                        $tip.show();
+                        break;
+                    default:
+                        node.inputs = 0;
+                        node._def.inputs = 0;
+                        $timer.show();
+                        $tip.hide();
+                        break;
+                }
+            }
+            $mode.change(updateControlsVisibility);
+            updateControlsVisibility();
         }
     });
 </script>

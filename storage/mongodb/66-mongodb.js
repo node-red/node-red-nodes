@@ -1,5 +1,6 @@
 
-module.exports = function (RED) {
+
+module.exports = function(RED) {
     "use strict";
     var mongo = require('mongodb');
     var ObjectID = require('mongodb').ObjectID;
@@ -11,13 +12,37 @@ module.exports = function (RED) {
         this.port = n.port;
         this.db = n.db;
         this.name = n.name;
+        this.connectOptions= n.connectOptions;
+        this.topology = n.topology;
+
+        //console.log(this);
+
+        var clustered = (this.topology !== "direct") || false;
 
         var url = "mongodb://";
-        if (this.credentials && this.credentials.user && this.credentials.password) {
-            url += this.credentials.user + ":" + this.credentials.password + "@";
+        if (this.topology === "dnscluster") {
+            url = "mongodb+srv://";
         }
-        url += this.hostname + ":" + this.port + "/" + this.db;
+        if (this.credentials && this.credentials.user && this.credentials.password) {
+            this.user = this.credentials.user;
+            this.password =  this.credentials.password;
+        } else {
+            this.user = n.user;
+            this.password = n.password;
+        }
+        if (this.user) {
+            url += this.user+":"+this.password+"@";
+        }
+        if (clustered) {
+            url += this.hostname + "/" + this.db
+        } else {
+            url += this.hostname + ":" + this.port + "/" + this.db;
+        }
+        if (this.connectOptions){
+            url += "?" + this.connectOptions;
+        }
 
+        console.log("MongoDB URL: " + url);
         this.url = url;
     }
 
@@ -44,12 +69,12 @@ module.exports = function (RED) {
         this.multi = n.multi || false;
         this.operation = n.operation;
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
-        this.status({ fill: "grey", shape: "ring", text: RED._("mongodbstatus.connecting") });
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
         var noerror = true;
 
-        var connectToDB = function () {
-            MongoClient.connect(node.mongoConfig.url, function (err, db) {
+        var connectToDB = function() {
+            MongoClient.connect(node.mongoConfig.url, function(err, client) {
                 if (err) {
                     node.status({ fill: "red", shape: "ring", text: RED._("mongodb.status.error") });
                     if (noerror) { node.error(err); }
@@ -57,10 +82,13 @@ module.exports = function (RED) {
                     node.tout = setTimeout(connectToDB, 10000);
                 }
                 else {
-                    node.status({ fill: "green", shape: "dot", text: RED._("mongodb.status.connected") });
-                    node.clientDb = db;
+                    node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
+                    node.clientDb = client.db();
+                    var db = client.db();
+                    //console.log( db);
                     noerror = true;
                     var coll;
+
                     if (node.collection) {
                         coll = db.collection(node.collection);
                     }
@@ -118,8 +146,9 @@ module.exports = function (RED) {
         var node = this;
         var noerror = true;
 
-        var connectToDB = function () {
-            MongoClient.connect(node.mongoConfig.url, function (err, db) {
+        var connectToDB = function() {
+            console.log("connecting:  " + node.mongoConfig.url);
+            MongoClient.connect(node.mongoConfig.url, function(err,client) {
                 if (err) {
                     node.status({ fill: "red", shape: "ring", text: RED._("mongodb.status.error") });
                     if (noerror) { node.error(err); }
@@ -127,8 +156,9 @@ module.exports = function (RED) {
                     node.tout = setTimeout(connectToDB, 10000);
                 }
                 else {
-                    node.status({ fill: "green", shape: "dot", text: RED._("mongodb.status.connected") });
-                    node.clientDb = db;
+                    node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
+                    node.clientDb = client.db();
+                    var db = client.db();
                     noerror = true;
                     var coll;
                     node.on("input", function (msg) {
@@ -161,10 +191,10 @@ module.exports = function (RED) {
                                 skip = 0;
                             }
 
-                            coll.find(selector, msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function (err, items) {
+                            coll.find(selector).project(msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
                                 if (err) {
                                     node.error(err);
-                                }
+                                    >          }
                                 else {
                                     msg.payload = items;
                                     delete msg.projection;
@@ -189,13 +219,21 @@ module.exports = function (RED) {
                         }
                         else if (node.operation === "aggregate") {
                             msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
-                            coll.aggregate(msg.payload, function (err, result) {
+                            coll.aggregate(msg.payload, function(err, cursor) {
                                 if (err) {
                                     node.error(err);
                                 }
                                 else {
-                                    msg.payload = result;
-                                    node.send(msg);
+                                     cursor.toArray(function(cursorError, cursorDocs) {
+                                       //console.log(cursorDocs);
+                                       if (cursorError) {
+                                         node.error(cursorError);
+                                       }
+                                       else {
+                                         msg.payload = cursorDocs;
+                                         node.send(msg);
+                                       }
+                                     });
                                 }
                             });
                         }

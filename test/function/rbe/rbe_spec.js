@@ -286,9 +286,12 @@ describe('rbe node', function() {
             n2.on("input", function(msg) {
                 c = c + 1;
                 if (c === 1) {
-                    msg.should.have.a.property("payload", 120);
+                    msg.should.have.a.property("payload", 100);
                 }
                 else if (c === 2) {
+                    msg.should.have.a.property("payload", 111);
+                }
+                else if (c === 3) {
                     msg.should.have.a.property("payload", 135);
                     done();
                 }
@@ -296,8 +299,8 @@ describe('rbe node', function() {
             n1.emit("input", {payload:100});
             n1.emit("input", {payload:95});
             n1.emit("input", {payload:105});
+            n1.emit("input", {payload:111});
             n1.emit("input", {payload:120});
-            n1.emit("input", {payload:130});
             n1.emit("input", {payload:135});
         });
     });
@@ -389,6 +392,32 @@ describe('rbe node', function() {
             n1.emit("input", {payload:20});
             n1.emit("input", {payload:50});
             n1.emit("input", {payload:"5 deg"});
+        });
+    });
+
+    it('should send output if gap is 0 and input doesnt change (narrowband)', function(done) {
+        var flow = [{"id":"n1", "type":"rbe", func:"narrowband", gap:"0", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", 1);
+                }
+                else if (c === 4) {
+                    msg.should.have.a.property("payload",1);
+                    done();
+                }
+                c += 1;
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:0});
+            n1.emit("input", {payload:1});
         });
     });
 

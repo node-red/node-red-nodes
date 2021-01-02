@@ -79,28 +79,6 @@ describe('sentiment Node', function() {
         });
     });
 
-    it('should add a positive score for good words (in French)', function(done) {
-        var flow = [{id:"jn1",type:"sentiment",wires:[["jn2"]],lang:"fr"},
-                    {id:"jn2", type:"helper"}];
-        helper.load(sentimentNode, flow, function() {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function(msg) {
-                try {
-                    msg.should.have.property('sentiment');
-                    msg.sentiment.should.have.property('score');
-                    msg.sentiment.score.should.be.a.Number();
-                    msg.sentiment.score.should.be.above(5);
-                    done();
-                } catch(err) {
-                    done(err);
-                }
-            });
-            var testString = 'bon, belle, don du ciel, brillant';
-            jn1.receive({payload:testString});
-        });
-    });
-
     it('should add a positive score for good words - alternative property', function(done) {
         var flow = [{id:"jn1",type:"sentiment",property:"foo",wires:[["jn2"]]},
                     {id:"jn2", type:"helper"}];

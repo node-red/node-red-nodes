@@ -505,7 +505,7 @@ module.exports = function(RED) {
                         var missingUsernames = Object.keys(missingUsers).join(",");
                         return node.twitterConfig.getUsers(missingUsernames).then(function() {
                             var len = tweets.length;
-                            for (var i = 0;i < len; i++) {
+                            for (var i = 0; i < len; i++) {
                                 var tweet = messages[i];
                                 var output = tweets[i];
                                 output.sender = userObjectCache[tweet.message_create.sender_id];
@@ -642,7 +642,12 @@ module.exports = function(RED) {
                                     node.status({});
                                 } else {
                                     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                    node.error(result.body.errors[0].message,msg);
+                                    
+                                    if ('error' in result.body && typeof result.body.error === 'string') {
+                                        node.error(result.body.error,msg);
+                                    } else {
+                                        node.error(result.body.errors[0].message,msg);
+                                    }
                                 }
                             }).catch(function(err) {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});

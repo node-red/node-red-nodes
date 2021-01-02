@@ -1,0 +1,55 @@
+<script type="text/html" data-help-name="twitter-credentials">
+    <p>Authentication for the Twitter API</p>
+    <p>Earlier versions of this node provided one-click authentication. Twitter removed the ability
+       to do that in June 2018. You must now register your own application with
+       <a href="https://developer.twitter.com/">Twitter</a> and generate your own access tokens.</p>
+
+</script>
+
+<script type="text/html" data-help-name="twitter in">
+    <p>Twitter input node. Can be used to search either:
+    <ul><li>the public stream for tweets containing the configured search term</li>
+        <li>tweets from accounts that the authenticated user follows</li>
+        <li>tweets by specified users</li>
+        <li>direct messages received by the authenticated user</li>
+    </ul></p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the text of the tweet</dd>
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd>set to <code>tweets/<i>screen_name</i></code></dd>
+        <dt>tweet <span class="property-type">object</span></dt>
+        <dd>the full tweet object returned by the Twitter API</dd>
+        <dt>location <span class="property-type">object</span></dt>
+        <dd>location information associated with the tweet, if known</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>When searching for multiple terms, use a space for <i>and</i> and comma `,` for <i>or</i>.</p>
+    <p>The full tweet object is documented <a href="https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/tweet-object" target="_new">here</a>.</p>
+    <p><b>Note:</b> this node is subject to the rate limiting restrictions of the Twitter
+      API. It polls the API once a minute for updates. If you deploy frequently you may
+      exceed the limit. The node will automatically delay polling until the end of the current
+      rate limiting window.</p>
+</script>
+
+<script type="text/html" data-help-name="twitter out">
+    <p>Send tweets and direct messages.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Sent as the body of the tweet. See below for how to send a Direct Message</dd>
+        <dt class="optional">media <span class="property-type">buffer</span></dt>
+        <dd>A Buffer of an image to attach to the tweet</dd>
+        <dt class="optional">params <span class="property-type">object</span></dt>
+        <dd>Additional parameters to pass to the Twitter status update API.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This nodes sends a tweet for the authenticated user. If <code>msg.media</code>
+    is set and contains a Buffer, it is attached as an image.</p>
+    <p>To send a Direct Message, the payload should be formatted as: <code>D {username} {message}</code>.</p>
+    <p>Note that you cannot attach an image to a direct message.</p>
+    <p>If <code>msg.params</code> exists and is an object of name:value pairs, they
+       will be included in the request to the Twitter api. The available values are documented
+       <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update#parameters" target="_new">here</a>.</p>
+</script>

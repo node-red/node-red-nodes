@@ -1,0 +1,20 @@
+{
+  "sqlite": {
+    "label": {
+      "database": "データベース",
+      "sqlQuery": "SQLクエリ",
+      "viaMsgTopic": "msg.topic経由",
+      "fixedStatement": "固定文",
+      "preparedStatement": "事前定義文",
+      "batchWithoutResponse": "一括(応答なし)",
+      "sqlStatement": "SQL文",
+      "mode": "モード",
+      "readWriteCreate": "読み取り-書き込み-作成",
+      "readWrite": "読み取り-書き込み",
+      "readOnly": "読み取りのみ"
+    },
+    "tips": {
+      "memoryDb": "<b>注釈</b>: データベース名に <code>:memory:</code> を設定すると、非永続的なメモリデータベースを作成します。"
+    }
+  }
+}

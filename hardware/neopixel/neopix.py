@@ -47,6 +47,8 @@ MODE = sys.argv[3]
 LED_BRIGHTNESS = min(255,int(max(0,float(sys.argv[4])) * 255 / 100))
 if (sys.argv[5].lower() != "true"):
     LED_GAMMA = range(256)
+LED_CHANNEL = int(sys.argv[6])
+LED_PIN = int(sys.argv[7])
 
 def getRGBfromI(RGBint):
     blue =  RGBint & 255

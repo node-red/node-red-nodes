@@ -1,5 +1,4 @@
-
-<script type="text/x-red" data-template-name="e-mail">
+<script type="text/html" data-template-name="e-mail">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-envelope"></i> <span data-i18n="email.label.to"></span></label>
         <input type="text" id="node-input-name" placeholder="email@address.com">
@@ -57,24 +56,8 @@
         <label for="node-input-dname"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-dname" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
-</script>
 
-<script type="text/x-red" data-help-name="e-mail">
-    <p>Sends the <code>msg.payload</code> as an email, with a subject of <code>msg.topic</code>.</p>
-    <p>The default message recipient can be configured in the node, if it is left
-    blank it should be set using the <code>msg.to</code> property of the incoming message. If left blank
-    you can also specify <code>msg.cc</code> and/or <code>msg.bcc</code> properties.</p>
-    <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
-    default value.</p>
-    <p>The payload can be html format.</p>
-    <p>If the payload is a binary buffer then it will be converted to an attachment.
-    The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
-    <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
-    more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.</p>
-    <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
-    <p>If you have own signed certificates, Nodemailer can complain about that and refuse sending the message. In this case you can try switching off TLS.</p>
-    <p>Note: uses SMTP with SSL to port 465.</p>
+    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
 </script>
 
 <script type="text/javascript">
@@ -103,7 +86,7 @@
             return this._("email.email");
         },
         label: function() {
-            return this.dname||this.name||"email";
+            return this.dname||this.name||this._("email.email");
         },
         labelStyle: function() {
             return (this.dname)?"node_label_italic":"";
@@ -120,7 +103,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="e-mail in">
+<script type="text/html" data-template-name="e-mail in">
     <div class="form-row">
         <label for="node-input-fetch"><i class="fa fa-hourglass-half"></i> <span data-i18n="email.label.getmail"></span></label>
         <select type="text" id="node-input-fetch" style="width:130px;">
@@ -171,6 +154,28 @@
             <option value="Delete" data-i18n="email.label.delete"></option>
         </select>
     </div>
+    <div class="form-row">
+        <label for="node-input-criteria"><i class="fa fa-search"></i> <span data-i18n="email.label.criteria"></span></label>
+        <select type="text" id="node-input-criteria">
+            <option value="ALL" data-i18n="email.label.all"></option>
+            <option value="ANSWERED" data-i18n="email.label.answered"></option>
+            <option value="FLAGGED" data-i18n="email.label.flagged"></option>
+            <option value="SEEN" data-i18n="email.label.seen"></option>
+            <option value="UNANSWERED" data-i18n="email.label.unanswered"></option>
+            <option value="UNFLAGGED" data-i18n="email.label.unflagged"></option>
+            <option value="UNSEEN" selected="selected" data-i18n="email.label.unseen"></option>
+            <option value="_msg_" data-i18n="email.label.criteriaFromMsg"></option>
+            <!--
+            <option value="DELETED" data-i18n="email.label.delete"></option>
+            <option value="DRAFT" data-i18n="email.label.none"></option>
+            <option value="NEW" data-i18n="email.label.delete"></option>
+            <option value="UNDELETED" data-i18n="email.label.read"></option>
+            <option value="UNDRAFT" data-i18n="email.label.delete"></option>
+            <option value="RECENT" data-i18n="email.label.read"></option>
+            <option value="OLD" data-i18n="email.label.delete"></option>
+            -->
+        </select>
+    </div>
     <br/>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -199,44 +204,15 @@
             if (protocol === "IMAP") {
                 $(".node-input-box").show();
                 $(".node-input-disposition").show();
+                $(".node-input-criteria").show();
             } else {
                 $(".node-input-box").hide();
                 $(".node-input-disposition").hide();
+                $(".node-input-criteria").hide();
             }
             checkPorts();
         });
     </script>
-</script>
-
-<script type="text/x-red" data-help-name="e-mail in">
-    <p>Repeatedly gets a <b>single email</b> from an IMAP server and forwards on as a msg if not already seen.</p>
-    <p>The subject is loaded into <code>msg.topic</code> and <code>msg.payload</code> is the plain text body.
-       If there is text/html then that is returned in <code>msg.html</code>. <code>msg.from</code> and <code>msg.date</code> are also set if you need them.</p>
-    <p>Additionally <code>msg.header</code> contains the complete header object including
-    <i>to</i>, <i>cc</i> and other potentially useful properties.</p>
-    <p>Uses the imap module.</p>
-    <p><b>Note:</b> this node <i>only</i> gets the most recent single email from the inbox, so set the repeat (polling) time appropriately.</p>
-    <p>Note: uses IMAP with SSL to port 993.</p>
-    <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property.  This will be an array of objects where
-    each object represents a specific attachments.  The format of the object is:</p>
-
-<pre>
-{
-  contentType:        // The MIME content description
-  fileName:           // A suggested file name associated with this attachment
-  transferEncoding:   // How was the original email attachment encodded?
-  contentDisposition: // Unknown
-  generatedFileName:  // A suggested file name associated with this attachment
-  contentId:          // A unique generated ID for this attachment
-  checksum:           // A checksum against the data
-  length:             // Size of data in bytes
-  content:            // The actual content of the data contained in a Node.js Buffer object
-                      // We can turn this into a base64 data string with content.toString('base64')
-}
-</pre>
-<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
-<p>The maximum refresh interval is 2147483 seconds (24.8 days).</p>
-
 </script>
 
 <script type="text/javascript">
@@ -252,6 +228,7 @@
             port: {value:"993",required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email
+	        criteria: {value: "UNSEEN"},
             repeat: {value:"300",required:true},
             fetch: {value:"auto"},
             inputs: {value:0}
@@ -284,6 +261,10 @@
                 $("#node-input-box").val("INBOX");
                 this.box = "INBOX";
             }
+            if (typeof this.criteria === 'undefined') {
+                $("#node-input-criteria").val("UNSEEN");
+                this.criteria = "UNSEEN";
+            }
             if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
             $("#node-input-fetch").change(function() {
                 if ($("#node-input-fetch").val() === "trigger") {
@@ -298,4 +279,38 @@
         }
     });
 })();
+</script>
+
+
+<script type="text/html" data-template-name="e-mail mta">
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
+        <input type="text" id="node-input-port" style="width:70%;"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.mta"></span></div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('e-mail mta',{
+        category: 'social',
+        color:"#c7e9c0",
+        defaults: {
+            name: {value:""},
+            port: {value:"1025",required:true},
+        },
+        inputs:0,
+        outputs:1,
+        icon: "envelope.png",
+        paletteLabel: function() { return this._("email.email") + " MTA" },
+        label: function() {
+            return this.name||this._("email.email") + " MTA";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
 </script>

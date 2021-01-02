@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "0.6.8",
+    "version"       : "0.11.1",
     "description"   : "Node-RED nodes to talk to serial ports",
     "dependencies"  : {
-        "serialport"   : "^6.2.2"
+        "serialport"   : "^9.0.2"
     },
     "repository" : {
         "type":"git",
@@ -12,11 +12,12 @@
     "license": "Apache-2.0",
     "keywords": [ "node-red", "serial" ],
     "node-red": {
-        "version": ">=0.16.0",
+        "version": ">=0.18.0",
         "nodes": {
             "serialport": "25-serial.js"
         }
     },
+    "engines" : { "node" : ">=8.6.0" },
     "author": {
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",

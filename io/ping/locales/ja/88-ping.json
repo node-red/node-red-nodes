@@ -2,8 +2,14 @@
     "ping": {
         "ping": "ping",
         "label": {
-            "target": "対象",
-            "ping": "Ping (秒)"
+            "target": "ターゲット",
+            "ping": "Ping (秒)",
+            "mode": "モード",
+            "mode_option": {
+                "timed": "時間",
+                "triggered": "トリガー"
+            },
+            "tip": "注: msg.payloadでホスト名を動的に指定する場合は、ターゲットフィールドを空にします。"
         }
     }
 }

@@ -250,7 +250,7 @@ describe('base64 node', function() {
                         return evt[0].type == "base64";
                     });
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("Invalid Base64 string");
+                    logEvents[0][0].msg.toString().should.startWith("base64.error.invalid");
                     done();
                 } catch (e) {
                     done(e);
@@ -275,7 +275,7 @@ describe('base64 node', function() {
                         return evt[0].type == "base64";
                     });
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("Not a Base64 string");
+                    logEvents[0][0].msg.toString().should.startWith("base64.error.nonbase64");
                     done();
                 } catch (e) {
                     done(e);

@@ -1,0 +1,26 @@
+<script type="text/html" data-help-name="sqlite">
+    <p>SQLiteデータベースにアクセスする機能を提供します。</p>
+    <p>SQLクエリには、本ノードへどの様にクエリを渡すかを設定します。</p>
+    <p><i>msg.topic経由</i> と <i>固定文</i> のSQLクエリは、設定したデータベースに対して <b>db.all</b> 操作を実行します。これによって、INSERTSとUPDATES、DELETESを利用できます。性質上、SQLインジェクションに<i>注意してください</i>。</p>
+    <p><i>事前定義文</i> のSQLタイプも <b>db.all</b> を使用しますが、渡されたパラメータを無害化することで、SQLインジェクションが生じる可能性を排除できます。</p>
+    <p><i>一括(応答なし)</i> のSQLタイプは、提供された文字列内にある全てのSQLステートメントを実行する <b>db.exec</b> を使用します。結果の行は返されません。</p>
+    <p><i>msg.topic経由</i> または <i>一括(応答なし)</i> を用いる時、 <code>msg.topic</code> には、データベースに問い合わせるための <i>クエリ</i> が格納されている必要があります。</p>
+    <p>通常の方法や事前定義文を用いる時、 <i>クエリ</i> はノード設定に入力される必要があります。</p>
+    <p>事前定義文を用いるためには <code>msg.params</code> をオブジェクトとしてパラメータに渡します。例:<br />
+    <code>msg.params = {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$id:1,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
+    }</code><br />
+    パラメータのオブジェクト名は、事前定義文に設定したパラメータと一致させる必要があります。
+    もし <code>SQLITE_RANGE: bind or column index out of range</code> というエラーが発生した場合は、バラメータのオブジェクトのキーに$を含めてください。<br />
+    上の例で用いるSQLクエリは、次の様になります: <code>insert into user_table (user_id, user) VALUES ($id, $name);</code></p>
+    <p>SQLクエリを使用すると、 <code>msg.payload</code> に結果が返されます。</p>
+    <p>通常、返されるペイロードは、結果の行から成る配列(またはエラー)になります。</p>
+    <p>フルパスやファイル名を含む <code>msg.extension</code> プロパティを用いることで、SQLiteの拡張を読み込むこともできます。</p>
+    <p>ミリ秒単位の再接続タイムアウトは、<b>settings.js</b> に下記の設定を追加することで、変更できます。
+    <pre>sqliteReconnectTime: 20000,</pre></p>
+</script>
+
+<script type="text/html" data-help-name="sqlitedb">
+    <p>データベースファイルのデフォルトディレクトリは、Node-REDプロセスを開始したユーザのホームディレクトリです。これは絶対パスを用いることで変更できます。</p>
+</script>

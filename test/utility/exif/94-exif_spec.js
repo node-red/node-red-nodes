@@ -26,7 +26,7 @@ describe('exif node', function() {
         //var data = fs.readFileSync("test/utility/exif/exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
         //var data = fs.readFileSync("exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         var gpsmsg = { gps: { GPSLatitudeRef: 'N',
             GPSLatitude: [ 50, 57, 22.4697 ],
@@ -65,7 +65,7 @@ describe('exif node', function() {
         //var data = fs.readFileSync("test/utility/exif/exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
         //var data = fs.readFileSync("exif_test_image.jpg", null); // extracting genuine exif data to be fed back as the result of the stubbed ExifImage constructor
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         var gpsmsg = { gps: { GPSLatitudeRef: 'S',
             GPSLatitude: [ 50, 57, 22.4697 ],
@@ -101,7 +101,7 @@ describe('exif node', function() {
         var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -127,7 +127,7 @@ describe('exif node', function() {
         var data = "hello";
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -153,7 +153,7 @@ describe('exif node', function() {
         var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         helper.load(exifNode, flow, function() {
             var exifNode1 = helper.getNode("exifNode1");
@@ -179,7 +179,7 @@ describe('exif node', function() {
         var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         var gpsmsg = { gps: { GPSLatitudeRef: 'N',
             GPSLatitude: [ 50, 57 ],
@@ -219,7 +219,7 @@ describe('exif node', function() {
         var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         var gpsmsg = { gps: { GPSLatitudeRef: 'N',
             GPSLatitude: [ 50, 57, 1.3 ],
@@ -259,7 +259,7 @@ describe('exif node', function() {
         var data = new Buffer.from("hello");
         var eD;
         var flow = [{id:"exifNode1", type:"exif", wires:[["helperNode1"]]},
-                    {id:"helperNode1", type:"helper"}];
+            {id:"helperNode1", type:"helper"}];
 
         var gpsmsg = { gps: { GPSLatitudeRef: 'N',
             GPSLatitude: [ 50, 57, 1.3 ],
@@ -290,7 +290,5 @@ describe('exif node', function() {
             exifNode1.receive({payload:data});
         });
     });
-
-
 
 });

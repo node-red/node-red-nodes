@@ -15,6 +15,10 @@
         "errors": {
             "windowsnotsupport": "Not currently supported on Windows.",
             "filenotfound": "File not found"
+        },
+        "state":{
+            "stopped": "stopped",
+            "nofilename":"Missing filename on input"
         }
     }
 }

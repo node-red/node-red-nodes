@@ -15,6 +15,7 @@ module.exports = function(RED) {
         this.autorun = true;
         if (n.autorun === false) { this.autorun = false; }
         var node = this;
+        var lastmsg = {};
 
         function inputlistener(msg) {
             if (msg != null) {
@@ -34,6 +35,7 @@ module.exports = function(RED) {
                     if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
                     if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
                     else { node.warn("Command not running"); }
+                    lastmsg = msg;
                 }
             }
         }
@@ -58,13 +60,17 @@ module.exports = function(RED) {
                         line += data.toString();
                         var bits = line.split("\n");
                         while (bits.length > 1) {
-                            node.send([{payload:bits.shift()},null,null]);
+                            var m = RED.util.cloneMessage(lastmsg);
+                            m.payload = bits.shift();
+                            console.log(m);
+                            node.send([m,null,null]);
                         }
                         line = bits[0];
                     }
                     else {
                         if (data && (data.length !== 0)) {
-                            node.send([{payload:data},null,null]);
+                            lastmsg.payload = data;
+                            node.send([lastmsg,null,null]);
                         }
                     }
                 });
@@ -73,7 +79,8 @@ module.exports = function(RED) {
                     if (node.op === "string") { data = data.toString(); }
                     if (node.op === "number") { data = Number(data); }
                     if (RED.settings.verbose) { node.log("err: "+data); }
-                    node.send([null,{payload:data},null]);
+                    lastmsg.payload = data;
+                    node.send([null,lastmsg,null]);
                 });
 
                 node.child.on('close', function (code,signal) {

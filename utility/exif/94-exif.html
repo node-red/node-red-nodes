@@ -1,17 +1,31 @@
 
-<script type="text/x-red" data-template-name="exif">
+<script type="text/html" data-template-name="exif">
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-dot-circle-o"></i> Mode</label>
+        <select style="width:70%" id="node-input-mode">
+            <option value="normal">Standard node</option>
+            <option value="worldmap">Use with Worldmap-in node</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-exif-prop-select">
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="exif">
+<script type="text/html" data-help-name="exif">
     <p>Extract <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a> information from JPEG images.</p>
-    <p>This node expects an incoming JPEG image buffer. If Exif data is present,
+    <p>This node expects an incoming JPEG image buffer in the selected property. If Exif data is present,
     it extracts the data into the <code>msg.exif</code> object.</p>
     <p>The node then adds location data as <code>msg.location</code>, should the Exif data carry this information.
-    <code>msg.payload</code> remains the original, unmodified image buffer. </p>
+    This also includes an icon, bearing and field of view arc suitable for use in the worldmap node.
+    The selected input property retains the original, unmodified image buffer.</p>
+    <p>If configured to use the worldmap in node then the existing image payload will be replaced by the location
+    object so that it can be fed back to the map directly.</p>
 </script>
 
 <script type="text/javascript">
@@ -19,7 +33,9 @@
         category: 'utility',
         color:"#f1c2f0",
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            mode: {value:"normal"},
+            property: {value:"payload",required:true}
         },
         inputs:1,
         outputs:1,
@@ -29,6 +45,17 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.property === undefined) { $("#node-input-property").val("payload"); }
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
+
+            $("#node-input-mode").change(function() {
+                if ($("#node-input-mode").val() === "worldmap") {
+                    $("#node-exif-prop-select").hide();
+                }
+                else { $("#node-exif-prop-select").show(); }
+            });
         }
     });
 </script>

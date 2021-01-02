@@ -67,7 +67,6 @@ module.exports = function(RED) {
             node.log('subscribing to: '+node.topic);
             node.client.subscribe(node.topic, function(body, headers) {
                 var newmsg={"headers":headers,"topic":node.topic}
-                
                 try {
                     newmsg.payload = JSON.parse(body);
                 }

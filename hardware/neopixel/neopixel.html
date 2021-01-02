@@ -1,8 +1,15 @@
 
-<script type="text/x-red" data-template-name="rpi-neopixels">
+<script type="text/html" data-template-name="rpi-neopixels">
 <div class="form-row">
     <label for="node-input-pixels"><i class="fa fa-sun-o"></i> LEDs</label>
     <input type="text" id="node-input-pixels" placeholder="number" style="width:60px;"> in the string
+    <span style="margin-left:50px;">Pin Number </span>
+    <select id="node-input-gpio" style="width:50px; margin-left:5px;">
+        <option value="18">12</option>
+        <option value="12">32</option>
+        <option value="13">33</option>
+        <option value="19">35</option>
+    </select>
 </div>
 <div class="form-row">
     <label for="node-input-mode"><i class="fa fa-cogs"></i> Mode</label>
@@ -46,9 +53,11 @@
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name">
 </div>
+<div class="form-tips"><b>Note</b>: pins 12 and 32 are on channel 0, and 33 and 35 are on channel 1.
+    You can only use one pin from each channel.</div>
 </script>
 
-<script type="text/x-red" data-help-name="rpi-neopixels">
+<script type="text/html" data-help-name="rpi-neopixels">
     <p>Raspberry Pi node to drive a string of neopixel or ws2812 LEDs.</p>
     <p>Defaults to a bar chart style mode using configured foreground and background colours.
     It can also display a needle (single pixel) type gauge.</p>
@@ -65,8 +74,10 @@
     with a CSV string <i>x,y,r,g,b</i>
     <p>By default, gamma correction is enabled but it can disabled which can be useful for working with low brightness levels</p>
     <p><code>msg.brightness</code> can be used to dynamically set brightness level</p>
-    <p>The pixels data line should be connected to Pi physical pin 12 - GPIO 18. <i>Note:</i>
-    this may conflict with audio playback.</p>
+    <p>The pixels data line should be connected to Pi physical pin 12, 32, 33 or 35. <b>Note:</b>
+    pins 12 and 32 are on the same channel, as are 33 and 35. If you want connect two neopixels then use pins
+    from different channels.</p>
+    <p>Note: this node may also conflict with audio playback.</p>
     <p align="right"><a href="http://flows.nodered.org/node/node-red-node-pi-neopixel#usage">More info&nbsp;&nbsp;</a></p>
 </script>
 
@@ -76,6 +87,7 @@
         color:"#c6dbef",
         defaults: {
             name: { value:"" },
+            gpio: { value:18 },
             pixels: { value:"", required:true, validate:RED.validators.number() },
             bgnd: { value:"" },
             fgnd: { value:"" },

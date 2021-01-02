@@ -40,6 +40,9 @@ module.exports = function(RED) {
         this.rgb = n.rgb || "rgb";
         this.gamma = n.gamma;
         if (this.gamma === undefined) { this.gamma = true; }
+        this.gpio = n.gpio || 18;
+        this.channel = 0;
+        if (this.gpio == 13 || this.gpio == 19) { this.channel = 1; }
         this.brightness = Number(n.brightness || 100);
         this.wipe = Number(n.wipe || 40);
         if (this.wipe < 0) { this.wipe = 0; }
@@ -114,7 +117,7 @@ module.exports = function(RED) {
         }
 
         if (allOK === true) {
-            node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma]);
+            node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma, node.channel, node.gpio]);
             node.status({fill:"green",shape:"dot",text:"ok"});
 
             node.on("input", inputlistener);
@@ -130,9 +133,9 @@ module.exports = function(RED) {
             node.child.on('close', function () {
                 node.child = null;
                 if (RED.settings.verbose) { node.log(RED._("rpi-gpio.status.closed")); }
-                if (node.done) {
+                if (node.finished) {
                     node.status({fill:"grey",shape:"ring",text:"closed"});
-                    node.done();
+                    node.finished();
                 }
                 else { node.status({fill:"red",shape:"ring",text:"stopped"}); }
             });
@@ -146,7 +149,7 @@ module.exports = function(RED) {
             node.on("close", function(done) {
                 node.status({fill:"grey",shape:"ring",text:"closed"});
                 if (node.child != null) {
-                    node.done = done;
+                    node.finished = done;
                     node.child.kill('SIGKILL');
                 }
                 else { done(); }

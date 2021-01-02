@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="snmp">
+<script type="text/html" data-template-name="snmp">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -27,11 +27,12 @@
     <div class="form-tips">Tip: Multiple OIDs can be separated by commas.</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp">
+<script type="text/html" data-help-name="snmp">
     <p>Simple SNMP oid or oid list fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain a comma separated list of oids to request. (no spaces)</p>
+    <p>OIDs must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -59,7 +60,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="snmp set">
+<script type="text/html" data-template-name="snmp set">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -86,9 +87,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips">Tip: Numeric inputs must be numbers not strings, e.g. 1 not "1".</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp set">
+<script type="text/html" data-help-name="snmp set">
     <p>Simple snmp Set node. Trigger by any input</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
@@ -101,6 +103,8 @@
     },
     {   "oid":   ... }
 ]</pre>
+    <p>Any numeric inputs must be numbers, not strings, e.g. 1  not "1".</p>
+    <p>OIDs must be numeric. iso. is the same a 1.</p>
     </p>
 </script>
 
@@ -128,7 +132,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="snmp table">
+<script type="text/html" data-template-name="snmp table">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -157,11 +161,12 @@
     <div class="form-tips">Tip: ONLY accepts a single OID.</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp table">
+<script type="text/html" data-help-name="snmp table">
     <p>Simple SNMP oid table fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -189,7 +194,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="snmp subtree">
+<script type="text/html" data-template-name="snmp subtree">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -218,11 +223,12 @@
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp subtree">
-    <p>Simple SNMP oid subtree fetcher. Triggered by any input.</p>
+<script type="text/html" data-help-name="snmp subtree">
+    <p>Simple SNMP oid subtree fetcher. Triggered by any input. Reads all OIDS at and below the current base OID.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
 </script>
 
@@ -251,7 +257,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="snmp walker">
+<script type="text/html" data-template-name="snmp walker">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -280,12 +286,16 @@
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>
 
-<script type="text/x-red" data-help-name="snmp walker">
-    <p>Simple SNMP oid walker fetcher. Triggered by any input.</p>
+<script type="text/html" data-help-name="snmp walker">
+    <p>Simple SNMP oid walker fetcher. Triggered by any input. 
+    Fetches all nodes from this OID to the end of the table.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
+    <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
+    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to 
+    the typical snmpwalk command line app.</p>
 </script>
 
 <script type="text/javascript">

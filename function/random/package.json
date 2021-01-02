@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-random",
-    "version"       : "0.1.2",
+    "version"       : "0.3.0",
     "description"   : "A Node-RED node that when triggered generates a random number between two values.",
     "dependencies"  : {
     },
@@ -19,5 +19,8 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [
+        {"name": "@zenofmud"}
+    ]
 }

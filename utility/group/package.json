@@ -1,0 +1,20 @@
+{
+    "name": "node-red-node-group",
+    "version": "1.0.0",
+    "description": "A Node-RED node to allow flows containing groups to be imported into Node-RED 1.0.x or earlier.",
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes/tree/master/utility/group"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "group": "group.js"
+        }
+    },
+    "author": "Nick O'Leary <nick.oleary@gmail.com>"
+}

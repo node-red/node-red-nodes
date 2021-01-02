@@ -1,5 +1,5 @@
 
- module.exports = function(RED) {
+module.exports = function(RED) {
     "use strict";
 
     //import noble

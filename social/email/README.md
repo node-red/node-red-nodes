@@ -7,7 +7,8 @@ node-red-node-email
 Pre-requisite
 -------------
 
-You will need valid email credentials for your email server.
+You will need valid email credentials for your email server. For GMail this may mean
+getting an application password if you have two-factor authentication enabled.
 
 **Note :** Version 1.x of this node requires **Node.js v8** or newer.
 
@@ -16,18 +17,18 @@ Install
 -------
 
 Version 0.x of this node is usually installed by default by Node-RED.
-To install version 1.x you need to uninstall the existing version.
-
-        cd /usr/lib/node_modules/node-red
-        sudo npm uninstall --unsafe-perm node-red-node-email
-
-Then run the following command in your Node-RED user directory - typically `~/.node-red`
+As long as you have at least version 0.19.x of Node-RED you can install the new version
+by using the `Menu - Manage Palette` option, or running the following command in your
+Node-RED user directory - typically `~/.node-red`
 
         cd ~/.node-red
         npm i node-red-node-email
 
-**Note :** this installs the new version locally rather than globally. This can then be managed by the palette manager.
+GMail users
+-----------
 
+If you are accessing GMail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
+or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
 
 Usage
 -----
@@ -57,8 +58,10 @@ Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 The default message recipient can be configured in the node, if it is left
 blank it should be set using the `msg.to` property of the incoming message.
 
-You may optionally override the *from* email address by setting `msg.from`,
-otherwise the node will use the `userid` setting from the server connection.
+The email *from* can be set using `msg.from` but not all mail services allow 
+this unless `msg.from` is also a valid userid or email address associated with 
+the password. Note: if `userid` or msg.from does not contain a valid email 
+address (userxx@some_domain.com), you may see (No Sender) in the email.
 
 The payload can be html format.
 
@@ -68,6 +71,6 @@ The filename should be set using `msg.filename`. Optionally
 `msg.description` can be added for the body text.
 
 Alternatively you may provide `msg.attachments` which should contain an array of one or
-more attachments in <a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a> format.
+more attachments in <a href="https://nodemailer.com/message/attachments/" target="_new">nodemailer</a> format.
 
 Uses the *nodemailer* npm module.
