@@ -142,7 +142,7 @@ module.exports = function(RED) {
         this.multi = n.multi || false;
         this.operation = n.operation || "find";
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
-        this.status({fill:"grey",shape:"ring",text: RED._("mongodb.status.connecting")});
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
         var noerror = true;
 
@@ -150,7 +150,7 @@ module.exports = function(RED) {
             console.log("connecting:  " + node.mongoConfig.url);
             MongoClient.connect(node.mongoConfig.url, function(err,client) {
                 if (err) {
-                    node.status({ fill: "red", shape: "ring", text: RED._("mongodb.status.error") });
+                    node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
                     if (noerror) { node.error(err); }
                     noerror = false;
                     node.tout = setTimeout(connectToDB, 10000);
