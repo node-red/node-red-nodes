@@ -1,11 +1,29 @@
 
-<script type="text/x-red" data-template-name="mongodb">
+<script type="text/html" data-template-name="mongodb">
     <div class="form-row">
-        <label for="node-config-input-hostname"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.host"></span></label>
-        <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost" style="width: 40%;" >
-        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span data-i18n="mongodb.label.port"></span></label>
-        <input type="text" id="node-config-input-port" style="width:45px">
+        <label for="node-config-input-hostname"><i class="fa fa-bookmark"></i><span data-i18n="mongodb.label.host"></span></label>
+        <input class="input-append-left" type="text" id="node-config-input-hostname" placeholder="localhost">
     </div>
+
+    <div class="form-row node-config-input-topology">
+      <label for="node-config-input-topology"><span data-i18n="mongodb.label.topology"></span></label>
+          <select id="node-config-input-topology">
+            <option type="button" class="red-ui-button toggle topology-group" selected  value="direct">Direct (mongodb://)</button>
+            <option type="button" class="red-ui-button toggle topology-group" value="replicaset">RelicaSet/Cluster (mongodb://)</button>
+            <option type="button" class="red-ui-button toggle topology-group" value="dnscluster">DNS Cluster (mongodb+srv://)</button>
+          </select>
+    </div>
+
+    <div class="form-row node-config-connectOptions">
+        <label for="node-config-input-connectOptions"><i class="fa fa-wrench"></i><span data-i18n="mongodb.label.connectOptions"></span></label>
+        <input type="text" id="node-config-input-connectOptions">
+    </div>
+
+    <div class="form-row node-config-input-port">
+        <label for="node-config-input-port"><i class="fa fa-plug"></i><span data-i18n="mongodb.label.port"></span></label>
+        <input type="text" id="node-config-input-port" style="width:55px;">
+    </div>
+
     <div class="form-row">
         <label for="node-config-input-db"><i class="fa fa-database"></i> <span data-i18n="mongodb.label.database"></span></label>
         <input type="text" id="node-config-input-db">
@@ -30,6 +48,8 @@
         color: "rgb(218, 196, 180)",
         defaults: {
             hostname: {value: "127.0.0.1", required: true},
+            topology: {value: "direct", required: true},
+            connectOptions: {value: "", required: false},
             port: {value: 27017, required: true},
             db: {value: "", required: true},
             name: {value: ""}
@@ -39,13 +59,60 @@
             password: {type: "password"}
         },
         label: function() {
-            return this.name || this.hostname + ":" + this.port + "/" + this.db;
-        }
+            return this.name || this.db + "@" + this.hostname;
+        },
+        oneditprepare: function() {
+          $("#node-config-input-topology").on("change", function() {
+            var topology = $("#node-config-input-topology option:selected").val();
+            if (topology === "direct") {
+              $(".node-config-input-port").show();
+            } else {
+              $(".node-config-input-port").hide();
+            }
+          });
+        },
     });
 </script>
 
+<script type="text/html" data-help-name="mongodb">
+    <p>Define a connection method to your MongoDB server instance.</p>
+    <p>There are 3 supported options:
+        <details><summary>Standard/direct</summary>
+            For databases that request connections in the form
+            <code>
+              mongodb://[username]:[password]@[hostname]:[port]/[dbname]
+            </code>
+            Most often used for local MongoDB instances (localhost:27017), and other stand-alone instances.
+        </details>
+        <details><summary>Standard/replicaset</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb://[username]:[password]@[hostnameA]:[port],[hostnameB]:[port]/[dbname]?replicaSet=[replsetname]
+            </code>
+            Often used with <q>database as a service</q> offerings,
+            or on-premises instances that have been configured for availability and resilience
+        </details>
+        <details><summary>Clustered by DNS seedlist</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb+srv://[username]:[password]@[clustername]/[dbname]?retryWrites=true&w=majority
+            </code>
+            A configuration of MongoDB instances that provide availability and performance
+            through replication and sharding, accessed through a cluster alias name, rather than
+            by specific host:port connections. This is the default for MongoDB instances in the
+            <a href="https://www.mongodb.com/cloud/atlas" target="_blank">Atlas cloud service</a>.
+        </details>
+      <p><strong>Connect options</strong> is where you add the optional parameters required by your MongoDB instance.
+        This might include:
+        <ul><li>w=majority</li><li>replicaSet=replset</li><li>authSource=admin</li></ul> and any other options appropriate -
+        full set available at <a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">
+        Connection String URI Format — MongoDB Manual</a>.
+      <p>If you are connecting to <a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb-group" target="_blank">
+        IBM Databases for MongoDB</a>, as a replica-set, be sure to append <code>ssl=true&tlsAllowInvalidCertificates=true </code>
+        to the <strong>Connect options</strong>.
+</script>
 
-<script type="text/x-red" data-template-name="mongodb out">
+<script type="text/html" data-template-name="mongodb out">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
@@ -85,7 +152,7 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mongodb out">
+<script type="text/html" data-help-name="mongodb out">
     <p>A simple MongoDB output node. Can save, insert, update and remove objects from a chosen collection.</p>
     <p>Save will update an existing object or insert a new object if one does not already exist.</p>
     <p>Insert will insert a new object.</p>
@@ -107,7 +174,6 @@
 </script>
 
 <script type="text/javascript">
-
     function oneditprepare() {
         $("#node-input-operation").change(function () {
             var id = $("#node-input-operation option:selected").val();
@@ -150,7 +216,7 @@
         align: "right",
         label: function() {
             var mongoNode = RED.nodes.node(this.mongodb);
-            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection: "mongodb");
+            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
@@ -160,7 +226,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="mongodb in">
+<script type="text/html" data-template-name="mongodb in">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
@@ -184,7 +250,7 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mongodb in">
+<script type="text/html" data-help-name="mongodb in">
     <p>Calls a MongoDB collection method based on the selected operator.</p>
     <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
     Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
@@ -200,7 +266,6 @@
 </script>
 
 <script type="text/javascript">
-
     RED.nodes.registerType('mongodb in', {
         category: 'storage-input',
         color: "rgb(218, 196, 180)",
@@ -215,7 +280,7 @@
         icon: "mongodb.png",
         label: function() {
             var mongoNode = RED.nodes.node(this.mongodb);
-            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection: "mongodb");
+            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";

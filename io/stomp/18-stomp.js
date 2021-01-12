@@ -10,8 +10,8 @@ module.exports = function(RED) {
         this.port = n.port;
         this.protocolversion = n.protocolversion;
         this.vhost = n.vhost;
-        this.reconnectretries = n.reconnectretries;
-        this.reconnectdelay = n.reconnectdelay * 1000;
+        this.reconnectretries = n.reconnectretries || 999999;
+        this.reconnectdelay = (n.reconnectdelay || 15) * 1000;
         this.name = n.name;
         this.username = this.credentials.user;
         this.password = this.credentials.password;
@@ -66,15 +66,14 @@ module.exports = function(RED) {
         node.client.connect(function(sessionId) {
             node.log('subscribing to: '+node.topic);
             node.client.subscribe(node.topic, function(body, headers) {
+                var newmsg={"headers":headers,"topic":node.topic}
                 try {
-                    msg.payload = JSON.parse(body);
+                    newmsg.payload = JSON.parse(body);
                 }
                 catch(e) {
-                    msg.payload = body;
+                    newmsg.payload = body;
                 }
-                msg.headers = headers;
-                msg.topic = node.topic;
-                node.send(msg);
+                node.send(newmsg);
             });
         }, function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"});

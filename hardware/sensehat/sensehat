@@ -1,4 +1,14 @@
 #!/bin/bash
 
 BASEDIR=$(dirname $0)
-sudo python -u $BASEDIR/sensehat.py $@
+
+ID=$(id -u)
+
+# Avoid using sudo if we're already root
+SUDO=sudo
+if [ $ID -eq 0 ]
+then
+   SUDO=""
+fi
+
+$SUDO python -u $BASEDIR/sensehat.py $@

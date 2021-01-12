@@ -1,6 +1,6 @@
 node-red-node-pibrella
 ======================
-A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://pibrealla.com/" target="_new">Pibrella</a> add-on board for a Raspberry-Pi.
+A <a href="http://nodered.org" target="_new">Node-RED</a> node to control a <a href="http://pibrella.com/" target="_new">Pibrella</a> add-on board for a Raspberry-Pi.
 
 Install
 -------

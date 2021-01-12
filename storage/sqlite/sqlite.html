@@ -1,16 +1,25 @@
-
-<script type="text/x-red" data-template-name="sqlitedb">
+<script type="text/html" data-template-name="sqlitedb">
     <div class="form-row">
-        <label for="node-config-input-db"><i class="fa fa-database"></i> Database</label>
+        <label for="node-config-input-db"><i class="fa fa-database"></i> <span data-i18n="sqlite.label.database"></label>
         <input type="text" id="node-config-input-db" placeholder="/tmp/sqlite">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-mode" data-i18n="sqlite.label.mode"></label>
+        <select id="node-config-input-mode" style="width:70%">
+            <option value="RWC" data-i18n="sqlite.label.readWriteCreate"></option>
+            <option value="RW" data-i18n="sqlite.label.readWrite"></option>
+            <option value="RO" data-i18n="sqlite.label.readOnly"></option>
+        </select>
+    </div>
+    <div class="form-tips" data-i18n="[html]sqlite.tips.memoryDb"></div>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('sqlitedb',{
         category: 'config',
         defaults: {
-            db: {value:"",required:true}
+            db: {value:"", required:true},
+            mode: {value:"RWC"}
         },
         label: function() {
             return this.db;
@@ -18,27 +27,33 @@
     });
 </script>
 
-
-<script type="text/x-red" data-template-name="sqlite">
+<script type="text/html" data-template-name="sqlite">
     <div class="form-row">
-        <label for="node-input-mydb"><i class="fa fa-database"></i> Database</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mydb"><i class="fa fa-database"></i> <span data-i18n="sqlite.label.database"></label>
         <input type="text" id="node-input-mydb">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for=""><i class="fa fa-code"></i> <span data-i18n="sqlite.label.sqlQuery"></label>
+        <select id="node-input-sqlquery">
+            <option value="msg.topic" data-i18n="sqlite.label.viaMsgTopic"></option>
+            <option value="fixed" data-i18n="sqlite.label.fixedStatement"></option>
+            <option value="prepared" data-i18n="sqlite.label.preparedStatement"></option>
+            <option value="batch" data-i18n="sqlite.label.batchWithoutResponse"></option>
+        </select>
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="sqlite">
-    <p>Allows basic access to a Sqlite database.</p>
-    <p>This node uses the <b>db.all</b> operation against the configured database. This does allow INSERTS, UPDATES and DELETES.
-    By its very nature it is SQL injection... so <i>be careful out there...</i></p>
-    <p><code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
-    <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
-    <p>Typically the returned payload will be an array of the result rows, (or an error).</p>
-    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
-    <pre>sqliteReconnectTime: 20000,</pre></p>
+    <div class="form-row" style="margin-bottom: 0px;">
+        <label for="" style="width: unset;" id="node-input-sqllabel"><i class="fa fa-code"></i> <span data-i18n="sqlite.label.sqlStatement"></label>
+    </div>
+    <div>
+        <input type="hidden" id="node-input-sql" autofocus="autofocus">
+    </div>
+    <div class="form-row node-text-editor-row">
+        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-sql-editor" ></div>
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -47,6 +62,8 @@
         color:"#e97b00",
         defaults: {
             mydb: {type:"sqlitedb",required:true},
+            sqlquery: {value:"msg.topic",required:true},
+            sql: {value:""},
             name: {value:""}
         },
         inputs:1,
@@ -56,8 +73,59 @@
             var dbNode = RED.nodes.node(this.mydb);
             return this.name||(dbNode?dbNode.label():"sqlite");
         },
-            labelStyle: function() {
+        labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var ace = this;
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-sql-editor',
+                mode: 'ace/mode/sql',
+                value: $("#node-input-sql").val(),
+                globals: {
+                    msg:true,
+                    context:true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+
+            $("#node-input-sqlquery").change(function() {
+                if ($("#node-input-sqlquery").val() == "msg.topic" || $("#node-input-sqlquery").val() == "batch"){
+                    $("#node-input-sqllabel").hide();
+                    $("#node-input-sql-editor").hide();
+                }
+                else{
+                    $("#node-input-sqllabel").show();
+                    $("#node-input-sql-editor").show();
+                    ace.editor.renderer.updateFull();
+                }
+            });
+            $("#node-input-sqlquery").change();
+        },
+        oneditsave: function() {
+            $("#node-input-sql").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function(size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i=0; i<rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height",height+"px");
+            this.editor.resize();
         }
     });
 </script>

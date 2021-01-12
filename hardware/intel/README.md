@@ -22,7 +22,7 @@ hardware / downloads for your particular board.
 Ensure the latest version of mraa libraries are installed: (version 1.5 as of Sept 2015)
 
         echo "src mraa-upm http://iotdk.intel.com/repos/1.5/intelgalactic" > /etc/opkg/mraa-upm.conf
-        okpg update
+        opkg update
         opkg upgrade
 
 **NOTE** : This node assumes that the mraa npm is already installed globally - as

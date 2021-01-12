@@ -11,7 +11,11 @@ module.exports = function(RED) {
         this.op = n.op;
         this.redo = n.redo;
         this.running = false;
+        this.closer = n.closer || "SIGKILL";
+        this.autorun = true;
+        if (n.autorun === false) { this.autorun = false; }
         var node = this;
+        var lastmsg = {};
 
         function inputlistener(msg) {
             if (msg != null) {
@@ -31,63 +35,78 @@ module.exports = function(RED) {
                     if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
                     if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
                     else { node.warn("Command not running"); }
+                    lastmsg = msg;
                 }
             }
         }
 
         function runit() {
+            var line = "";
             if (!node.cmd || (typeof node.cmd !== "string") || (node.cmd.length < 1)) {
                 node.status({fill:"grey",shape:"ring",text:"no command"});
                 return;
             }
-            node.child = spawn(node.cmd, node.args);
-            if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
-            node.status({fill:"green",shape:"dot",text:"running"});
-            node.running = true;
-            var line = "";
+            try {
+                node.child = spawn(node.cmd, node.args);
+                if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
+                node.status({fill:"green",shape:"dot",text:"running"});
+                node.running = true;
 
-            node.child.stdout.on('data', function (data) {
-                if (node.op === "string") { data = data.toString(); }
-                if (node.op === "number") { data = Number(data); }
-                if (RED.settings.verbose) { node.log("out: "+data); }
-                if (node.op === "lines") {
-                    line += data.toString();
-                    var bits = line.split("\n");
-                    while (bits.length > 1) {
-                        node.send([{payload:bits.shift()},null,null]);
+                node.child.stdout.on('data', function (data) {
+                    if (node.op === "string") { data = data.toString(); }
+                    if (node.op === "number") { data = Number(data); }
+                    if (RED.settings.verbose) { node.log("out: "+data); }
+                    if (node.op === "lines") {
+                        line += data.toString();
+                        var bits = line.split("\n");
+                        while (bits.length > 1) {
+                            var m = RED.util.cloneMessage(lastmsg);
+                            m.payload = bits.shift();
+                            console.log(m);
+                            node.send([m,null,null]);
+                        }
+                        line = bits[0];
                     }
-                    line = bits[0];
-                }
-                else {
-                    if (data && (data.length !== 0)) {
-                        node.send([{payload:data},null,null]);
+                    else {
+                        if (data && (data.length !== 0)) {
+                            lastmsg.payload = data;
+                            node.send([lastmsg,null,null]);
+                        }
                     }
-                }
-            });
+                });
 
-            node.child.stderr.on('data', function (data) {
-                if (node.op === "string") { data = data.toString(); }
-                if (node.op === "number") { data = Number(data); }
-                if (RED.settings.verbose) { node.log("err: "+data); }
-                node.send([null,{payload:data},null]);
-            });
+                node.child.stderr.on('data', function (data) {
+                    if (node.op === "string") { data = data.toString(); }
+                    if (node.op === "number") { data = Number(data); }
+                    if (RED.settings.verbose) { node.log("err: "+data); }
+                    lastmsg.payload = data;
+                    node.send([null,lastmsg,null]);
+                });
 
-            node.child.on('close', function (code,signal) {
-                if (RED.settings.verbose) { node.log("ret: "+code+":"+signal); }
+                node.child.on('close', function (code,signal) {
+                    if (RED.settings.verbose) { node.log("ret: "+code+":"+signal); }
+                    node.running = false;
+                    node.child = null;
+                    var rc = code;
+                    if (code === null) { rc = signal; }
+                    node.send([null,null,{payload:rc}]);
+                    node.status({fill:"red",shape:"ring",text:"stopped"});
+                });
+
+                node.child.on('error', function (err) {
+                    if (err.errno === "ENOENT") { node.warn('Command not found'); }
+                    else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                    else { node.log('error: ' + err); }
+                    node.status({fill:"red",shape:"ring",text:"error"});
+                });
+            }
+            catch(e) {
+                if (e.errno === "ENOENT") { node.warn('Command not found'); }
+                else if (e.errno === "EACCES") { node.warn('Command not executable'); }
+                else { node.error(e); }
+                node.status({fill:"red",shape:"ring",text:"error"});
                 node.running = false;
-                node.child = null;
-                var rc = code;
-                if (code === null) { rc = signal; }
-                node.send([null,null,{payload:rc}]);
-                node.status({fill:"red",shape:"ring",text:"stopped"});
-            });
-
-            node.child.on('error', function (err) {
-                if (err.errno === "ENOENT") { node.warn('Command not found'); }
-                else if (err.errno === "EACCES") { node.warn('Command not executable'); }
-                else { node.log('error: ' + err); }
-                node.status({fill:"grey",shape:"dot",text:"error"});
-            });
+            }
         }
 
         if (node.redo === true) {
@@ -101,13 +120,24 @@ module.exports = function(RED) {
 
         node.on("close", function(done) {
             clearInterval(loop);
-            if (node.child != null) { node.child.kill('SIGKILL'); }
-            if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
+            if (node.child != null) {
+                var tout;
+                node.child.on('exit', function() {
+                    if (tout) { clearTimeout(tout); }
+                    done();
+                });
+                tout = setTimeout(function() {
+                    node.child.kill("SIGKILL"); // if it takes more than 3 secs kill it anyway.
+                    done();
+                }, 3000);
+                node.child.kill(node.closer);
+                if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
+            }
+            else { setTimeout(function() { done(); }, 100); }
             node.status({});
-            setTimeout(function() { done(); }, 100);
         });
 
-        runit();
+        if (this.autorun) { runit(); }
 
         node.on("input", inputlistener);
     }

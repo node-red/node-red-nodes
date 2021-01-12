@@ -9,7 +9,14 @@
             "followers": "followed by",
             "tweetslabel": "tweets",
             "eventslabel": "events",
-            "clickhere": "Twitterの認証を行うため、ここをクリックしてください"
+            "create": "次のURLから自身のアプリケーションを作成",
+            "copy-consumer": "'Keys and tokens'セクションからConsumer APIキーをコピー",
+            "consumer_key": "API key",
+            "consumer_secret": "API secret key",
+            "copy-accessToken": "新たに'Access token & access token secret'を作成し、コピー",
+            "access_key": "Access token",
+            "access_secret": "Access token secret",
+            "enter-id": "Twitter IDを設定"
         },
         "placeholder": {
             "for": "@ids, #tagsはコンマ区切りで入力",
@@ -39,12 +46,9 @@
             "unexpectedend": "ストリームが予期せず終了しました",
             "invalidtag": "無効なタグプロパティ",
             "missingcredentials": "Twitterが認証されていません",
-            "truncated": "140文字を超えるツイートが切り捨てられました",
+            "truncated": "280文字を超えるツイートが切り捨てられました",
             "sendfail": "ツイートの投稿が失敗: __error__",
-            "nopayload": "ツイートするペイロードがありません",
-            "oauthbroke": "something in twitter oauth broke.",
-            "oautherror": "<html><head></head><body><p>認証処理で問題が生じました。以下のエラーが返されました:</p><p><b>__statusCode__</b>: __errorData__</p><p>Node-REDが動いているシステムの時刻が正しく設定されていないことが、このエラーの原因の1つです。</p></body></html>",
-            "authorized": "<html><head></head><body><p>認証されました - このウィンドウを閉じて、Node-REDへ戻ることができます。</p></body></html>"
+            "nopayload": "ツイートするペイロードがありません"
         }
     }
 }

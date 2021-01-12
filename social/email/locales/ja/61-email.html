@@ -1,0 +1,50 @@
+<!-- Source revision: https://github.com/node-red/node-red-nodes/commit/45e4c6d9d44b4e62b4be6b3e04728ebe306579f2 -->
+
+<script type="text/html" data-help-name="e-mail">
+    <p><code>msg.payload</code>をemailとして送信します。件名は<code>msg.topic</code>で指定します。</p>
+    <p>メッセージの受信者のデフォルトはノードに設定できます。空のままとした場合は、入力メッセージの<code>msg.to</code>を設定します。<code>msg.cc</code>や<code>msg.bcc</code>や<code>msg.replyTo</code>や<code>msg.inReplyTo</code>や<code>msg.references</code>, <code>msg.headers</code>, <code>msg.priority</code>プロパティを設定することもできます。</p>
+    <p><code>msg.from</code>を指定すると、<code>ユーザID</code>のデフォルト値を上書きできます。</p>
+    <p>ペイロードはHTML形式とすることも可能です。</p>
+    <p>ペイロードにバイナリバッファを指定すると、添付ファイルに変換します。ファイル名は<code>msg.filename</code>に指定、メッセージ本体は<code>msg.description</code>に指定することができます。</p>
+    <p><code>msg.attachments</code>に<a href="https://www.npmjs.com/package/nodemailer#attachments" target="_new">nodemailer</a>形式のオブジェクトを1つ以上含む配列を設定して、複数の添付ファイルを指定することもできます。</p>
+    <p>受信側で必要な場合には、<code>msg.envelope</code>オブジェクトを指定できます。このオブジェクトには、fromやtoを指定します。</p>
+    <p>自己署名証明書を用いる場合、Nodemailerはメッセージ送信を拒否することがあります。その際は、TLSを無効にしてみてください。</p>
+    <p>注: SMTP over SSLを465番ポートで利用。</p>
+</script>
+
+<script type="text/html" data-help-name="e-mail in">
+    <p>IMAPサーバから<b>emailを一件</b>取得し、メッセージとして転送する処理を繰り返します。</p>
+    <p>件名を<code>msg.topic</code>に、テキスト形式のメッセージ本体を<code>msg.payload</code>に設定します。text/htmlがあれば、<code>msg.html</code>に設定します。<code>msg.from</code>と<code>msg.date</code>を必要に応じて設定します。</p>
+    <p>さらに、<code>msg.header</code>からヘッダオブジェクトを参照できます。ヘッダオブジェクトは<i>to</i>や<i>cc</i>他の有用なプロパティを含んでいます。</p>
+    <p>この実装にはimapモジュールを利用しています。</p>
+    <p><b>注:</b> このノードは最新のメールを1つだけメールボックスから取得します。そのため、更新間隔を適切に設定してください。</p>
+    <p>注: SMTP over SSLを993番ポートで利用します。</p>
+    <p>入力メールに添付ファイルがある場合は、<code>msg.attachments</code>プロパティに保存します。この値は添付ファイルを表すオブジェクトからなる配列です。要素オブジェクトの形式は次の通りです:</p>
+
+<pre>
+{
+  contentType:        // MIME項目種別
+  fileName:           // 添付ファイルの想定ファイル名
+  transferEncoding:   // 元の添付ファイルのエンコーディング
+  contentDisposition: // 不明
+  generatedFileName:  // 添付ファイルの想定ファイル名
+  contentId:          // 添付ファイルの一意な識別子
+  checksum:           // データのチェックサム
+  length:             // データのバイト数
+  content:            // 実際のデータを表すNode.jsのバッファオブジェクト
+                      // content.toString('base64')によりbase64形式の文字列に変換可能
+}
+</pre>
+<p>POP3プロトコルでのデフォルトポート番号は、素のTCPでは110番、SSLでは995番です。IMAPプロトコルでは、素のTCPでは143番、SSLでは993番です。</p>
+
+</script>
+
+<script type="text/html" data-help-name="e-mail mta">
+    <p>メール転送エージェント - 入ってくるSMTPメールのため、ポートでリッスンします。</p>
+    <p><b>注釈</b>: セキュリティが組み込まれていないため、"プロダクション向けではありません"。
+    これは主に、外部へのメール送信のローカルテスト向けですが、必要に応じて実際のメールサービスへのメール転送としても使用できます。</p>
+    <p>1024未満のポート(例えば25や465など)を使用するには、特権的アクセスを得る必要がある場合があります。
+    Linuxシステムでは以下のコマンドを実行し、Node-REDを再起動することで達成できます。
+    <pre>sudo setcap ‘cap_net_bind_service=+eip’ $(which node)</pre>
+    これによって、全てのnodeアプリケーションが全ポートにアクセスできる様になることに注意してください.</p>
+</script>

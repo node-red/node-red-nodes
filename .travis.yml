@@ -1,27 +1,32 @@
 sudo: false
 language: node_js
-env:
-  - CXX="g++-4.8"
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
-    - gcc-4.8
 matrix:
-  allow_failures:
-  - node_js: "7"
-node_js:
-  - "8"
-  - "7"
-  - "6"
-  - "4"
+  # allow_failures:
+  #   - node_js: 14
+  include:
+    - node_js: 14
+    - node_js: 12
+    - node_js: 10
+    - node_js: 8
+    # - python: 2.7
+    #   language: python
+    #   before_script: pip install flake8
+    #   script: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+    - python: 3.7
+      language: python
+      dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+      sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
+      before_script: pip install flake8
+      script: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+before_install:
+  - npm i -g npm
 before_script:
-  - npm install -g istanbul grunt-cli
-  - npm install coveralls
-  - npm install git+https://github.com/node-red/node-red.git
-  - export NODE_RED_HOME=`pwd`/node_modules/node-red
-  - (cd $NODE_RED_HOME ; npm install nock@~0.48.0)
+  # Remove the './node_modules/.bin:' entry, see https://github.com/travis-ci/travis-ci/issues/8813
+  - export PATH=`echo ${PATH} | sed -re 's,(^|:)(./)?node_modules/.bin($|:),\1,'`
+  - npm install -g nyc grunt-cli coveralls
+  - npm install node-red
 script:
-  - istanbul cover grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js || true ) && rm -rf coverage
+  # - istanbul cover grunt --report lcovonly && istanbul report text && ( cat coverage/lcov.info | $(npm get prefix)/bin/coveralls || true ) && rm -rf coverage
+  # - nyc --check-coverage --reporter=text --reporter=lcovonly --reporter=html grunt
+  # - nyc grunt && rm -rf coverage .nyc_output
+  - nyc grunt && nyc report --reporter=text-lcov | coveralls

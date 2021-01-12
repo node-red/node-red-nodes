@@ -1,18 +1,16 @@
-node-red-node-pilcd
-===================
+# node-red-node-pilcd
 
 A <a href="http://nodered.org" target="_new">Node-RED</a> node for a Raspberry Pi
 to write to a GPIO connected HD44780 style LCD panels.
 
-Install
--------
+## Install
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Node-RED Menu - Manage Palette option to install, or run the following
+command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-pilcd
 
-Usage
------
+## Usage
 
 Raspberry Pi output to HD44780 style LCD module - typically 1, 2, or 4 lines.
 

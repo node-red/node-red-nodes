@@ -4,11 +4,12 @@
 import RPi.GPIO as GPIO
 import sys
 
-bounce = 20     # bounce time in mS to apply
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
 
-if sys.version_info >= (3,0):
-    print("Sorry - currently only configured to work with python 2.x")
-    sys.exit(1)
+bounce = 20     # bounce time in mS to apply
 
 if len(sys.argv) > 1:
     cmd = sys.argv[1].lower()
@@ -17,7 +18,7 @@ if len(sys.argv) > 1:
     GPIO.setwarnings(False)
 
     if cmd == "pwm":
-        #print "Initialised pin "+str(pin)+" to PWM"
+        #print("Initialised pin "+str(pin)+" to PWM")
         GPIO.setup(pin,GPIO.OUT)
         p = GPIO.PWM(pin, 100)
         p.start(0)
@@ -32,10 +33,10 @@ if len(sys.argv) > 1:
                 GPIO.cleanup(pin)
                 sys.exit(0)
             except Exception as ex:
-                print "bad data: "+data
+                print("bad data: "+data)
 
     elif cmd == "buzz":
-        #print "Initialised pin "+str(pin)+" to Buzz"
+        #print("Initialised pin "+str(pin)+" to Buzz")
         GPIO.setup(pin,GPIO.OUT)
         p = GPIO.PWM(pin, 100)
         p.stop()
@@ -54,10 +55,10 @@ if len(sys.argv) > 1:
                 GPIO.cleanup(pin)
                 sys.exit(0)
             except Exception as ex:
-                print "bad data: "+data
+                print("bad data: "+data)
 
     elif cmd == "out":
-        #print "Initialised pin "+str(pin)+" to OUT"
+        #print("Initialised pin "+str(pin)+" to OUT")
         GPIO.setup(pin,GPIO.OUT)
         if len(sys.argv) == 4:
             GPIO.output(pin,int(sys.argv[3]))
@@ -78,9 +79,9 @@ if len(sys.argv) > 1:
             GPIO.output(pin,data)
 
     elif cmd == "in":
-        #print "Initialised pin "+str(pin)+" to IN"
+        #print("Initialised pin "+str(pin)+" to IN")
         def handle_callback(chan):
-            print GPIO.input(chan)
+            print(GPIO.input(chan))
 
         if len(sys.argv) == 4:
             if sys.argv[3].lower() == "up":
@@ -91,7 +92,7 @@ if len(sys.argv) > 1:
                 GPIO.setup(pin,GPIO.IN)
         else:
             GPIO.setup(pin,GPIO.IN)
-        print GPIO.input(pin)
+        print(GPIO.input(pin))
         GPIO.add_event_detect(pin, GPIO.BOTH, callback=handle_callback, bouncetime=bounce)
 
         while True:
@@ -104,7 +105,7 @@ if len(sys.argv) > 1:
                 sys.exit(0)
 
     elif cmd == "byte":
-        #print "Initialised BYTE mode - "+str(pin)+
+        #print("Initialised BYTE mode - "+str(pin)+)
         list = [7,11,13,12,15,16,18,22]
         GPIO.setup(list,GPIO.OUT)
 
@@ -127,7 +128,7 @@ if len(sys.argv) > 1:
                 GPIO.output(list[bit], data & mask)
 
     elif cmd == "borg":
-        #print "Initialised BORG mode - "+str(pin)+
+        #print("Initialised BORG mode - "+str(pin)+)
         GPIO.setup(11,GPIO.OUT)
         GPIO.setup(13,GPIO.OUT)
         GPIO.setup(15,GPIO.OUT)
@@ -154,10 +155,10 @@ if len(sys.argv) > 1:
                 data = 0
 
     elif cmd == "rev":
-        print GPIO.RPI_REVISION
+        print(GPIO.RPI_REVISION)
 
     elif cmd == "ver":
-        print GPIO.VERSION
+        print(GPIO.VERSION)
 
     elif cmd == "mouse":  # catch mice button events
         file = open( "/dev/input/mice", "rb" )
@@ -171,7 +172,7 @@ if len(sys.argv) > 1:
           button = ord( buf[0] ) & pin # mask out just the required button(s)
           if button != oldbutt:  # only send if changed
               oldbutt = button
-              print button
+              print(button)
 
         while True:
             try:
@@ -181,4 +182,4 @@ if len(sys.argv) > 1:
                 sys.exit(0)
 
 else:
-    print "Bad parameters - in|out|pwm|buzz|byte|borg|mouse|ver pin {value|up|down}"
+    print("Bad parameters - in|out|pwm|buzz|byte|borg|mouse|ver pin {value|up|down}")

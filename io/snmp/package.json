@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "0.0.15",
+    "version"       : "0.0.25",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
-        "net-snmp"  : "^1.1.19"
+        "net-snmp"  : "1.2.4"
     },
     "repository" : {
         "type":"git",

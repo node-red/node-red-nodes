@@ -1,0 +1,24 @@
+{
+    "name"          : "node-red-node-sentiment",
+    "version"       : "0.1.6",
+    "description"   : "A Node-RED node that uses the AFINN-165 wordlists for sentiment analysis of words.",
+    "dependencies"  : {
+        "sentiment" : "2.1.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/analysis/sentiment"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "sentiment", "anaylsis", "AFINN" ],
+    "node-red" : {
+        "nodes" : {
+            "sentiment": "72-sentiment.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
+        "url": "http://nodered.org"
+    }
+}

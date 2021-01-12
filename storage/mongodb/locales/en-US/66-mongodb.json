@@ -2,6 +2,8 @@
     "mongodb": {
         "label": {
             "host": "Host",
+            "topology":"Connection topology",
+            "connectOptions":"Connect options",
             "port": "Port",
             "database": "Database",
             "username": "Username",

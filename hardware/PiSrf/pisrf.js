@@ -6,20 +6,26 @@ module.exports = function(RED) {
     var fs = require('fs');
 
     var gpioCommand = __dirname + '/nrsrf.py';
+    var allOK = true;
 
-    if (!fs.existsSync("/dev/ttyAMA0")) { // unlikely if not on a Pi
-        //util.log("Info : Ignoring Raspberry Pi specific node.");
-        throw "Info : Ignoring Raspberry Pi specific node.";
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": BCM") === -1) {
+            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+            allOK = false;
+        }
+        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
+            allOK = false;
+        }
+        else if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
+            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
+            allOK = false;
+        }
     }
-
-    if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
-        util.log("[rpi-srf] Info : Can't find Pi RPi.GPIO python library.");
-        throw "Warning : Can't find Pi RPi.GPIO python library.";
-    }
-
-    if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
-        util.log("[rpi-srf] Error : " + gpioCommand + " needs to be executable.");
-        throw "Error : " + gpioCommand + " must to be executable.";
+    catch(err) {
+        RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+        allOK = false;
     }
 
     function PiSrfNode(n) {
@@ -29,56 +35,60 @@ module.exports = function(RED) {
         this.pins += ","+(n.pulse || 0.5);
         var node = this;
 
-        if (node.pins !== undefined) {
-            node.child = spawn(gpioCommand, [node.pins]);
-            node.running = true;
-            if (RED.settings.verbose) { node.log("parameters: " + node.pins + " :"); }
+        if (allOK === true) {
+            if (node.pins !== undefined) {
+                node.child = spawn(gpioCommand, [node.pins]);
+                node.running = true;
+                if (RED.settings.verbose) { node.log("parameters: " + node.pins + " :"); }
 
-            node.child.stdout.on('data', function(data) {
-                if (RED.settings.verbose) { node.log("out: " + data + " :"); }
-                data = data.toString().trim();
-                if (data.length > 0) {
-                    node.send({topic:node.topic, payload:data});
+                node.child.stdout.on('data', function(data) {
+                    if (RED.settings.verbose) { node.log("out: " + data + " :"); }
+                    data = data.toString().trim();
+                    if (data.length > 0) {
+                        node.send({topic:node.topic, payload:data});
+                    }
+                });
+
+                node.child.stderr.on('data', function(data) {
+                    if (RED.settings.verbose) { node.log("err: " + data + " :"); }
+                });
+
+                node.child.on('close', function(code) {
+                    if (RED.settings.verbose) { node.log("ret: " + code + " :"); }
+                    node.child = null;
+                    node.running = false;
+                });
+
+                node.child.on('error', function(err) {
+                    if (err.errno === "ENOENT") { node.warn('Command not found'); }
+                    else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                    else { node.log('error: ' + err); }
+                });
+
+            }
+            else {
+                node.error("Invalid Parameters: " + node.pins);
+            }
+
+            var wfi = function(done) {
+                if (!node.running) {
+                    if (RED.settings.verbose) { node.log("end"); }
+                    done();
+                    return;
                 }
-            });
+                setTimeout(function() { wfi(done); }, 333);
+            }
 
-            node.child.stderr.on('data', function(data) {
-                if (RED.settings.verbose) { node.log("err: " + data + " :"); }
+            node.on("close", function(done) {
+                if (node.child != null) {
+                    node.child.kill('SIGKILL');
+                }
+                wfi(done);
             });
-
-            node.child.on('close', function(code) {
-                if (RED.settings.verbose) { node.log("ret: " + code + " :"); }
-                node.child = null;
-                node.running = false;
-            });
-
-            node.child.on('error', function(err) {
-                if (err.errno === "ENOENT") { node.warn('Command not found'); }
-                else if (err.errno === "EACCES") { node.warn('Command not executable'); }
-                else { node.log('error: ' + err); }
-            });
-
         }
         else {
-            node.error("Invalid Parameters: " + node.pins);
+            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
         }
-
-        var wfi = function(done) {
-            if (!node.running) {
-                if (RED.settings.verbose) { node.log("end"); }
-                done();
-                return;
-            }
-            setTimeout(function() { wfi(done); }, 333);
-        }
-
-        node.on("close", function(done) {
-            if (node.child != null) {
-                node.child.kill('SIGKILL');
-            }
-            wfi(done);
-        });
-
     }
     RED.nodes.registerType("rpi-srf", PiSrfNode);
 }

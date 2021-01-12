@@ -71,7 +71,9 @@ Joystick events are sent when the Sense HAT joystick is interacted with. The
 This node sends commands to the 8x8 LED display on the Sense HAT.
 
 Commands are sent to the node in `msg.payload`. Multiple commands can
-be sent in a single message by separating them with newline (\n) characters.
+be sent in a single message by separating them with newline (\n) characters. 
+You must use a function node or a change node (jsonata expression) when 
+using the newline (\n) character to create a payload containing multiple commands.
 
 #### Set the colour of individual pixels
 
@@ -103,11 +105,15 @@ Format: `R<angle>`
 
 `angle` must be 0, 90, 180 or 270.
 
+Example: `R180`
+
 #### Flip the screen
 
-Format: `R<axis>`
+Format: `F<axis>`
 
 `axis` must be either `H` or `V` to flip on the horizontal or vertical axis respectively.
+
+Example: `FV`
 
 #### Scroll a message
 
@@ -128,3 +134,5 @@ The following message properties can be used to customise the appearance:
 Format: `D<level>`
 
 `level` must be 0 (low) or 1 (high).
+
+Example: `D1`

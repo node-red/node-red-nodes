@@ -9,11 +9,16 @@ except ImportError:
     from neopixel import Adafruit_NeoPixel as PixelStrip, Color
     __version__ = "legacy"
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 # LED strip configuration:
 LED_COUNT      = 8      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
+LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # PWM channel
@@ -36,9 +41,14 @@ LED_GAMMA = [
 222,224,227,229,231,233,235,237,239,241,244,246,248,250,252,255]
 
 
-LED_COUNT = int(sys.argv[1])
-WAIT_MS = int(sys.argv[2])
+LED_COUNT = max(0,int(sys.argv[1]))
+WAIT_MS = max(0,int(sys.argv[2]))
 MODE = sys.argv[3]
+LED_BRIGHTNESS = min(255,int(max(0,float(sys.argv[4])) * 255 / 100))
+if (sys.argv[5].lower() != "true"):
+    LED_GAMMA = range(256)
+LED_CHANNEL = int(sys.argv[6])
+LED_PIN = int(sys.argv[7])
 
 def getRGBfromI(RGBint):
     blue =  RGBint & 255
@@ -54,43 +64,73 @@ def setPixel(strip, i, color):
 
 def setPixels(strip, s, e, color, wait_ms=30):
     """Set pixels from s(tart) to e(nd)"""
-    for i in range(s, e+1):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(s, e+1):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
+
+def setBrightness(strip, brightness, wait_ms=30):
+    """Set overall brighness"""
+    strip.setBrightness(brightness)
+    strip.show()
+    time.sleep(wait_ms/1000.0)
 
 def colorWipe(strip, color, wait_ms=30):
     """Wipe color across display a pixel at a time."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
+    if (wait_ms > 0):
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 def shiftUp(strip, color, wait_ms=30):
     """Shift all pixels one way."""
     oldcolour = strip.getPixelColor(0)
     strip.setPixelColor(0, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(1,LED_COUNT):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(1,LED_COUNT):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def shiftDown(strip, color, wait_ms=30):
     """Shift all pixels the other way."""
     oldcolour = strip.getPixelColor(LED_COUNT-1)
     strip.setPixelColor(LED_COUNT-1, color)
     strip.show()
-    time.sleep(wait_ms/1000.0)
-    for i in range(LED_COUNT-2,-1,-1):
-        newcolour = oldcolour
-        oldcolour = strip.getPixelColor(i)
-        strip.setPixelColor(i, newcolour)
-        strip.show()
+    if (wait_ms > 0):
         time.sleep(wait_ms/1000.0)
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+            strip.show()
+            time.sleep(wait_ms/1000.0)
+    else:
+        for i in range(LED_COUNT-2,-1,-1):
+            newcolour = oldcolour
+            oldcolour = strip.getPixelColor(i)
+            strip.setPixelColor(i, newcolour)
+        strip.show()
 
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""
@@ -145,6 +185,9 @@ if __name__ == '__main__':
         try:
             data = raw_input()
             bits = data.split(',')
+            if len(bits) == 2:
+                if bits[0] == "brightness":
+                    setBrightness(strip, min(255,max(0,int(bits[1]))), WAIT_MS)
             if len(bits) == 3:
                 if MODE == "shiftu":
                     shiftUp(strip, Color(int(bits[0]), int(bits[1]), int(bits[2])), WAIT_MS)
@@ -159,5 +202,5 @@ if __name__ == '__main__':
         except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
             sys.exit(0)
         except Exception as ex:
-            print "bad data: "+data
-            print ex
+            print("bad data: "+data)
+            print(ex)

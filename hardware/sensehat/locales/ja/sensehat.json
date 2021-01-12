@@ -1,0 +1,12 @@
+{
+    "sensehat": {
+        "label": {
+            "outputs": "出力",
+            "motionEvents": "モーションイベント",
+            "motionEventsExamples": "加速度計、ジャイロスコープ、磁力計、方位計",
+            "environmentEvents": "環境イベント",
+            "environmentEventsExamples": "温度、湿度、気圧",
+            "joystickEvents": "ジョイスティックイベント"
+        }
+    }
+}

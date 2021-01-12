@@ -1,0 +1,48 @@
+<!-- Source revision: https://github.com/node-red/node-red-nodes/commit/425f5c151fa35b8f4a4df3956fbc3ac07e74f195 -->
+
+<script type="text/html" data-help-name="twitter-credentials">
+    <p>Twitter APIの認証</p>
+    <p>初期のバージョンのノードは、1クリック認証を提供していました。Twitterは、2018年6月にこの機能を削除しました。現在は、<a href="https://developer.twitter.com/">Twitter</a>に自身のアプリケーションを登録し、自身のaccess tokenを生成する必要があります。</p>
+</script>
+
+<script type="text/html" data-help-name="twitter in">
+    <p>twitter入力ノード。以下を検索するために利用します:
+    <ul><li>指定した検索語を含む公開ストリームのツイート</li>
+        <li>認証したユーザがフォローしているアカウントからのツイート</li>
+        <li>指定したユーザのツイート</li>
+        <li>認証したユーザが受け取ったダイレクトメッセージ</li>
+    </ul></p>
+    <h3>出力</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">文字列</span></dt>
+        <dd>ツイートの本文</dd>
+        <dt>topic <span class="property-type">文字列</span></dt>
+        <dd><code>tweets/<i>screen_name</i></code>に設定</dd>
+        <dt>tweet <span class="property-type">オブジェクト</span></dt>
+        <dd>Twitter APIから返された完全なツイートオブジェクト</dd>
+        <dt>location <span class="property-type">オブジェクト</span></dt>
+        <dd>存在する場合、ツイートと関連付けされた位置情報</dd>
+    </dl>
+    <h3>詳細</h3>
+    <p>複数の検索語を指定する場合、スペース文字で<i>and</i>、コンマ「,」で<i>or</i>を表します。検索語を<code>msg.payload</code>で渡す場合、<b>for</b>フィールドは空としてください。</p>
+    <p>完全なツイートオブジェクトについては、<a href="https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/tweet-object" target="_new">ここ</a>にドキュメントがあります。</p>
+    <p><b>注:</b> 本ノードはTwitter APIの流量制限に依存します。本ノードは更新のために1分に1回、APIをポーリングします。もし、頻繁にデプロイする場合、この制限を超えることがあります。本ノードは、流量制限がなくなるまで自動的にポーリングを遅延させます。</p>
+</script>
+
+<script type="text/html" data-help-name="twitter out">
+    <p>ツイートやダイレクトメッセージを送信します。</p>
+    <h3>入力</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">文字列</span></dt>
+        <dd>送信するツイートの本体。ダイレクトメッセージを送信する方法は以下を参照してください。</dd>
+        <dt class="optional">media <span class="property-type">バッファ</span></dt>
+        <dd>ツイートに添付する画像のバッファ</dd>
+        <dt class="optional">params <span class="property-type">オブジェクト</span></dt>
+        <dd>Twitterの状態更新APIに渡すための追加パラメータ</dd>
+    </dl>
+    <h3>詳細</h3>
+    <p><code>msg.media</code>にバッファオブジェクトを指定すると、その値を画像としてツイートに付け加えます。</p>
+    <p>ダイレクトメッセージ(DM)を送るには、"D {ユーザ名} {メッセージ}"形式のペイロードを用います。</p>
+    <p>ダイレクトメッセージに画像を添付することはできません。</p>
+    <p><code>msg.params</code>に「名前:値」の組みからなるオブジェクトを指定すると、Twitter APIの更新リクエストのパラメータとして用います。利用できる値については、<a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update#parameters" target="_new">ここ</a>にドキュメントがあります。</p>
+</script>

@@ -1,26 +1,14 @@
-
-<script type="text/x-red" data-template-name="rpi-lcd">
+<script type="text/html" data-template-name="rpi-lcd">
     <div class="form-row">
-        <label for="node-input-pins"><i class="fa fa-circle"></i> Pins</label>
+        <label for="node-input-pins"><i class="fa fa-circle"></i> <span data-i18n="pilcd.label.pins"></label>
         <input type="text" id="node-input-pins" placeholder="RS,E,D4,D5,D6,D7">
     </div>
     <br/>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-    <div class="form-tips"><b>Tip</b>: Pins MUST be a comma separated list of the 6 GPIO
-    connector pin numbers that are connected to the RS, E, D4, D5, D6 and D7 pins of the LCD.</div>
-</script>
-
-<script type="text/x-red" data-help-name="rpi-lcd">
-    <p>Raspberry Pi output to a HD44780 style LCD. Usually 1, 2, or 4 lines of characters.</p>
-    <p>Expects a <code>msg.payload</code> with a string in it.</p>
-    <p>Strings for the second line of the display must start <b>2:</b> - the third start <b>3:</b> - and the fourth <b>4:</b></p>
-    <p>To clear the display send the string <b>clr:</b></p>
-    <p>It is up to you to manage string lengths to suit the display.</p>
-    <p>Requires the RPi.GPIO python library version 0.5.8 (or better) in order to work.</p>
-    <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
+    <div class="form-tips" data-i18n="[html]pilcd.tip.tip"></div>
 </script>
 
 <script type="text/javascript">

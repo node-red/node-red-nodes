@@ -5,15 +5,18 @@ module.exports = function(RED) {
 
     function MsgPackNode(n) {
         RED.nodes.createNode(this,n);
+        this.property = n.property||"payload";
         var node = this;
         this.on("input", function(msg) {
-            if (msg.hasOwnProperty("payload")) {
-                if (Buffer.isBuffer(msg.payload)) {
-                    var l = msg.payload.length;
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
+                if (Buffer.isBuffer(value)) {
+                    var l = value.length;
                     try {
-                        msg.payload = msgpack.decode(msg.payload);
+                        value = msgpack.decode(value);
+                        RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
-                        node.status({text:l +" b->o "+ JSON.stringify(msg.payload).length});
+                        node.status({text:l +" b->o "+ JSON.stringify(value).length});
                     }
                     catch (e) {
                         node.error("Bad decode",msg);
@@ -21,9 +24,10 @@ module.exports = function(RED) {
                     }
                 }
                 else {
-                    var le = JSON.stringify(msg.payload).length;
-                    msg.payload = msgpack.encode(msg.payload);
-                    node.status({text:le +" o->b "+ msg.payload.length});
+                    var le = JSON.stringify(value).length;
+                    value = msgpack.encode(value);
+                    RED.util.setMessageProperty(msg,node.property,value);
+                    node.status({text:le +" o->b "+ value.length});
                     node.send(msg);
                 }
             }

@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-wemo",
-  "version": "0.1.14",
+  "version": "0.1.18",
   "description": "Input and Output nodes for Belkin WeMo devices",
   "repository": "https://github.com/node-red/node-red-nodes/tree/master/hardware",
   "main": "WeMoNG.js",
@@ -17,7 +17,7 @@
     "name": "Benjamin Hardill",
     "url": "http://www.hardill.me.uk/wordpress/"
   },
-  "license": "APACHE-2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "node-ssdp": "~3.2.5",
     "request": "~2.74.0",

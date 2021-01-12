@@ -1,6 +1,6 @@
 
 var should = require("should");
-var helper = require('../../../test/helper.js');
+var helper = require("node-red-node-test-helper");
 var testNode = require('../../../function/smooth/17-smooth.js');
 
 describe('smooth node', function() {
@@ -48,6 +48,29 @@ describe('smooth node', function() {
         });
     });
 
+    it('should average over a number of inputs - another property - foo', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", property:"foo", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 4) { msg.should.have.a.property("foo", 1.8); }
+                if (c === 6) { msg.should.have.a.property("foo", 3); done(); }
+            });
+            n1.emit("input", {foo:1});
+            n1.emit("input", {foo:1});
+            n1.emit("input", {foo:2});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {foo:3});
+            n1.emit("input", {foo:4});
+            n1.emit("input", {foo:4.786});
+        });
+    });
+
     it('should be able to be reset', function(done) {
         var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
@@ -66,6 +89,29 @@ describe('smooth node', function() {
             n1.emit("input", {reset:true, payload:4});
             n1.emit("input", {payload:5});
             n1.emit("input", {payload:6});
+        });
+    });
+
+    it('should be able to be reset - while using another property - foo', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", property:"foo", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 3) { msg.should.have.a.property("foo", 2); }
+                if (c === 6) { msg.should.have.a.property("foo", 5); done(); }
+            });
+            n1.emit("input", {foo:1});
+            n1.emit("input", {foo:2});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {foo:3});
+            n1.emit("input", {reset:true, foo:4});
+            n1.emit("input", {foo:5});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {foo:6});
         });
     });
 
@@ -270,5 +316,79 @@ describe('smooth node', function() {
             n1.emit("input", {payload:9, topic:"B"});
         });
     });
-
+    it("should reduce the number of messages by averaging if asked", function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", reduce:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 1) { msg.should.have.a.property("payload", 3); }
+                else if (c === 2) { msg.should.have.a.property("payload", 6); done(); }
+                else if (c > 2) { done(new Error("should not emit more than two messages.")); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:3});
+            n1.emit("input", {payload:4});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:6});
+            n1.emit("input", {payload:7});
+            n1.emit("input", {payload:8});
+            n1.emit("input", {payload:9})
+;            n1.emit("input", {payload:0});
+        });
+    });
+    it("should reduce the number of messages by max value, if asked", function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"max", count:"5", reduce:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 1) { msg.should.have.a.property("payload", 5); }
+                else if (c === 2) { msg.should.have.a.property("payload", 9); done(); }
+                else if (c > 2) { done(new Error("should not emit more than two messages.")); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:3});
+            n1.emit("input", {payload:4});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:6});
+            n1.emit("input", {payload:7});
+            n1.emit("input", {payload:8});
+            n1.emit("input", {payload:9});
+            n1.emit("input", {payload:0});
+        });
+    });
+    it("should reduce the number of messages by min value, if asked", function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"min", count:"5", reduce:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 1) { msg.should.have.a.property("payload", 1); }
+                else if (c === 2) { msg.should.have.a.property("payload", 0); done(); }
+                else if (c > 2) { done(new Error("should not emit more than two messages.")); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:2});
+            n1.emit("input", {payload:3});
+            n1.emit("input", {payload:4});
+            n1.emit("input", {payload:5});
+            n1.emit("input", {payload:6});
+            n1.emit("input", {payload:7});
+            n1.emit("input", {payload:8});
+            n1.emit("input", {payload:9});
+            n1.emit("input", {payload:0});
+        });
+    });
 });

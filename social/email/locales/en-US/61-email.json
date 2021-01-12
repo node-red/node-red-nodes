@@ -1,26 +1,41 @@
 {
     "email": {
+        "email": "email",
         "label": {
+            "getmail":"Get mail",
+            "auto": "automatically",
+            "trigger": "when triggered",
             "to": "To",
             "server": "Server",
             "port": "Port",
             "useSecureConnection": "Use secure connection.",
             "userid": "Userid",
             "password": "Password",
-            "repeat": "Refresh",
+            "repeat": "every",
             "seconds": "seconds",
             "folder": "Folder",
             "protocol": "Protocol",
             "useSSL": "Use SSL?",
+            "useTLS": "Use TLS?",
             "disposition": "Disposition",
             "none": "None",
             "read": "Mark Read",
-            "delete": "Delete"
+            "delete": "Delete",
+            "criteria": "Criteria",
+            "criteriaFromMsg": "- set from msg.criteria -",
+            "all": "All",
+            "answered": "Answered",
+            "flagged": "Flagged",
+            "seen": "Seen",
+            "unanswered": "Unanswered",
+            "unflagged": "Unflagged",
+            "unseen": "Unseen"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {
             "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
-            "recent": "Tip: Only retrieves the single most recent email."
+            "recent": "Tip: Only retrieves the single most recent email.",
+            "mta": "<b>Note:</b> To use ports below 1024 you may need elevated (root) privileges. See help sidebar."
         },
         "status": {
             "messagesent": "Message sent: __response__",
@@ -33,6 +48,7 @@
             "inboxzero": "you have achieved Inbox Zero",
             "sending": "sending",
             "sendfail": "send failed",
+            "parseerror": "Failed to parse message",
             "connecterror": "connect error"
         },
         "errors": {
@@ -42,7 +58,10 @@
             "nosmtptransport": "No SMTP transport. See info panel.",
             "nopayload": "No payload to send",
             "fetchfail": "Failed to fetch folder: __folder__",
-            "messageerror": "Fetch message error: __error__"
+            "parsefail": "Failed to parse message",
+            "messageerror": "Fetch message error: __error__",
+            "refreshtoolarge": "Refresh interval too large. Limiting to 2147483 seconds",
+            "invalidattachment": "Invalid attachment content. Must be String or buffer"
         }
     }
 }

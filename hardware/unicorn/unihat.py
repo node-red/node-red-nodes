@@ -1,13 +1,20 @@
 #!/usr/bin/python
 
 # Import library functions we need
-import sys
-import os
-import unicornhat as UH
+from __future__ import print_function
 
-if sys.version_info >= (3,0):
-    print("Sorry - currently only configured to work with python 2.x")
-    sys.exit(1)
+import sys
+
+try:
+    import unicornhat as UH
+except ImportError:
+    print("run: pip install --user --upgrade unicornhat\n  before trying again.")
+    sys.exit(0)
+
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
 
 brightness = float(sys.argv[1])/100
 UH.off()
@@ -64,4 +71,4 @@ while True:
     except (EOFError, SystemExit):  # hopefully always caused by us sigint'ing the program
         sys.exit(0)
     except Exception as ex:
-        print "bad data: "+data
+        print("bad data: "+data)

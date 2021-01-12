@@ -30,13 +30,13 @@ At a minimum, please include:
 
 ## Feature requests
 
-For feature requests, please raise them on the [mailing list](https://groups.google.com/forum/#!forum/node-red).
+For feature requests, please raise them on the [Node-RED Forum](https://discourse.nodered.org).
 
 ## Pull-Requests
 
 If you want to raise a pull-request with a new feature, or a refactoring
 of existing code, it may well get rejected if you haven't discussed it on
-the [mailing list](https://groups.google.com/forum/#!forum/node-red) first.
+the [Node-RED Forum](https://discourse.nodered.org) first.
 
 ### Contributor License Agreement
 

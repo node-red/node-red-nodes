@@ -1,7 +1,34 @@
-
 <script type="text/x-red" data-template-name="twitter-credentials">
-    <div class="form-row" id="node-config-twitter-row"></div>
-    <input type="hidden" id="node-config-input-screen_name">
+    <div class="form-row">
+        <label for="node-config-input-screen_name"><i class="fa fa-twitter"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
+        <i class="fa fa-at"></i> <input type="text" id="node-config-input-screen_name">
+    </div>
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>1.</b> <span data-i18n="twitter.label.create"></span> <a href="https://developer.twitter.com/en/apps" target="_blank" style="text-decoration:underline;">developer.twitter.com/en/apps</a></p>
+    </div>
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>2.</b> <span data-i18n="twitter.label.copy-consumer"></span></p>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-consumer_key"><span data-i18n="twitter.label.consumer_key"></span></label>
+        <input type="password" id="node-config-input-consumer_key">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-consumer_secret"><span data-i18n="twitter.label.consumer_secret"></span></label>
+        <input type="password" id="node-config-input-consumer_secret">
+    </div>
+
+    <div class="form-row">
+        <p style="margin-top: 30px;"><b>3.</b> <span data-i18n="twitter.label.copy-accessToken"></span></p>
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-access_token"><span data-i18n="twitter.label.access_key"></span></label>
+        <input type="password" id="node-config-input-access_token">
+    </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-access_token_secret"><span data-i18n="twitter.label.access_secret"></span></label>
+        <input type="password" id="node-config-input-access_token_secret">
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -15,64 +42,33 @@
             screen_name: {value:""}
         },
         credentials: {
-            screen_name: {type:"text"},
+            consumer_key: { type: "password"},
+            consumer_secret: { type: "password" },
             access_token: {type: "password"},
             access_token_secret: {type:"password"}
         },
         label: function() {
-            return this.screen_name;
+            if (this.screen_name) {
+                return (this.screen_name[0]!=="@"?"@":"")+this.screen_name
+            } else {
+                return "Twitter: "+this.id
+            }
         },
         exportable: false,
-        oneditprepare: function() {
-            var twitterConfigNodeId = this.id;
-            var clickhere = this._("twitter.label.clickhere");
-            var twitterID = this._("twitter.label.twitter-id");
-            function showTwitterAuthStart() {
-                var pathname = document.location.pathname;
-                if (pathname.slice(-1) != "/") {
-                    pathname += "/";
-                }
-                var callback = encodeURIComponent(location.protocol+"//"+location.hostname+":"+location.port+pathname+"twitter-credentials/"+twitterConfigNodeId+"/auth/callback");
-                $("#node-config-dialog-ok").button("disable");
-                $("#node-config-twitter-row").html('<div style="text-align: center; margin-top: 20px; "><a class="editor-button" id="node-config-twitter-start" href="twitter-credentials/'+twitterConfigNodeId+'/auth?callback='+callback+'" target="_blank">'+clickhere+'</a></div>');
-                $("#node-config-twitter-start").click(function() {
-                    twitterConfigNodeIntervalId = window.setTimeout(pollTwitterCredentials,2000);
-                });
-            }
-            function updateTwitterScreenName(sn) {
-                $("#node-config-input-screen_name").val(sn);
-                $("#node-config-twitter-row").html('<label><i class="fa fa-user"></i> '+twitterID+'</label><span class="input-xlarge uneditable-input">'+sn+'</span>');
-            }
-            function pollTwitterCredentials(e) {
-                $.getJSON('credentials/twitter-credentials/'+twitterConfigNodeId,function(data) {
-                    if (data.screen_name) {
-                        updateTwitterScreenName(data.screen_name);
-                        twitterConfigNodeIntervalId = null;
-                        $("#node-config-dialog-ok").button("enable");
-                    } else {
-                        twitterConfigNodeIntervalId = window.setTimeout(pollTwitterCredentials,2000);
-                    }
-                })
-            }
-            if (!this.screen_name || this.screen_name === "") {
-                showTwitterAuthStart();
-            } else {
-                if (this.credentials.screen_name) {
-                    updateTwitterScreenName(this.credentials.screen_name);
-                } else {
-                    showTwitterAuthStart();
-                }
-            }
-        },
         oneditsave: function() {
-            if (twitterConfigNodeIntervalId) {
-                window.clearTimeout(twitterConfigNodeIntervalId);
-            }
-        },
-        oneditcancel: function(adding) {
-            if (twitterConfigNodeIntervalId) {
-                window.clearTimeout(twitterConfigNodeIntervalId);
-            }
+            var trimFields = [
+                "consumer_key",
+                "consumer_secret",
+                "access_token",
+                "access_token_secret"
+            ];
+            // Just in case any whitespace has crept in with the copy-paste of the fields
+            trimFields.forEach(function(field) {
+                var v = $("#node-config-input-"+field).val();
+                v = v.trim();
+                $("#node-config-input-"+field).val(v);
+
+            });
         }
     });
 })();
@@ -90,7 +86,6 @@
             <option value="true" data-i18n="twitter.search.follow"></option>
             <option value="user" data-i18n="twitter.search.user"></option>
             <option value="dm" data-i18n="twitter.search.direct"></option>
-            <option value="event" data-i18n="twitter.search.events"></option>
         </select>
     </div>
     <div class="form-row" id="node-input-tags-row">
@@ -104,29 +99,6 @@
     <div class="form-tips"><span data-i18n="[html]twitter.tip"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="twitter in">
-    <p>Twitter input node. Can be used to search either:
-    <ul><li>the public stream for tweets containing the configured search term</li>
-        <li>all the tweets from accounts that the authenticated user follows</li>
-        <li>all tweets by specified users</li>
-        <li>direct messages received by the authenticated user</li>
-        <li>twitter events for the authenticated user</li>
-    </ul></p>
-    <p>Use space for <i>and</i> and comma , for <i>or</i> when searching for multiple terms.
-    If you want to pass in the search term(s) via the <code>msg.payload</code>, leave the <b>for</b> field blank.</p>
-    <p>Sets the <code>msg.topic</code> to <i>tweets/</i> and then appends the senders screen name.</p>
-    <p>Sets <code>msg.location</code> to the tweeters location if known.</p>
-    <p>When returning events it sets the <code>msg.payload</code> to the twitter event, a full list is documented by
-    <a href="https://dev.twitter.com/streaming/overview/messages-types#Events_event" target="_new">Twitter</a>.</p>
-    <p>Sets <code>msg.tweet</code> to the full tweet object as documented by <a href="https://dev.twitter.com/overview/api/tweets" target="_new">Twitter</a>.
-
-    <p><b>Note</b>: This node is not connected to the FireHose, so will not return 100% of all tweets to a busy @id or #hashtag.</p>
-    <p><b>Note:</b> when set to follow specific users, or your direct messages, the node is subject to
-      the rate limiting of the Twitter API. If you deploy the flows multiple times within a 15 minute window, you may
-      exceed the limit and will see errors from the node. These errors will clear automatically when the current 15
-      minute window passes.</p>
-</script>
-
 <script type="text/javascript">
     RED.nodes.registerType('twitter in',{
         category: 'social-input',
@@ -136,7 +108,6 @@
             tags: {value:""},
             user: {value:"false",required:true},
             name: {value:""},
-            topic: {value:"tweets"},
             inputs: {value:0}
         },
         inputs: 0,
@@ -196,7 +167,6 @@
     });
 </script>
 
-
 <script type="text/x-red" data-template-name="twitter out">
     <div class="form-row">
         <label for="node-input-twitter"><i class="fa fa-user"></i> <span data-i18n="twitter.label.twitter-id"></span></label>
@@ -206,15 +176,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="twitter out">
-    <p>Twitter out node. Tweets the <code>msg.payload</code>.</p>
-    <p>To send a Direct Message (DM) - use a payload like "D {username} {message}"</p>
-    <p>If <code>msg.media</code> exists and is a Buffer object, this node will treat it
-       as an image and attach it to the tweet.</p>
-    <p>If <code>msg.params</code> exists and is an object of name:value pairs,
-    this node will treat it as parameters for the update request.</p>
 </script>
 
 <script type="text/javascript">

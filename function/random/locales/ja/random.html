@@ -1,0 +1,16 @@
+<script type="text/html" data-help-name="random">
+    <p>最小値と最大値との間の乱数を生成します。デフォルトは1から10です。</p>
+    <p><code>最小</code> や <code>最大</code> を空にした場合は、以下の様に動的に値を設定できます。</p>
+    <h3>入力</h3>
+    <dl class="message-properties">
+        <dt>from <span class="property-type">数値</span></dt>
+        <dd>使用する最小値を含みます。</dd>
+        <dt>to <span class="property-type">数値</span></dt>
+        <dd>使用する最大値を含みます。</dd>
+    </dl>
+    <h3>詳細</h3>
+    <p>整数値を返すように設定した場合は、乱数には最大値と最小値の両方が<i>含まれます</i>。
+        <code>min <= n <= max</code></p>
+    <p>浮動小数点値を返すように設定した場合、乱数は最小値から最大値未満の値を含み、最大値は含まれません。
+        <code>min <= n < max</code></p>
+</script>

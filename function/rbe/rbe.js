@@ -13,6 +13,7 @@ module.exports = function(RED) {
             this.gap = parseFloat(this.gap);
         }
         this.g = this.gap;
+        this.property = n.property||"payload";
 
         var node = this;
 
@@ -20,41 +21,42 @@ module.exports = function(RED) {
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("reset")) {
                 if (msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
-                     delete node.previous[msg.topic];
+                    delete node.previous[msg.topic];
                 }
                 else { node.previous = {}; }
             }
-            if (msg.hasOwnProperty("payload")) {
+            var value = RED.util.getMessageProperty(msg,node.property);
+            if (value !== undefined) {
                 var t = msg.topic || "_no_topic";
                 if ((this.func === "rbe") || (this.func === "rbei")) {
                     var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
-                    if (typeof(msg.payload) === "object") {
+                    if (typeof(value) === "object") {
                         if (typeof(node.previous[t]) !== "object") { node.previous[t] = {}; }
-                        if (!RED.util.compareObjects(msg.payload, node.previous[t])) {
-                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                        if (!RED.util.compareObjects(value, node.previous[t])) {
+                            node.previous[t] = RED.util.cloneMessage(value);
                             if (doSend) { node.send(msg); }
                         }
                     }
                     else {
-                        if (msg.payload !== node.previous[t]) {
-                            node.previous[t] = RED.util.cloneMessage(msg.payload);
+                        if (value !== node.previous[t]) {
+                            node.previous[t] = RED.util.cloneMessage(value);
                             if (doSend) { node.send(msg); }
                         }
                     }
                 }
                 else {
-                    var n = parseFloat(msg.payload);
+                    var n = parseFloat(value);
                     if (!isNaN(n)) {
                         if ((typeof node.previous[t] === 'undefined') && (this.func === "narrowband")) {
                             if (node.start === '') { node.previous[t] = n; }
                             else { node.previous[t] = node.start; }
                         }
-                        if (node.pc) { node.gap = (node.previous[t] * node.g / 100) || 0; }
+                        if (node.pc) { node.gap = Math.abs(node.previous[t] * node.g / 100) || 0; }
                         else { node.gap = Number(node.gap); }
                         if ((node.previous[t] === undefined) && (node.func === "narrowbandEq")) { node.previous[t] = n; }
-                        if (node.previous[t] === undefined) { node.previous[t] = n - node.gap; }
+                        if (node.previous[t] === undefined) { node.previous[t] = n - node.gap - 1; }
                         if (Math.abs(n - node.previous[t]) === node.gap) {
-                            if (this.func === "deadbandEq") {
+                            if ((this.func === "deadbandEq")||(this.func === "narrowband")) {
                                 if (node.inout === "out") { node.previous[t] = n; }
                                 node.send(msg);
                             }

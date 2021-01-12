@@ -1,6 +1,8 @@
 node-red-node-nma
 =================
 
+## DO NOT USE - as NMA have ceased to operate.
+
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to send alerts via <a href="http://www.notifymyandroid.com/" target="_new">Notify-My-Android</a>.
 
 Install

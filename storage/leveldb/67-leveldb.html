@@ -1,8 +1,17 @@
 
-<script type="text/x-red" data-template-name="leveldbase">
+<script type="text/html" data-template-name="leveldbase">
     <div class="form-row">
         <label for="node-config-input-db"><i class="fa fa-briefcase"></i> Database</label>
         <input type="text" id="node-config-input-db" placeholder="database path/name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-encoding"><i class="fa fa-random"></i> Values are</label>
+        
+        <select type="text" id="node-config-input-encoding">
+            <option value="utf8">text</option>
+            <option value="json">JSON</option>
+            <option value="binary">binary</option>
+        </select>
     </div>
 </script>
 
@@ -10,7 +19,8 @@
     RED.nodes.registerType('leveldbase',{
         category: 'config',
         defaults: {
-            db: {value:"",required:true}
+            db: {value:"",required:true},
+            encoding: {value:"utf8"}
         },
         label: function() {
             return this.db;
@@ -18,7 +28,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="leveldb in">
+<script type="text/html" data-template-name="leveldb in">
     <div class="form-row node-input-level">
         <label for="node-input-level"><i class="fa fa-briefcase"></i> Database</label>
         <input type="text" id="node-input-level">
@@ -29,7 +39,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="leveldb in">
+<script type="text/html" data-help-name="leveldb in">
     <p>Uses <a href="https://code.google.com/p/leveldb/" target="_new"><i>LevelDB</i></a> for a simple key value pair database.</p>
     <p>Use this node to <b>get</b>, or retrieve the data already saved in the database.</p>
     <p><code>msg.topic</code> must hold the <i>key</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
@@ -58,7 +68,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="leveldb out">
+<script type="text/html" data-template-name="leveldb out">
     <div class="form-row node-input-level">
         <label for="node-input-level"><i class="fa fa-briefcase"></i> Database</label>
         <input type="text" id="node-input-level">
@@ -77,7 +87,7 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="leveldb out">
+<script type="text/html" data-help-name="leveldb out">
     <p>Uses <a href="https://code.google.com/p/leveldb/" target="_new"><i>LevelDB</i></a> for a simple key value pair database.</p>
     <p>Use this node to either <b>put</b> (store) the <code>msg.payload</code> to the named database file, using <code>msg.topic</code> as the key.</p>
     <p>To <b>delete</b> information select delete in the properties dialogue and again use <code>msg.topic</code> as the key.</b>.</p>

@@ -4,7 +4,7 @@ node-red-node-discovery
 A <a href="http://nodered.org" target="_new">Node-RED</a> node that uses Bonjour
  / Avahi to discover local network services such as iTunes libraries, printers, etc.
 
-Now also supports announcing new services.
+It also supports announcing new services.
 
 Prerequisites
 -------------
@@ -13,7 +13,7 @@ please read the [install instructions](https://www.npmjs.com/package/mdns) for t
 
 For Debian / Ubuntu this requires installing
 
-        sudo apt-get install libavahi-compat-libdnssd-dev
+        sudo apt-get install libavahi-compat-libdnssd-dev libudev-dev
 
 Install
 -------
