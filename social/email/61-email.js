@@ -120,7 +120,18 @@ module.exports = function(RED) {
                         var payload = RED.util.ensureString(msg.payload);
                         sendopts.text = payload; // plaintext body
                         if (/<[a-z][\s\S]*>/i.test(payload)) { sendopts.html = payload; } // html body
-                        if (msg.attachments) { sendopts.attachments = msg.attachments; } // add attachments
+                        if (msg.attachments && Array.isArray(msg.attachments)) {
+                            sendopts.attachments = msg.attachments;
+                            for (var a=0; a < sendopts.attachments.length; a++) {
+                                if (sendopts.attachments[a].hasOwnProperty("content")) {
+                                    if (typeof sendopts.attachments[a].content !== "string" && !Buffer.isBuffer(sendopts.attachments[a].content)) {
+                                        node.error(RED._("email.errors.invalidattachment"),msg);
+                                        node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
+                                        return;
+                                    }
+                                }
+                            }
+                        }
                     }
                     smtpTransport.sendMail(sendopts, function(error, info) {
                         if (error) {
