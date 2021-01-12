@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="pi-gpiod in">
+<script type="text/html" data-template-name="pi-gpiod in">
     <style>
         .pinTable {
             width: 300px;
@@ -168,10 +168,10 @@
     their other use before using as GPIO.</div>
 </script>
 
-<script type="text/x-red" data-help-name="pi-gpiod in">
+<script type="text/html" data-help-name="pi-gpiod in">
     <p>Raspberry Pi input node. Generates a <code>msg.payload</code> with either a
     0 or 1 depending on the state of the input pin.
-    Requires the <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a>
+    Requires the <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a>
     daemon to be running on the host computer in order to work.</p>
     <p><b>Outputs</b>
     <ul>
@@ -233,7 +233,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="pi-gpiod out">
+<script type="text/html" data-template-name="pi-gpiod out">
     <style>
         .pinTable {
             width: 300px;
@@ -415,9 +415,9 @@
     their other use before using as GPIO.</div>
 </script>
 
-<script type="text/x-red" data-help-name="pi-gpiod out">
+<script type="text/html" data-help-name="pi-gpiod out">
     <p>Raspberry Pi output node. Can be used in Digital, PWM or Servo modes. Requires the
-    <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
+    <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
     <p><b>Inputs</b>
     <ul>
         <li><code>msg.payload</code> - <i>number | string</i> - 0,1 (Digital), 0-100 (PWM, Servo)</li>
