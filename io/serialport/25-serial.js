@@ -5,6 +5,7 @@ module.exports = function(RED) {
     var events = require("events");
     var serialp = require("serialport");
     var bufMaxSize = 32768;  // Max serial buffer size, for inputs...
+    const serialReconnectTime = settings.serialReconnectTime || 15000;
 
     // TODO: 'serialPool' should be encapsulated in SerialPortNode
 
@@ -350,7 +351,7 @@ module.exports = function(RED) {
                                 }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
-                                }, settings.serialReconnectTime);
+                                }, serialReconnectTime);
                             }
                         });
                         obj.serial.on('error', function(err) {
@@ -359,7 +360,7 @@ module.exports = function(RED) {
                             if (obj.tout) { clearTimeout(obj.tout); }
                             obj.tout = setTimeout(function() {
                                 setupSerial();
-                            }, settings.serialReconnectTime);
+                            }, serialReconnectTime);
                         });
                         obj.serial.on('close', function() {
                             if (!obj._closing) {
@@ -371,7 +372,7 @@ module.exports = function(RED) {
                                 if (obj.tout) { clearTimeout(obj.tout); }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
-                                }, settings.serialReconnectTime);
+                                }, serialReconnectTime);
                             }
                         });
                         obj.serial.on('open',function() {
