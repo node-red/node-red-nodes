@@ -146,8 +146,6 @@ module.exports = function(RED) {
                         const bufferOutput = getWritableBuffer();
                         pureimage.encodeJPEGToStream(c,bufferOutput.stream,90).then(() => {
                             msg.payload = bufferOutput.getBuffer();
-                            msg.defaultFontSize = defaultFontSize;
-
                             node.send(msg);
                         })
                     }).catch(err => {
