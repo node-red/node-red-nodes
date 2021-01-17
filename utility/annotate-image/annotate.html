@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="annotate-image">
+<script type="text/html" data-template-name="annotate-image">
     <div class="form-row">
         <span id="node-input-row-stroke">
             <label for="node-input-stroke">Line Color</label>
@@ -20,7 +20,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="annotate-image">
+<script type="text/html" data-help-name="annotate-image">
     <p>A node that can annotate JPEG images with simple shapes and labels.</p>
     <h3>Inputs</h3>
     <dl class="message-properties">
@@ -65,8 +65,8 @@
             <dt>fontColor <span class="property-type">string</span></dt>
             <dd>The color of the font to use for the label. Default: <code>"#ffC000"</code></dd>
             <dt>labelLocation <span class="property-type">string</span></dt>
-            <dd>The Location to place the label. Default: <code>"top"</code> or <code>"bottom"</code>.<br>
-                If this propery is not set it will default to <code>"automatic"</code></dd>
+            <dd>The location to place the label. Can be set to <code>top</code> or <code>bottom</code>.
+                Default: <code>"automatic"</code>.</dd>
         </dl>
     <h3>Examples</h3>
     <pre> msg.annotations = [ {
@@ -119,9 +119,6 @@
         var s = ((r<<16) + (g<<8) + b).toString(16);
         colorPalette.push('#'+'000000'.slice(0, 6-s.length)+s);
     }
-
-
-
 
     RED.nodes.registerType('annotate-image',{
         category: 'utility',
