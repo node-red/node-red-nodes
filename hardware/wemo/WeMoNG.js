@@ -246,7 +246,7 @@ module.exports = function(RED) {
             } else if (typeof msg.payload === 'object') {
                 //object need to get complicated here
                 if (msg.payload.hasOwnProperty('state') && typeof msg.payload.state === 'number') {
-                    if (dev.type === 'socket') {
+                    if (dev.type === 'socket' || dev.type === 'socket_insight') {
                         if (msg.payload.state >= 0 && msg.payload.state < 2) {
                             on = msg.payload.state;
                         }
@@ -278,7 +278,7 @@ module.exports = function(RED) {
                 }
             }
 
-            if (dev.type == 'socket') {
+            if (dev.type == 'socket' || dev.type == 'socket_insight') {
                 //console.log("socket");
                 wemo.toggleSocket(dev, on);
             } else if (dev.type === 'light') {
@@ -325,7 +325,10 @@ module.exports = function(RED) {
                         }
                         break;
                     }
-                    case 'socket': {
+                    case 'socket':
+                    case 'socket_insight': {
+                        // For backwards compatibility, always send type 'socket'
+                        notification.type = 'socket';
                         node.send(msg);
                         break;
                     }
@@ -426,9 +429,19 @@ module.exports = function(RED) {
                     msg.payload = status;
                     node.send(msg);
                 });
+            } else if (dev.type === 'socket_insight') {
+                console.log("socket_insight");
+                // insight socket: ask both current switch status AND power measurements
+                wemo.getInsightParams(dev)
+                .then(function(insightParameters) {
+                    msg.payload = insightParameters;
+                    // 'state' should be a number for backwards compatibility
+                    msg.payload.state = parseInt(msg.payload.state);
+                    node.send(msg);
+                });            
             } else {
                 console.log("socket");
-                //socket
+                // classic socket: no power measurement, so only request current switch status
                 wemo.getSocketStatus(dev)
                 .then(function(status) {
                     msg.payload = {
