@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="timeswitch">
+<script type="text/html" data-template-name="timeswitch">
     <div class="form-row">
         <label for="node-input-starttime"><i class="fa fa-clock-o"></i> Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;On</label>
         <select id="node-input-starttime" style="width:24% !important">
@@ -99,8 +99,8 @@
             <option value="1395">23:15</option>
             <option value="1410">23:30</option>
             <option value="1425">23:45</option>
-            <option value="5000">Dawn</option>
-            <option value="6000">Dusk</option>
+            <option value="5000">Sunrise</option>
+            <option value="6000">Sunset</option>
         </select>
         <div style="display:inline-block; width:12%; text-align:right;">Off</div>
         <select id="node-input-endtime" style="width:24% !important">
@@ -200,8 +200,8 @@
             <option value="1395">23:15</option>
             <option value="1410">23:30</option>
             <option value="1425">23:45</option>
-            <option value="5000">Dawn</option>
-            <option value="6000">Dusk</option>
+            <option value="5000">Sunrise</option>
+            <option value="6000">Sunset</option>
             <option value="10001">Start + 1 min</option>
             <option value="10002">Start + 2 mins</option>
             <option value="10005">Start + 5 mins</option>
@@ -222,9 +222,9 @@
   </div>
 
   <div class="form-row" id="offsetrow">
-    <label for="node-input-dawnoff">Offset&nbsp;:&nbsp;Dawn</label>
+    <label for="node-input-dawnoff">Offset&nbsp;:&nbsp;Sunrise</label>
     <input type="text" id="node-input-dawnoff" placeholder="0" style="width:22%">
-    <div style="display:inline-block; width:12%; text-align:right;">Dusk</div>
+    <div style="display:inline-block; width:12%; text-align:right;">Sunset</div>
     <input type="text" id="node-input-duskoff" placeholder="0" style="width:22%">
   </div>
 
@@ -266,11 +266,11 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="timeswitch">
+<script type="text/html" data-help-name="timeswitch">
     <p>Timeswitch node to schedule daily on/off events.</p>
     <p>Sets <code>msg.payload</code> to 1 at on time, and 0 at off time.</p>
-    <p>Also allows the use of dawn and dusk.</p>
-    <p>Dawn and dusk times can be offset both positively (+ve) for minutes later
+    <p>Also allows the use of sunrise and sunset.</p>
+    <p>Sunrise and sunset times can be offset both positively (+ve) for minutes later
     or negatively (-ve) for minutes earlier.</p>
     <p>The output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending on
     whether the current time is during the selected on time or off time.</p>
