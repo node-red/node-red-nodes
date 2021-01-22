@@ -19,7 +19,7 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 ```
         npm install node-red-node-mongodb
 ```
-Note that this package requires a MongoDB client package at least version 3.6.1 - if you have an older (version 2) client,
+Note that this package requires a MongoDB client package at least version 3.6.3 - if you have an older (version 2) client,
 you may need to remove that before installing this
 ```
         npm remove mongodb
@@ -29,10 +29,10 @@ you may need to remove that before installing this
 Usage
 -----
 
-Nodes to save and retrieve data in a MongoDB instance - the database server can be local (mongodb//:localhost:27017), remote (mongodb://hostname.network:27017), 
-replica-set or cluster (mongodb://hostnameA.network:27017,hostnameB.network:27017), and DNS seedlist cluster (mongodb+srv://clustername.network).  
+Nodes to save and retrieve data in a MongoDB instance - the database server can be local (mongodb//:localhost:27017), remote (mongodb://hostname.network:27017),
+replica-set or cluster (mongodb://hostnameA.network:27017,hostnameB.network:27017), and DNS seedlist cluster (mongodb+srv://clustername.network).
 
-Reference [MongoDB docs](https://docs.mongodb.com/manual/reference/connection-string/) to see which connection method (host or clustered) to use for your MongoDB instance. 
+Reference [MongoDB docs](https://docs.mongodb.com/manual/reference/connection-string/) to see which connection method (host or clustered) to use for your MongoDB instance.
 
 ### Input
 
