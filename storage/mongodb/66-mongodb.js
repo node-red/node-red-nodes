@@ -53,6 +53,21 @@ module.exports = function(RED) {
         }
     });
 
+    function getPayload(node, msg) {
+        if (node.payonly) {
+            if (typeof msg.payload !== "object") {
+                msg.payload = {"payload": msg.payload};
+            }
+            if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
+                msg.payload._id = msg._id;
+            }
+
+            return msg.payload;
+        }
+
+        return msg;
+    }
+
     function ensureValidSelectorObject(selector) {
         if (selector != null && (typeof selector != 'object' || Buffer.isBuffer(selector))) {
             return {};
@@ -126,6 +141,25 @@ module.exports = function(RED) {
                                 });
                             }
                         }
+                        else if (node.operation === "insertOne") {
+                            const options = {}
+                            const payload = getPayload(node, msg);
+
+                            coll.insertOne(payload, options, function(err,item) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "insertMany") {
+                            const options = {}
+
+                            coll.insertMany(msg.payload, options, function(err,item) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
                         else if (node.operation === "insert") {
                             if (node.payonly) {
                                 if (typeof msg.payload !== "object") {
@@ -169,6 +203,57 @@ module.exports = function(RED) {
                         }
                         else if (node.operation === "delete") {
                             coll.remove(msg.payload, function(err, items) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "updateOne") {
+                            if (typeof msg.payload !== "object") {
+                                msg.payload = {"payload": msg.payload};
+                            }
+                            var query = msg.query || {};
+                            var payload = msg.payload || {};
+                            var options = {
+                                upsert: node.upsert,
+                                multi: node.multi
+                            };
+                            if (ObjectID.isValid(msg.query._id)) {
+                                msg.query._id = new ObjectID(msg.query._id);
+                            }
+                            coll.updateOne(query, payload, options, function(err, item) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "updateMany") {
+                            var query = msg.query || {};
+                            var payload = msg.payload || [];
+                            var options = {
+                                upsert: node.upsert,
+                                multi: node.multi
+                            };
+                            if (ObjectID.isValid(msg.query._id)) {
+                                msg.query._id = new ObjectID(msg.query._id);
+                            }
+                            coll.updateMany(query, payload, options, function(err, item) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "deleteOne") {
+                            const options = {}
+                            coll.deleteOne(msg.payload, options, function(err, items) {
+                                if (err) {
+                                    node.error(err,msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "deleteMany") {
+                            const options = {}
+                            coll.deleteMany(msg.payload, options, function(err, items) {
                                 if (err) {
                                     node.error(err,msg);
                                 }

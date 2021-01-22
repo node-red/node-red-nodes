@@ -66,16 +66,32 @@ A simple MongoDB output node. Can save, insert, update and remove objects from a
 
 MongoDB only accepts objects.
 
-Save and insert can either store `msg` or `msg.payload`. If msg.payload is
+Save, insert, and insertOne can either store `msg` or `msg.payload`. If msg.payload is
 selected it should contain an object. If not it will be wrapped in an object with a name of payload.
 
-*Save* will update an existing object or insert a new object if one does not already exist.
+*Save* will update an existing object or insert a new object if one does not already exist. (Deprecated)
 
-*Insert* will insert a new object.
+*Insert* will insert a new object. (Deprecated)
+
+*InsertOne* will insert a single new object.
+
+*InsertMany* takes an array of objects in `msg.payload` and inserts them all into the collection.
+
 
 *Update* will modify an existing object or objects. The query to select objects
 to update uses `msg.query` and the update to the element uses `msg.payload`.
-Update can add an object if it does not exist or update multiple objects.
+Update can add an object if it does not exist or update multiple objects. (Deprecated)
+
+*UpdateOne* will modify an existing object. The query to select objects
+to update uses `msg.query` and the update to the element uses `msg.payload`.
+Update can add an object if it does not exist.
+
+*UpdateMany* will modify all objects that match the query. The query to select objects
+to update uses `msg.query` and the update to the element uses `msg.payload`.
+
+*DeleteOne* will remove one object that matches the query passed in on `msg.payload`.
+
+*DeleteMany* will remove all objects that match the query passed in on `msg.payload`.
 
 *Remove* will remove objects that match the query passed in on `msg.payload`.
 A blank query will delete *all of the objects* in the collection.

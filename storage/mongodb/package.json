@@ -3,7 +3,7 @@
     "version"       : "0.2.4",
     "description"   : "Node-RED nodes to talk to an Mongo database",
     "dependencies"  : {
-        "mongodb"   : "^3.6.2"
+        "mongodb"   : "^3.6.3"
     },
     "repository" : {
         "type":"git",
@@ -25,6 +25,10 @@
     {
       "name": "Ross Cruickshank",
       "email": "ross@vnet.ibm.com"
+    },
+    {
+        "name": "Brandon Herman",
+        "email": "brandon.herman@outlook.com"
     }
   ]
 }

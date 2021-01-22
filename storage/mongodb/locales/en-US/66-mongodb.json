@@ -18,8 +18,12 @@
         "operation": {
             "save": "save",
             "insert": "insert",
+            "insertOne": "insertOne",
+            "insertMany": "insertMany",
             "update": "update",
             "remove": "remove",
+            "deleteOne": "deleteOne",
+            "deleteMany": "deleteMany",
             "find": "find",
             "count": "count",
             "aggregate": "aggregate"
