@@ -83,7 +83,7 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = client.db();
+                    node.client = client;
                     var db = client.db();
                     //console.log( db);
                     noerror = true;
@@ -185,7 +185,7 @@ module.exports = function(RED) {
         node.on("close", function() {
             node.status({});
             if (node.tout) { clearTimeout(node.tout); }
-            if (node.clientDb) { node.clientDb.close(); }
+            if (node.client) { node.client.close(); }
         });
     }
     RED.nodes.registerType("mongodb out",MongoOutNode);
@@ -212,7 +212,7 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = client.db();
+                    node.client = client;
                     var db = client.db();
                     noerror = true;
                     var coll;
@@ -303,7 +303,7 @@ module.exports = function(RED) {
         node.on("close", function() {
             node.status({});
             if (node.tout) { clearTimeout(node.tout); }
-            if (node.clientDb) { node.clientDb.close(); }
+            if (node.client) { node.client.close(); }
         });
     }
     RED.nodes.registerType("mongodb in",MongoInNode);
