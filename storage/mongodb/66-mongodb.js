@@ -154,7 +154,7 @@ module.exports = function(RED) {
                         else if (node.operation === "insertMany") {
                             const options = {}
 
-                            coll.insertMany(msg.payload, options, function(err,item) {
+                            coll.insertMany(msg.payload.values, options, function(err,items) {
                                 if (err) {
                                     node.error(err,msg);
                                 }
@@ -215,8 +215,7 @@ module.exports = function(RED) {
                             var query = msg.query || {};
                             var payload = msg.payload || {};
                             var options = {
-                                upsert: node.upsert,
-                                multi: node.multi
+                                upsert: node.upsert
                             };
                             if (ObjectID.isValid(msg.query._id)) {
                                 msg.query._id = new ObjectID(msg.query._id);
@@ -231,8 +230,7 @@ module.exports = function(RED) {
                             var query = msg.query || {};
                             var payload = msg.payload || [];
                             var options = {
-                                upsert: node.upsert,
-                                multi: node.multi
+                                upsert: node.upsert
                             };
                             if (ObjectID.isValid(msg.query._id)) {
                                 msg.query._id = new ObjectID(msg.query._id);
@@ -340,6 +338,34 @@ module.exports = function(RED) {
                                     delete msg.projection;
                                     delete msg.sort;
                                     delete msg.limit;
+                                    delete msg.skip;
+                                    node.send(msg);
+                                }
+                            });
+                        }
+                        else if (node.operation === "findOne") {
+                            selector = ensureValidSelectorObject(msg.payload);
+                            var skip = msg.skip;
+                            if (typeof skip === "string" && !isNaN(skip)) {
+                                skip = Number(skip);
+                            } else if (typeof skip === "undefined") {
+                                skip = 0;
+                            }
+
+                            const options = {
+                                projection: msg.projection || {},
+                                sort: msg.sort,
+                                skip,
+                            }
+
+                            coll.findOne(selector, options, function (err, item) {
+                                if (err) {
+                                    node.error(err);
+                                }
+                                else {
+                                    msg.payload = item;
+                                    delete msg.projection;
+                                    delete msg.sort;
                                     delete msg.skip;
                                     node.send(msg);
                                 }

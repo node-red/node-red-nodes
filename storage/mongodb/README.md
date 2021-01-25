@@ -48,6 +48,14 @@ Optionally, you may also (via a function) set
 - a `msg.limit` number,
 - a `msg.skip` number.
 
+*FindOne* is similar to *Find* but only returns a singular object that matches the query from the `msg.payload`.
+
+Optionally, you may also (via a function) set
+
+- a `msg.projection` object to constrain the returned fields,
+- a `msg.sort` object.
+- a `msg.skip` number.
+
 *Count* returns a count of the number of documents in a collection or matching a
 query using the `msg.payload` as the query statement.
 

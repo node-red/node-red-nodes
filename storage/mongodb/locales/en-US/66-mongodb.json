@@ -21,9 +21,12 @@
             "insertOne": "insertOne",
             "insertMany": "insertMany",
             "update": "update",
+            "updateOne": "updateOne",
+            "updateMany": "updateMany",
             "remove": "remove",
             "deleteOne": "deleteOne",
             "deleteMany": "deleteMany",
+            "findOne": "findOne",
             "find": "find",
             "count": "count",
             "aggregate": "aggregate"
@@ -34,6 +37,7 @@
             "error": "error"
         },
         "tip": "<b> Tip:</b> If no collection is set, ensure <code>msg.collection</code> will contain the collection name",
+        "insertMany-tips": "<b> Tip:</b> When using <code>insertMany</code> ensure your <code>msg.payload.values</code> is an array of objects that you want to insert.",
         "errors": {
             "nocollection": "No collection defined",
             "missingconfig": "missing mongodb configuration"

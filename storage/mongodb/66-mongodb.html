@@ -126,12 +126,12 @@
         <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
             <option value="store" data-i18n="mongodb.operation.save"></option>
             <option value="insert" data-i18n="mongodb.operation.insert"></option>
-            <option value="update" data-i18n="mongodb.operation.update"></option>
-            <option value="delete" data-i18n="mongodb.operation.remove"></option>
             <option value="insertOne" data-i18n="mongodb.operation.insertOne"></option>
             <option value="insertMany" data-i18n="mongodb.operation.insertMany"></option>
+            <option value="update" data-i18n="mongodb.operation.update"></option>
             <option value="updateOne" data-i18n="mongodb.operation.updateOne"></option>
             <option value="updateMany" data-i18n="mongodb.operation.updateMany"></option>
+            <option value="delete" data-i18n="mongodb.operation.remove"></option>
             <option value="deleteOne" data-i18n="mongodb.operation.deleteOne"></option>
             <option value="deleteMany" data-i18n="mongodb.operation.deleteMany"></option>
         </select>
@@ -156,6 +156,7 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
+    <div class="form-tips" id="node-insertMany-warning" style="display: none"><span data-i18n="[html]mongodb.insertMany-tips"></span></div>
 </script>
 
 <script type="text/html" data-help-name="mongodb out">
@@ -190,14 +191,23 @@
         $("#node-input-operation").change(function () {
             var id = $("#node-input-operation option:selected").val();
 
-            if (id === "update" || id === "updateOne" || id === "updateMany") {
+            if (id === "update") {
                 $(".node-input-payonly").hide();
                 $(".node-input-upsert, .node-input-multi").show();
+            } else if (id === "updateOne" || id === "updateMany") {
+                $(".node-input-payonly, .node-input-multi").hide();
+                $(".node-input-upsert").show();
             } else if (id === "delete" || id === "deleteOne" || id === "deleteMany") {
                 $(".node-input-payonly, .node-input-upsert, .node-input-multi").hide();
             } else {
                 $(".node-input-payonly").show();
                 $(".node-input-upsert, .node-input-multi").hide();
+            }
+
+            if (id === "insertMany") {
+                $("#node-insertMany-warning").show();
+            } else {
+                $("#node-insertMany-warning").hide();
             }
         });
 
@@ -250,6 +260,7 @@
     <div class="form-row">
         <label for="node-input-operation"><i class="fa fa-wrench"></i> <span data-i18n="mongodb.label.operation"></span></label>
         <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
+            <option value="findOne" data-i18n="mongodb.operation.findOne"></option>
             <option value="find" data-i18n="mongodb.operation.find"></option>
             <option value="count" data-i18n="mongodb.operation.count"></option>
             <option value="aggregate" data-i18n="mongodb.operation.aggregate"></option>
@@ -267,6 +278,9 @@
     <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
     Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
     fields, a <code>msg.sort</code> object, a <code>msg.limit</code> number and a <code>msg.skip</code> number.</p>
+    <p>FindOne queries a collection using the <code>msg.payload</code> as the query statement and returns a single object.
+    Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
+    fields, a <code>msg.sort</code> object, and a <code>msg.skip</code> number.</p>
     <p>Count returns a count of the number of documents in a collection or matching a query using the
     <code>msg.payload</code> as the query statement.</p>
     <p>Aggregate provides access to the aggregation pipeline using the <code>msg.payload</code> as the pipeline array.</p>
