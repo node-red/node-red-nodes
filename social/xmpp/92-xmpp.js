@@ -209,6 +209,21 @@ module.exports = function(RED) {
         }
     });
 
+    function joinMUC(node, xmpp, name) {
+        // the presence with the muc x element signifies we want to join the muc
+        // if we want to support passwords, we need to add that as a child of the x element
+        // (third argument to the x/muc/children )
+        // We also turn off chat history (maxstanzas 0) because that's not what this node is about.
+        var stanza = xml('presence',
+                         {"to": name},
+                         xml("x",'http://jabber.org/protocol/muc'),
+                         { maxstanzas:0, seconds:1 }
+                        );
+        node.serverConfig.used(node);
+        xmpp.send(stanza);
+
+    }
+    
     function XmppInNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
@@ -218,6 +233,9 @@ module.exports = function(RED) {
         this.sendAll = n.sendObject;
         // Yes, it's called "from", don't ask me why; I don't know why
         this.from = n.to || "";
+        this.quiet = false;
+        // MUC == Multi-User-Chat == chatroom
+        this.muc = this.join && (this.from !== "")
         var node = this;
 
         var xmpp = this.serverConfig.client;
@@ -235,26 +253,27 @@ module.exports = function(RED) {
            disconnect: Socket is disconnected
         */
 
-        xmpp.on('online', async address => {
+        // if we're already connected, then do the actions now, otherwise register a callback
+        if(xmpp.status === "online") {
             node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-            if ((node.join) && (node.from !== "")) {
-                var to = node.from+'/'+node.nick;
-                // the presence with the muc x element signifies we want to join the muc
-                // if we want to support passwords, we need to add that as a child of the x element
-                // (third argument to the x/muc/children )
-                // We also turn off chat history (maxstanzas 0) because that's not what this node is about.
-                var stanza = xml('presence',
-                                 {"to": to},
-                                 xml("x",'http://jabber.org/protocol/muc'),
-                                 { maxstanzas:0, seconds:1 }
-                                );
-                node.serverConfig.used(node);
-                xmpp.send(stanza).catch(error => {node.warn("Got error when sending presence: "+error)});
+            if(node.muc) {
+                joinMUC(node, xmpp, node.from+'/'+node.nick);
+            }
+        }
+        // sod it, register it anyway, that way things will work better on a reconnect:
+        xmpp.on('online', async address => {
+            node.quiet = false;
+            node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+            if (node.muc) {
+                // if we want to use a chatroom, we need to tell the server we want to join it
+                joinMUC(node, xmpp, node.from+'/'+node.nick);
             }
         });
 
         xmpp.on('connecting', async address => {
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            if(!node.quiet) {
+                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            }
         });
         xmpp.on('connect', async address => {
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connected"});
@@ -279,38 +298,40 @@ module.exports = function(RED) {
         // Should we listen on other's status (chatstate) or a chatroom state (groupbuddy)?
         xmpp.on('error', err => {
             if (RED.settings.verbose || LOGITALL) { node.log("XMPP Error: "+err); }
-            if (err.hasOwnProperty("stanza")) {
-                if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
-                else { node.error(err.stanza.name,err); }
-                node.status({fill:"red",shape:"ring",text:"bad login"});
-            }
-            else {
-                if (err.errno === "ETIMEDOUT") {
-                    node.error("Timeout connecting to server",err);
-                    node.status({fill:"red",shape:"ring",text:"timeout"});
-                }
-                if (err.errno === "ENOTFOUND") {
-                    node.error("Server doesn't exist "+xmpp.options.service,err);
-                    node.status({fill:"red",shape:"ring",text:"bad address"});
-                }
-                else if (err === "XMPP authentication failure") {
-                    node.error("Authentication failure! "+err,err);
-                    node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
-                }
-                else if (err.name === "SASLError") {
-                    node.error("Authorization error! "+err.condition,err);
-                    node.status({fill:"red",shape:"ring",text:"XMPP authorization failure"});
-                }
-                else if (err == "TimeoutError") {
-                    // Suppress it! This seems to happen with OpenFire servers and doesn't actually stop us from working
-                    node.warn("Timed out! ");
-                    node.status({fill:"grey",shape:"dot",text:"opening"});
-                    // uncomment if you want it to be an error
-                    //node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+            if(!node.quiet) {
+                node.quiet = true;
+                if (err.hasOwnProperty("stanza")) {
+                    if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
+                    else { node.error(err.stanza.name,err); }
+                    node.status({fill:"red",shape:"ring",text:"bad login"});
                 }
                 else {
-                    node.error(err,err);
-                    node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                    if (err.errno === "ETIMEDOUT") {
+                        node.error("Timeout connecting to server",err);
+                        node.status({fill:"red",shape:"ring",text:"timeout"});
+                    }
+                    if (err.errno === "ENOTFOUND") {
+                        node.error("Server doesn't exist "+xmpp.options.service,err);
+                        node.status({fill:"red",shape:"ring",text:"bad address"});
+                    }
+                    else if (err === "XMPP authentication failure") {
+                        node.error("Authentication failure! "+err,err);
+                        node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
+                    }
+                    else if (err.name === "SASLError") {
+                        node.error("Authorization error! "+err.condition,err);
+                        node.status({fill:"red",shape:"ring",text:"XMPP authorization failure"});
+                    }
+                    else if (err == "TimeoutError") {
+                        // Suppress it!
+                        node.warn("Timed out! ");
+                        node.status({fill:"grey",shape:"dot",text:"opening"});
+                        //node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+                    }
+                    else {
+                        node.error(err,err);
+                        node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                    }
                 }
             }
         });
@@ -395,7 +416,7 @@ module.exports = function(RED) {
                     if (RED.settings.verbose || LOGITALL) {
                         node.log("starting xmpp client");
                     }
-                    xmpp.start().catch(error => {node.warn("Got error on start: "+error); node.warn("XMPP Status is now: "+xmpp.status)});;
+                    xmpp.start().catch(error => {node.warn("Got error on start: "+error); node.warn("XMPP Status is now: "+xmpp.status)});
                 }
             }
         }
@@ -421,6 +442,9 @@ module.exports = function(RED) {
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         this.to = n.to || "";
+        this.quiet = false;
+        // MUC == Multi-User-Chat == chatroom
+        this.muc = this.join && (this.to !== "")
         var node = this;
 
         var xmpp = this.serverConfig.client;
@@ -438,27 +462,26 @@ module.exports = function(RED) {
            disconnect: Socket is disconnected
         */
 
-        xmpp.on('online', function(data) {
+        // if we're already connected, then do the actions now, otherwise register a callback
+        if(xmpp.status === "online") {
             node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-            if ((node.join) && (node.to !== "")) {
-                // disable chat history
-                var to = node.to+'/'+node.nick;
-                // the presence with the muc x element signifies we want to join the muc
-                // if we want to support passwords, we need to add that as a child of the x element
-                // (third argument to the x/muc/children )
-                // We also turn off chat history (maxstanzas 0) because that's not what this node is about.
-                var stanza = xml('presence',
-                                 {"to": to},
-                                 xml("x",'http://jabber.org/protocol/muc'),
-                                 { maxstanzas:0, seconds:1 }
-                                );
-                node.serverConfig.used(node);
-                xmpp.send(stanza);
+            if(node.muc){
+                joinMUC(node, xmpp, node.to+'/'+node.nick);
+            }
+        }
+        // sod it, register it anyway, that way things will work better on a reconnect:
+        xmpp.on('online', function(data) {
+            node.quiet = false;
+            node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+            if (node.muc) {
+                joinMUC(node, xmpp,node.to+"/"+node.nick);
             }
         });
 
         xmpp.on('connecting', async address => {
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            if(!node.quiet) {
+                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            }
         });
         xmpp.on('connect', async address => {
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connected"});
@@ -482,37 +505,36 @@ module.exports = function(RED) {
 
         xmpp.on('error', function(err) {
             if (RED.settings.verbose || LOGITALL) { node.log(err); }
-            if (err.hasOwnProperty("stanza")) {
-                if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
-                else { node.error(err.stanza.name,err); }
-                node.status({fill:"red",shape:"ring",text:"bad login"});
-            }
-            else {
-                if (err.errno === "ETIMEDOUT") {
-                    node.error("Timeout connecting to server",err);
-                    node.status({fill:"red",shape:"ring",text:"timeout"});
-                } 
-                else if (err.errno === "ENOTFOUND") {
-                    node.error("Server doesn't exist "+xmpp.options.service,err);
-                    node.status({fill:"red",shape:"ring",text:"bad address"});
-                }
-                if (err.errno === "ENOTFOUND") {
-                    node.error("Server doesn't exist "+xmpp.options.service,err);
-                    node.status({fill:"red",shape:"ring",text:"bad address"});
-                }
-                else if (err === "XMPP authentication failure") {
-                    node.error(err,err);
-                    node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
-                }
-                else if (err == "TimeoutError") {
-                    // OK, this happens with OpenFire, suppress it. The connection seems to still work
-                    node.status({fill:"grey",shape:"dot",text:"opening"});
-                    node.log("Timed out! ",err);
-//                    node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+            if(!node.quiet) {
+                node.quiet = true;
+                if (err.hasOwnProperty("stanza")) {
+                    if (err.stanza.name === 'stream:error') { node.error("stream:error - bad login id/pwd ?",err); }
+                    else { node.error(err.stanza.name,err); }
+                    node.status({fill:"red",shape:"ring",text:"bad login"});
                 }
                 else {
-                    node.error("Unknown error: "+err,err);
-                    node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                    if (err.errno === "ETIMEDOUT") {
+                        node.error("Timeout connecting to server",err);
+                        node.status({fill:"red",shape:"ring",text:"timeout"});
+                    }
+                    else if (err.errno === "ENOTFOUND") {
+                        node.error("Server doesn't exist "+xmpp.options.service,err);
+                        node.status({fill:"red",shape:"ring",text:"bad address"});
+                    }
+                    else if (err === "XMPP authentication failure") {
+                        node.error(err,err);
+                        node.status({fill:"red",shape:"ring",text:"XMPP authentication failure"});
+                    }
+                    else if (err == "TimeoutError") {
+                        // OK, this happens with OpenFire, suppress it.
+                        node.status({fill:"grey",shape:"dot",text:"opening"});
+                        node.log("Timed out! ",err);
+                        //                    node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
+                    }
+                    else {
+                        node.error("Unknown error: "+err,err);
+                        node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                    }
                 }
             }
         });
