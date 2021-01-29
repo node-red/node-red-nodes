@@ -4,7 +4,7 @@ module.exports = function(RED) {
     var spawn = require("child_process").spawn;
     var plat = require("os").platform();
 
-    function doPing(node, host, arrayMode){
+    function doPing(node, host, arrayMode) {
         const defTimeout = 5000;
         var ex, hostOptions, commandLineOptions;
         if (typeof host === "string") {
@@ -25,30 +25,27 @@ module.exports = function(RED) {
         if (arrayMode) {
             msg.ping = hostOptions
         }
-        if (plat == "linux" || plat == "android") { 
+        if (plat == "linux" || plat == "android") {
             commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"]
-        } else if (plat.match(/^win/)) { 
+        } else if (plat.match(/^win/)) {
             commandLineOptions = ["-n", "1", "-w", hostOptions.timeout]
-        } else if (plat == "darwin" || plat == "freebsd") { 
+        } else if (plat == "darwin" || plat == "freebsd") {
             commandLineOptions = ["-n", "-t", timeoutS, "-c", "1"]
-        } else { 
-            node.error("Sorry - your platform - "+plat+" - is not recognised.", msg); 
+        } else {
+            node.error("Sorry - your platform - "+plat+" - is not recognised.", msg);
             return; //dont pass go - just return!
         }
 
         //spawn with timeout in case of os issue
-        ex = spawn("ping", [...commandLineOptions, hostOptions.host]); 
+        ex = spawn("ping", [...commandLineOptions, hostOptions.host]);
 
         //monitor every spawned process & SIGINT if too long
         var spawnTout = setTimeout(() => {
             node.log(`ping - Host '${hostOptions.host}' process timeout - sending SIGINT`)
             try {
-                if (ex && ex.pid) { 
-                    ex.removeAllListeners();
-                    ex.kill("SIGINT"); 
-                }
-            } 
-            catch(e) { console.warn(e) }
+                if (ex && ex.pid) { ex.kill("SIGINT"); }
+            }
+            catch(e) {console.warn(e); }
         }, hostOptions.timeout+1000); //add 1s for grace
 
         var res = false;
@@ -56,11 +53,9 @@ module.exports = function(RED) {
         var fail = false;
         //var regex = /from.*time.(.*)ms/;
         var regex = /=.*[<|=]([0-9]*).*TTL|ttl..*=([0-9\.]*)/;
-        if (ex && ex.hasOwnProperty("stdout")) {
-            ex.stdout.on("data", function (data) {
-                line += data.toString();
-            });
-        }
+        ex.stdout.on("data", function (data) {
+            line += data.toString();
+        });
         ex.on("exit", function (err) {
             clearTimeout(spawnTout);
         });
@@ -99,7 +94,7 @@ module.exports = function(RED) {
         function generatePingList(str) {
             return (str + "").split(",").map((e) => (e + "").trim()).filter((e) => e != "");
         }
-        function clearPingInterval(){
+        function clearPingInterval() {
             if (node.tout) { clearInterval(node.tout); }
         }
 

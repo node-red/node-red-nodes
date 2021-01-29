@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="pi-gpiod in">
+<script type="text/html" data-template-name="pi-gpiod in">
     <style>
         .pinTable {
             width: 300px;
@@ -168,10 +168,10 @@
     their other use before using as GPIO.</div>
 </script>
 
-<script type="text/x-red" data-help-name="pi-gpiod in">
+<script type="text/html" data-help-name="pi-gpiod in">
     <p>Raspberry Pi input node. Generates a <code>msg.payload</code> with either a
     0 or 1 depending on the state of the input pin.
-    Requires the <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a>
+    Requires the <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a>
     daemon to be running on the host computer in order to work.</p>
     <p><b>Outputs</b>
     <ul>
@@ -233,7 +233,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="pi-gpiod out">
+<script type="text/html" data-template-name="pi-gpiod out">
     <style>
         .pinTable {
             width: 300px;
@@ -399,6 +399,28 @@
             <option value="1" data-i18n="pi-gpiod.initpin1"></option>
         </select>
     </div>
+    <div class="form-row" id="node-set-freq">
+        <label for="node-input-freq"> <span data-i18n="rpi-gpio.label.freq"></span></label>
+        Frequency: <select id="node-input-freq" style="width:80px;">
+            <option value="8000">8000</option>
+            <option value="4000">4000</option>
+            <option value="2000">2000</option>
+            <option value="1600">1600</option>
+            <option value="1000">1000</option>
+            <option value="800">800</option>
+            <option value="500">500</option>
+            <option value="400">400</option>
+            <option value="320">320</option>
+            <option value="250">250</option>
+            <option value="200">200</option>
+            <option value="160">160</option>
+            <option value="80">80</option>
+            <option value="50">50</option>
+            <option value="40">40</option>
+            <option value="20">20</option>
+            <option value="10">10</option>
+        </select> Hz
+    </div>
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> <span data-i18n="pi-gpiod.label.host"></label>
         <input type="text" id="node-input-host" placeholder="localhost" style="width:250px;">
@@ -415,9 +437,9 @@
     their other use before using as GPIO.</div>
 </script>
 
-<script type="text/x-red" data-help-name="pi-gpiod out">
+<script type="text/html" data-help-name="pi-gpiod out">
     <p>Raspberry Pi output node. Can be used in Digital, PWM or Servo modes. Requires the
-    <a href="http://abyz.co.uk/rpi/pigpio/pigpiod.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
+    <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
     <p><b>Inputs</b>
     <ul>
         <li><code>msg.payload</code> - <i>number | string</i> - 0,1 (Digital), 0-100 (PWM, Servo)</li>
@@ -450,7 +472,8 @@
             level: { value:"0" },
             out: { value:"out" },
             sermin: { value:"1000" },
-            sermax: { value:"2000" }
+            sermax: { value:"2000" },
+            freq: { value:"800" }
         },
         inputs:1,
         outputs:0,
@@ -478,29 +501,32 @@
 
             var hidestate = function () {
                 if ($("#node-input-out").val() === "pwm") {
+                    $('#node-set-freq').show();
                     $('#node-set-tick').hide();
                     $('#node-set-state').hide();
                     $('#node-set-minimax').hide();
                     $('#node-input-set').prop('checked', false);
-                    $("#dig-tip").hide();
-                    $("#pwm-tip").show();
-                    $("#ser-tip").hide();
+                    $('#dig-tip').hide();
+                    $('#pwm-tip').show();
+                    $('#ser-tip').hide();
                 }
                 else if ($("#node-input-out").val() === "ser") {
+                    $('#node-set-freq').hide();
                     $('#node-set-tick').hide();
                     $('#node-set-state').hide();
                     $('#node-set-minimax').show();
                     $('#node-input-set').prop('checked', false);
-                    $("#dig-tip").hide();
-                    $("#pwm-tip").hide();
-                    $("#ser-tip").show();
+                    $('#dig-tip').hide();
+                    $('#pwm-tip').hide();
+                    $('#ser-tip').show();
                 }
                 else {
+                    $('#node-set-freq').hide();
                     $('#node-set-tick').show();
                     $('#node-set-minimax').hide();
-                    $("#dig-tip").show();
-                    $("#pwm-tip").hide();
-                    $("#ser-tip").hide();
+                    $('#dig-tip').show();
+                    $('#pwm-tip').hide();
+                    $('#ser-tip').hide();
                 }
             };
             $("#node-input-out").change(function () { hidestate(); });

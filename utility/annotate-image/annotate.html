@@ -1,0 +1,166 @@
+
+<script type="text/html" data-template-name="annotate-image">
+    <div class="form-row">
+        <span id="node-input-row-stroke">
+            <label for="node-input-stroke">Line Color</label>
+        </span>
+        <label style="margin-left: 20px" for="node-input-lineWidth">Line Width</label>
+        <input style="width: 50px" type="text" id="node-input-lineWidth">
+    </div>
+    <div class="form-row">
+        <span id="node-input-row-fontColor">
+            <label for="node-input-fontColor">Font Color</label>
+        </span>
+        <label style="margin-left: 20px" for="node-input-fontSize">Font Size</label>
+        <input style="width: 50px" type="text" id="node-input-fontSize">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="annotate-image">
+    <p>A node that can annotate JPEG images with simple shapes and labels.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">Buffer</span></dt>
+        <dd>A Buffer containing a JPEG image. Support for PNG will come soon.</dd>
+        <dt>annotations<span class="property-type">Array</span></dt>
+        <dd>An array of annotations to apply to the image. See below for details
+            of the annotation format.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">Buffer</span></dt>
+        <dd>The image with any annotations applied.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>The annotations provided in <code>msg.annotations</code> are applied in order.
+       Each annotation is an object with the following properties:</p>
+        <dl class="message-properties">
+            <dt>type<span class="property-type">string</span></dt>
+            <dd><ul>
+                <li><code>"rect"</code> - draws a rectangle</li>
+                <li><code>"circle"</code> - draws a circle</li>
+            </dd>
+            <dt>x,y <span class="property-type">number</span></dt>
+            <dd>The top-left corner of a <code>rect</code> annotation, or the center of a <code>circle</code> annotation.</dd>
+            <dt>w,h <span class="property-type">number</span></dt>
+            <dd>The width and height of a <code>rect</code> annotation.</dd>
+            <dt>r <span class="property-type">number</span></dt>
+            <dd>The radius of a <code>circle</code> annotation.</dd>
+            <dt>bbox <span class="property-type">array</span></dt>
+            <dd>This can be used instead of <code>x</code>,<code>y</code>,<code>w</code>,<code>h</code> and <code>r</code>. It should
+                be an array of four values giving the bounding box of the annotation: <code>[x, y, w, h]</code>.<br>
+                If this property is set and <code>type</code> is not set, it will default to <code>rect</code>.</dd>
+            <dt>label <span class="property-type">string</span></dt>
+            <dd>An optional piece of text to label the annotation with</dd>
+            <dt>stroke <span class="property-type">string</span></dt>
+            <dd>The line color of the annotation. Default: <code>"#ffC000"</code></dd>
+            <dt>lineWidth <span class="property-type">number</span></dt>
+            <dd>The stroke width used to draw the annotation. Default: <code>5</code></dd>
+            <dt>fontSize <span class="property-type">number</span></dt>
+            <dd>The font size to use for the label. Default: <code>24</code></dd>
+            <dt>fontColor <span class="property-type">string</span></dt>
+            <dd>The color of the font to use for the label. Default: <code>"#ffC000"</code></dd>
+            <dt>labelLocation <span class="property-type">string</span></dt>
+            <dd>The location to place the label. Can be set to <code>top</code> or <code>bottom</code>.
+                Default: <code>"automatic"</code>.</dd>
+        </dl>
+    <h3>Examples</h3>
+    <pre> msg.annotations = [ {
+    type: "rect",
+    x: 10, y: 10, w: 50, h: 50,
+    label: "hello"
+}]</pre>
+<pre> msg.annotations = [ {
+    type: "circle",
+    x: 50, y: 50, r: 20
+}]</pre>
+<pre> msg.annotations = [ {
+    type: "rect",
+    bbox: [ 10, 10, 50, 50]
+}]</pre>
+</script>
+
+<script type="text/javascript">
+
+(function() {
+    // Lifted from @node-red/editor-client/.../group.js
+    // Need to make this a default built-in palette so we don't have to copy
+    // it around.
+    var colorPalette = [
+        "#ff0000",
+        "#ffC000",
+        "#ffff00",
+        "#92d04f",
+        "#0070c0",
+        "#001f60",
+        "#6f2fa0",
+        "#000000",
+        "#777777"
+    ]
+    var colorSteps = 3;
+    var colorCount = colorPalette.length;
+    for (var i=0,len=colorPalette.length*colorSteps;i<len;i++) {
+        var ci = i%colorCount;
+        var j = Math.floor(i/colorCount)+1;
+        var c = colorPalette[ci];
+        var r = parseInt(c.substring(1, 3), 16);
+        var g = parseInt(c.substring(3, 5), 16);
+        var b = parseInt(c.substring(5, 7), 16);
+        var dr = (255-r)/(colorSteps+((ci===colorCount-1) ?0:1));
+        var dg = (255-g)/(colorSteps+((ci===colorCount-1) ?0:1));
+        var db = (255-b)/(colorSteps+((ci===colorCount-1) ?0:1));
+        r = Math.min(255,Math.floor(r+j*dr));
+        g = Math.min(255,Math.floor(g+j*dg));
+        b = Math.min(255,Math.floor(b+j*db));
+        var s = ((r<<16) + (g<<8) + b).toString(16);
+        colorPalette.push('#'+'000000'.slice(0, 6-s.length)+s);
+    }
+
+    RED.nodes.registerType('annotate-image',{
+        category: 'utility',
+        color:"#f1c2f0",
+        defaults: {
+            name: {value:""},
+            fill: {value:""},
+            stroke: {value:"#ffC000"},
+            lineWidth: {value:5},
+            fontSize: {value: 24},
+            fontColor: {value: "#ffC000"}
+
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-object-group",
+        label: function() {
+            return this.name||"annotate image";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            RED.colorPicker.create({
+                id:"node-input-stroke",
+                value: this.stroke || "#ffC000",
+                palette: colorPalette,
+                cellPerRow: colorCount,
+                cellWidth: 16,
+                cellHeight: 16,
+                cellMargin: 3
+            }).appendTo("#node-input-row-stroke");
+            RED.colorPicker.create({
+                id:"node-input-fontColor",
+                value: this.fontColor || "#ffC000",
+                palette: colorPalette,
+                cellPerRow: colorCount,
+                cellWidth: 16,
+                cellHeight: 16,
+                cellMargin: 3
+            }).appendTo("#node-input-row-fontColor");
+        }
+    });
+})();
+</script>

@@ -69,7 +69,7 @@ module.exports = function(RED) {
         this.multi = n.multi || false;
         this.operation = n.operation;
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
-        this.status({fill:"grey",shape:"ring",text:RED._("mongodbstatus.connecting")});
+        this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
         var noerror = true;
 
@@ -83,7 +83,7 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = client.db();
+                    node.client = client;
                     var db = client.db();
                     //console.log( db);
                     noerror = true;
@@ -185,7 +185,7 @@ module.exports = function(RED) {
         node.on("close", function() {
             node.status({});
             if (node.tout) { clearTimeout(node.tout); }
-            if (node.clientDb) { node.clientDb.close(); }
+            if (node.client) { node.client.close(); }
         });
     }
     RED.nodes.registerType("mongodb out",MongoOutNode);
@@ -212,7 +212,7 @@ module.exports = function(RED) {
                 }
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
-                    node.clientDb = client.db();
+                    node.client = client;
                     var db = client.db();
                     noerror = true;
                     var coll;
@@ -274,13 +274,13 @@ module.exports = function(RED) {
                         }
                         else if (node.operation === "aggregate") {
                             msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
-                            coll.aggregate(msg.payload, function(err, result) {
+                            coll.aggregate(msg.payload, function(err, cursor) {
                                 if (err) {
                                     node.error(err);
                                 }
                                 else {
                                      cursor.toArray(function(cursorError, cursorDocs) {
-                                       console.log(cursorDocs);
+                                       //console.log(cursorDocs);
                                        if (cursorError) {
                                          node.error(cursorError);
                                        }
@@ -303,7 +303,7 @@ module.exports = function(RED) {
         node.on("close", function() {
             node.status({});
             if (node.tout) { clearTimeout(node.tout); }
-            if (node.clientDb) { node.clientDb.close(); }
+            if (node.client) { node.client.close(); }
         });
     }
     RED.nodes.registerType("mongodb in",MongoInNode);

@@ -1,7 +1,7 @@
 
 <!-- PUSHBULLET CONFIG -->
 
-<script type="text/x-red" data-template-name="pushbullet-config">
+<script type="text/html" data-template-name="pushbullet-config">
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
@@ -30,7 +30,7 @@
 
 <!-- PUSHBULLET OUT -->
 
-<script type="text/x-red" data-template-name="pushbullet">
+<script type="text/html" data-template-name="pushbullet">
     <div class="form-row">
         <label for="node-input-config"><i class="fa fa-user"></i> Config</label>
         <input type="text" id="node-input-config">
@@ -72,12 +72,9 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="pushbullet-migration-info" style="display: none;">
-        <p><i class="fa fa-random"></i> Configuration node has been migrated, please click Ok and then re-deploy flow to save settings.</p>
-    </div>
 </script>
 
-<script type="text/x-red" data-help-name="pushbullet">
+<script type="text/html" data-help-name="pushbullet">
     <p>Uses PushBullet to push <code>msg.payload</code> to a device that has the PushBullet app installed.</p>
     <p>Optionally uses <code>msg.topic</code> to set the title, if not already set in the properties.</p>
     <p>Optionally uses <code>msg.pushtype</code> to set the type of the push, if not already set in the properties.</p>
@@ -122,7 +119,6 @@
                     });
                 }
             }
-
             try {
                 getName(this.credentials.deviceid);
             }
@@ -131,7 +127,6 @@
                     getName(data.deviceid);
                 });
             }
-
             return this.name||this.devicename||this.title||"pushbullet";
         },
         labelStyle: function() {
@@ -139,9 +134,6 @@
         },
         oneditsave: function() {
             this.devicename = undefined;
-            if(this.migrationData) {
-                $.ajax('pushbullet/'+this.id+'/migrate?save=true');
-            }
         },
         oneditprepare: function() {
             var node = this, ddConfig = $('#node-input-config'), ddDevice = $('#node-input-deviceid'), ddPushtype = $('#node-input-pushtype');
@@ -181,7 +173,6 @@
                                 addCurrent = false;
                             }
                         }
-
                         if(currentDevice) {
                             if(addCurrent && currentDevice !== "_msg_") {
                                 ddDevice.append('<option value="'+currentDevice+'">'+currentDevice+'</option>');
@@ -191,75 +182,13 @@
                     });
                 }
             }
-
-            function checkMigration(cb) {
-                $.getJSON('pushbullet/'+node.id+'/migrate', function(data) {
-                    var showMigration = false;
-                    node.migrationData = data.config;
-                    if(data.migrated) {
-                        if(data.config) {
-                            var configId = data.config;
-                            var configType = 'pushbullet-config';
-                            var configTypeDef = RED.nodes.getType(configType);
-                            RED.nodes.add({
-                                type: configType,
-                                id: configId,
-                                name: "Imported",
-                                users: [node.id],
-                                label: configTypeDef.label,
-                                _def: configTypeDef,
-                            });
-                        }
-                        if(node.credentials) {
-                            if(node.credentials.pushkey) {
-                                if(ddConfig.find('option[value="'+data.config+'"]').length === 0) {
-                                    ddConfig.append('<option value="'+data.config+'">Imported</option>');
-                                }
-                                ddConfig.val(data.config);
-                                showMigration = true;
-                            }
-                            else {
-                                ddConfig.val("_ADD_");
-                            }
-
-                            if(node.credentials.deviceid) {
-                                ddDevice.append('<option value="'+node.credentials.deviceid+'">Imported</option>');
-                                ddDevice.val(node.credentials.deviceid);
-                                showMigration = true;
-                            }
-                            else {
-                                ddDevice.val("");
-                            }
-                        }
-                    }
-
-                    if(showMigration) {
-                        ddPushtype.val("note");
-                        node.dirty = true;
-                        $('#pushbullet-migration-info').show();
-                    }
-                    if(cb) {
-                        cb(showMigration);
-                    }
-                });
-            }
-
-            checkMigration(function(migrated) {
-                if(!migrated) {
-                    ddConfig.change(function() {
-                        if(ddConfig.val() && ddConfig.val() !== "_ADD_") {
-                            updateDeviceList();
-                        }
-                    });
-                }
-            });
         }
     });
 </script>
 
 <!-- PUSHBULLET IN -->
 
-<script type="text/x-red" data-template-name="pushbullet in">
+<script type="text/html" data-template-name="pushbullet in">
     <div class="form-row">
         <label for="node-input-config"><i class="fa fa-user"></i> Config</label>
         <input type="text" id="node-input-config" placeholder="Node-RED">
@@ -277,7 +206,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="pushbullet in">
+<script type="text/html" data-help-name="pushbullet in">
     <p>Receives Pushbullets from all devices. Messages contain the following data:</p>
     <p><code>msg.pushtype</code>: type of message</p>
     <p><code>msg.topic</code>: topic information from the push</p>

@@ -1,0 +1,26 @@
+{
+    "name": "node-red-node-annotate-image",
+    "version": "0.1.1",
+    "description": "A Node-RED node that can annotate an image",
+    "dependencies": {
+        "pureimage": "^0.2.5"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes/tree/master/utility/iamge-annotate"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "annotate": "annotate.js"
+        }
+    },
+    "contributors": [
+        {
+            "name": "Nick O'Leary"
+        }
+    ]
+}
