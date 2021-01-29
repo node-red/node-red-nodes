@@ -29,9 +29,26 @@
     <li>Light Groups</li>
     <li>Motion Detector</li>
   </ul>
-  <p>Sockets will generate msg.payload with values of 0/1/8 for off or on 
-  (8 is on but at standby load for insight sockets), lightswill return an
-  object like this:</p>
+  <p>Sockets will generate msg.payload with values of 0 or 1 (for off or on).</p> 
+  <p>Insight sockets will return an object like this (where state can also be 8 at standby):</p>
+  <pre>
+  {
+    state: "1"
+    onSince: 1611180205
+    onFor: 853
+    onToday: 18284
+    onTotal: 48785
+    averagePower: 12
+    power: 0
+    energyToday: 3772853
+    energyTotal: 10142468
+    sid: "uuid:adebe0c4-1dd1-11b2-8779-d6b6d5a8a932"
+    type: "socket"
+    name: "WeMo Insight"
+    id: "221536K12000B4"
+  }
+  </pre>
+  <p>Lights will return an object like this:</p>
   <pre>
   {
     name: 'Bedroom light',
@@ -164,7 +181,23 @@
 
 <script type="text/x-red" data-help-name="wemo lookup">
     <p>This node queries the current state of a device</p>
-    <p>For lights it return a msg.payload that looks like this:</p>
+    <p>For sockets it returns a msg.payload that looks like this:</p>
+<pre>{
+  state: 0
+}</pre>
+    <p>For insight sockets it returns a msg.payload that contains extra power parameters:</p>
+<pre>{
+  state: 0,
+  onSince: 1611179325,
+  onFor: 2545,
+  onToday: 17432,
+  onTotal: 47939,
+  averagePower: 13,
+  power: 3.205,
+  energyToday: 3596536,
+  energyTotal: 9966151
+}</pre>
+    <p>For lights it returns a msg.payload that looks like this:</p>
 <pre>{
   available: true,
   state: 0,
