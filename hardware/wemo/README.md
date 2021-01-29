@@ -73,16 +73,39 @@ And a lightbulb can look like this:
    }
 ```
 
-Insight
+An Insight socket output can look like this:
 
 ```
   {
     "raw": "<e:propertyset xmlns:e=\"urn:schemas-upnp-org:event-1-0\">\n<e:property>\n<BinaryState>8|1454271649|301|834|56717|1209600|8|1010|638602|12104165</BinaryState>\n</e:property>\n</e:propertyset>\n\n\r",
     "state": "8",
-    "power": 1.01,
+    "onSince": 1611179325,
+    "onFor": 2545,
+    "onToday": 17432,
+    "onTotal": 47939,
+    "averagePower": 13,
+    "power": 3.205,
+    "energyToday": 3596536,
+    "energyTotal": 9966151
     "sid": "uuid:ea808ecc-1dd1-11b2-9579-8e5c117d479e",
     "type": "socket",
     "name": "WeMo Insight",
     "id": "221450K1200F5C"
   }
 ```
+Some information about those power parameters:
++ `state`: Whether the device is currently ON or OFF (1 or 0).
++ `onSince`: The date and time when the device was last turned on or off (as a Unix timestamp).
++ `onFor`: How long the device was last ON for (seconds).
++ `onToday`: How long the device has been ON today (seconds).
++ `onTotal`: How long the device has been ON total (seconds).
++ `timespan`: Timespan over which onTotal is relevant (seconds). Typically 2 weeks except when first started up.
++ `averagePower`: Average power consumption (Watts).
++ `power`: Current power consumption (Watts).
++ `energyToday`: Energy used today (Watt-hours, or Wh).
++ `energyTotal`: Energy used in total (Wh).
++ `standbyLimit`: Minimum energy usage to register the insight as switched on ( milliwats, default 8000mW, configurable via WeMo App).
+
+## Lookup Node
+
+This node queries the current state of a device, when an input message is injected.  The output is very similar to that of the Input node.

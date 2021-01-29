@@ -69,6 +69,17 @@ var getSocketState = {
   ].join('\n')
 }
 
+var getInsightParameters = {
+  method: 'POST',
+  path: '/upnp/control/insight1',
+  action: '"urn:Belkin:service:insight:1#GetInsightParams"',
+  body: [
+    postbodyheader,
+    '<u:GetInsightParams xmlns:u="urn:Belkin:service:insight:1">',
+    '</u:GetInsightParams>',
+    postbodyfooter
+  ].join('\n')
+}    
 
 var setdevstatus = {};
 setdevstatus.path = '/upnp/control/bridge1';
@@ -107,6 +118,47 @@ var WeMoNG = function () {
 
   this.reverseCapabilityMap = reverseCapabilityMap;
 
+}
+
+function addInsightParams(insightParms, msg) {
+  var params = insightParms.split("|");
+
+  // Whether the device is ON or OFF (1 or 0)
+  msg.state = params[0];
+  
+  // The date and time when the device was last turned on or off (as a Unix timestamp)
+  msg.onSince = parseInt(params[1]);
+  
+  // How long the device was last ON for (seconds)
+  msg.onFor = parseInt(params[2]);
+
+  // How long the device has been ON today (seconds)
+  msg.onToday = parseInt(params[3]);
+  
+  // How long the device has been ON total (seconds)
+  msg.onTotal = parseInt(params[4]);
+  
+  // Timespan over which onTotal is relevant (seconds). Typically 2 weeks except when first started up.
+  //msg.timespan = parseInt(params[5]);
+  
+  // Average power consumption (Watts)
+  msg.averagePower = parseInt(params[6]);
+  
+  // Current power consumption (Watts).  Conversion required because the value is delivered in milliWatts.
+  // It is called 'power' (instead of currentPower) for backwards compatibility ...
+  msg.power = params[7]/1000;
+  
+  // Energy used today (Watt-hours, or Wh)
+  msg.energyToday = parseInt(params[8]);
+  
+  // Energy used in total (Wh)
+  msg.energyTotal = parseFloat(params[9]);
+  
+  // The 10-th parameter is not always available
+  if (params[10]) {
+    // Minimum energy usage to register the insight as switched on ( milliwats, default 8000mW, configurable via WeMo App)
+    msg.standbyLimit = parseInt(params[10]);
+  }
 }
 
 util.inherits(WeMoNG, events.EventEmitter);
@@ -222,8 +274,23 @@ WeMoNG.prototype.start = function start() {
               post_request.write(util.format(getenddevs.body, udn));
               post_request.end();
 
+            } else if (device.deviceType.indexOf('urn:Belkin:device:insight') != -1) {
+              // Insight socket (with power measurement)
+              var socket = {
+                "ip": location.hostname,
+                "port": location.port,
+                "name": device.friendlyName,
+                "type": "socket_insight",
+                "device": device
+              };
+              if (!_wemo.devices[device.serialNumber]) {
+                _wemo.devices[device.serialNumber] = socket;
+                _wemo.emit('discovered',device.serialNumber);
+              } else {
+                _wemo.devices[device.serialNumber] = socket;
+              }
             } else if (device.deviceType.indexOf('urn:Belkin:device') != -1) {
-              //socket
+              // classic socket (without power measurement)
               var socket = {
                 "ip": location.hostname,
                 "port": location.port,
@@ -359,6 +426,57 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
   });
 
   post_request.write(getSocketState.body);
+  post_request.end();
+
+  return def.promise;
+};
+
+WeMoNG.prototype.getInsightParams = function getInsightParams(socket) {
+  var postoptions = {
+    host: socket.ip,
+    port: socket.port,
+    path: getInsightParameters.path,
+    method: getInsightParameters.method,
+    headers: {
+      'SOAPACTION': getInsightParameters.action,
+      'Content-Type': 'text/xml; charset="utf-8"',
+      'Accept': ''
+    }
+  }
+
+  var def = Q.defer();
+
+  var post_request = http.request(postoptions, function(res){
+    var data = "";
+    res.setEncoding('utf8');
+    res.on('data', function(chunk){
+      data += chunk;
+    });
+
+    res.on('end', function(){
+      xml2js.parseString(data, function(err, result){
+        if (!err) {
+          var params = result["s:Envelope"]["s:Body"][0]["u:GetInsightParamsResponse"][0].InsightParams[0];
+          var msg = {};
+          addInsightParams(params, msg);
+          def.resolve(msg);
+        }
+      });
+    });
+  });
+
+  post_request.on('error', function (e) {
+    console.log(e);
+    console.log("%j", postoptions);
+    def.reject();
+  });
+
+  post_request.on('timeout', function(){
+    post_request.abort();
+    def.reject();
+  });
+
+  post_request.write(getInsightParameters.body);
   post_request.end();
 
   return def.promise;
@@ -500,9 +618,8 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
       } else if (prop.hasOwnProperty('BinaryState')) {
         msg.state = prop['BinaryState'][0];
         if (msg.state.length > 1) {
-          var parts = msg.state.split('|');
-          msg.state = parts[0];
-          msg.power = parts[7]/1000;
+          // Add all the insight params to the msg
+          addInsightParams(msg.state, msg);
         }
 
         def.resolve(msg);
