@@ -235,7 +235,6 @@ module.exports = function(RED) {
             node.serverConfig.MUCs[name] = "joined";
             xmpp.send(stanza);
         }
-
     }
 
     // separated out since we want the same functionality from both in and out nodes
