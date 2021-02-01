@@ -14,20 +14,25 @@ module.exports = function(RED) {
         }
         this.g = this.gap;
         this.property = n.property||"payload";
+        this.septopics = true;
+        if (n.septopics !== undefined && n.septopics === false) {
+            this.septopics = false;
+        }
 
         var node = this;
 
         node.previous = {};
         this.on("input",function(msg) {
             if (msg.hasOwnProperty("reset")) {
-                if (msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
+                if (node.septopics && msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
                     delete node.previous[msg.topic];
                 }
                 else { node.previous = {}; }
             }
             var value = RED.util.getMessageProperty(msg,node.property);
             if (value !== undefined) {
-                var t = msg.topic || "_no_topic";
+                var t = "_no_topic";
+                if (node.septopics) { t = msg.topic || t; }
                 if ((this.func === "rbe") || (this.func === "rbei")) {
                     var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
                     if (typeof(value) === "object") {
