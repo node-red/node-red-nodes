@@ -115,10 +115,14 @@ module.exports = function(RED) {
                                 text = textObj.getText();
                             }
                         }
-                        if (RED.settings.verbose || LOGITALL) {that.log("Culprit: "+that.lastUsed); }
+                        if (RED.settings.verbose || LOGITALL) {that.log("Culprit: "+that.lastUsed.id); }
                         if ("undefined" !== typeof that.lastUsed) {
                             that.lastUsed.status({fill:"red",shape:"ring",text:text});
                             that.lastUsed.warn(text);
+                            if (that.lastUsed.join) {
+                                // it was trying to MUC things up
+                                clearMUC(that);
+                            }
                         }
                         if (RED.settings.verbose || LOGITALL) {
                             that.log("We did wrong: "+text);
@@ -237,6 +241,13 @@ module.exports = function(RED) {
         }
     }
 
+    function clearMUC(config) {
+        //something has happened, so clear out our presence indicators
+        if (RED.settings.verbose || LOGITALL) {
+            config.log("cleared all MUC membership");
+        }
+        config.MUCs = {};
+    }
     // separated out since we want the same functionality from both in and out nodes
     function errorHandler(node, err){
         if (!node.quiet) {
@@ -250,8 +261,9 @@ module.exports = function(RED) {
             }
             // The error might be a string
             else if (err == "TimeoutError") {
-                // OK, this happens with OpenFire, suppress it.
-                node.status({fill:"grey",shape:"dot",text:"opening"});
+                // OK, this happens with OpenFire, suppress it, but invalidate MUC membership as it will need to be re-established.
+                clearMUC(node.serverConfig);
+                node.status({fill:"grey",shape:"dot",text:"TimeoutError"});
                 node.log("Timed out! ",err);
                 //                    node.status({fill:"red",shape:"ring",text:"XMPP timeout"});
             }
@@ -271,7 +283,7 @@ module.exports = function(RED) {
                 node.status({fill:"red",shape:"ring",text:"timeout"});
             }
             else if (err.errno === "ENOTFOUND") {
-                node.error("Server doesn't exist "+xmpp.options.service,err);
+                node.error("Server doesn't exist "+node.serverConfig.server,err);
                 node.status({fill:"red",shape:"ring",text:"bad address"});
             }
             // nothing we've seen before!
