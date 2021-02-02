@@ -50,6 +50,8 @@ module.exports = function(RED) {
         this.connected = false;
         // store the nodes that have us as config so we know when to tear it all down.
         this.users = {};
+        // Store the chatrooms (MUC) that we've joined (sent "presence" XML to) already
+        this.MUCs = {};
         // helper variable, because "this" changes definition inside a callback
         var that = this;
 
@@ -216,14 +218,23 @@ module.exports = function(RED) {
         // if we want to support passwords, we need to add that as a child of the x element
         // (third argument to the x/muc/children )
         // We also turn off chat history (maxstanzas 0) because that's not what this node is about.
-        var stanza = xml('presence',
-                         {"to": name},
-                         xml("x",'http://jabber.org/protocol/muc'),
-                         { maxstanzas:0, seconds:1 }
-                        );
-        node.serverConfig.used(node);
-        xmpp.send(stanza);
-
+        // Yes, there's a race condition, but it's not a huge problem to send two messages
+        // so we don't care.
+        if (name in node.serverConfig.MUCs) {
+            if (RED.settings.verbose || LOGITALL) {
+                node.log("already joined MUC "+name);
+            }
+        }
+        else {
+            var stanza = xml('presence',
+                             {"to": name},
+                             xml("x",'http://jabber.org/protocol/muc'),
+                             { maxstanzas:0, seconds:1 }
+                            );
+            node.serverConfig.used(node);
+            node.serverConfig.MUCs[name] = "joined";
+            xmpp.send(stanza);
+        }
     }
 
     // separated out since we want the same functionality from both in and out nodes
@@ -579,7 +590,13 @@ module.exports = function(RED) {
                 var to = node.to || msg.topic || "";
                 if (to !== "") {
                     var message;
-                    var type = node.join? "groupchat":"chat";
+                    var type = "chat";
+                    if (node.join) {
+                        // we want to connect to groupchat / chatroom / MUC
+                        type = "groupchat";
+                        // joinMUC will do nothing if we're already joined
+                        joinMUC(node, xmpp, to+'/'+node.nick);
+                    }
                     if (node.sendAll) {
                         message = xml(
                             "message",
