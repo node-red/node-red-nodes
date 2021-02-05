@@ -6,7 +6,8 @@ module.exports = function(RED) {
     function DaemonNode(n) {
         RED.nodes.createNode(this,n);
         this.cmd = n.command;
-        this.args = n.args.trim().split(" ") || [];
+        //this.args = n.args.trim().split(" ") || [];
+        this.args = n.args.trim().match(/("[^"]*")|[^ ]+/g);
         this.cr = n.cr;
         this.op = n.op;
         this.redo = n.redo;
