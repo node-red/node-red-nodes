@@ -160,7 +160,7 @@ module.exports = function(RED) {
         if (this.baseurl.substring(0,5) === "https") { http = require("https"); }
         else { http = require("http"); }
         this.on("input", function(msg) {
-            this.url = this.baseurl + '/feed/value.json';
+            this.url = this.baseurl + '/feed/aget.json';
             this.url += '&apikey='+this.apikey;
             var feedid = this.feedid || msg.feedid;
             if (feedid !== "") {
@@ -169,14 +169,17 @@ module.exports = function(RED) {
             http.get(this.url, function(res) {
                 msg.rc = res.statusCode;
                 msg.payload = "";
+                msg.feed_data = "";
                 res.setEncoding('utf8');
                 res.on('data', function(chunk) {
-                    msg.payload += chunk;
+                    msg.feed_data += chunk;
                 });
                 res.on('end', function() {
                     if (msg.rc === 200) {
                         try {
-                            msg.payload = JSON.parse(msg.payload);
+                            msg.feed_data = JSON.parse(msg.feed_data);
+                            msg.topic = msg.feed_data.name;
+                            msg.payload = msg.feed_data.value;
                         }
                         catch(err) {
                             // Failed to parse, pass it on
