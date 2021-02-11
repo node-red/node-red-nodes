@@ -42,7 +42,7 @@ module.exports = function(RED) {
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
-            if (!msg.payload) { msg.payload = ""; }
+            if (typeof msg.payload === 'undefined') { msg.payload = "(undefined msg.payload)"; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
             }

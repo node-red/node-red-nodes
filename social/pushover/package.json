@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pushover",
-    "version"       : "0.0.20",
+    "version"       : "0.0.21",
     "description"   : "A Node-RED node to send alerts via Pushover",
     "dependencies"  : {
         "pushover-notifications"   : "^1.2.2"
