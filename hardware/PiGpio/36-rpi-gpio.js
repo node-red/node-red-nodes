@@ -56,7 +56,7 @@ module.exports = function(RED) {
                     for (var i = 0; i < d.length; i++) {
                         if (d[i] === '') { return; }
                         if (node.running && node.buttonState !== -1 && !isNaN(Number(d[i])) && node.buttonState !== d[i]) {
-                            node.send({ topic:"pi/"+node.pin, payload:Number(d[i]) });
+                            node.send({ topic:"gpio/"+node.pin, payload:Number(d[i]) });
                         }
                         node.buttonState = d[i];
                         node.status({fill:"green",shape:"dot",text:d[i]});
@@ -97,7 +97,7 @@ module.exports = function(RED) {
                 if (node.intype == "up") { val = 1; }
                 if (node.intype == "down") { val = 0; }
                 setTimeout(function() {
-                    node.send({ topic:"pi/"+node.pin, payload:val });
+                    node.send({ topic:"gpio/"+node.pin, payload:val });
                     node.status({fill:"grey",shape:"dot",text:RED._("rpi-gpio.status.na",{value:val})});
                 },250);
             }
