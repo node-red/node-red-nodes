@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var SunCalc = require('suncalc');
-    var moment = require('moment-timezone');
+    const spacetime = require("spacetime")
 
     function TimeswitchNode(n) {
         RED.nodes.createNode(this, n);
@@ -44,8 +44,8 @@ module.exports = function(RED) {
         this.on("input", function(msg2) {
             if (msg2.payload === "reset") { ison = 0; }
 
-            var timeOffset = moment.tz.zone(this.timezone).utcOffset(Date.now()) * 60 * 1000;
-            var now = new Date(Date.now() - timeOffset);
+            var timeOffset = spacetime(Date.now()).goto(this.timezone.toLowerCase()).timezone().current.offset * 60 * 60 * 1000;
+            var now = new Date(Date.now() + timeOffset);
             var nowMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), 0);
             var midnightMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0);
             var today = Math.round((nowMillis - midnightMillis) / 60000) % 1440;
