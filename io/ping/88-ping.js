@@ -126,7 +126,7 @@ module.exports = function(RED) {
                 if (plat == "linux" || plat == "android") {
                     commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"];
                 } else if (plat == "darwin" || plat == "freebsd") {
-                    commandLineOptions = ["-n", "-X", timeoutS, "-c", "1"] //NOTE: dont know if -X works on mac OSX
+                    commandLineOptions = ["-n", "-c", "1"] //NOTE: dont know if -X works on mac OSX
                 } else {
                     node.error("Sorry IPv6 on your platform - "+plat+" - is not supported.", msg);
                 }
