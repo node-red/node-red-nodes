@@ -161,12 +161,6 @@ module.exports = function(RED) {
                         that.lastUsed.warn(stanza.getChild('error'));
                     }
                 }
-                else if (stanza.attrs.type === 'result') {
-                    // AM To-Do check for 'bind' result with our current jid
-                    var query = stanza.getChild('query');
-                    if (RED.settings.verbose || LOGITALL) {that.log("result!"); }
-                    if (RED.settings.verbose || LOGITALL) {that.log(query); }
-                }
             }
         });
 
@@ -221,15 +215,6 @@ module.exports = function(RED) {
         var stanza = xml('iq',
             {type:'get', id:id, to:thing},
             xml('query', 'http://jabber.org/protocol/disco#items')
-        );
-        xmpp.send(stanza);
-    }
-
-    function getInfo(thing,id,xmpp) {
-        // Now try to get a list of all info about a thing
-        var stanza = xml('iq',
-            {type:'get', id:id, to:thing},
-            xml('query', 'http://jabber.org/protocol/disco#info')
         );
         xmpp.send(stanza);
     }
@@ -404,7 +389,7 @@ module.exports = function(RED) {
 
         // Meat of it, a stanza object contains chat messages (and other things)
         xmpp.on('stanza', async (stanza) => {
-            if (RED.settings.verbose || LOGITALL) {node.log(stanza); }
+            if (RED.settings.verbose || LOGITALL) { node.log(stanza); }
             if (stanza.is('message')) {
                 if (stanza.attrs.type == 'chat') {
                     var body = stanza.getChild('body');
@@ -415,7 +400,7 @@ module.exports = function(RED) {
                             msg.topic = stanza.attrs.from
                         }
                         else { msg.topic = ids[0]; }
-                        // if (RED.settings.verbose || LOGITALL) {node.log("Received a message from "+stanza.attrs.from); }
+                        // if (RED.settings.verbose || LOGITALL) { node.log("Received a message from "+stanza.attrs.from); }
                         if (!node.join && ((node.from[0] === "") || (node.from.includes(stanza.attrs.to)))) {
                             node.send([msg,null]);
                         }
@@ -473,8 +458,8 @@ module.exports = function(RED) {
             else if (stanza.attrs.type === 'result') {
                 // AM To-Do check for 'bind' result with our current jid
                 var query = stanza.getChild('query');
-                if (RED.settings.verbose || LOGITALL) {this.log("result!"); }
-                if (RED.settings.verbose || LOGITALL) {this.log(query); }
+                if (RED.settings.verbose || LOGITALL) { this.log("result!"); }
+                if (RED.settings.verbose || LOGITALL) { this.log(query); }
 
                 // handle query for list of rooms available
                 if (query && query.attrs.hasOwnProperty("xmlns") && query.attrs["xmlns"] === "http://jabber.org/protocol/disco#items") {
@@ -494,6 +479,21 @@ module.exports = function(RED) {
                         }
                     }
                     if (RED.settings.verbose || LOGITALL) {this.log("ROOMS:"+this.server+this.roomsFound); }
+                }
+                if (query && query.attrs.hasOwnProperty("xmlns") && query.attrs["xmlns"] === "http://jabber.org/protocol/disco#info") {
+                    var fe = [];
+                    var _items = stanza.getChild('query').getChildren('feature');
+                    for (var i = 0; i<_items.length; i++) {
+                        fe.push(_items[i].attrs);
+                    }
+                    var id = []
+                    var _idents = stanza.getChild('query').getChildren('identity');
+                    for (var i = 0; i<_idents.length; i++) {
+                        id.push(_idents[i].attrs);
+                    }
+                    var from = stanza.attrs.from;
+                    var msg = {topic:from, payload: { identity:id, features:fe} };
+                    node.send([null,msg]);
                 }
             }
         });
@@ -652,7 +652,17 @@ module.exports = function(RED) {
                         )
                     );
                     node.serverConfig.used(node);
-                    if (RED.settings.verbose || LOGITALL) {node.log("sending stanza "+stanza.toString()); }
+                    if (RED.settings.verbose || LOGITALL) { node.log("sending stanza "+stanza.toString()); }
+                    xmpp.send(stanza);
+                }
+                else if (msg.command === "info") {
+                    var to = node.to || msg.topic || "";
+                    var stanza = xml('iq',
+                        {type:'get', id:node.id, to:to},
+                        xml('query', 'http://jabber.org/protocol/disco#info')
+                    );
+                    node.serverConfig.used(node);
+                    if (RED.settings.verbose || LOGITALL) { node.log("sending stanza "+stanza.toString()); }
                     xmpp.send(stanza);
                 }
             }
@@ -698,7 +708,7 @@ module.exports = function(RED) {
         });
 
         node.on("close", function(removed, done) {
-            if (RED.settings.verbose || LOGITALL) {node.log("Closing"); }
+            if (RED.settings.verbose || LOGITALL) { node.log("Closing"); }
             node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
             node.serverConfig.deregister(node, done);
         });
