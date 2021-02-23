@@ -322,7 +322,8 @@ module.exports = function(RED) {
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         // Yes, it's called "from", don't ask me why; I don't know why
-        this.from = (n.to || "").trim();
+        // (because it's where you are asking to get messages from...)
+        this.from = ((n.to || "").split(':')).map(s => s.trim());
         this.quiet = false;
         // MUC == Multi-User-Chat == chatroom
         //this.muc = this.join && (this.from !== "")
@@ -357,13 +358,15 @@ module.exports = function(RED) {
             node.quiet = false;
             node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
             if (node.join) {
-                if (node.from === "") {
+                if (node.from[0] === "") {
                     // try to get list of all rooms and join them all.
                     getItems(this.serverConfig.server,this.serverConfig.id,xmpp);
                 }
                 else {
                     // if we want to use a chatroom, we need to tell the server we want to join it
-                    joinMUC(node, xmpp, node.from+'/'+node.nick);
+                    for (var i=0; i<node.from.length; i++) {
+                        joinMUC(node, xmpp, node.from[i]+'/'+node.nick);
+                    }
                 }
             }
         });
@@ -413,7 +416,7 @@ module.exports = function(RED) {
                         }
                         else { msg.topic = ids[0]; }
                         // if (RED.settings.verbose || LOGITALL) {node.log("Received a message from "+stanza.attrs.from); }
-                        if (!node.join && ((node.from === "") || (node.from === stanza.attrs.to))) {
+                        if (!node.join && ((node.from[0] === "") || (node.from.includes(stanza.attrs.to)))) {
                             node.send([msg,null]);
                         }
                     }
@@ -429,7 +432,7 @@ module.exports = function(RED) {
                     }
                     var msg = { topic:from, payload:payload, room:conference };
                     //if (from && stanza.attrs.from != node.nick && from != node.nick) {
-                    if (from && node.join && (node.from === "" || node.from === conference)) {
+                    if (from && node.join && (node.from[0] === "" || node.from.includes(conference))) {
                         node.send([msg,null]);
                     }
                     //}
