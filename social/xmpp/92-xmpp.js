@@ -322,10 +322,10 @@ module.exports = function(RED) {
         this.join = n.join || false;
         this.sendAll = n.sendObject;
         // Yes, it's called "from", don't ask me why; I don't know why
-        this.from = n.to || "";
+        this.from = (n.to || "").trim();
         this.quiet = false;
         // MUC == Multi-User-Chat == chatroom
-        this.muc = this.join && (this.from !== "")
+        //this.muc = this.join && (this.from !== "")
         // list of possible rooms - queried from server
         this.roomsFound = {};
         var node = this;
@@ -356,8 +356,8 @@ module.exports = function(RED) {
         xmpp.on('online', async address => {
             node.quiet = false;
             node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-            if (node.muc) {
-                if (node.from.toUpperCase() === "ALL_ROOMS") {
+            if (node.join) {
+                if (node.from === "") {
                     // try to get list of all rooms and join them all.
                     getItems(this.serverConfig.server,this.serverConfig.id,xmpp);
                 }
@@ -428,11 +428,11 @@ module.exports = function(RED) {
                         payload = body.getText();
                     }
                     var msg = { topic:from, payload:payload, room:conference };
-                    if (from && stanza.attrs.from != node.nick && from != node.nick) {
-                        if (node.from.toUpperCase() === "ALL_ROOMS" || node.from === conference) {
-                            node.send([msg,null]);
-                        }
+                    //if (from && stanza.attrs.from != node.nick && from != node.nick) {
+                    if (from && node.join && (node.from === "" || node.from === conference)) {
+                        node.send([msg,null]);
                     }
+                    //}
                 }
             }
             else if (stanza.is('presence')) {
