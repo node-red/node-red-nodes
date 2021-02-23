@@ -17,6 +17,9 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips"><b>Note:</b> By setting Buddy to "ALL_ROOMS" and ticking "Is a chat room",
+        the node will try to listen to all the rooms the user has access to.
+    </div>
 </script>
 
 <script type="text/html" data-help-name="xmpp in">
@@ -79,7 +82,6 @@
 <script type="text/html" data-help-name="xmpp out">
     <p>Connects to an XMPP server to send messages.</p>
     <p>The <b>To</b> field is optional. If not set the <code>msg.topic</code> property of the message is used.</p>
-    <p>If you are joining a room then the <b>To</b> field must be supplied.</p>
     <p>You may also send a msg with <code>msg.presence</code> to set your presence to one of <i>chat, away, dnd</i> or <i>xa</i>.
     If you do so then the <code>msg.payload</code> will set your status message.</p>
 </script>
