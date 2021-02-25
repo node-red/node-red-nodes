@@ -15,7 +15,7 @@ module.exports = function(RED) {
         this.duskoff = n.duskoff;
         this.dawnoff = n.dawnoff;
         this.mytopic = n.mytopic;
-        this.timezone = n.timezone;
+        this.timezone = n.timezone || "UTC";
 
         this.sun = n.sun;
         this.mon = n.mon;
