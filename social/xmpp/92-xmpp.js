@@ -97,6 +97,7 @@ module.exports = function(RED) {
         // this means we need to figure out which node might have sent it
         // we also deal with subscriptions (i.e. presence information) here
         this.client.on('stanza', async (stanza) => {
+            //console.log("STAN",stanza.toString())
             if (stanza.is('message')) {
                 if (stanza.attrs.type == 'error') {
                     if (RED.settings.verbose || LOGITALL) {
@@ -106,27 +107,27 @@ module.exports = function(RED) {
                     var err = stanza.getChild('error');
                     if (err) {
                         var textObj = err.getChild('text');
-                        var text = "node-red:common.status.error";
+                        var text = "error";
                         if (typeof textObj !== "undefined") {
                             text = textObj.getText();
                         }
                         else {
-                            textObj = err.getChild('code');
+                            textObj = err.getAttr('code');
                             if (typeof textObj !== "undefined") {
-                                text = textObj.getText();
+                                text = textObj;
                             }
                         }
                         if (RED.settings.verbose || LOGITALL) {that.log("Culprit: "+that.lastUsed.id); }
                         if (typeof that.lastUsed !== "undefined") {
-                            that.lastUsed.status({fill:"red",shape:"ring",text:text});
-                            that.lastUsed.warn(text);
+                            that.lastUsed.status({fill:"red",shape:"ring",text:"error "+text});
+                            that.lastUsed.warn("Error "+text);
                             if (that.lastUsed.join) {
                                 // it was trying to MUC things up
                                 clearMUC(that);
                             }
                         }
                         if (RED.settings.verbose || LOGITALL) {
-                            that.log("We did wrong: "+text);
+                            that.log("We did wrong: Error "+text);
                             that.log(stanza);
                         }
 
@@ -149,6 +150,24 @@ module.exports = function(RED) {
                         break;
                     default:
                         that.log("Was told we've "+stanza.attrs.type+" from "+stanza.attrs.from+" but we don't really care");
+                    }
+                }
+                if (stanza.attrs.to.indexOf(that.jid) !== -1) {
+                    var _x = stanza.getChild("x")
+                    if (_x !== undefined) {
+                        var _stat = _x.getChildren("status");
+                        for (var i = 0; i<_stat.length; i++) {
+                            if (_stat[i].attrs.code == 201) {
+                                if (RED.settings.verbose || LOGITALL) {that.log("created new room"); }
+                                var stanza = xml('iq',
+                                    {type:'set', id:that.id, from:that.jid, to:stanza.attrs.from.split('/')[0]},
+                                    xml('query', 'http://jabber.org/protocol/muc#owner',
+                                        xml('x', {xmlns:'jabber:x:data', type:'submit'})
+                                    )
+                                );
+                                that.client.send(stanza);
+                            }
+                        }
                     }
                 }
             }
@@ -188,18 +207,22 @@ module.exports = function(RED) {
 
         // gets called when the node is destroyed, e.g. if N-R is being stopped.
         this.on("close", async done => {
-            if (that.client.connected) {
-                await that.client.send(xml('presence', {type: 'unavailable'}));
-                try{
-                    if (RED.settings.verbose || LOGITALL) {
-                        that.log("Calling stop() after close, status is "+that.client.status);
-                    }
-                    await that.client.stop().then(that.log("XMPP client stopped")).catch(error=>{that.warn("Got an error whilst closing xmpp session: "+error)});
-                }
-                catch(e) {
-                    that.warn(e);
-                }
+            const rooms = Object.keys(this.MUCs)
+            for (const room of rooms) {
+                await that.client.send(xml('presence', {to:room, type:'unavailable'}));
             }
+            // if (that.client.connected) {
+            await that.client.send(xml('presence', {type:'unavailable'}));
+            try{
+                if (RED.settings.verbose || LOGITALL) {
+                    that.log("Calling stop() after close, status is "+that.client.status);
+                }
+                await that.client.stop().then(that.log("XMPP client stopped")).catch(error=>{that.warn("Got an error whilst closing xmpp session: "+error)});
+            }
+            catch(e) {
+                that.warn(e);
+            }
+            // }
             done();
         });
     }
@@ -227,9 +250,7 @@ module.exports = function(RED) {
         // Yes, there's a race condition, but it's not a huge problem to send two messages
         // so we don't care.
         if (name in node.serverConfig.MUCs) {
-            if (RED.settings.verbose || LOGITALL) {
-                node.log("already joined MUC "+name);
-            }
+            if (RED.settings.verbose || LOGITALL) { node.log("already joined MUC "+name); }
         }
         else {
             var stanza = xml('presence',
@@ -240,8 +261,8 @@ module.exports = function(RED) {
             );
             node.serverConfig.used(node);
             node.serverConfig.MUCs[name] = "joined";
+            if (RED.settings.verbose || LOGITALL) { node.log("JOINED "+name); }
             xmpp.send(stanza);
-            if (RED.settings.verbose || LOGITALL) { node.log("JOINED",name); }
         }
     }
 
@@ -293,7 +314,7 @@ module.exports = function(RED) {
             // nothing we've seen before!
             else {
                 node.error("Unknown error: "+err,err);
-                node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                node.status({fill:"red",shape:"ring",text:"error"});
             }
         }
     }
@@ -312,9 +333,20 @@ module.exports = function(RED) {
         this.quiet = false;
         // MUC == Multi-User-Chat == chatroom
         //this.muc = this.join && (this.from !== "")
-        // list of possible rooms - queried from server
-        this.roomsFound = {};
         var node = this;
+
+        var joinrooms = function() {
+            if (node.from[0] === "") {
+                // try to get list of all rooms and join them all.
+                getItems(node.serverConfig.server, node.serverConfig.id, xmpp);
+            }
+            else {
+                // if we want to use a chatroom, we need to tell the server we want to join it
+                for (var i=0; i<node.from.length; i++) {
+                    joinMUC(node, xmpp, node.from[i]+'/'+node.nick);
+                }
+            }
+        }
 
         var xmpp = this.serverConfig.client;
 
@@ -333,7 +365,7 @@ module.exports = function(RED) {
 
         // if we're already connected, then do the actions now, otherwise register a callback
         // if (xmpp.status === "online") {
-        //     node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+        //     node.status({fill:"green",shape:"dot",text:"connected"});
         //     if (node.muc) {
         //         joinMUC(node, xmpp, node.from+'/'+node.nick);
         //     }
@@ -341,28 +373,20 @@ module.exports = function(RED) {
         // sod it, register it anyway, that way things will work better on a reconnect:
         xmpp.on('online', async address => {
             node.quiet = false;
-            node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+            node.status({fill:"green",shape:"dot",text:"connected"});
             if (node.join) {
-                if (node.from[0] === "") {
-                    // try to get list of all rooms and join them all.
-                    getItems(this.serverConfig.server,this.serverConfig.id,xmpp);
-                }
-                else {
-                    // if we want to use a chatroom, we need to tell the server we want to join it
-                    for (var i=0; i<node.from.length; i++) {
-                        joinMUC(node, xmpp, node.from[i]+'/'+node.nick);
-                    }
-                }
+                node.jointick = setInterval(function() { joinrooms(); }, 60000);
+                joinrooms();
             }
         });
 
         xmpp.on('connecting', async address => {
             if (!node.quiet) {
-                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+                node.status({fill:"grey",shape:"dot",text:"connecting"});
             }
         });
         xmpp.on('connect', async address => {
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connected"});
+            node.status({fill:"grey",shape:"dot",text:"connected"});
         });
         xmpp.on('opening', async address => {
             node.status({fill:"grey",shape:"dot",text:"opening"});
@@ -374,7 +398,7 @@ module.exports = function(RED) {
             node.status({fill:"grey",shape:"dot",text:"closing"});
         });
         xmpp.on('close', async address => {
-            node.status({fill:"grey",shape:"dot",text:"closed"});
+            node.status({fill:"grey",shape:"ring",text:"closed"});
         });
         xmpp.on('disconnecting', async address => {
             node.status({fill:"grey",shape:"dot",text:"disconnecting"});
@@ -391,6 +415,7 @@ module.exports = function(RED) {
         xmpp.on('stanza', async (stanza) => {
             if (RED.settings.verbose || LOGITALL) { node.log(stanza); }
             if (stanza.is('message')) {
+                // console.log(stanza.toString())
                 if (stanza.attrs.type == 'chat') {
                     var body = stanza.getChild('body');
                     if (body) {
@@ -470,15 +495,16 @@ module.exports = function(RED) {
                             getItems(_items[i].attrs.jid,this.serverConfig.jid,xmpp);
                         }
                         else {
-                            node.roomsFound[_items[i].attrs.name] = _items[i].attrs.jid;
                             var name = _items[i].attrs.jid+'/'+node.serverConfig.username;
                             if (!(name in node.serverConfig.MUCs)) {
-                                if (RED.settings.verbose || LOGITALL) {this.log("Need to Join room:"+name); }
-                                joinMUC(node, xmpp, name)
+                                if (RED.settings.verbose || LOGITALL) { node.log("Need to Join room:"+name); }
+                                joinMUC(node, xmpp, name);
+                            }
+                            else {
+                                if (RED.settings.verbose || LOGITALL) { node.log("Already joined:"+name); }
                             }
                         }
                     }
-                    if (RED.settings.verbose || LOGITALL) {this.log("ROOMS:"+this.server+this.roomsFound); }
                 }
                 if (query && query.attrs.hasOwnProperty("xmlns") && query.attrs["xmlns"] === "http://jabber.org/protocol/disco#info") {
                     var fe = [];
@@ -507,26 +533,30 @@ module.exports = function(RED) {
         // Now actually make the connection
         try {
             if (xmpp.status === "online") {
-                node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+                node.status({fill:"green",shape:"dot",text:"connected"});
             }
             else {
-                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+                node.status({fill:"grey",shape:"dot",text:"connecting"});
                 if (xmpp.status === "offline") {
                     if (RED.settings.verbose || LOGITALL) {
                         node.log("starting xmpp client");
                     }
-                    xmpp.start().catch(error => {node.warn("Got error on start: "+error); node.warn("XMPP Status is now: "+xmpp.status)});
+                    xmpp.start().catch(error => {
+                        node.warn("Got error on start: "+error);
+                        node.warn("XMPP Status is now: "+xmpp.status)
+                    });
                 }
             }
         }
         catch(e) {
             node.error("Bad xmpp configuration; service: "+xmpp.options.service+" jid: "+node.serverConfig.jid);
             node.warn(e.stack);
-            node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+            node.status({fill:"red",shape:"ring",text:"disconnected"});
         }
 
         node.on("close", function(removed, done) {
-            node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+            if (node.jointick) { clearInterval(node.jointick); }
+            node.status({fill:"grey",shape:"ring",text:"disconnected"});
             node.serverConfig.deregister(node, done);
         });
     }
@@ -563,7 +593,7 @@ module.exports = function(RED) {
 
         // if we're already connected, then do the actions now, otherwise register a callback
         // if (xmpp.status === "online") {
-        //     node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+        //     node.status({fill:"green",shape:"dot",text:"connected"});
         //     if (node.muc){
         //         // if we want to use a chatroom, we need to tell the server we want to join it
         //         joinMUC(node, xmpp, node.from+'/'+node.nick);
@@ -572,7 +602,7 @@ module.exports = function(RED) {
         // sod it, register it anyway, that way things will work better on a reconnect:
         xmpp.on('online', function(data) {
             node.quiet = false;
-            node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+            node.status({fill:"green",shape:"dot",text:"connected"});
             if (node.muc) {
                 // if we want to use a chatroom, we need to tell the server we want to join it
                 joinMUC(node, xmpp, node.from+'/'+node.nick);
@@ -581,11 +611,11 @@ module.exports = function(RED) {
 
         xmpp.on('connecting', async address => {
             if (!node.quiet) {
-                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+                node.status({fill:"grey",shape:"dot",text:"connecting"});
             }
         });
         xmpp.on('connect', async address => {
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connected"});
+            node.status({fill:"grey",shape:"dot",text:"connected"});
         });
         xmpp.on('opening', async address => {
             node.status({fill:"grey",shape:"dot",text:"opening"});
@@ -609,6 +639,11 @@ module.exports = function(RED) {
             errorHandler(node, err)
         });
 
+        xmpp.on('stanza', async (stanza) => {
+            // if (stanza.is('presence')) {
+            // }
+        });
+
         //register with config
         this.serverConfig.register(this);
         // Now actually make the connection
@@ -616,13 +651,13 @@ module.exports = function(RED) {
             node.status({fill:"green",shape:"dot",text:"online"});
         }
         else {
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+            node.status({fill:"grey",shape:"dot",text:"connecting"});
             if (xmpp.status === "offline") {
                 xmpp.start().catch(error => {
                     node.error("Bad xmpp configuration; service: "+xmpp.options.service+" jid: "+node.serverConfig.jid);
                     node.warn(error);
                     node.warn(error.stack);
-                    node.status({fill:"red",shape:"ring",text:"node-red:common.status.error"});
+                    node.status({fill:"red",shape:"ring",text:"error"});
                 });
             }
         }
@@ -683,7 +718,6 @@ module.exports = function(RED) {
                             { type: type, to: to },
                             xml("body", {}, JSON.stringify(msg))
                         );
-
                     }
                     else if (msg.payload) {
                         if (typeof(msg.payload) === "object") {
@@ -709,7 +743,7 @@ module.exports = function(RED) {
 
         node.on("close", function(removed, done) {
             if (RED.settings.verbose || LOGITALL) { node.log("Closing"); }
-            node.status({fill:"red",shape:"ring",text:"node-red:common.status.disconnected"});
+            node.status({fill:"grey",shape:"ring",text:"disconnected"});
             node.serverConfig.deregister(node, done);
         });
     }
