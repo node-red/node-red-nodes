@@ -27,7 +27,7 @@ describe('rbe node', function() {
         });
     });
 
-    it('should only send output if payload changes (rbe)', function(done) {
+    it('should only send output if payload changes - with multiple topics (rbe)', function(done) {
         var flow = [{"id":"n1", "type":"rbe", func:"rbe", gap:"0", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
@@ -57,8 +57,24 @@ describe('rbe node', function() {
                     msg.should.have.a.property("payload",false);
                     c+=1;
                 }
-                else  {
+                else if (c == 5) {
                     msg.should.have.a.property("payload",true);
+                    c+=1;
+                }
+                else if (c == 6) {
+                    msg.should.have.a.property("topic","a");
+                    msg.should.have.a.property("payload",1);
+                    c+=1;
+                }
+                else if (c == 7) {
+                    msg.should.have.a.property("topic","b");
+                    msg.should.have.a.property("payload",1);
+                    c+=1;
+                }
+                else  {
+                    c += 1;
+                    msg.should.have.a.property("topic","c");
+                    msg.should.have.a.property("payload",1);
                     done();
                 }
             });
@@ -74,6 +90,80 @@ describe('rbe node', function() {
             n1.emit("input", {payload:false});
             n1.emit("input", {payload:false});
             n1.emit("input", {payload:true});
+
+            n1.emit("input", {topic:"a",payload:1});
+            n1.emit("input", {topic:"b",payload:1});
+            n1.emit("input", {topic:"b",payload:1});
+            n1.emit("input", {topic:"a",payload:1});
+            n1.emit("input", {topic:"c",payload:1});
+
+        });
+    });
+
+    it('should ignore multiple topics if told to (rbe)', function(done) {
+        var flow = [{id:"n1", type:"rbe", func:"rbe", gap:"0", septopics:false, wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                if (c === 0) {
+                    msg.should.have.a.property("payload", "a");
+                    c+=1;
+                }
+                else if (c === 1) {
+                    msg.should.have.a.property("payload", 2);
+                    c+=1;
+                }
+                else if (c == 2) {
+                    msg.should.have.a.property("payload");
+                    msg.payload.should.have.a.property("b",1);
+                    msg.payload.should.have.a.property("c",2);
+                    c+=1;
+                }
+                else if (c == 3) {
+                    msg.should.have.a.property("payload",true);
+                    c+=1;
+                }
+                else if (c == 4) {
+                    msg.should.have.a.property("payload",false);
+                    c+=1;
+                }
+                else if (c == 5) {
+                    msg.should.have.a.property("payload",true);
+                    c+=1;
+                }
+                else if (c == 6) {
+                    msg.should.have.a.property("topic","a");
+                    msg.should.have.a.property("payload",1);
+                    c+=1;
+                }
+                else  {
+                    msg.should.have.a.property("topic","a");
+                    msg.should.have.a.property("payload",2);
+                    done();
+                }
+            });
+            n1.emit("input", {topic:"a",payload:"a"});
+            n1.emit("input", {topic:"b",payload:"a"});
+            n1.emit("input", {topic:"c",payload:"a"});
+            n1.emit("input", {topic:"a",payload:2});
+            n1.emit("input", {topic:"b",payload:2});
+            n1.emit("input", {payload:{b:1,c:2}});
+            n1.emit("input", {payload:{c:2,b:1}});
+            n1.emit("input", {payload:{c:2,b:1}});
+            n1.emit("input", {topic:"a",payload:true});
+            n1.emit("input", {topic:"b",payload:false});
+            n1.emit("input", {topic:"c",payload:false});
+            n1.emit("input", {topic:"d",payload:true});
+
+            n1.emit("input", {topic:"a",payload:1});
+            n1.emit("input", {topic:"b",payload:1});
+            n1.emit("input", {topic:"c",payload:1});
+            n1.emit("input", {topic:"d",payload:1});
+            n1.emit("input", {topic:"a",payload:2});
+
         });
     });
 

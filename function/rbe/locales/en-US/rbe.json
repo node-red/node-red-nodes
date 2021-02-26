@@ -5,7 +5,8 @@
             "func": "Mode",
             "init": "Send initial value",
             "start": "Start value",
-            "name": "Name"
+            "name": "Name",
+            "septopics": "Apply mode for each msg.topic separately"
         },
         "placeholder":{
             "bandgap": "e.g. 10 or 5%",

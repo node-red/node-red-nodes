@@ -26,10 +26,5 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    },
-    "contributors": [
-        {
-            "name": "@tweek"
-        }
-    ]
+    }
 }
