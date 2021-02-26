@@ -211,18 +211,18 @@ module.exports = function(RED) {
             for (const room of rooms) {
                 await that.client.send(xml('presence', {to:room, type:'unavailable'}));
             }
-            // if (that.client.connected) {
-            await that.client.send(xml('presence', {type:'unavailable'}));
-            try{
-                if (RED.settings.verbose || LOGITALL) {
-                    that.log("Calling stop() after close, status is "+that.client.status);
+            if (that.connected) {
+                await that.client.send(xml('presence', {type:'unavailable'}));
+                try{
+                    if (RED.settings.verbose || LOGITALL) {
+                        that.log("Calling stop() after close, status is "+that.client.status);
+                    }
+                    await that.client.stop().then(that.log("XMPP client stopped")).catch(error=>{that.warn("Got an error whilst closing xmpp session: "+error)});
                 }
-                await that.client.stop().then(that.log("XMPP client stopped")).catch(error=>{that.warn("Got an error whilst closing xmpp session: "+error)});
+                catch(e) {
+                    that.warn(e);
+                }
             }
-            catch(e) {
-                that.warn(e);
-            }
-            // }
             done();
         });
     }
