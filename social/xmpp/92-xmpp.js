@@ -97,7 +97,7 @@ module.exports = function(RED) {
         // this means we need to figure out which node might have sent it
         // we also deal with subscriptions (i.e. presence information) here
         this.client.on('stanza', async (stanza) => {
-            //console.log("STAN",stanza.toString())
+            //console.log("STANZA",stanza.toString())
             if (stanza.is('message')) {
                 if (stanza.attrs.type == 'error') {
                     if (RED.settings.verbose || LOGITALL) {
@@ -152,7 +152,7 @@ module.exports = function(RED) {
                         that.log("Was told we've "+stanza.attrs.type+" from "+stanza.attrs.from+" but we don't really care");
                     }
                 }
-                if (stanza.attrs.to.indexOf(that.jid) !== -1) {
+                if (stanza.attrs.to && stanza.attrs.to.indexOf(that.jid) !== -1) {
                     var _x = stanza.getChild("x")
                     if (_x !== undefined) {
                         var _stat = _x.getChildren("status");
@@ -249,7 +249,8 @@ module.exports = function(RED) {
         // We also turn off chat history (maxstanzas 0) because that's not what this node is about.
         // Yes, there's a race condition, but it's not a huge problem to send two messages
         // so we don't care.
-        if (name in node.serverConfig.MUCs) {
+        var mu = name.split("/")[0];
+        if (mu in node.serverConfig.MUCs) {
             if (RED.settings.verbose || LOGITALL) { node.log("already joined MUC "+name); }
         }
         else {
@@ -260,8 +261,8 @@ module.exports = function(RED) {
                 )
             );
             node.serverConfig.used(node);
-            node.serverConfig.MUCs[name] = "joined";
-            if (RED.settings.verbose || LOGITALL) { node.log("JOINED "+name); }
+            node.serverConfig.MUCs[mu] = "joined";
+            if (RED.settings.verbose || LOGITALL) { node.log("JOINED "+mu); }
             xmpp.send(stanza);
         }
     }
@@ -331,6 +332,7 @@ module.exports = function(RED) {
         // (because it's where you are asking to get messages from...)
         this.from = ((n.to || "").split(':')).map(s => s.trim());
         this.quiet = false;
+        this.subject = {};
         // MUC == Multi-User-Chat == chatroom
         //this.muc = this.join && (this.from !== "")
         var node = this;
@@ -415,11 +417,15 @@ module.exports = function(RED) {
         xmpp.on('stanza', async (stanza) => {
             if (RED.settings.verbose || LOGITALL) { node.log(stanza); }
             if (stanza.is('message')) {
-                // console.log(stanza.toString())
+                var subj = stanza.getChild("subject");
+                if (subj) {
+                    subj = subj.getText();
+                    if (subj.trim() !== "") { node.subject[stanza.attrs.from.split('/')[0]] = subj; }
+                }
                 if (stanza.attrs.type == 'chat') {
                     var body = stanza.getChild('body');
                     if (body) {
-                        var msg = { payload:body.getText() };
+                        var msg = { payload:body.getText(), subject:node.subject[stanza.attrs.from.split('/')[0]] };
                         var ids = stanza.attrs.from.split('/');
                         if (ids[1].length !== 36) {
                             msg.topic = stanza.attrs.from
@@ -435,15 +441,14 @@ module.exports = function(RED) {
                     const parts = stanza.attrs.from.split("/");
                     var conference = parts[0];
                     var from = parts[1];
+                    var msg = { topic:from, room:conference, subject:node.subject[stanza.attrs.from.split('/')[0]] };
                     var body = stanza.getChild('body');
-                    var payload = "";
                     if (typeof body !== "undefined") {
-                        payload = body.getText();
-                    }
-                    var msg = { topic:from, payload:payload, room:conference };
-                    //if (from && stanza.attrs.from != node.nick && from != node.nick) {
-                    if (from && node.join && (node.from[0] === "" || node.from.includes(conference))) {
-                        node.send([msg,null]);
+                        msg.payload = body.getText();
+                        //if (from && stanza.attrs.from != node.nick && from != node.nick) {
+                        if (from && node.join && (node.from[0] === "" || node.from.includes(conference))) {
+                            node.send([msg,null]);
+                        }
                     }
                     //}
                 }
@@ -469,7 +474,14 @@ module.exports = function(RED) {
                     // right, do we care if there's no status?
                     if (statusText !== "") {
                         var from = stanza.attrs.from;
-                        var msg = {topic:from, payload: {presence:state, status:statusText} };
+                        var msg = {
+                            topic:from,
+                            payload: {
+                                presence:state,
+                                status:statusText,
+                                name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                            }
+                        };
                         node.send([null,msg]);
                     }
                     else {
@@ -499,6 +511,7 @@ module.exports = function(RED) {
                             if (!(name in node.serverConfig.MUCs)) {
                                 if (RED.settings.verbose || LOGITALL) { node.log("Need to Join room:"+name); }
                                 joinMUC(node, xmpp, name);
+                                node.serverConfig.MUCs[name.split('/')[0]] = _items[i].attrs.name.split('/')[0];
                             }
                             else {
                                 if (RED.settings.verbose || LOGITALL) { node.log("Already joined:"+name); }
@@ -664,6 +677,7 @@ module.exports = function(RED) {
 
         // Let's get down to business and actually send a message
         node.on("input", function(msg) {
+            var to = node.to || msg.topic || "";
             if (msg.presence) {
                 if (['away', 'dnd', 'xa', 'chat'].indexOf(msg.presence) > -1 ) {
                     var stanza = xml('presence', {"show":msg.presence}, xml('status', {}, msg.payload));
@@ -679,7 +693,6 @@ module.exports = function(RED) {
                     xmpp.send(stanza);
                 }
                 else if (msg.command === "get") {
-                    var to = node.to || msg.topic || "";
                     var stanza = xml('iq',
                         {type:'get', id:node.id, to:to},
                         xml('query', 'http://jabber.org/protocol/muc#admin',
@@ -691,7 +704,6 @@ module.exports = function(RED) {
                     xmpp.send(stanza);
                 }
                 else if (msg.command === "info") {
-                    var to = node.to || msg.topic || "";
                     var stanza = xml('iq',
                         {type:'get', id:node.id, to:to},
                         xml('query', 'http://jabber.org/protocol/disco#info')
@@ -702,7 +714,6 @@ module.exports = function(RED) {
                 }
             }
             else {
-                var to = node.to || msg.topic || "";
                 if (to !== "") {
                     var message;
                     var type = "chat";
@@ -712,6 +723,16 @@ module.exports = function(RED) {
                         // joinMUC will do nothing if we're already joined
                         joinMUC(node, xmpp, to+'/'+node.nick);
                     }
+                    // if (msg.subject) {
+                    //     var stanza = xml(
+                    //         "message",
+                    //         { type:type, to:to },
+                    //         xml("subject", {}, msg.subject.toString())
+                    //     );
+                    //     node.serverConfig.used(node);
+                    //     console.log("SENDING",stanza.toString())
+                    //     xmpp.send(stanza);
+                    // }
                     if (node.sendAll) {
                         message = xml(
                             "message",
