@@ -119,8 +119,8 @@ module.exports = function(RED) {
                         }
                         if (RED.settings.verbose || LOGITALL) {that.log("Culprit: "+that.lastUsed.id); }
                         if (typeof that.lastUsed !== "undefined") {
-                            that.lastUsed.status({fill:"red",shape:"ring",text:"error "+text});
-                            that.lastUsed.warn("Error "+text);
+                            that.lastUsed.status({fill:"yellow",shape:"dot",text:"warning. "+text});
+                            that.lastUsed.warn("Warning. "+text);
                             if (that.lastUsed.join) {
                                 // it was trying to MUC things up
                                 clearMUC(that);
@@ -260,6 +260,15 @@ module.exports = function(RED) {
                     xml("history", {maxstanzas:0, seconds:1})   // We don't want any history
                 )
             );
+            if (node.hasOwnProperty("credentials") && node.credentials.hasOwnProperty("password")) {
+                stanza = xml('presence',
+                    {"to":name},
+                    xml("x",'http://jabber.org/protocol/muc',
+                        xml("history", {maxstanzas:0, seconds:1}),   // We don't want any history
+                        xml("password", {}, node.credentials.password)   // Add the password
+                    )
+                );
+            }
             node.serverConfig.used(node);
             node.serverConfig.MUCs[mu] = "joined";
             if (RED.settings.verbose || LOGITALL) { node.log("JOINED "+mu); }
@@ -458,6 +467,29 @@ module.exports = function(RED) {
                     // this isn't for us, let the config node deal with it.
                 }
                 else {
+                    if (stanza.attrs.type === 'error') {
+                        var error = stanza.getChild('error');
+                        if (error.attrs.code) {
+                            try {
+                                var reas = error.toString().split('><')[1].split(" xml")[0].trim();
+                                if (reas == "registration-required") { reas = "membership-required"; }
+                            }
+                            catch(e) {};
+                            var msg = {
+                                topic:stanza.attrs.from,
+                                payload: {
+                                    code:error.attrs.code,
+                                    status:"error",
+                                    reason:reas,
+                                    name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                                }
+                            };
+                            node.send([null,msg]);
+                            node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
+                            node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                        }
+                    }
+
                     var state = stanza.getChild('show');
                     if (state) { state = state.getText(); }
                     else { state = "available"; }
@@ -573,7 +605,11 @@ module.exports = function(RED) {
             node.serverConfig.deregister(node, done);
         });
     }
-    RED.nodes.registerType("xmpp in",XmppInNode);
+    RED.nodes.registerType("xmpp in",XmppInNode,{
+        credentials: {
+            password: {type: "password"}
+        }
+    });
 
 
     function XmppOutNode(n) {
@@ -653,8 +689,27 @@ module.exports = function(RED) {
         });
 
         xmpp.on('stanza', async (stanza) => {
-            // if (stanza.is('presence')) {
-            // }
+            if (stanza.attrs.type === 'error') {
+                var error = stanza.getChild('error');
+                if (error.attrs.code) {
+                    try {
+                        var reas = error.toString().split('><')[1].split(" xml")[0].trim();
+                        if (reas == "registration-required") { reas = "membership-required"; }
+                    }
+                    catch(e) {};
+                    var msg = {
+                        topic:stanza.attrs.from,
+                        payload: {
+                            code:error.attrs.code,
+                            status:"error",
+                            reason:reas,
+                            name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                        }
+                    };
+                    node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
+                    node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                }
+            }
         });
 
         //register with config
@@ -723,16 +778,15 @@ module.exports = function(RED) {
                         // joinMUC will do nothing if we're already joined
                         joinMUC(node, xmpp, to+'/'+node.nick);
                     }
-                    // if (msg.subject) {
-                    //     var stanza = xml(
-                    //         "message",
-                    //         { type:type, to:to },
-                    //         xml("subject", {}, msg.subject.toString())
-                    //     );
-                    //     node.serverConfig.used(node);
-                    //     console.log("SENDING",stanza.toString())
-                    //     xmpp.send(stanza);
-                    // }
+                    if (msg.subject) {
+                        var stanza = xml(
+                            "message",
+                            { type:type, to:to, from:node.serverConfig.jid },
+                            xml("subject", {}, msg.subject.toString())
+                        );
+                        node.serverConfig.used(node);
+                        xmpp.send(stanza);
+                    }
                     if (node.sendAll) {
                         message = xml(
                             "message",
@@ -756,8 +810,10 @@ module.exports = function(RED) {
                             );
                         }
                     }
-                    node.serverConfig.used(node);
-                    xmpp.send(message);
+                    if (message) {
+                        node.serverConfig.used(node);
+                        xmpp.send(message);
+                    }
                 }
             }
         });
@@ -768,5 +824,9 @@ module.exports = function(RED) {
             node.serverConfig.deregister(node, done);
         });
     }
-    RED.nodes.registerType("xmpp out",XmppOutNode);
+    RED.nodes.registerType("xmpp out",XmppOutNode,{
+        credentials: {
+            password: {type: "password"}
+        }
+    });
 }

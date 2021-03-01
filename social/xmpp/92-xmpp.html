@@ -13,6 +13,10 @@
         <input type="checkbox" id="node-input-join" placeholder="" style="display:inline-block; width:auto; vertical-align:top;">
         <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
     </div>
+    <div class="form-row" id="node-room-pwd">
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="optional room password">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -41,6 +45,9 @@
             to: {value:""},
             join: {value:false}
         },
+        credentials: {
+            password: {type:"password"}
+        },
         inputs:0,
         outputs:2,
         icon: "xmpp.png",
@@ -49,6 +56,16 @@
         },
         labelStyle: function() {
             return (this.name)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-join').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
+            $('#node-input-to').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
         }
     });
 </script>
@@ -72,6 +89,10 @@
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-join" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
+    </div>
+    <div class="form-row" id="node-room-pwd">
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="optional room password">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -98,6 +119,9 @@
             join: {value:false},
             sendObject: {value:false}
         },
+        credentials: {
+            password: {type:"password"}
+        },
         inputs:1,
         outputs:0,
         icon: "xmpp.png",
@@ -107,6 +131,16 @@
         },
         labelStyle: function() {
             return (this.name)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-join').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
+            $('#node-input-to').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
         }
     });
 </script>
@@ -127,7 +161,7 @@
         <input type="text" id="node-config-input-nickname" placeholder="Joe (optional)">
     </div>
     <div class="form-row">
-        <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-password">
     </div>
 </script>
