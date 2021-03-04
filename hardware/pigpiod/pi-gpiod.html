@@ -164,8 +164,7 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips"><span data-i18n="[html]pi-gpiod.tip.in"></span></div>
-    <div class="form-tips" id="pin-tip">Pins marked in blue are dual use. Make sure they are not enabled for
-    their other use before using as GPIO.</div>
+    <div class="form-tips" id="pin-tip"><span data-i18n="[html]pi-gpiod.tip.dual"></span></div>
 </script>
 
 <script type="text/html" data-help-name="pi-gpiod in">
@@ -383,9 +382,9 @@
     </div>
     <div class="form-row" id="node-set-minimax">
         <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.limits"></label>
-        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> uS
+        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> us
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> uS
+        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> us
     </div>
     <div class="form-row" id="node-set-tick">
         <label>&nbsp;</label>
@@ -400,8 +399,8 @@
         </select>
     </div>
     <div class="form-row" id="node-set-freq">
-        <label for="node-input-freq"> <span data-i18n="rpi-gpio.label.freq"></span></label>
-        Frequency: <select id="node-input-freq" style="width:80px;">
+        <label for="node-input-freq"> <span data-i18n="pi-gpiod.label.freq"></span></label>
+        <select id="node-input-freq" style="width:80px;">
             <option value="8000">8000</option>
             <option value="4000">4000</option>
             <option value="2000">2000</option>
@@ -433,8 +432,7 @@
     <div class="form-tips" id="dig-tip"><span data-i18n="[html]pi-gpiod.tip.dig"></span></div>
     <div class="form-tips" id="pwm-tip"><span data-i18n="[html]pi-gpiod.tip.pwm"></span></div>
     <div class="form-tips" id="ser-tip"><span data-i18n="[html]pi-gpiod.tip.ser"></span></div>
-    <div class="form-tips" id="pin-tip">Pins marked in blue are dual use. Make sure they are not enabled for
-    their other use before using as GPIO.</div>
+    <div class="form-tips" id="pin-tip"><span data-i18n="[html]pi-gpiod.tip.dual"></span></div>
 </script>
 
 <script type="text/html" data-help-name="pi-gpiod out">
