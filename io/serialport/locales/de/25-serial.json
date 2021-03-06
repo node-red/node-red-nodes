@@ -1,0 +1,73 @@
+{
+    "serial": {
+        "status": {
+            "waiting": "Wartend",
+            "timeout": "Zeitablauf"
+        },
+        "label": {
+            "serialport": "Serieller Port",
+            "settings": "Einstellungen",
+            "baudrate": "Baudrate",
+            "databits": "Datenbits",
+            "parity": "Parität",
+            "stopbits": "Stoppbits",
+            "input": "Empfang",
+            "split": "Aufteilung",
+            "deliver": "und Ausgabe",
+            "output": "Versand",
+            "request": "Anforderung",
+            "responsetimeout": "Standardwert Antwort-Zeitablauf",
+            "ms": "ms",
+            "serial": "seriell",
+            "none": "none",
+            "start": "Optional Warten auf das Startzeichen",
+            "startor": ", dann"
+        },
+        "placeholder": {
+            "serialport": "z. B. /dev/ttyUSB0/"
+        },
+        "parity": {
+            "none": "Keine",
+            "even": "Gerade",
+            "mark": "Mark",
+            "odd": "Ungerade",
+            "space": "Space"
+        },
+        "linestates": {
+            "none": "Auto",
+            "high": "High",
+            "low": "Low"
+        },
+        "split": {
+            "character": "anhand Zeichen",
+            "timeout": "nach Zeitablauf von",
+            "silent": "nach Ruhezeit von",
+            "lengths": "in feste Längen von"
+        },
+        "output": {
+            "ascii": "als ASCII-Strings",
+            "binary": "binäre Buffer"
+        },
+        "addsplit": "Zeichen zu Ausgangsnachrichten hinzufügen",
+        "tip": {
+            "responsetimeout": "Tipp: Der Standardwert des Antwort-Zeitablaufs (default response timeout) kann durch Setzen von msg.timeout überschrieben werden",
+            "split": "Tipp: Das Aufteilungszeichen wird benutzt, um die empfangenen Daten in einzelne Nachrichten aufzuteilen. Es werden Zeichen ($), Escape-Codes (\\n) oder Hex-Codes (0x03) akzeptiert.",
+            "silent": "Tipp: Im Ruhezeit-Modus wird die Ruhezeitmessung bei jedem neu empfangenen Zeichen neu gestartet",
+            "timeout": "Tipp: Im Zeitablauf-Modus startet die Zeitmessung mit Empfang des ersten Zeichens",
+            "count": "Tipp: Im Modus der festen Längen kann msg.count die vorgegebene Anzahl überschreiben, sofern dieser Wert kleiner ist",
+            "waitfor": "Tipp: Optional. Leer lassen, um alle Daten zu empfangen. Es werden Zeichen ($), Escape-Codes (\\n) oder Hex-Codes (0x03) akzeptiert." ,
+            "addchar": "Tipp: Dieses Zeichen wird jeder über den seriellen Port gesendeten Nachricht hinzugefügt. Üblicherweise \\r oder \\n."
+        },
+        "onopen": "Seriellen Port __port__ geöffnet mit __baud__ Baud, __config__",
+        "errors": {
+            "missing-conf": "Fehlende serielle Konfiguration",
+            "serial-port": "Serieller Port",
+            "error": "Serieller Port __port__ Fehler: __error__",
+            "unexpected-close": "Serieller Port __port__ unerwartet geschlossen",
+            "disconnected": "Serieller Port __port__ getrennt",
+            "closed": "Serieller Port __port__ geschlossen",
+            "list": "Port-Auflistung fehlgeschlagen. Bitte manuell eintragen.",
+            "badbaudrate": "Ungültige Baudrate"
+        }
+    }
+}

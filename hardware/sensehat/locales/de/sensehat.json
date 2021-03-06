@@ -1,0 +1,12 @@
+{
+    "sensehat": {
+        "label": {
+            "outputs": "Ausgänge",
+            "motionEvents": "Bewegungsereignisse",
+            "motionEventsExamples": "Beschleunigungsmesser, Gyroskop, Magnetometer, Kompass",
+            "environmentEvents": "Umgebungsereignisse",
+            "environmentEventsExamples": "Temperatur, Luftfeuchtigkeit, Luftdruck",
+            "joystickEvents": "Joystick-Ereignisse"
+        }
+    }
+}

@@ -1,0 +1,54 @@
+{
+    "twitter": {
+        "label": {
+            "twitter-id": "Twitter-ID",
+            "search": "Suche",
+            "for": "nach",
+            "user": "Benutzer",
+            "dmslabel": "DMs",
+            "followers": "Verfolgt von",
+            "tweetslabel": "Tweets",
+            "eventslabel": "Ereignisse",
+            "create": "Eigene Applikation erstellen auf Seite",
+            "copy-consumer": "Consumer API keys vom 'Keys und Tokens' Abschnitt hierher kopieren",
+            "consumer_key": "API key",
+            "consumer_secret": "API secret key",
+            "copy-accessToken": "Neue 'Access token & access token secret' erzeugen und hierher kopieren",
+            "access_key": "Access token",
+            "access_secret": "Access token secret",
+            "enter-id": "Setze Deine Twitter-ID"
+        },
+        "placeholder": {
+            "for": "Komma-getrennte Wörter, @ids, #tags",
+            "user": "Komma-getrennte @twitter handles"
+        },
+        "search": {
+            "public": "alle öffentlichen Tweets",
+            "follow": "alle Tweets von Usern, denen ich folge",
+            "user": "Tweets bestimmter User",
+            "direct": "meine direkten Nachrichten",
+            "events": "meine Twitter-Ereignisse"
+        },
+        "tip": "Tipp: Nur Kommas ohne Leerzeichen zwischen mehreren Suchbegriffen verwenden. Komma = ODER, Leerzeichen = UND.<br/>Die Twitter-API wird nicht 100% aller Tweets liefern.<br/>Tweets von gefolgten Usern enthalten ihre Retweets und Favoriten.<br/>Das <b>nach</b>-Feld leer lassen, um es durch msg.payload setzen zu können.",
+        "status": {
+            "using-geo": "Benutze Geo-Lokation: __location__",
+            "tweeting": "Tweeting",
+            "failed": "Fehlgeschlagen"
+        },
+        "warn": {
+            "nousers": "User-Option ausgewählt, aber keine User angegeben",
+            "waiting": "Warte auf Suchbegriff"
+        },
+        "errors": {
+            "ratelimit": "Ratenlimit erfolgt",
+            "limitrate": "Begrenze Rate",
+            "streamerror": "Stream-Fehler: __error__ (__rc__)",
+            "unexpectedend": "Stream unerwartet beendet",
+            "invalidtag": "Ungültige Tag-Eigenschaft",
+            "missingcredentials": "Fehlende Twitter-Berechtigungen",
+            "truncated": "Tweet abgeschnitten nach mehr als 280 Zeichen",
+            "sendfail": "Tweet-Senden fehlgeschlagen: __error__",
+            "nopayload": "Keine Nutzdaten (Payload) zu tweeten"
+        }
+    }
+}

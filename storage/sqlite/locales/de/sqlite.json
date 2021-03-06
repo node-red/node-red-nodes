@@ -1,0 +1,20 @@
+{
+    "sqlite": {
+        "label": {
+            "database": "Datenbank",
+            "sqlQuery": "SQL-Abfrage",
+            "viaMsgTopic": "Via msg.topic",
+            "fixedStatement": "Fester Ausdruck",
+            "preparedStatement": "Vorbereiteter Ausdruck",
+            "batchWithoutResponse": "Batch ohne Antwort",
+            "sqlStatement": "SQL-Ausdruck (Statement)",
+            "mode": "Modus",
+            "readWriteCreate": "Lesen-Schreiben-Erzeugen",
+            "readWrite": "Lesen-Schreiben",
+            "readOnly": "Nur-Lesen"
+        },
+        "tips": {
+            "memoryDb": "<b>Hinweis:</b> Das Setzen der Datenbank auf <code>:memory:</code> erzeugt eine flüchtige (nicht-persistente) Datenbank im Speicher."
+        }
+    }
+}
