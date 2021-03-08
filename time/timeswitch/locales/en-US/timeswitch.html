@@ -1,0 +1,12 @@
+
+<script type="text/html" data-help-name="timeswitch">
+    <p>Timeswitch node to schedule daily on/off events.</p>
+    <p>Sets <code>msg.payload</code> to 1 at on time, and 0 at off time.</p>
+    <p>Also allows the use of sunrise and sunset.</p>
+    <p>Sunrise and sunset times can be offset both positively (+ve) for minutes later
+    or negatively (-ve) for minutes earlier.</p>
+    <p>The output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending on
+    whether the current time is during the selected on time or off time.</p>
+    <p>If you just need the transitions from 0->1 or 1->0 then follow this node with an RBE node.</p>
+    <p>You may also optionally specify a <code>msg.topic</code> if required.</p>
+</script>

@@ -1,0 +1,11 @@
+
+<script type="text/html" data-help-name="exif">
+    <p>Extract <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a> information from JPEG images.</p>
+    <p>This node expects an incoming JPEG image buffer in the selected property. If Exif data is present,
+    it extracts the data into the <code>msg.exif</code> object.</p>
+    <p>The node then adds location data as <code>msg.location</code>, should the Exif data carry this information.
+    This also includes an icon, bearing and field of view arc suitable for use in the worldmap node.
+    The selected input property retains the original, unmodified image buffer.</p>
+    <p>If configured to use the worldmap in node then the existing image payload will be replaced by the location
+    object so that it can be fed back to the map directly.</p>
+</script>
