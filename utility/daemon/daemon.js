@@ -70,7 +70,6 @@ module.exports = function(RED) {
                         while (bits.length > 1) {
                             var m = RED.util.cloneMessage(lastmsg);
                             m.payload = bits.shift();
-                            console.log(m);
                             node.send([m,null,null]);
                         }
                         line = bits[0];
