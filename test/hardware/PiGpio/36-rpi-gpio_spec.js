@@ -99,7 +99,7 @@ describe('RPI GPIO Node', function() {
             var n2 = helper.getNode("n2");
             n2.on("input", function(msg) {
                 try {
-                    msg.should.have.property('topic', 'pi/7');
+                    msg.should.have.property('topic', 'gpio/7');
                     msg.should.have.property('payload', 1);
                     done();
                 } catch(err) {
@@ -117,7 +117,7 @@ describe('RPI GPIO Node', function() {
             var n2 = helper.getNode("n2");
             n2.on("input", function(msg) {
                 try {
-                    msg.should.have.property('topic', 'pi/11');
+                    msg.should.have.property('topic', 'gpio/11');
                     msg.should.have.property('payload', 0);
                     done();
                 } catch(err) {
