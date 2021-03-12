@@ -1,0 +1,42 @@
+{
+    "arduino": {
+        "label": {
+            "pin": "Pin",
+            "type": "Typ",
+            "port": "Port"
+        },
+        "placeholder": {
+            "port": "z. B. /dev/ttyUSB0 COM1"
+        },
+        "status": {
+            "connectfirst": "Verbinde mit zuerst gefundenen Board",
+            "connect": "Verbinde mit __device__",
+            "connected": "Verbunden mit __device__",
+            "version": "Version: __version__",
+            "portclosed": "Serieller Arduino-Port geschlossen"
+        },
+        "state": {
+            "in": {
+                "digital": "Digitaler Pin",
+                "pullup": "Digitaler Pin mit Pullup",
+                "analogue": "Analoger Pin",
+                "string": "String"
+            },
+            "out": {
+                "digital": "Digital (0/1)",
+                "analogue": "Analog (0-255)",
+                "servo": "Servo (0-180)",
+                "string": "String"
+            }
+        },
+        "tip": {
+            "io": "<b>Hinweis:</b> Derselbe Pin kann nicht gleichzeitig als Ausgang und Eingang verwendet werden",
+            "conf": "<b>Tipp:</b> Zur automatischen Erkennung des seriellen Ports die Suche verwenden"
+        },
+        "errors": {
+            "portnotconf": "Port nicht konfiguriert",
+            "portnotfound": "Port nicht gefunden: __device__",
+            "devnotfound": "Device __dev__ nicht gefunden. Versuche Board zu finden."
+        }
+    }
+}

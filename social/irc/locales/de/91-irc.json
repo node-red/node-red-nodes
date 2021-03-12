@@ -1,0 +1,44 @@
+{
+    "irc": {
+        "label": {
+            "ircserver": "IRC-Server",
+            "channel": "Kanal",
+            "action": "Aktion",
+            "port": "Port",
+            "ssl": "Sichere SSL-Verbindung",
+            "self": "Selbstausgestellte Zertifikate erlauben",
+            "nickname": "Nickname",
+            "username": "Benutzername",
+            "password": "Passwort"
+        },
+        "placeholder": {
+            "ifreq": "wenn vom Server benötigt"
+        },
+        "payload": "Sende Nutzdaten (Payload) an Kanäle",
+        "topic": "Benutze msg.topic um Nicknamen oder Kanäle vorzugeben",
+        "msg": "Sende komplettes msg-Objekt an Kanäle",
+        "tip": {
+            "in": "Der beizutretende Kanal muss mit einer # (Raute) beginnen.<br/>Bei mehreren Kanälen müssen diese mit Kommas getrennt angegeben werden. Z. B. #chan1,#chan2,etc.",
+            "out": "Der beizutretende Kanal muss mit einer # (Raute) beginnen.<br/>Beim Senden eines kompletten Objekt wird es zuvor in Strings umgewandelt."
+        },
+        "errors": {
+            "connect": "Verbinde",
+            "err": "Fehler",
+            "net": "NET",
+            "connected": "Verbunden",
+            "online": "Online",
+            "joined": "Beigetreten",
+            "ping": "Ping von",
+            "quit": "Quit",
+            "restart": "Neustart",
+            "connectionlost": "Verbindung verloren?",
+            "hasjoined": "ist beigetreten",
+            "sentinvite": "Sende Einladung an",
+            "hasleft": "ist ausgetreten",
+            "hasquit": "hat beendet (quit)",
+            "kickedfrom": "wurde gekickt von",
+            "rawcommand": "Rohbefehl",
+            "topicnotset": "msg.topic nicht gesetzt"
+        }
+    }
+}

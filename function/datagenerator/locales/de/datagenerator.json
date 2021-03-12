@@ -1,0 +1,13 @@
+{
+    "datagen": {
+        "datagen": "data generator",
+        "label": {
+            "syntax": "Rückgabe",
+            "text": "ein Text-String",
+            "json": "ein analysiertes (parsed) JSON-Objekt"
+        },
+        "errors": {
+            "json-error": "Fehler beim Versuch, String zu JSON zu analysieren (parsen)"
+        }
+    }
+}
