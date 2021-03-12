@@ -9,6 +9,12 @@
                 "timed": "Timed",
                 "triggered": "Triggered"
             },
+            "protocol": "Protocol",
+            "protocol_option": {
+                "auto": "Automatic",
+                "ipv4": "IPv4",
+                "ipv6": "IPv6"
+            },
             "tip": "Note: Leave Target field blank to allow msg.payload to set hosts dynamically."
         }
     }

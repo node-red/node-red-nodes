@@ -9,6 +9,12 @@
                 "timed": "時間",
                 "triggered": "トリガー"
             },
+            "protocol": "プロトコル",
+            "protocol_option": {
+                "auto": "自動の",
+                "ipv4": "IPv4",
+                "ipv6": "IPv6"
+            },
             "tip": "注: msg.payloadでホスト名を動的に指定する場合は、ターゲットフィールドを空にします。"
         }
     }

@@ -7,7 +7,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.cmd = n.command;
         //this.args = n.args.trim().split(" ") || [];
-        this.args = n.args.trim().match(/("[^"]*")|[^ ]+/g);
+        this.args = n.args.trim(); //.match(/("[^"]*")|[^ ]+/g);
         this.cr = n.cr;
         this.op = n.op;
         this.redo = n.redo;
@@ -15,6 +15,13 @@ module.exports = function(RED) {
         this.closer = n.closer || "SIGKILL";
         this.autorun = true;
         if (n.autorun === false) { this.autorun = false; }
+        if (this.args.match(/^\[.*\]$/)) {
+            try { this.args = JSON.parse(this.args); }
+            catch(e) {
+                node.warn("Bad parameters - should be a JSON array or space separated")
+            }
+        }
+        else { this.args = this.args.match(/("[^"]*")|[^ ]+/g); }
         var node = this;
         var lastmsg = {};
 
@@ -63,7 +70,6 @@ module.exports = function(RED) {
                         while (bits.length > 1) {
                             var m = RED.util.cloneMessage(lastmsg);
                             m.payload = bits.shift();
-                            console.log(m);
                             node.send([m,null,null]);
                         }
                         line = bits[0];

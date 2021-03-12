@@ -470,11 +470,12 @@ module.exports = function(RED) {
                     if (stanza.attrs.type === 'error') {
                         var error = stanza.getChild('error');
                         if (error.attrs.code) {
+                            var reas = "";
                             try {
-                                var reas = error.toString().split('><')[1].split(" xml")[0].trim();
+                                reas = error.toString().split('><')[1].split(" xml")[0].trim();
                                 if (reas == "registration-required") { reas = "membership-required"; }
                             }
-                            catch(e) {};
+                            catch(e) {}
                             var msg = {
                                 topic:stanza.attrs.from,
                                 payload: {
@@ -692,11 +693,12 @@ module.exports = function(RED) {
             if (stanza.attrs.type === 'error') {
                 var error = stanza.getChild('error');
                 if (error.attrs.code) {
+                    var reas = "";
                     try {
-                        var reas = error.toString().split('><')[1].split(" xml")[0].trim();
+                        reas = error.toString().split('><')[1].split(" xml")[0].trim();
                         if (reas == "registration-required") { reas = "membership-required"; }
                     }
-                    catch(e) {};
+                    catch(e) {}
                     var msg = {
                         topic:stanza.attrs.from,
                         payload: {

@@ -15,6 +15,19 @@
     <p>ホスト名が解決できなかったり、レスポンスが得られなければ、<b>false</b>を返します。</p>
     <p>デフォルトでは20秒ごとにpingを送りますが、設定で変更できます。</p>
 
+    <h4>Protocol...</h4>
+    <ul>
+        <li><b>Automatic</b><br>
+            <P>Will use any Protocol, IPv4 or IPv6, to reach host; based on your operating system network settings</P>
+        </li>
+        <li><b>IPv4</b><br>
+            <P>Forces use of IPv4 to reach host. Will fail if no route availibe</P>
+        </li>
+        <li><b>IPv6</b><br>
+            <P>Forces use of IPv6 to reach host. Will fail if no route availibe</P>
+        </li>
+    </ul>
+
     <h4>モード...</h4>
     <ul>
         <li><b>時間</b><br>
@@ -25,7 +38,7 @@
         <li><b>トリガー</b><br>
             <p><code>トリガー</code>モードでは、入力ワイヤを結線し、<code>msg</code>入力によってping処理を起動します。
     <p><code>ターゲット</code>フィールドに入力した値はホスト名もしくはIPアドレスとして使用します。 ターゲットはホスト名/IPアドレスをカンマで区切ったものです。例: <code>"192.168.0.1"</code> あるいは <code>"192.168.0.1, www.google.com"</code></p>
-    
+
             <p><code>ターゲット</code>を空にした場合、カンマ区切り文字列、もしくは、ホストの配列を<code>msg.payload</code>に指定します。
                 <ul>
                     <li><code>文字列</code> - カンマ区切りのホスト名/IPアドレス 例: <code>"192.168.0.1"</code> あるいは <code>"192.168.0.1, www.google.com"</code> </li>
@@ -33,12 +46,12 @@
                 <li>配列ペイロードの例: <pre>[
     "192.168.0.99",
     {
-        "host":"192.168.0.1", 
+        "host":"192.168.0.1",
         "name":"ルータ"
-    },  
+    },
     {
-        "host":"myapiserver.com", 
-        "name":"拡張API", 
+        "host":"myapiserver.com",
+        "name":"拡張API",
         "timeout": 20000,
         "support":"support@myapiserver.com"
     }
