@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-base64",
-    "version"       : "0.2.1",
+    "version"       : "0.3.0",
     "description"   : "A Node-RED node to pack and unpack objects to base64 format",
     "dependencies"  : {
     },
