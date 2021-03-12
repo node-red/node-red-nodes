@@ -5,6 +5,14 @@
         <input type="text" id="node-input-host" placeholder="192.168.0.1, www.google.com">
     </div>
     <div class="form-row">
+        <label for="node-protocol"><i class="fa fa-gear"></i> <span data-i18n="ping.label.protocol"></label>
+        <select type="text" id="node-input-protocol" style="width: 70%">
+            <option value="Automatic" data-i18n="ping.label.protocol_option.auto"></option>
+            <option value="IPv4" data-i18n="ping.label.protocol_option.ipv4"></option>
+            <option value="IPv6" data-i18n="ping.label.protocol_option.ipv6"></option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-mode"><i class="fa fa-wrench"></i> <span data-i18n="ping.label.mode"></label>
         <select type="text" id="node-input-mode" style="width: 70%">
             <option value="timed" data-i18n="ping.label.mode_option.timed"></option>
@@ -54,6 +62,7 @@ var timerParameterValidator = function(node,v){
         category: "network-input",
         color:"#fdf0c2",
         defaults: {
+            protocol: {value:"Automatic"},
             mode: {value:"timed"},
             name: {value:""},
             host: {value:"", validate: function(v){
