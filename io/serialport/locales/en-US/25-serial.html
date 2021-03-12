@@ -1,0 +1,56 @@
+
+<script type="text/html" data-help-name="serial in">
+    <p>Reads data from a local serial port.</p>
+    <p>Can either <ul><li>wait for a "split" character (default \n). Also accepts hex notation (0x0d).</li>
+    <li>Wait for a timeout in milliseconds from the first character received</li>
+    <li>Wait to fill a fixed sized buffer</li></ul></p>
+    <p>It then outputs <code>msg.payload</code> as either a UTF8 ascii string or a binary Buffer object.</p>
+    <p><code>msg.port</code> is set to the name of the port selected.</p>
+    <p>If no split character is specified, or a timeout or buffer size of 0, then a stream of single characters
+    is sent - again either as ascii chars or size 1 binary buffers.</p>
+</script>
+
+<script type="text/html" data-help-name="serial out">
+    <p>Provides a connection to an outbound serial port.</p>
+    <p>Only the <code>msg.payload</code> is sent.</p>
+    <p>Optionally the baudrate can be changed using <code>msg.baudrate</code></p>
+    <p>Optionally the new line character used to split the input can be appended to every message sent out to the serial port.</p>
+    <p>Binary payloads can be sent by using a Buffer object.</p>
+</script>
+
+<script type="text/html" data-help-name="serial request">
+    <p>Provides a connection to a request/response serial port.</p>
+    <p>This node behaves as a tightly coupled combination of <code>serial in</code> and <code>serial out</code> nodes,
+    with which it shares the configuration.</p>
+    <p>Send the request message in <code>msg.payload</code> as you would do with a <code>serial out</code> node.
+    The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request.
+    Once a response is received (with the same logic of a <code>serial in</code> node), or after a timeout occurs, a message is sent to the output (see Outputs below),
+    with <code>msg.payload</code> containing the received response (or missing in case if timeout) and all other fields preserved.</p>
+    <p>For consistency with the <code>serial in</code> node, <code>msg.port</code> is set to the name of the port selected.</p>
+    <h3>Inputs</h3>
+    <ul>
+    <li>
+    <code>msg.timeout</code> is the timeout (in ms) after which the incoming message is propagated to the output with <code>msg.status</code> set to <code>"ERR_TIMEOUT"</code> and missing payload.
+    If not present, the default value is 10000 (10s).
+    </li>
+    <li><code>msg.count</code> if set this will override the configured number of characters as long as it is less than the number configured.</li>
+    <li><code>msg.waitfor</code> single character, escape code, or hex code. If set, the node will wait until it matches that character in the stream and then start the output.</li>
+    <li>Optionally the baudrate can be changed using <code>msg.baudrate</code></li>
+    </ul>
+    <h3>Outputs</h3>
+    <ul>
+    <li><code>msg.payload</code> is the response. If no response occured, this field is removed.</li>
+    <li><code>msg.status</code> is <code>"OK"</code> in case a response is received, or <code>"ERR_TIMEOUT"</code> if a timeout occurs.</li>
+    <li>Any other field coming from the input will be preserved.</li>
+    </ul>
+</script>
+
+<script type="text/html" data-help-name="serial-port">
+    <p>Provides configuration options for a serial port.</p>
+    <p>The search button should return a list of available serial ports to choose from, or you
+    can type in the location if known.</p>
+    <p>The DTR, RTS, CTS and DSR switches can be used to permanently pull the corresponding flow control pin high or low, e.g. in order to power devices via those pins.</p>
+    <p>The node can optionally wait until it matches a pre-defined character.
+        The data can then be split on a fixed character, after a timeout, or after a fixed number of characters.</p>
+    <p>If using a character, it can be specified as either the character, the escaped shortcut (e.g. \n), or the hex code (e.g. 0x0d).</p>
+</script>
