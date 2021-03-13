@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="rpi-piface in">
+<script type="text/html" data-template-name="rpi-piface in">
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
@@ -42,7 +42,7 @@
     <div class="form-tips">Tip: Only Digital I/O is supported - input must be 0 or 1.</div>
 </script>
 
-<script type="text/x-red" data-help-name="rpi-piface in">
+<script type="text/html" data-help-name="rpi-piface in">
     <p>Raspberry Pi PiFace input node. Generates a <code>msg.payload</code> with either a 0 or 1 depending
     on the state of the input pin.</p>
     <p>You may also enable the input pullup resistor if required.</p>
@@ -76,7 +76,7 @@
 </script>
 
 
-<script type="text/x-red" data-template-name="rpi-piface out">
+<script type="text/html" data-template-name="rpi-piface out">
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-circle"></i> GPIO Pin</label>
         <select type="text" id="node-input-pin" style="width: 150px;">
@@ -111,7 +111,7 @@
     <div class="form-tips">Tip: Only Digital I/O is supported - input must be 0 or 1.</div>
 </script>
 
-<script type="text/x-red" data-help-name="rpi-piface out">
+<script type="text/html" data-help-name="rpi-piface out">
     <p>Raspberry Pi PiFace output node. The PiFace board must be fitted.</p>
     <p>Will set the selected relay, LED, or pin on or off depending on the value passed in. Expects a <code>msg.payload</code> with either a 1 or 0 (or true or false).</p>
     <p>Requires the WiringPi gpio command in order to work.</p>
