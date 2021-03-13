@@ -87,7 +87,7 @@ module.exports = function(RED) {
             if (this.tick) { clearTimeout(this.tick); }
             if (this.check) { clearInterval(this.check); }
             node.connected = false;
-            node.connection.release();
+            // node.connection.release();
             node.emit("state"," ");
             node.pool.end(function(err) { done(); });
         });
@@ -141,7 +141,7 @@ module.exports = function(RED) {
                                 }.bind(this));
                             };
                         }
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 status = {fill:"red",shape:"ring",text:"Error: "+err.code};
                                 node.status(status);
@@ -156,7 +156,7 @@ module.exports = function(RED) {
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
-                            node.mydbConfig.connection.release();
+                            //node.mydbConfig.connection.release();
                         });
                     }
                     else {
