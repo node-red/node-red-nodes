@@ -128,7 +128,7 @@ module.exports = function(RED) {
                         var bind = [];
                         if (Array.isArray(msg.payload)) { bind = msg.payload; }
                         else if (typeof msg.payload === 'object' && msg.payload !== null) {
-                            bind=msg.payload;
+                            bind = msg.payload;
                             node.mydbConfig.connection.config.queryFormat = function(query, values) {
                                 if (!values) {
                                     return query;
@@ -148,7 +148,7 @@ module.exports = function(RED) {
                                 node.error(err,msg);
                             }
                             else {
-                                if ( (rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
+                                if ((rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
                                     msg.payload = JSON.parse(JSON.stringify(rows));
                                 }
                                 else { msg.payload = rows; }
@@ -156,9 +156,9 @@ module.exports = function(RED) {
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
-                            if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
-                                node.mydbConfig.connection.release();
-                            }
+                            // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
+                            //     node.mydbConfig.connection.release();
+                            // }
                         });
                     }
                     else {
