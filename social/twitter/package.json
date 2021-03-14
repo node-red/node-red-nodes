@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-twitter",
-    "version": "1.1.7",
+    "version": "1.2.0",
     "description": "A Node-RED node to talk to Twitter",
     "dependencies": {
         "twitter-ng": "0.6.2",
