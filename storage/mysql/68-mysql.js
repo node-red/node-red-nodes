@@ -141,7 +141,7 @@ module.exports = function(RED) {
                                 }.bind(this));
                             };
                         }
-                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 status = {fill:"red",shape:"ring",text:"Error: "+err.code};
                                 node.status(status);
@@ -156,7 +156,9 @@ module.exports = function(RED) {
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
-                            //node.mydbConfig.connection.release();
+                            if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
+                                node.mydbConfig.connection.release();
+                            }
                         });
                     }
                     else {
