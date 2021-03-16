@@ -41,7 +41,9 @@ module.exports = function(RED) {
                     timezone : node.tz,
                     insecureAuth: true,
                     multipleStatements: true,
-                    connectionLimit: 25,
+                    connectionLimit: 50,
+                    timeout: 30000,
+                    connectTimeout: 30000,
                     charset: node.charset
                 });
             }
