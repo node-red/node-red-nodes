@@ -150,10 +150,10 @@ module.exports = function(RED) {
                                 node.error(err,msg);
                             }
                             else {
-                                if ((rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
+                                if (rows.constructor.name === "OkPacket") {
                                     msg.payload = JSON.parse(JSON.stringify(rows));
                                 }
-                                else if ((rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
+                                else if (rows.constructor.name === "Array") {
                                     msg.payload = rows.map(v => Object.assign({}, v));
                                 }
                                 else { msg.payload = rows; }
