@@ -153,6 +153,9 @@ module.exports = function(RED) {
                                 if ((rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
                                     msg.payload = JSON.parse(JSON.stringify(rows));
                                 }
+                                else if ((rows.constructor.name === "OkPacket") || (rows.constructor.name === "Array")) {
+                                    msg.payload = rows.map(v => Object.assign({}, v));
+                                }
                                 else { msg.payload = rows; }
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
