@@ -30,7 +30,7 @@
         "initpin1": "Initalzustand high (1)",
         "pinname": "Pin",
         "tip": {
-            "pin": "<b>Pins in Verwendung:</b> ",
+            "pin": "<b>Pins in Verwendung</b>: ",
             "in": "Nur digitaler Eingang unterstützt - Eingangszustand muss 0 oder 1 sein",
             "dig": "Digitaler Ausgang - Node-Eingangswert muss 0 oder 1 sein",
             "pwm": "PWM-Ausgang - Node-Eingangswert muss zwischen 0 und 100 sein",
@@ -53,7 +53,7 @@
         "errors": {
             "invalidpin": "Ungültiger GPIO-Pin",
             "invalidinput": "Ungültige Eingabe",
-            "error": "Fehler: __error__"
+            "error": "FEHLER: __error__"
         }
     }
 }
