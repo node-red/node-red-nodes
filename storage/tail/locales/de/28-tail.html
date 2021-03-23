@@ -1,0 +1,21 @@
+<script type="text/html" data-help-name="tail">
+    <p>Aufteilung (Überwachung auf Anfügungen) einer vorgegebenen Datei.</p>
+    <h3>Eingangsdaten</h3>
+    <dl class="message-properties">
+        <dt class="optional">filename <span class="property-type">string</span></dt>
+        <dd>Wenn nicht im Node vorgegeben, gibt diese optionale Eigenschaft den Dateinamen vor.
+            Wenn ein leerer String <code>""</code> empfangen wird, wird die Aufteilung gestoppt.</dd>
+    </dl>
+    <h3>Ausgangsdaten</h3>
+    <dl class="message-properties">
+        <dt class="optional">payload <span class="property-type">string | buffer</span></dt>
+        <dd>
+            <ul>
+                <li>Textdateien (UTF-8) werden als Zeichenfolgen (string) geliefert.</li>
+                <li>Binärdateien werden als Buffer-Okjekte geliefert.</li>
+            </ul>
+        </dd>
+    </dl>
+    <p><b>Hinweis</b>: Unter Windows muss die Datei möglicherweise zwischen den Schreibvorgängen geschlossen werden,
+       damit Aktualisierungen registriert werden.</p>
+</script>
