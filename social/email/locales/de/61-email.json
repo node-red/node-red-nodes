@@ -33,9 +33,9 @@
         },
         "default-message": "__description__\n\nDatei von Node-RED ist angehängt: __filename__",
         "tip": {
-            "cred": "<b>Hinweis:</b> Berechtigungen von globaler emailkeys.js-Datei kopiert",
+            "cred": "<b>Hinweis</b>: Berechtigungen von globaler emailkeys.js-Datei kopiert",
             "recent": "Tipp: Es wird nur die letzte E-Mail abgerufen",
-            "mta": "<b>Hinweis:</b> Um Ports unter 1024 zu verwenden könnten höhere (root) Rechte benötigt werden. Siehe Hilfe-Seitenleiste."
+            "mta": "<b>Hinweis</b>: Um Ports unter 1024 zu verwenden könnten höhere (root) Rechte benötigt werden. Siehe Hilfe-Seitenleiste."
         },
         "status": {
             "messagesent": "Nachricht gesendet: __response__",
