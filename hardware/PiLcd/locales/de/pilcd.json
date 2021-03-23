@@ -4,7 +4,7 @@
             "pins": "Pins"
         },
         "tip": {
-            "tip": "<b>Tipp:</b> Bei Pins muss eine Komma-getrennte Liste von 6 GPIO-Anschlusspin-Nummern eingetragen werden, die mit RS, E, D4, D5, D6 und D7 des LCD verbunden sind."
+            "tip": "<b>Tipp</b>: Bei Pins muss eine Komma-getrennte Liste von 6 GPIO-Anschlusspin-Nummern eingetragen werden, die mit RS, E, D4, D5, D6 und D7 des LCD verbunden sind."
         },
         "status": {
             "not-available": "Nicht verfügbar",
