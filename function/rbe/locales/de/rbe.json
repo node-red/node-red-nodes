@@ -9,7 +9,7 @@
             "septopics": "Modus für jedes msg.topic separat anwenden"
         },
         "placeholder":{
-            "bandgap": "z. B. 10% oder 5%",
+            "bandgap": "z.B. 10 oder 5%",
             "start": "Leer lassen, um erste empfangenen Daten zu nutzen"
         },
         "opts": {
