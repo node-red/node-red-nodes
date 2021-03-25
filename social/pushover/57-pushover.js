@@ -39,9 +39,27 @@ module.exports = function(RED) {
             var url_title = node.url_title || msg.url_title || null;
             var html = node.html || msg.html || false;
             var attachment = msg.attachment || null;
+            var retry = msg.retry || 30;
+            var expire = msg.expire || 600;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
+			if (isNaN(retry)) {
+                retry = 30;
+                node.warn("No valid number for retry found, using default 30s retry interval");
+            }
+            if (isNaN(expire)) {
+                expire = 600;
+                node.warn("No valid number for expire time found, using default 600s retry duration");
+            }
+            if (retry < 30) {
+                retry = 30;
+                node.warn("Retry interval too low, using minimal 30s retry interval");
+            }
+            if (expire > 10800) {
+                expire = 10800;
+                node.warn("Expire time too high, using maximum setting of 10800s (3 hours) retry duration");
+            }
             if (typeof msg.payload === 'undefined') { msg.payload = "(undefined msg.payload)"; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
@@ -52,8 +70,8 @@ module.exports = function(RED) {
                     message: msg.payload,
                     title: title,
                     priority: pri,
-                    retry: 30,
-                    expire: 600,
+                    retry: retry,
+                    expire: expire,
                     html: html
                 };
                 if (dev) { pushmsg.device = dev; }
