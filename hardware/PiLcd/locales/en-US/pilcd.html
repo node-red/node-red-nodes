@@ -1,5 +1,11 @@
 <script type="text/html" data-help-name="rpi-lcd">
     <p>Raspberry Pi output to a HD44780 style LCD. Usually 1, 2, or 4 lines of characters.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">string</span></dt>
+        <dd>Text to be displayed</dd>
+    </dl>
+    <h3>Details</h3>
     <p>Expects a <code>msg.payload</code> with a string in it.</p>
     <p>Strings for the second line of the display must start <b>2:</b> - the third start <b>3:</b> - and the fourth <b>4:</b></p>
     <p>To clear the display send the string <b>clr:</b></p>
