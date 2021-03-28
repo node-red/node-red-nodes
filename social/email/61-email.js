@@ -506,7 +506,11 @@ module.exports = function(RED) {
             if (this.interval_id != null) {
                 clearTimeout(this.interval_id);
             }
-            if (imap) { imap.destroy(); }
+            if (imap) {
+                imap.end();
+                setTimeout(function() { imap.destroy(); },1000);
+                node.status({});
+            }
         });
 
         function setInputRepeatTimeout() {
