@@ -13,7 +13,7 @@
             "stopbits": "Stoppbits",
             "input": "Empfang",
             "split": "Aufteilung",
-            "deliver": "und Ausgabe",
+            "deliver": "und Ausgabe als",
             "output": "Versand",
             "request": "Anforderung",
             "responsetimeout": "Standardwert Antwort-Zeitablauf",
@@ -24,7 +24,7 @@
             "startor": ", dann"
         },
         "placeholder": {
-            "serialport": "z. B. /dev/ttyUSB0/"
+            "serialport": "z.B. /dev/ttyUSB0/"
         },
         "parity": {
             "none": "Keine",
@@ -45,8 +45,8 @@
             "lengths": "in feste Längen von"
         },
         "output": {
-            "ascii": "als ASCII-Strings",
-            "binary": "binäre Buffer"
+            "ascii": "ASCII-Strings",
+            "binary": "Binäre Buffer"
         },
         "addsplit": "Zeichen zu Ausgangsnachrichten hinzufügen",
         "tip": {
@@ -62,7 +62,7 @@
         "errors": {
             "missing-conf": "Fehlende serielle Konfiguration",
             "serial-port": "Serieller Port",
-            "error": "Serieller Port __port__ Fehler: __error__",
+            "error": "Serieller Port __port__ FEHLER: __error__",
             "unexpected-close": "Serieller Port __port__ unerwartet geschlossen",
             "disconnected": "Serieller Port __port__ getrennt",
             "closed": "Serieller Port __port__ geschlossen",
