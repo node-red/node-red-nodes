@@ -10,7 +10,9 @@
     <h3>Gmail-Benutzer</h3>
     <p>Beim Zugriff auf Gmail kann es nötig sein, entweder <a target="_new" href="https://support.google.com/mail/answer/185833?hl=de">ein App-Passwort</a> zu aktivieren oder den <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=de">Zugriff aufs Google-Konto durch weniger sichere Apps</a> über die Google-Konto-Einstellungen zu erlauben.</p>
     <h3>Details</h3>
-    <p>Die Nachricht in <code>msg.payload</code> kann als HTML formatiert sein.</p>
+    <p>Die Nachricht in <code>msg.payload</code> kann als HTML formatiert sein.
+      Ein separater, davon abweichender Plaintext kann in <code>msg.plain</code> angegeben werden. Ansonsten wird auch <code>msg.payload</code> verwendet.
+      <code>msg.plain</code> wird ignoriert, wenn <code>msg.payload</code> kein HTML enthält.</p>
     <p>Wenn <code>msg.payload</code> ein binärer Buffer ist, so wird sie in einen Nachrichten-Dateianhang (attachment) konvertiert.
        Der Dateiname sollte mittels <code>msg.filename</code> angegeben werden.
        Optional kann <code>msg.description</code> als Nachrichtentext hinzugefügt werden.</p>

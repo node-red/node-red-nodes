@@ -119,7 +119,13 @@ module.exports = function(RED) {
                     else {
                         var payload = RED.util.ensureString(msg.payload);
                         sendopts.text = payload; // plaintext body
-                        if (/<[a-z][\s\S]*>/i.test(payload)) { sendopts.html = payload; } // html body
+                        if (/<[a-z][\s\S]*>/i.test(payload)) { 
+                            sendopts.html = payload; // html body
+                            if (msg.hasOwnProperty("plain")) {
+                                var plaintext = RED.util.ensureString(msg.plain);
+                                sendopts.text = plaintext; // plaintext body - specific plaintext version
+                            }
+                        }
                         if (msg.attachments && Array.isArray(msg.attachments)) {
                             sendopts.attachments = msg.attachments;
                             for (var a=0; a < sendopts.attachments.length; a++) {
