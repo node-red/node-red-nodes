@@ -10,7 +10,9 @@
     <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
     or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
     <h3>Details</h3>
-    <p>The payload can be html format.</p>
+    <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>. 
+    If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext. 
+    <code>msg.plaintext</code> will be ignored if <code>msg.payload</code> doesn't contain html.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
