@@ -121,8 +121,8 @@ module.exports = function(RED) {
                         sendopts.text = payload; // plaintext body
                         if (/<[a-z][\s\S]*>/i.test(payload)) { 
                             sendopts.html = payload; // html body
-                            if (msg.hasOwnProperty("plain")) {
-                                var plaintext = RED.util.ensureString(msg.plain);
+                            if (msg.hasOwnProperty("plaintext")) {
+                                var plaintext = RED.util.ensureString(msg.plaintext);
                                 sendopts.text = plaintext; // plaintext body - specific plaintext version
                             }
                         }
