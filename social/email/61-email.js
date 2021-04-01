@@ -119,15 +119,16 @@ module.exports = function(RED) {
                     else {
                         var payload = RED.util.ensureString(msg.payload);
                         sendopts.text = payload; // plaintext body
-                        if (/<[a-z][\s\S]*>/i.test(payload)) { 
+                        if (/<[a-z][\s\S]*>/i.test(payload)) {
                             sendopts.html = payload; // html body
                             if (msg.hasOwnProperty("plaintext")) {
                                 var plaintext = RED.util.ensureString(msg.plaintext);
                                 sendopts.text = plaintext; // plaintext body - specific plaintext version
                             }
                         }
-                        if (msg.attachments && Array.isArray(msg.attachments)) {
-                            sendopts.attachments = msg.attachments;
+                        if (msg.attachments) {
+                            if (!Array.isArray(msg.attachments)) { sendopts.attachments = [ msg.attachments ]; }
+                            else { sendopts.attachments = msg.attachments; }
                             for (var a=0; a < sendopts.attachments.length; a++) {
                                 if (sendopts.attachments[a].hasOwnProperty("content")) {
                                     if (typeof sendopts.attachments[a].content !== "string" && !Buffer.isBuffer(sendopts.attachments[a].content)) {
