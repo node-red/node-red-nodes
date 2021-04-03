@@ -5,7 +5,7 @@ var events = require('events');
 var util = require('util');
 var Client = require('node-ssdp').Client;
 var xml2js  = require('xml2js');
-var request = require('request');
+// var request = require('request');
 var http = require('http');
 var url = require('url');
 var Q = require('q');
@@ -270,6 +270,11 @@ WeMoNG.prototype.start = function start() {
               post_request.on('timeout', function(){
                 post_request.abort();
               });
+
+              post_request.on('error', function(err){
+                // should log err
+                console.log(err);
+              })
 
               post_request.write(util.format(getenddevs.body, udn));
               post_request.end();

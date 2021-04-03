@@ -398,12 +398,17 @@ module.exports = function(RED) {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
-        node.on('input', function(msg) {
+        node.on('input', function(msg, send, done) {
             var dev = wemo.get(node.dev);
+
+            send = send || function() { node.send.apply(node,arguments) }
 
             if (!dev) {
                 //need to show that dev not currently found
                 console.log('no device found');
+                if (done) {
+                    done()
+                }
                 return;
             }
 
@@ -427,7 +432,16 @@ module.exports = function(RED) {
                     delete status.capabilities;
                     // }
                     msg.payload = status;
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                }).catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });
             } else if (dev.type === 'socket_insight') {
                 console.log("socket_insight");
@@ -437,7 +451,16 @@ module.exports = function(RED) {
                     msg.payload = insightParameters;
                     // 'state' should be a number for backwards compatibility
                     msg.payload.state = parseInt(msg.payload.state);
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                }).catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });            
             } else {
                 console.log("socket");
@@ -447,7 +470,17 @@ module.exports = function(RED) {
                     msg.payload = {
                         state: status
                     };
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                })
+                .catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });
             }
         });
