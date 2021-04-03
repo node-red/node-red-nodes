@@ -6,11 +6,13 @@
     <code>msg.inReplyTo</code>, <code>msg.references</code>, <code>msg.headers</code>, or <code>msg.priority</code> properties.</p>
     <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
     default value.</p>
-    <h3>GMail users</h3>
-    <p>If you are accessing GMail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
+    <h3>Gmail users</h3>
+    <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
     or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
     <h3>Details</h3>
-    <p>The payload can be html format.</p>
+    <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>. 
+    If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext. 
+    <code>msg.plaintext</code> will be ignored if <code>msg.payload</code> doesn't contain html.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
     <p>Alternatively you may provide <code>msg.attachments</code> which should contain an array of one or
@@ -21,7 +23,7 @@
 </script>
 
 <script type="text/html" data-help-name="e-mail in">
-    <p>Repeatedly gets emails from an IMAP server and forwards on as a msg if not already seen.</p>
+    <p>Repeatedly gets emails from a POP3 or IMAP server and forwards on as a msg if not already seen.</p>
     <p>The subject is loaded into <code>msg.topic</code> and <code>msg.payload</code> is the plain text body.
        If there is text/html then that is returned in <code>msg.html</code>. <code>msg.from</code> and <code>msg.date</code> are also set if you need them.</p>
     <p>Additionally <code>msg.header</code> contains the complete header object including
@@ -29,10 +31,8 @@
     <p>It can optionally mark the message as Read (default), Delete it, or leave unmarked (None).</p>
     <p>Uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a> - see that page for
         information on the <code>msg.criteria</code> format if needed.</p>
-    <p><b>Note</b>: uses IMAP with SSL to port 993.</p>
     <p>Any attachments supplied in the incoming email can be found in the <code>msg.attachments</code> property. This will be an array of objects where
     each object represents a specific attachments.  The format of the object is:</p>
-
 <pre>
 {
   contentType:        // The MIME content description
@@ -47,13 +47,13 @@
                       // We can turn this into a base64 data string with content.toString('base64')
 }
 </pre>
-<p>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
-<p>The maximum refresh interval is 2147483 seconds (24.8 days).</p>
+<p><b>Note</b>: For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+<p><b>Note</b>: The maximum refresh interval is 2147483 seconds (24.8 days).</p>
 
 </script>
 
 <script type="text/html" data-help-name="e-mail mta">
-    <p>Mail Transfer Agent - listens on a port for incoming SMTP mail.</p>
+    <p>Mail Transfer Agent - listens on a port for incoming SMTP mails.</p>
     <p><b>Note</b>: "NOT for production use" as there is no security built in.
     This is primarily for local testing of outbound mail sending, but could be used
     as a mail forwarder to a real email service if required.</p>

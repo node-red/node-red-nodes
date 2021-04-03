@@ -1,8 +1,9 @@
 {
     "name"          : "node-red-node-timeswitch",
-    "version"       : "0.0.8",
+    "version"       : "0.1.0",
     "description"   : "A Node-RED node to provide a simple timeswitch to schedule daily on/off events.",
     "dependencies"  : {
+        "spacetime": "^6.12.5",
         "suncalc": "^1.8.0"
     },
     "repository" : {
@@ -20,5 +21,10 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [
+        {
+          "name": "@pmacostapdi"
+        }
+    ]
 }

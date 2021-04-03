@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-redis",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "description"   : "A Node-RED node to save data to an Redis database",
     "dependencies"  : {
         "redis"   : "0.12.1"

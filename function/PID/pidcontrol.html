@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="PID control">
+<script type="text/html" data-template-name="PID control">
     <div class="form-row">
         <label for="node-input-target" style="width:120px;"><i class="fa fa-dot-circle-o"></i> Set Point</label>
         <input type="text" id="node-input-target" placeholder="target value" style="width:60%;">
@@ -22,14 +22,6 @@
     </div>
     <div class="form-tips"><b>Tip:</b> This node ONLY works on numbers<br>
     The damping factors are typically in the range 0 - 1.<br></div>
-</script>
-
-<script type="text/x-red" data-help-name="PID control">
-    <p>A PID controller node.</p>
-    <p>This node ONLY expects a numeric <code>msg.payload</code> containing the current reading.
-    It will output the correction that needs to be applied in order to move to the preset <i>set point</i> value.</p>
-    <p>See <a href="https://en.wikipedia.org/wiki/PID_controller" target="_new">Wikipedia</a> for more details.</p>
-    <p>The <i>set point</i> may be overridden by <code>msg.setpoint</code>. If you do so the edit box value can be used as the initial value.</p>
 </script>
 
 <script type="text/javascript">

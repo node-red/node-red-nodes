@@ -1,0 +1,11 @@
+
+<script type="text/html" data-help-name="sunrise">
+    <p>Uses the suncalc module to generate an output at sunrise and sunset based on a specified location.</p>
+    <p>Several choices of definition of sunrise and sunset are available, see the <i><a href = "https://github.com/mourner/suncalc" target="_new">suncalc</a></i> module for details.</p>
+    <p>The start and end times can be offset by a number of minutes before (minus) or after (plus) the chosen event time.</p>
+    <p>The first output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending if in between selected times or not.
+    The second output emits only on the transition between night to day (<i>-> 1</i>) or day to night (<i>-> 0</i>).</p>
+    <p>It also outputs <code>msg.start</code>, <code>msg.end</code> and <code>msg.now</code> which are todays start and end times, with offsets applied, in ISO format, and the current ISO time.</p>
+    <p><code>msg.sun</code> is an object containing the azimuth and altitude, in degrees, of the current sun position.</p>
+    <p><code>msg.moon</code> is an object containing <thead></thead> position, phase, illumination and icon of the moon.</p>
+</script>

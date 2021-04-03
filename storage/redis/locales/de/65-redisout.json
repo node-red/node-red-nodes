@@ -1,0 +1,21 @@
+{
+    "redisout": {
+        "label": {
+            "host": "Host",
+            "port": "Port",
+            "key": "Schlüssel",
+            "type": "Typ"
+        },
+        "type": {
+            "string": "String",
+            "hash": "Hash",
+            "set": "Set",
+            "list": "List"
+        },
+        "tip": "Wenn kein Schlüssel angegeben, wird der Topic als Schlüssel verwendet.<br>Beim Typ Hash sollten die Nutzdaten (payload) ein Objekt oder field=value string sein.",
+        "errors": {
+            "invalidpayload": "Ungültige Nutzdaten (payload) für redis-hash",
+            "nokey": "Kein Schlüssel oder Topic gesetzt"
+        }
+    }
+}

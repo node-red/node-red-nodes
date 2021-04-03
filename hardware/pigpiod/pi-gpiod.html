@@ -164,25 +164,8 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips"><span data-i18n="[html]pi-gpiod.tip.in"></span></div>
-    <div class="form-tips" id="pin-tip">Pins marked in blue are dual use. Make sure they are not enabled for
-    their other use before using as GPIO.</div>
+    <div class="form-tips" id="pin-tip"><span data-i18n="[html]pi-gpiod.tip.dual"></span></div>
 </script>
-
-<script type="text/html" data-help-name="pi-gpiod in">
-    <p>Raspberry Pi input node. Generates a <code>msg.payload</code> with either a
-    0 or 1 depending on the state of the input pin.
-    Requires the <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a>
-    daemon to be running on the host computer in order to work.</p>
-    <p><b>Outputs</b>
-    <ul>
-        <li><code>msg.payload</code> - <i>number</i> - the level of the pin (0 or 1).</li>
-        <li><code>msg.topic</code> - <i>string</i> - pi/{the pin number}</li>
-    </ul>
-    <p><b>Details</b></p>
-    <p>You may also enable the input pullup resistor &uarr; or the pulldown resistor &darr;.</p>
-    <p>If using with Docker on Pi then the default Host IP should be <code>172.17.0.1</code>. You will also need to run <code>sudo pigpiod</code> on the host.</p>
-    <p><b>Note:</b> the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
-    </script>
 
 <script type="text/javascript">
     var bcm2pin = {
@@ -383,9 +366,9 @@
     </div>
     <div class="form-row" id="node-set-minimax">
         <label>&nbsp;&nbsp;&nbsp;&nbsp;<span data-i18n="pi-gpiod.label.limits"></label>
-        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> uS
+        <span data-i18n="pi-gpiod.label.min"></span> <input type="text" id="node-input-sermin" style="width:70px;"> us
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> uS
+        <span data-i18n="pi-gpiod.label.max"></span> <input type="text" id="node-input-sermax" style="width:70px;"> us
     </div>
     <div class="form-row" id="node-set-tick">
         <label>&nbsp;</label>
@@ -400,8 +383,8 @@
         </select>
     </div>
     <div class="form-row" id="node-set-freq">
-        <label for="node-input-freq"> <span data-i18n="rpi-gpio.label.freq"></span></label>
-        Frequency: <select id="node-input-freq" style="width:80px;">
+        <label for="node-input-freq"> <span data-i18n="pi-gpiod.label.freq"></span></label>
+        <select id="node-input-freq" style="width:80px;">
             <option value="8000">8000</option>
             <option value="4000">4000</option>
             <option value="2000">2000</option>
@@ -433,25 +416,7 @@
     <div class="form-tips" id="dig-tip"><span data-i18n="[html]pi-gpiod.tip.dig"></span></div>
     <div class="form-tips" id="pwm-tip"><span data-i18n="[html]pi-gpiod.tip.pwm"></span></div>
     <div class="form-tips" id="ser-tip"><span data-i18n="[html]pi-gpiod.tip.ser"></span></div>
-    <div class="form-tips" id="pin-tip">Pins marked in blue are dual use. Make sure they are not enabled for
-    their other use before using as GPIO.</div>
-</script>
-
-<script type="text/html" data-help-name="pi-gpiod out">
-    <p>Raspberry Pi output node. Can be used in Digital, PWM or Servo modes. Requires the
-    <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
-    <p><b>Inputs</b>
-    <ul>
-        <li><code>msg.payload</code> - <i>number | string</i> - 0,1 (Digital), 0-100 (PWM, Servo)</li>
-    </ul>
-    <p><b>Details</b></p>
-    <p>Digital mode expects a <code>msg.payload</code> with either a 0 or 1 (or true or false),
-    and will set the selected physical pin high or low depending on the value passed in.</p>
-    <p>The initial value of the pin at deploy time can also be set to 0 or 1.</p>
-    <p>When using PWM and Servo modes, the input value should be a number 0 - 100, and can be floating point.</p>
-    <p>In Servo mode you can stop the output by sending a <code>msg.payload</code> of <code>null</code> or <code>""</code>.</p>
-    <p>If using with Docker on Pi then the default Host IP should be <code>172.17.0.1</code>. You will also need to run <code>sudo pigpiod</code> on the host.</p>
-    <p><b>Note</b>: the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
+    <div class="form-tips" id="pin-tip"><span data-i18n="[html]pi-gpiod.tip.dual"></span></div>
 </script>
 
 <script type="text/javascript">

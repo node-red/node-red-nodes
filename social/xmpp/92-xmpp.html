@@ -13,9 +13,17 @@
         <input type="checkbox" id="node-input-join" placeholder="" style="display:inline-block; width:auto; vertical-align:top;">
         <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
     </div>
+    <div class="form-row" id="node-room-pwd">
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="optional room password">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Note:</b> By leaving Buddy empty and ticking "Is a chat room",
+        the node will try to listen to all the rooms the user has access to.
+        You can specify multiple rooms by separating them by a :
     </div>
 </script>
 
@@ -37,6 +45,9 @@
             to: {value:""},
             join: {value:false}
         },
+        credentials: {
+            password: {type:"password"}
+        },
         inputs:0,
         outputs:2,
         icon: "xmpp.png",
@@ -45,6 +56,16 @@
         },
         labelStyle: function() {
             return (this.name)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-join').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
+            $('#node-input-to').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
         }
     });
 </script>
@@ -69,6 +90,10 @@
         <input type="checkbox" id="node-input-join" placeholder="" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-join" style="width:70%;">Is a Chat Room ?</label>
     </div>
+    <div class="form-row" id="node-room-pwd">
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="optional room password">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -79,7 +104,6 @@
 <script type="text/html" data-help-name="xmpp out">
     <p>Connects to an XMPP server to send messages.</p>
     <p>The <b>To</b> field is optional. If not set the <code>msg.topic</code> property of the message is used.</p>
-    <p>If you are joining a room then the <b>To</b> field must be supplied.</p>
     <p>You may also send a msg with <code>msg.presence</code> to set your presence to one of <i>chat, away, dnd</i> or <i>xa</i>.
     If you do so then the <code>msg.payload</code> will set your status message.</p>
 </script>
@@ -95,6 +119,9 @@
             join: {value:false},
             sendObject: {value:false}
         },
+        credentials: {
+            password: {type:"password"}
+        },
         inputs:1,
         outputs:0,
         icon: "xmpp.png",
@@ -104,6 +131,16 @@
         },
         labelStyle: function() {
             return (this.name)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-join').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
+            $('#node-input-to').change(function() {
+                if ($("#node-input-join").is(':checked') && $("#node-input-to").val() && $("#node-input-to").val().indexOf(':') === -1) { $("#node-room-pwd").show(); }
+                else { $("#node-room-pwd").hide(); }
+            });
         }
     });
 </script>
@@ -124,7 +161,7 @@
         <input type="text" id="node-config-input-nickname" placeholder="Joe (optional)">
     </div>
     <div class="form-row">
-        <label for="node-config-input-pass"><i class="fa fa-lock"></i> Password</label>
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-password">
     </div>
 </script>

@@ -28,6 +28,11 @@
         <input type="text" id="node-input-property" style="width:70%;"/>
     </div>
     <div class="form-row">
+        <label> </label>
+        <input type="checkbox" id="node-input-septopics" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="rbe.label.septopics"></span>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="rbe.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]rbe.label.name" style="width:70%;">
     </div>
@@ -43,6 +48,7 @@
             gap: {value:"",validate:RED.validators.regex(/^(\d*[.]*\d*|)(%|)$/)},
             start: {value:""},
             inout: {value:"out"},
+            septopics: {value:true},
             property: {value:"payload",required:true}
         },
         inputs:1,
@@ -58,6 +64,9 @@
         oneditprepare: function() {
             if (this.property === undefined) {
                 $("#node-input-property").val("payload");
+            }
+            if (this.septopics === undefined) {
+                $("#node-input-septopics").prop('checked', true);
             }
             $("#node-input-property").typedInput({default:'msg',types:['msg']});
             //$( "#node-input-gap" ).spinner({min:0});

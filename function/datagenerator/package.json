@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-data-generator",
-    "version"       : "0.1.1",
+    "version"       : "0.2.0",
     "description"   : "A Node-RED node to create a string of dummy data values from a template. Useful for test-cases.",
     "dependencies"  : {
         "dummy-json": "^2.0.0"

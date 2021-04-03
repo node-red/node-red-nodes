@@ -1,0 +1,38 @@
+{
+    "mongodb": {
+        "label": {
+            "host": "Host",
+            "topology":"Verbindungs- topologie",
+            "connectOptions":"Verbindungs- optionen",
+            "port": "Port",
+            "database": "Datenbank",
+            "username": "Benutzername",
+            "password": "Passwort",
+            "server": "Server",
+            "collection": "Collection",
+            "operation": "Operation",
+            "onlystore": "Nur msg.payload-Objekt speichern",
+            "createnew": "Erzeuge ein neues Dokument, wenn keine Übereinstimmung gefunden",
+            "updateall": "Aktualisiere alle übereinstimmenden Dokumente"
+        },
+        "operation": {
+            "save": "Speichern",
+            "insert": "Einfügen",
+            "update": "Aktualisieren",
+            "remove": "Entfernen",
+            "find": "Finden",
+            "count": "Zählen",
+            "aggregate": "Vereinen"
+        },
+        "status": {
+            "connecting": "Verbinde",
+            "connected": "Verbunden",
+            "error": "Fehler"
+        },
+        "tip": "<b>Tipp:</b> Wenn keine Collection vorgegeben ist, muss <code>msg.collection</code> den Collection-Namen enthalten",
+        "errors": {
+            "nocollection": "Keine Collection angegeben",
+            "missingconfig": "Fehlende MongoDB-Konfiguration"
+        }
+    }
+}

@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="mlsentiment">
+<script type="text/html" data-template-name="mlsentiment">
     <div class="form-row">
         <label for="node-input-lang"><i class="fa fa-language"></i> <span data-i18n="mlsentiment.label.language"></span></label>
         <select type="text" id="node-input-lang" style="width:70%;">
@@ -116,35 +116,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
-</script>
-
-<script type="text/x-red" data-help-name="mlsentiment">
-    <p>Analyses the chosen property, default <code>payload</code>, and adds a <code>sentiment</code> object.</p>
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>sentiment <span class="property-type">object</span></dt>
-        <dd>contains the resulting AFINN-111 sentiment.</dd>
-        <dt>sentiment.score <span class="property-type">number</span></dt>
-        <dd>the sentiment score.</dd>
-    </dl>
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>words <span class="property-type">object</span></dt>
-        <dd>an object of words and scores to override or add words can be supplied - <code>{ word:score,... }</code>.</dd>
-    </dl>
-    <dl class="message-properties">
-        <dt>lang <span class="property-type">string</span></dt>
-        <dd>Two letter cldr code to specify the language to use - from the list below</dd>
-    </dl>
-    <h3>Details</h3>
-    <p>A score greater than zero is positive and less than zero is negative.</p>
-    <p>The score typically ranges from -5 to +5, but can go higher and lower.</p>
-    <p>See <a href="https://github.com/marcellobarile/multilang-sentiment/blob/develop/README.md" target="_blank">the Sentiment docs here</a>.</p>
-    <p>The node can also be configured to let the language be specified by setting <code>msg.lang</code> to one of the codes below</p>
-    <p>The language codes supported are - af, am, ar, az, be, bg, bn, bs, ca, ceb, co, cs, cy, da, de, el, en, eo, es, et, eu, fa, fi,
-    fr, fy, ga, gd, gl, gu, ha, haw, hi, hmn, hr, ht, hu, hy, id, ig, is, it, iw, ja, jw, ka, kk, km, kn, ko, ku, ky, la, lb, lo, lt,
-    lv, mg, mi, mk, ml, mn, mr, ms, mt, my, ne, nl, no, ny, pa, pl, ps, pt, ro, ru, sd, si, sk, sl, sm, sn, so, sq, sr, st, su, sv,
-    sw, ta, te, tg, th, tl, tr, uk, ur, uz, vi, xh, yi, yo, zh, zh-tw, zu</p>
 </script>
 
 <script type="text/javascript">

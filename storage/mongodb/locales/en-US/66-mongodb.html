@@ -1,0 +1,74 @@
+
+<script type="text/html" data-help-name="mongodb">
+    <p>Define a connection method to your MongoDB server instance.</p>
+    <p>There are 3 supported options:
+        <details><summary>Standard/direct</summary>
+            For databases that request connections in the form
+            <code>
+              mongodb://[username]:[password]@[hostname]:[port]/[dbname]
+            </code>
+            Most often used for local MongoDB instances (localhost:27017), and other stand-alone instances.
+        </details>
+        <details><summary>Standard/replicaset</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb://[username]:[password]@[hostnameA]:[port],[hostnameB]:[port]/[dbname]?replicaSet=[replsetname]
+            </code>
+            Often used with <q>database as a service</q> offerings,
+            or on-premises instances that have been configured for availability and resilience
+        </details>
+        <details><summary>Clustered by DNS seedlist</summary>
+            For databases that request connections in the form
+            <code>
+            mongodb+srv://[username]:[password]@[clustername]/[dbname]?retryWrites=true&w=majority
+            </code>
+            A configuration of MongoDB instances that provide availability and performance
+            through replication and sharding, accessed through a cluster alias name, rather than
+            by specific host:port connections. This is the default for MongoDB instances in the
+            <a href="https://www.mongodb.com/cloud/atlas" target="_blank">Atlas cloud service</a>.
+        </details>
+      <p><strong>Connect options</strong> is where you add the optional parameters required by your MongoDB instance.
+        This might include:
+        <ul><li>w=majority</li><li>replicaSet=replset</li><li>authSource=admin</li></ul> and any other options appropriate -
+        full set available at <a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">
+        Connection String URI Format — MongoDB Manual</a>.
+      <p>If you are connecting to <a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb-group" target="_blank">
+        IBM Databases for MongoDB</a>, as a replica-set, be sure to append <code>ssl=true&tlsAllowInvalidCertificates=true </code>
+        to the <strong>Connect options</strong>.
+</script>
+
+<script type="text/html" data-help-name="mongodb out">
+    <p>A simple MongoDB output node. Can save, insert, update and remove objects from a chosen collection.</p>
+    <p>Save will update an existing object or insert a new object if one does not already exist.</p>
+    <p>Insert will insert a new object.</p>
+    <p>Save and insert either store <code>msg</code> or <code>msg.payload</code>.</p>
+    <p>Update will modify an existing object or objects. The query to select objects to update uses <code>msg.query</code>
+    and the update to the element uses <code>msg.payload</code>. If <code>msg.query._id</code> is
+    a valid mongo ObjectId string it will be converted to an ObjectId type.</p>
+    <p>Update can add a object if it does not exist or update multiple objects.</p>
+    <p>Remove will remove objects that match the query passed in on <code>msg.payload</code>. A blank query will delete
+    <i>all of the objects</i> in the collection.</p>
+    <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in the
+    node will override <code>msg.collection</code>.</p>
+    <p>By default MongoDB creates an <i>_id</i> property as the primary key - so repeated injections of the
+    same <code>msg</code> will result in many database entries.</p>
+    <p>If this is NOT the desired behaviour - ie. you want repeated entries to overwrite, then you must set
+    the <code>msg._id</code> property to be a constant by the use of a previous function node.</p>
+    <p>This could be a unique constant or you could create one based on some other msg property.</p>
+    <p>Currently we do not limit or cap the collection size at all... this may well change.</p>
+</script>
+
+<script type="text/html" data-help-name="mongodb in">
+    <p>Calls a MongoDB collection method based on the selected operator.</p>
+    <p>Find queries a collection using the <code>msg.payload</code> as the query statement as per the .find() function.
+    Optionally, you may also (via a function) set a <code>msg.projection</code> object to constrain the returned
+    fields, a <code>msg.sort</code> object, a <code>msg.limit</code> number and a <code>msg.skip</code> number.</p>
+    <p>Count returns a count of the number of documents in a collection or matching a query using the
+    <code>msg.payload</code> as the query statement.</p>
+    <p>Aggregate provides access to the aggregation pipeline using the <code>msg.payload</code> as the pipeline array.</p>
+    <p>You can either set the collection method in the node config or on <code>msg.collection</code>. Setting it in
+    the node will override <code>msg.collection</code>.</p>
+    <p>See the <a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB
+    collection methods docs</i></a> for examples.</p>
+    <p>The result is returned in <code>msg.payload</code>.</p>
+</script>

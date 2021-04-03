@@ -1,0 +1,59 @@
+{
+    "pi-gpiod": {
+        "label": {
+            "gpiopin": "GPIO",
+            "selectpin": "Pin-Auswahl",
+            "host": "Host",
+            "resistor": "Widerstand",
+            "readinitial": "Initalzustand bei Übernahme/Neustart lesen",
+            "type": "Typ",
+            "initpin": "Pin-Zustand initialisieren",
+            "debounce": "Entprellung",
+            "limits": "Limits",
+            "min": "min.",
+            "max": "max.",
+            "freq": "Frequenz"
+        },
+        "place": {
+            "host": "Lokale oder entfernte IP",
+            "port": "Port"
+        },
+        "resistor": {
+            "none": "Kein",
+            "pullup": "Pull-Up",
+            "pulldown": "Pull-Down"
+        },
+        "digout": "Digitaler Ausgang",
+        "pwmout": "PWM-Ausgang",
+        "servo": "Servo-Ausgang",
+        "initpin0": "Initalzustand low (0)",
+        "initpin1": "Initalzustand high (1)",
+        "pinname": "Pin",
+        "tip": {
+            "pin": "<b>Pins in Verwendung</b>: ",
+            "in": "Nur digitaler Eingang unterstützt - Eingangszustand muss 0 oder 1 sein",
+            "dig": "Digitaler Ausgang - Node-Eingangswert muss 0 oder 1 sein",
+            "pwm": "PWM-Ausgang - Node-Eingangswert muss zwischen 0 und 100 sein",
+            "ser": "Servo-Ausgang - Node-Eingangswert muss zwischen 0 und 100 sein. 50 ist die Mitte.<br/>Min. muss mindestens 500 µs und Max. muss 2500 µs oder weniger sein.",
+            "dual": "Blaue Pins sind mehrfach verwendbar. Es ist sicherzustellen, dass keine andere Verwendung aktiviert ist, um sie als GPIO zu verwenden."
+        },
+        "types": {
+            "digout": "Digitaler Ausgang",
+            "input": "Eingang",
+            "pullup": "Eingang mit Pull-Up",
+            "pulldown": "Eingang mit Pull-Down",
+            "pwmout": "PWM-Ausgang",
+            "servo": "Servo-Ausgang"
+        },
+        "status": {
+            "stopped": "Gestoppt",
+            "closed": "Geschlossen",
+            "not-running": "Nicht aktiv"
+        },
+        "errors": {
+            "invalidpin": "Ungültiger GPIO-Pin",
+            "invalidinput": "Ungültige Eingabe",
+            "error": "FEHLER: __error__"
+        }
+    }
+}

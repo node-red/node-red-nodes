@@ -1,0 +1,13 @@
+
+<script type="text/html" data-help-name="leveldb in">
+    <p>Uses <a href="https://code.google.com/p/leveldb/" target="_new"><i>LevelDB</i></a> for a simple key value pair database.</p>
+    <p>Use this node to <b>get</b>, or retrieve the data already saved in the database.</p>
+    <p><code>msg.topic</code> must hold the <i>key</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
+    <p>If nothing is found for the key then <code>msg.payload</code> is set to the <i>null</i> object.</p>
+</script>
+
+<script type="text/html" data-help-name="leveldb out">
+    <p>Uses <a href="https://code.google.com/p/leveldb/" target="_new"><i>LevelDB</i></a> for a simple key value pair database.</p>
+    <p>Use this node to either <b>put</b> (store) the <code>msg.payload</code> to the named database file, using <code>msg.topic</code> as the key.</p>
+    <p>To <b>delete</b> information select delete in the properties dialogue and again use <code>msg.topic</code> as the key.</b>.</p>
+</script>

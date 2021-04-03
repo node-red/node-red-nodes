@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="stomp in">
+<script type="text/html" data-template-name="stomp in">
     <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
         <input type="text" id="node-input-server">
@@ -14,7 +14,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="stomp in">
+<script type="text/html" data-help-name="stomp in">
     <p>Connects to a server using the Stomp protocol to receive messages.</p>
     <p>If the message received is JSON <code>msg.payload</code> will be parsed into an
     object. If not it will be the raw data.</p>
@@ -47,7 +47,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="stomp out">
+<script type="text/html" data-template-name="stomp out">
     <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
         <input type="text" id="node-input-server">
@@ -64,7 +64,7 @@
     property of the message.</div>
 </script>
 
-<script type="text/x-red" data-help-name="stomp out">
+<script type="text/html" data-help-name="stomp out">
     <p>Connects to an Stomp capable server to send messages.</p>
     <p>The <b>Destination</b> field is optional. If set it overrides the <code>msg.topic</code>
     property of the message.</p>
@@ -99,7 +99,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="stomp-server">
+<script type="text/html" data-template-name="stomp-server">
     <div class="form-row node-input-server">
         <label for="node-config-input-server"><i class="fa fa-bookmark"></i> Server</label>
         <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 45%;" >

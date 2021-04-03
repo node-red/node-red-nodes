@@ -1,0 +1,15 @@
+{
+    "ping": {
+        "ping": "ping",
+        "label": {
+            "target": "Ziel",
+            "ping": "Ping (S)",
+            "mode": "Modus",
+            "mode_option": {
+                "timed": "Zeitgesteuert",
+                "triggered": "Getriggert"
+            },
+            "tip": "Hinweis: Ziel-Eintrag leer lassen, damit über msg.payload der Hosts dynamisch gesetzt werden kann"
+        }
+    }
+}

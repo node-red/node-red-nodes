@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-random",
-    "version"       : "0.3.1",
+    "version"       : "0.4.0",
     "description"   : "A Node-RED node that when triggered generates a random number between two values.",
     "dependencies"  : {
     },

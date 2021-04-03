@@ -31,7 +31,7 @@ bounce = 25
 if len(sys.argv) > 2:
     cmd = sys.argv[1].lower()
     pin = int(sys.argv[2])
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
     if cmd == "pwm":

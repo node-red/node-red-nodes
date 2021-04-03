@@ -1,0 +1,24 @@
+{
+    "tail": {
+        "tail": "tail",
+        "label": {
+            "filename": "Dateiname",
+            "type": "Dateityp",
+            "splitlines": "Aufteilung mittels",
+            "name": "Name",
+            "regex": "Aufteilungszeichen oder regulärer Ausdruck (Regex)"
+        },
+        "action": {
+            "text": "Text (String-Rückgabe)",
+            "binary": "Binary (Buffer-Rückgabe)"
+        },
+        "errors": {
+            "windowsnotsupport": "Zurzeit nicht unterstützt unter Windows",
+            "filenotfound": "Datei nicht gefunden"
+        },
+        "state":{
+            "stopped": "Gestoppt",
+            "nofilename":"Fehlender Dateiname am Eingang"
+        }
+    }
+}

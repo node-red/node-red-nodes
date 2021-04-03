@@ -1,9 +1,9 @@
 {
     "name": "node-red-node-tail",
-    "version": "0.1.1",
+    "version": "0.3.0",
     "description": "A node to tail files for Node-RED",
     "dependencies": {
-        "tail": "^2.0.3"
+        "tail": "^2.2.0"
     },
     "repository": {
         "type": "git",

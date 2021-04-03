@@ -92,14 +92,14 @@ describe('RPI GPIO Node', function() {
 
 
     it('should read a dummy value high (not on Pi)', function(done) {
-        var flow = [{id:"n1", type:"rpi-gpio in", pin:"7", intype:"up", debounce:"25", read:true, wires:[["n2"]] },
-        {id:"n2", type:"helper"}];
+        var flow = [{id:"n1", type:"rpi-gpio in", pin:"7", intype:"up", debounce:"25", read:true, bcm:true, wires:[["n2"]] },
+            {id:"n2", type:"helper"}];
         helper.load(rpiNode, flow, function() {
             var n1 = helper.getNode("n1");
             var n2 = helper.getNode("n2");
             n2.on("input", function(msg) {
                 try {
-                    msg.should.have.property('topic', 'pi/7');
+                    msg.should.have.property('topic', 'gpio/7');
                     msg.should.have.property('payload', 1);
                     done();
                 } catch(err) {
@@ -110,14 +110,14 @@ describe('RPI GPIO Node', function() {
     });
 
     it('should read a dummy value low (not on Pi)', function(done) {
-        var flow = [{id:"n1", type:"rpi-gpio in", pin:"11", intype:"down", debounce:"25", read:true, wires:[["n2"]] },
-        {id:"n2", type:"helper"}];
+        var flow = [{id:"n1", type:"rpi-gpio in", pin:"11", intype:"down", debounce:"25", read:true, bcm:true, wires:[["n2"]] },
+            {id:"n2", type:"helper"}];
         helper.load(rpiNode, flow, function() {
             var n1 = helper.getNode("n1");
             var n2 = helper.getNode("n2");
             n2.on("input", function(msg) {
                 try {
-                    msg.should.have.property('topic', 'pi/11');
+                    msg.should.have.property('topic', 'gpio/11');
                     msg.should.have.property('payload', 0);
                     done();
                 } catch(err) {

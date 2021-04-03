@@ -2,6 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var SunCalc = require('suncalc');
+    const spacetime = require("spacetime")
 
     function TimeswitchNode(n) {
         RED.nodes.createNode(this, n);
@@ -14,6 +15,7 @@ module.exports = function(RED) {
         this.duskoff = n.duskoff;
         this.dawnoff = n.dawnoff;
         this.mytopic = n.mytopic;
+        this.timezone = n.timezone || "UTC";
 
         this.sun = n.sun;
         this.mon = n.mon;
@@ -42,10 +44,9 @@ module.exports = function(RED) {
         this.on("input", function(msg2) {
             if (msg2.payload === "reset") { ison = 0; }
 
-            var now = new Date();
-            var nowoff = -now.getTimezoneOffset() * 60000;
+            var timeOffset = spacetime(Date.now()).goto(this.timezone.toLowerCase()).timezone().current.offset * 60 * 60 * 1000;
+            var now = new Date(Date.now() + timeOffset);
             var nowMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), 0);
-            nowMillis += nowoff;
             var midnightMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0);
             var today = Math.round((nowMillis - midnightMillis) / 60000) % 1440;
             var starttime = Number(node.startt);
@@ -55,8 +56,6 @@ module.exports = function(RED) {
                 var times = SunCalc.getTimes(now, node.lat, node.lon);
                 var startMillis = Date.UTC(times[node.start].getUTCFullYear(), times[node.start].getUTCMonth(), times[node.start].getUTCDate(), times[node.start].getUTCHours(), times[node.start].getUTCMinutes());
                 var endMillis = Date.UTC(times[node.end].getUTCFullYear(), times[node.end].getUTCMonth(), times[node.end].getUTCDate(), times[node.end].getUTCHours(), times[node.end].getUTCMinutes());
-                startMillis += nowoff;
-                endMillis += nowoff;
                 var dawn = ((startMillis - midnightMillis) / 60000) + Number(node.dawnoff);
                 var dusk = ((endMillis - midnightMillis) / 60000) + Number(node.duskoff);
                 if (starttime == 5000) { starttime = dawn; }
