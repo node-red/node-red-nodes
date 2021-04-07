@@ -413,7 +413,7 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
           status = parseInt(status);
           def.resolve(status);
         } else {
-          def.reject();
+          def.reject(err);
         }
       });
     });
@@ -422,12 +422,12 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
   post_request.on('error', function (e) {
     console.log(e);
     console.log("%j", postoptions);
-    def.reject();
+    def.reject(e);
   });
 
   post_request.on('timeout', function(){
     post_request.abort();
-    def.reject();
+    def.reject("timeout");
   });
 
   post_request.write(getSocketState.body);
@@ -473,12 +473,12 @@ WeMoNG.prototype.getInsightParams = function getInsightParams(socket) {
   post_request.on('error', function (e) {
     console.log(e);
     console.log("%j", postoptions);
-    def.reject();
+    def.reject(e);
   });
 
   post_request.on('timeout', function(){
     post_request.abort();
-    def.reject();
+    def.reject("timeout");
   });
 
   post_request.write(getInsightParameters.body);
@@ -526,14 +526,14 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
                 };
                 def.resolve(obj);
               } else {
-                def.reject();
+                def.reject(err);
                 console.log("err");
               }
             });
           }
         } else {
           console.log("err");
-          def.reject();
+          def.reject(err);
         }
       });
     });
@@ -542,12 +542,12 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
   post_request.on('error', function (e) {
     console.log(e);
     console.log("%j", postoptions);
-    def.reject();
+    def.reject(e);
   });
 
   post_request.on('timeout', function () {
     console.log("Timeout");
-    post_request.abort();
+    post_request.abort("timeout");
     def.reject();
   });
 
@@ -617,7 +617,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
             msg.value = res['StateEvent']['Value'][0];
             def.resolve(msg);
           } else {
-            def.reject();
+            def.reject(err);
           }
         });
       } else if (prop.hasOwnProperty('BinaryState')) {
@@ -634,7 +634,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
       }
     } else {
       //error
-      def.reject();
+      def.reject(err);
     }
   });
 

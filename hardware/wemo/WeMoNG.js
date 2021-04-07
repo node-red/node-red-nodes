@@ -503,9 +503,13 @@ module.exports = function(RED) {
             'sid': req.headers.sid
         };
         //console.log("Incoming Event %s", req.body.toString());
-        wemo.parseEvent(req.body.toString()).then(function(evt) {
+        wemo.parseEvent(req.body.toString())
+        .then(function(evt) {
             evt.sid = notification.sid;
             wemo.emit('event',evt);
+        })
+        .catch(err => {
+            console.log(err)
         });
         res.send('');
     });
