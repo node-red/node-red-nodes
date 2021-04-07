@@ -123,7 +123,7 @@ module.exports = function(RED) {
                 }
             });
 
-            node.on("input", function(msg) {
+            node.on("input", function(msg, send, done) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
@@ -160,6 +160,7 @@ module.exports = function(RED) {
                                 node.send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
+                                done();
                             }
                             // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
                             //     node.mydbConfig.connection.release();
