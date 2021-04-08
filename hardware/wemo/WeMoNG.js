@@ -152,6 +152,14 @@ module.exports = function(RED) {
                     }
                 });
 
+                sub_request.on('error', function(){
+                    // devie probably offline
+                    // try again after a minute
+                    setTimeout( function() {
+                        subscribe(node)
+                    }, 60000)
+                })
+
                 sub_request.end();
             }
         }
