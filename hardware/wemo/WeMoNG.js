@@ -413,9 +413,11 @@ module.exports = function(RED) {
 
             if (!dev) {
                 //need to show that dev not currently found
-                console.log('no device found');
+                console.log('Device not discovered yet');
                 if (done) {
-                    done()
+                    done("Device not discovered yet")
+                } else {
+                    node.error("Device not discovered yet",msg)
                 }
                 return;
             }
@@ -471,7 +473,7 @@ module.exports = function(RED) {
                     }
                 });            
             } else {
-                console.log("socket");
+                //console.log("socket");
                 // classic socket: no power measurement, so only request current switch status
                 wemo.getSocketStatus(dev)
                 .then(function(status) {
