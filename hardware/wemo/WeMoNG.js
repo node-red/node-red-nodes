@@ -422,17 +422,11 @@ module.exports = function(RED) {
 
             if (!dev) {
                 //need to show that dev not currently found
-<<<<<<< HEAD
                 console.log('Device not discovered yet');
                 if (done) {
                     done("Device not discovered yet")
                 } else {
                     node.error("Device not discovered yet",msg)
-=======
-                console.log('no device found');
-                if (done) {
-                    done()
->>>>>>> Attempt to catch errors from wemo-lookup
                 }
                 return;
             }
