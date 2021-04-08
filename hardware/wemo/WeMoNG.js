@@ -125,7 +125,7 @@ module.exports = function(RED) {
 
                 callback_url += 'wemoNG/notification';
 
-                console.log('Callback URL = %s',callback_url);
+                // console.log('Callback URL = %s',callback_url);
 
                 var subscribeOptions = {
                     host: device.ip,
