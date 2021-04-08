@@ -229,12 +229,21 @@ module.exports = function(RED) {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
-        node.on('input', function(msg) {
+        node.on('input', function(msg, send, done){
             var dev = wemo.get(node.dev);
+
+            send = send || function() { node.send.apply(node,arguments) }
 
             if (!dev) {
                 //need to show that dev not currently found
-                console.log('no device found');
+                // console.log('no device found');
+
+                if (done) {
+                    done("Device not discovered yet")
+                } else {
+                    node.error("Device not discovered yet", msg)
+                }
+
                 return;
             }
 

@@ -273,7 +273,7 @@ WeMoNG.prototype.start = function start() {
 
               post_request.on('error', function(err){
                 // should log err
-                console.log(err);
+                //console.log(err);
               })
 
               post_request.write(util.format(getenddevs.body, udn));
@@ -363,12 +363,12 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
     });
 
     post_request.on('error', function (e) {
-      console.log(e);
-      console.log("%j", postoptions);
+      // console.log(e);
+      // console.log("%j", postoptions);
     });
 
     post_request.on('timeout', function () {
-      console.log("Timeout");
+      // console.log("Timeout");
       post_request.abort();
     });
 
@@ -420,8 +420,8 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
+    // console.log(e);
+    // console.log("%j", postoptions);
     def.reject(e);
   });
 
@@ -471,8 +471,8 @@ WeMoNG.prototype.getInsightParams = function getInsightParams(socket) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
+    // console.log(e);
+    // console.log("%j", postoptions);
     def.reject(e);
   });
 
@@ -527,12 +527,12 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
                 def.resolve(obj);
               } else {
                 def.reject(err);
-                console.log("err");
+                // console.log("err");
               }
             });
           }
         } else {
-          console.log("err");
+          // console.log("err");
           def.reject(err);
         }
       });
@@ -540,13 +540,13 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
+    // console.log(e);
+    // console.log("%j", postoptions);
     def.reject(e);
   });
 
   post_request.on('timeout', function () {
-    console.log("Timeout");
+    // console.log("Timeout");
     post_request.abort("timeout");
     def.reject();
   });
@@ -583,12 +583,12 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
+    // console.log(e);
+    // console.log("%j", postoptions);
   });
 
   post_request.on('timeout', function () {
-    console.log("Timeout");
+    // console.log("Timeout");
     post_request.abort();
   });
 
