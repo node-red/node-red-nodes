@@ -125,7 +125,7 @@ module.exports = function(RED) {
 
                 callback_url += 'wemoNG/notification';
 
-                console.log('Callback URL = %s',callback_url);
+                // console.log('Callback URL = %s',callback_url);
 
                 var subscribeOptions = {
                     host: device.ip,
@@ -151,6 +151,14 @@ module.exports = function(RED) {
                         console.log('failed to subsrcibe');
                     }
                 });
+
+                sub_request.on('error', function(){
+                    // devie probably offline
+                    // try again after a minute
+                    setTimeout( function() {
+                        subscribe(node)
+                    }, 60000)
+                })
 
                 sub_request.end();
             }
@@ -221,12 +229,21 @@ module.exports = function(RED) {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
-        node.on('input', function(msg) {
+        node.on('input', function(msg, send, done){
             var dev = wemo.get(node.dev);
+
+            send = send || function() { node.send.apply(node,arguments) }
 
             if (!dev) {
                 //need to show that dev not currently found
-                console.log('no device found');
+                // console.log('no device found');
+
+                if (done) {
+                    done("Device not discovered yet")
+                } else {
+                    node.error("Device not discovered yet", msg)
+                }
+
                 return;
             }
 
@@ -398,12 +415,19 @@ module.exports = function(RED) {
             node.status({fill: 'green',shape: 'dot',text: 'found'});
         }
 
-        node.on('input', function(msg) {
+        node.on('input', function(msg, send, done) {
             var dev = wemo.get(node.dev);
+
+            send = send || function() { node.send.apply(node,arguments) }
 
             if (!dev) {
                 //need to show that dev not currently found
-                console.log('no device found');
+                console.log('Device not discovered yet');
+                if (done) {
+                    done("Device not discovered yet")
+                } else {
+                    node.error("Device not discovered yet",msg)
+                }
                 return;
             }
 
@@ -427,7 +451,16 @@ module.exports = function(RED) {
                     delete status.capabilities;
                     // }
                     msg.payload = status;
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                }).catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });
             } else if (dev.type === 'socket_insight') {
                 console.log("socket_insight");
@@ -437,17 +470,36 @@ module.exports = function(RED) {
                     msg.payload = insightParameters;
                     // 'state' should be a number for backwards compatibility
                     msg.payload.state = parseInt(msg.payload.state);
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                }).catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });            
             } else {
-                console.log("socket");
+                //console.log("socket");
                 // classic socket: no power measurement, so only request current switch status
                 wemo.getSocketStatus(dev)
                 .then(function(status) {
                     msg.payload = {
                         state: status
                     };
-                    node.send(msg);
+                    send(msg);
+                    if (done) {
+                        done()
+                    }
+                })
+                .catch(function(err){
+                    if (done) {
+                        done(err)
+                    } else {
+                        node.error(err,msg)
+                    }
                 });
             }
         });
@@ -470,9 +522,13 @@ module.exports = function(RED) {
             'sid': req.headers.sid
         };
         //console.log("Incoming Event %s", req.body.toString());
-        wemo.parseEvent(req.body.toString()).then(function(evt) {
+        wemo.parseEvent(req.body.toString())
+        .then(function(evt) {
             evt.sid = notification.sid;
             wemo.emit('event',evt);
+        })
+        .catch(err => {
+            console.log(err)
         });
         res.send('');
     });

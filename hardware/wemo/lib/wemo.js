@@ -271,6 +271,11 @@ WeMoNG.prototype.start = function start() {
                 post_request.abort();
               });
 
+              post_request.on('error', function(err){
+                // should log err
+                //console.log(err);
+              })
+
               post_request.write(util.format(getenddevs.body, udn));
               post_request.end();
 
@@ -358,12 +363,12 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
     });
 
     post_request.on('error', function (e) {
-      console.log(e);
-      console.log("%j", postoptions);
+      // console.log(e);
+      // console.log("%j", postoptions);
     });
 
     post_request.on('timeout', function () {
-      console.log("Timeout");
+      // console.log("Timeout");
       post_request.abort();
     });
 
@@ -408,21 +413,21 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
           status = parseInt(status);
           def.resolve(status);
         } else {
-          def.reject();
+          def.reject(err);
         }
       });
     });
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
-    def.reject();
+    // console.log(e);
+    // console.log("%j", postoptions);
+    def.reject(e);
   });
 
   post_request.on('timeout', function(){
     post_request.abort();
-    def.reject();
+    def.reject("timeout");
   });
 
   post_request.write(getSocketState.body);
@@ -466,14 +471,14 @@ WeMoNG.prototype.getInsightParams = function getInsightParams(socket) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
-    def.reject();
+    // console.log(e);
+    // console.log("%j", postoptions);
+    def.reject(e);
   });
 
   post_request.on('timeout', function(){
     post_request.abort();
-    def.reject();
+    def.reject("timeout");
   });
 
   post_request.write(getInsightParameters.body);
@@ -521,28 +526,28 @@ WeMoNG.prototype.getLightStatus = function getLightStatus(light) {
                 };
                 def.resolve(obj);
               } else {
-                def.reject();
-                console.log("err");
+                def.reject(err);
+                // console.log("err");
               }
             });
           }
         } else {
-          console.log("err");
-          def.reject();
+          // console.log("err");
+          def.reject(err);
         }
       });
     });
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
-    def.reject();
+    // console.log(e);
+    // console.log("%j", postoptions);
+    def.reject(e);
   });
 
   post_request.on('timeout', function () {
-    console.log("Timeout");
-    post_request.abort();
+    // console.log("Timeout");
+    post_request.abort("timeout");
     def.reject();
   });
 
@@ -578,12 +583,12 @@ WeMoNG.prototype.setStatus = function setStatus(light, capability, value) {
   });
 
   post_request.on('error', function (e) {
-    console.log(e);
-    console.log("%j", postoptions);
+    // console.log(e);
+    // console.log("%j", postoptions);
   });
 
   post_request.on('timeout', function () {
-    console.log("Timeout");
+    // console.log("Timeout");
     post_request.abort();
   });
 
@@ -612,7 +617,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
             msg.value = res['StateEvent']['Value'][0];
             def.resolve(msg);
           } else {
-            def.reject();
+            def.reject(err);
           }
         });
       } else if (prop.hasOwnProperty('BinaryState')) {
@@ -629,7 +634,7 @@ WeMoNG.prototype.parseEvent = function parseEvent(evt) {
       }
     } else {
       //error
-      def.reject();
+      def.reject(err);
     }
   });
 
