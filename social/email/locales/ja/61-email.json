@@ -12,7 +12,6 @@
             "folder": "フォルダ",
             "protocol": "プロトコル",
             "useSSL": "SSLを使用",
-            "autotls": "STARTTLS",
             "disposition": "受信後の処理",
             "none": "なし",
             "read": "既読",
