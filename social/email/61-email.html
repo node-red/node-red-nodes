@@ -128,11 +128,11 @@
     </div>
     <div class="form-row">
         <label for="node-input-autotls"><i class="fa fa-lock"></i> <span data-i18n="email.label.autotls"></label>
- 	<select type="text" id="node-input-autotls" style="width: 150px;">
-            <option value="never" data-i18n="email.label.never">never</option>
-            <option value="always" data-i18n="email.label.always">always</option>
-            <option value="required" data-i18n="email.label.required">required</option>
-	</select>  
+        <select type="text" id="node-input-autotls" style="width: 150px;">
+            <option value="never" data-i18n="email.label.never"></option>
+            <option value="required" data-i18n="email.label.required"></option>
+            <option value="always" data-i18n="email.label.always"></option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
@@ -275,6 +275,10 @@
             if (typeof this.criteria === 'undefined') {
                 $("#node-input-criteria").val("UNSEEN");
                 this.criteria = "UNSEEN";
+            }
+            if (typeof this.autotls === 'undefined') {
+                $("#node-input-autotls").val("never");
+                this.autotls = "never";
             }
             if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
             $("#node-input-fetch").change(function() {
