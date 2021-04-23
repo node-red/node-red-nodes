@@ -155,7 +155,16 @@ module.exports = function(RED) {
                                     msg.payload = JSON.parse(JSON.stringify(rows));
                                 }
                                 else if (rows.constructor.name === "Array") {
-                                    msg.payload = rows.map(v => Object.assign({}, v));
+                                    if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
+                                        msg.payload = rows.map(v => Object.assign({}, v));
+                                    }
+                                    else if (rows[0] && rows[0].constructor.name === "Array") {
+                                        if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
+                                            msg.payload = rows.map(v => v.map(w => Object.assign({}, w)));
+                                        }
+                                        else { msg.payload = rows; }
+                                    }
+                                    else  { msg.payload = rows; }
                                 }
                                 else { msg.payload = rows; }
                                 send(msg);
