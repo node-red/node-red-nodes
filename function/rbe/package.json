@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-rbe",
-    "version"       : "0.2.9",
+    "version"       : "0.5.0",
     "description"   : "A Node-RED node that provides report-by-exception (RBE) and deadband capabilities.",
     "dependencies"  : {
     },

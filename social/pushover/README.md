@@ -24,7 +24,10 @@ Optionally uses `msg.topic` to set the configuration, if not already set in the 
  - `msg.attachment`: to specify an image to attach to message (path as a string or Buffer containing image)
  - `msg.url`: to add a web address
  - `msg.url_title`: to add a url title
+ - `msg.html`: set to true or 1 if message is HTML formatted, see the [supported tags](https://pushover.net/api#html)
  - `msg.sound`: to set the alert sound, see the [available options](https://pushover.net/api#sounds)
+ - `msg.retry`: to set retry interval for Emergency priority (2) messages, see [priority](https://pushover.net/api#priority)
+ - `msg.expire`: to set retry duration for Emergency priority (2) messages, see [priority](https://pushover.net/api#priority)
 
 The User-key and API-token are stored in a separate credentials file.
 

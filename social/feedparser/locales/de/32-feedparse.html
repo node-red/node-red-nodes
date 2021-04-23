@@ -1,0 +1,15 @@
+<script type="text/html" data-help-name="feedparse">
+    <p>Überwacht einen RSS/atom-Feed auf neue Einträge.</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd>Der originale Artikel-Link</dd>
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>Beschreibung</dd>
+        <dt>article <span class="property-type">object</span></dt>
+        <dd>Komplettes Artikel-Objekt</dd>
+    </dl>
+    <p>Die <code>msg.article</code>-Eigenschaft enthält das komplette Artikel-Objekt,
+    welches Eigenschaften wie <code>.title</code>, <code>.summary</code>, <code>.date</code> usw. enthält.</p>
+    <p>Das Aktualisierungsintervall kann nicht größer als 35790 Minuten sein (ca. 24,8 Tage).
+</script>

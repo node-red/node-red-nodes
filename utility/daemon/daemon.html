@@ -49,16 +49,6 @@
     All parameters should be passed in as arguments.</div>
 </script>
 
-<script type="text/html" data-help-name="daemon">
-    <p>Calls out to a long running system command. Sends <code>msg.payload</code> to stdin of the process.</p>
-    <p>Provides 3 outputs... stdout, stderr, and return code , from the running command.</p>
-    <p>If the called program stops (i.e. a return code is produced), this node can attempt to restart the command.</p>
-    <p>Setting <code>msg.kill</code> to a signal name (e.g. SIGINT, SIGHUP) will stop the process - but if the
-    restart flag is set it will then auto restart. Sending <code>msg.start</code> will also re-start the process.</p>
-    <p><b>Note:</b> Some applications will automatically buffer lines of output. It is advisable to turn off this behaviour.
-    For example, if running a Python app, the <code>-u</code> parameter will stop the output being buffered.</p>
-</script>
-
 <script type="text/javascript">
     RED.nodes.registerType('daemon',{
         category: 'function',

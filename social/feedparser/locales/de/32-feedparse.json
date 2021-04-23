@@ -1,0 +1,15 @@
+{
+    "feedparse": {
+        "feedparse": "feedparser",
+        "label": {
+            "feedurl": "Feed-URL",
+            "refresh": "Aktualisierung",
+            "minutes": "Minuten"
+        },
+        "errors": {
+            "badstatuscode": "Fehler - Fehlerhafter Statuscode",
+            "invalidurl": "Ungültige URL",
+            "invalidinterval": "Aktualisierungsintervall zu groß"
+        }
+    }
+}

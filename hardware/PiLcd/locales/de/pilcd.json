@@ -1,0 +1,19 @@
+{
+    "pilcd": {
+        "label": {
+            "pins": "Pins"
+        },
+        "tip": {
+            "tip": "<b>Tipp</b>: Bei Pins muss eine Komma-getrennte Liste von 6 GPIO-Anschlusspin-Nummern eingetragen werden, die mit RS, E, D4, D5, D6 und D7 des LCD verbunden sind."
+        },
+        "status": {
+            "not-available": "Nicht verfügbar",
+            "na": "Nicht anwendbar: __value__"
+        },
+        "errors": {
+            "ignorenode": "Raspberry-Pi-spezifische Nodes inaktiv gesetzt",
+            "libnotfound": "RPi.GPIO-Python-Bibliothek nicht gefunden",
+            "needtobeexecutable": "__command__ muss ausführbar sein"
+        }
+    }
+}

@@ -1,0 +1,36 @@
+
+<script type="text/html" data-help-name="pi-gpiod in">
+    <p>Raspberry Pi input node. Generates a <code>msg.payload</code> with either a
+    0 or 1 depending on the state of the input pin.
+    Requires the <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a>
+    daemon to be running on the host computer in order to work.</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">number</span></dt>
+        <dd>the level of the pin (0 or 1)</dd>
+        <dt>topic<span class="property-type">string</span></dt>
+        <dd>pin number <code>pi/{the pin number}</code></dd>
+    </dl>
+    <h3>Details</h3>
+    <p>You may also enable the input pullup resistor &uarr; or the pulldown resistor &darr;.</p>
+    <p>If using with Docker on Pi then the default Host IP should be <code>172.17.0.1</code>. You will also need to run <code>sudo pigpiod</code> on the host.</p>
+    <p><b>Note:</b> the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>
+
+<script type="text/html" data-help-name="pi-gpiod out">
+    <p>Raspberry Pi output node. Can be used in Digital, PWM or Servo modes. Requires the
+    <a href="http://abyz.me.uk/rpi/pigpio/index.html" target="_new">pi-gpiod</a> daemon to be running in order to work.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">number | string</span></dt>
+        <dd>0,1 (Digital), 0-100 (PWM, Servo)</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Digital mode expects a <code>msg.payload</code> with either a 0 or 1 (or true or false),
+    and will set the selected physical pin high or low depending on the value passed in.</p>
+    <p>The initial value of the pin at deploy time can also be set to 0 or 1.</p>
+    <p>When using PWM and Servo modes, the input value should be a number 0 - 100, and can be floating point.</p>
+    <p>In Servo mode you can stop the output by sending a <code>msg.payload</code> of <code>null</code> or <code>""</code>.</p>
+    <p>If using with Docker on Pi then the default Host IP should be <code>172.17.0.1</code>. You will also need to run <code>sudo pigpiod</code> on the host.</p>
+    <p><b>Note</b>: the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.</p>
+</script>

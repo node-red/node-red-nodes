@@ -1,7 +1,6 @@
 
 module.exports = function(RED) {
     "use strict";
-    var ExifImage = require('exif').ExifImage;
 
     function convertDegreesMinutesSecondsToDecimals(degrees, minutes, seconds) {
         var result;
@@ -15,6 +14,7 @@ module.exports = function(RED) {
         if (this.mode === "worldmap") { this.property = "payload.content"; }
         else { this.property = n.property || "payload"; }
         var node = this;
+        var ExifImage = require('exif').ExifImage;
 
         /***
          * Extracts GPS location information from Exif data. If enough information is
@@ -79,7 +79,8 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg) {
-            if (node.mode === "worldmap" && (msg.payload.action !== "file" || msg.payload.type.indexOf("image") === -1)) { return; } // in case worldmap-in not filtered.
+            if (node.mode === "worldmap" && Buffer.isBuffer(msg.payload)) { node.property = "payload"; }
+            else if (node.mode === "worldmap" && (msg.payload.action !== "file" || msg.payload.type.indexOf("image") === -1)) { return; } // in case worldmap-in not filtered.
             try {
                 var value = RED.util.getMessageProperty(msg,node.property);
                 if (value !== undefined) {

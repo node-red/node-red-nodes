@@ -119,9 +119,16 @@ module.exports = function(RED) {
                     else {
                         var payload = RED.util.ensureString(msg.payload);
                         sendopts.text = payload; // plaintext body
-                        if (/<[a-z][\s\S]*>/i.test(payload)) { sendopts.html = payload; } // html body
-                        if (msg.attachments && Array.isArray(msg.attachments)) {
-                            sendopts.attachments = msg.attachments;
+                        if (/<[a-z][\s\S]*>/i.test(payload)) {
+                            sendopts.html = payload; // html body
+                            if (msg.hasOwnProperty("plaintext")) {
+                                var plaintext = RED.util.ensureString(msg.plaintext);
+                                sendopts.text = plaintext; // plaintext body - specific plaintext version
+                            }
+                        }
+                        if (msg.attachments) {
+                            if (!Array.isArray(msg.attachments)) { sendopts.attachments = [ msg.attachments ]; }
+                            else { sendopts.attachments = msg.attachments; }
                             for (var a=0; a < sendopts.attachments.length; a++) {
                                 if (sendopts.attachments[a].hasOwnProperty("content")) {
                                     if (typeof sendopts.attachments[a].content !== "string" && !Buffer.isBuffer(sendopts.attachments[a].content)) {
@@ -182,6 +189,7 @@ module.exports = function(RED) {
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
+        this.autotls= n.autotls;
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
@@ -484,6 +492,7 @@ module.exports = function(RED) {
                 host: node.inserver,
                 port: node.inport,
                 tls: node.useSSL,
+                autotls: node.autotls,
                 tlsOptions: { rejectUnauthorized: false },
                 connTimeout: tout,
                 authTimeout: tout
@@ -506,7 +515,11 @@ module.exports = function(RED) {
             if (this.interval_id != null) {
                 clearTimeout(this.interval_id);
             }
-            if (imap) { imap.destroy(); }
+            if (imap) {
+                imap.end();
+                setTimeout(function() { imap.destroy(); },1000);
+                node.status({});
+            }
         });
 
         function setInputRepeatTimeout() {

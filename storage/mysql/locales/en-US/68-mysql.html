@@ -1,0 +1,18 @@
+
+<script type="text/html" data-help-name="MySQLdatabase">
+    <p>Add the credentials for accessing your database here.</p>
+    <p>Timezone can be set like GMT, EST5EDT, UTC, etc</p>
+    <p>The Charset defaults to the "old" 3 byte Mysql UTF8. If you need support for emojis etc then use UTF8MB4.</p>
+</script>
+
+<script type="text/html" data-help-name="mysql">
+    <p>Allows basic access to a MySQL database.</p>
+    <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
+    By its very nature it allows SQL injection... so <i>be careful out there...</i></p>
+    <p><code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
+    <p><code>msg.payload</code> can contain an array of values to bind to the topic.</p>
+    <p>Typically the returned payload will be an array of the result rows.</p>
+    <p>If nothing is found for the key then <i>null</i> is returned,</p>
+    <p>The reconnect timeout in milliseconds can be changed by adding a line to <b>settings.js</b>
+    <pre>mysqlReconnectTime: 30000,</pre></p>
+</script>

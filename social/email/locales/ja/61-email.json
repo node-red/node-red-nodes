@@ -16,7 +16,11 @@
             "none": "なし",
             "read": "既読",
             "delete": "削除",
-            "criteriaFromMsg": "- msg.criteriaから使用 -"
+            "criteriaFromMsg": "- msg.criteriaから使用 -",
+            "autotls": "TLSを開始?",
+            "never": "なし",
+            "always": "常時",
+            "required": "必要な場合"
         },
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
         "tip": {

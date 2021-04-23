@@ -1,0 +1,71 @@
+{
+    "email": {
+        "email": "email",
+        "label": {
+            "getmail":"Mailempfang",
+            "auto": "automatisch",
+            "trigger": "wenn getriggert",
+            "to": "An",
+            "server": "Server",
+            "port": "Port",
+            "useSecureConnection": "Sichere Verbindung verwenden",
+            "userid": "Benutzer-ID",
+            "password": "Passwort",
+            "repeat": "alle",
+            "seconds": "Sekunden",
+            "folder": "Verzeichnis",
+            "protocol": "Protokoll",
+            "useSSL": "SSL",
+            "useTLS": "TLS",
+            "disposition": "Behandlung",
+            "none": "Keine",
+            "read": "Gelesen markieren",
+            "delete": "Löschen",
+            "criteria": "Kriterium",
+            "criteriaFromMsg": "Gesetzt durch msg.criteria",
+            "all": "Alle",
+            "answered": "Beantwortet",
+            "flagged": "Markiert",
+            "seen": "Gesichtet",
+            "unanswered": "Unbeantwortet",
+            "unflagged": "Unmarkiert",
+            "unseen": "Ungesehen",
+            "autotls": "STARTTLS?",
+            "never": "nie",
+            "required": "wenn erforderlich",
+            "always": "immer"
+        },
+        "default-message": "__description__\n\nDatei von Node-RED ist angehängt: __filename__",
+        "tip": {
+            "cred": "<b>Hinweis</b>: Berechtigungen von globaler emailkeys.js-Datei kopiert",
+            "recent": "Tipp: Es wird nur die letzte E-Mail abgerufen",
+            "mta": "<b>Hinweis</b>: Um Ports unter 1024 zu verwenden könnten höhere (root) Rechte benötigt werden. Siehe Hilfe-Seitenleiste."
+        },
+        "status": {
+            "messagesent": "Nachricht gesendet: __response__",
+            "fetching": "Rufe ab",
+            "foldererror": "Fehler bei Verzeichnisabruf",
+            "messageerror": "Fehler bei Nachrichtenabruf",
+            "message": "Nachricht #__number__",
+            "newemail": "Neue E-Mail empfangen: __topic__",
+            "duplicate": "Duplikat nicht gesendet: __topic__",
+            "inboxzero": "Posteingang leer",
+            "sending": "Sende",
+            "sendfail": "Senden fehlgeschlagen",
+            "parseerror": "Analyse der Nachricht fehlgeschlagen",
+            "connecterror": "Verbindungsfehler"
+        },
+        "errors": {
+            "nouserid": "Kein E-Mail-Benutzer-ID angegeben",
+            "nopassword": "Kein E-Mail-Passwort angegeben",
+            "nocredentials": "Keine E-Mail-Berechtigungen gefunden. Siehe Info-Anzeige.",
+            "nosmtptransport": "Kein SMTP-Transport. Siehe Info-Anzeige.",
+            "nopayload": "Keine sendbaren Nutzdaten (Payload)",
+            "fetchfail": "Verzeichnisabruf fehlgeschlagen: __folder__",
+            "parsefail": "Analyse der Nachricht fehlgeschlagen",
+            "messageerror": "Nachrichtenabruf fehlgeschlagen: __error__",
+            "refreshtoolarge": "Abrufintervall ist zu groß. Max. Limit sind 2147483 Sekunden.",
+            "invalidattachment": "Ungültiger Anhang-Inhalt. Es muss ein String oder ein Buffer sein."
+        }
+    }
+}

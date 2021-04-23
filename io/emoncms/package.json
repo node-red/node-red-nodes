@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-emoncms",
-    "version"       : "0.2.1",
+    "version"       : "0.3.0",
     "description"   : "A Node-RED node to fetch/post data to/from emoncms",
     "dependencies"  : {
     },

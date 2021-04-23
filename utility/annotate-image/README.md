@@ -11,7 +11,7 @@ detected in the image by a TensorFlow node.
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Edit Menu - Manage Palette option to install, or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm install node-red-node-annotate-image
 
@@ -37,6 +37,8 @@ Each annotation is an object with the following properties:
  - `lineWidth` (*number*) : the stroke width used to draw the annotation. Default: `5`
  - `fontSize` (*number*) : the font size to use for the label. Default: `24`
  - `fontColor` (*string*) : the color of the font to use for the label. Default: `#ffC000`
+ - `labelLocation` (*string*) : The location to place the label. `top` or `bottom`.
+    If this propery is not set it will default to `automatic` and make the best guess based on location.
 
 
 Examples

@@ -1,0 +1,70 @@
+<script type="text/html" data-help-name="e-mail">
+    <p>Versand von <code>msg.payload</code> als E-Mail mit <code>msg.topic</code> als Subjekt.</p>
+    <p>Der Standard-Nachrichtenempfänger kann im Node vorgegeben werden.
+       Wenn nicht angegeben, muss der Nachrichtenempfänger über die <code>msg.to</code>-Eigenschaft
+       der eingehenden Nachricht übergeben werden.
+       Ebenso können einige oder alle vorgegeben werden von: <code>msg.cc</code>, <code>msg.bcc</code>, <code>msg.replyTo</code>,
+    <code>msg.inReplyTo</code>, <code>msg.references</code>, <code>msg.headers</code> oder <code>msg.priority</code>-Eigenschaften.</p>
+    <p>Es kann optional auch <code>msg.from</code> in den Nutzdaten (Payload) vorgegeben werden,
+       was die eingestellte <code>Benutzer-ID</code> überschreiben würde.</p>
+    <h3>Gmail-Benutzer</h3>
+    <p>Beim Zugriff auf Gmail kann es nötig sein, entweder <a target="_new" href="https://support.google.com/mail/answer/185833?hl=de">ein App-Passwort</a> zu aktivieren oder den <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=de">Zugriff aufs Google-Konto durch weniger sichere Apps</a> über die Google-Konto-Einstellungen zu erlauben.</p>
+    <h3>Details</h3>
+    <p>Die Nachricht in <code>msg.payload</code> kann als HTML formatiert sein.
+      Ein separater, davon abweichender Plaintext kann in <code>msg.plaintext</code> angegeben werden. Ansonsten wird auch <code>msg.payload</code> verwendet.
+      <code>msg.plaintext</code> wird ignoriert, wenn <code>msg.payload</code> kein HTML enthält.</p>
+    <p>Wenn <code>msg.payload</code> ein binärer Buffer ist, so wird sie in einen Nachrichten-Dateianhang (attachment) konvertiert.
+       Der Dateiname sollte mittels <code>msg.filename</code> angegeben werden.
+       Optional kann <code>msg.description</code> als Nachrichtentext hinzugefügt werden.</p>
+    <p>Alternativ kann auch <code>msg.attachments</code> übergeben werden, welches ein Datenfeld (array) mit einen oder mehreren
+    Dateianhängen im <a href="https://nodemailer.com/message/attachments/" target="_new">nodemailer</a>-Format enthält.</p>
+    <p>Falls vom Empfänger benötigt, kann zusätzlich über <code>msg.envelope</code> ein Objekt übergeben werden, welches typischerweise zusätzliche <code>from</code>- und <code>to</code>-Eigenschaften enthält.</p>
+    <p>Wenn ein selbstausgestelltes Zertifikates vorliegt, kann sich Nodemailer darüber beschweren und das Senden der Nachricht ablehnen.
+       In diesem Fall kann versucht werden TLS abzuschalten.</p>
+    <p><b>Hinweis</b>: Verwendet SMTP mit SSL über Port 465.</p>
+</script>
+
+<script type="text/html" data-help-name="e-mail in">
+    <p>Regelmäßiger Abruf von E-Mails von einem POP3- oder IMAP-Server und Weiterleitung der Nachricht, falls diese noch nicht angezeigt wurde.</p>
+    <p>Der Subjekttext wird in <code>msg.topic</code> und der Klartextinhalt in <code>msg.payload</code> abgelegt.
+       Wenn text/html vorliegt, dann wird dieser in <code>msg.html</code> abgelegt.
+       <code>msg.from</code> und <code>msg.date</code> sind ebenfalls für die weitere Nutzung gesetzt.</p>
+    <p>Zusätzlich enthält <code>msg.header</code> den kompletten Mailkopf (Header) als Objekt mit
+    <i>to</i>, <i>cc</i> und anderen eventuell nützlichen Eigenschaften.</p>
+    <p>Der Node kann optional die Nachricht als gelesen markieren (Standard-Einstellung), sie löschen oder sie als unmarkiert belassen.</p>
+    <p>Verwendet wird das <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap-Modul</a> - 
+       siehe dort für Informationen über das <code>msg.criteria</code>-Format, falls benötigt.</p>
+    <p>Alle Dateianhänge mitgeliefert in eingehenden E-Mails können in der <code>msg.attachments</code>-Eigenschaft gefunden werden.
+       Es wird dann ein Datenfeld (Array) von Objekten übergeben, wo jedes Objekt ein einzelner Dateianhang (attachment) darstellt.
+       Das Objektformat ist:</p>
+<pre>
+{
+  contentType:        // Die MIME-Inhaltsbeschreibung (MIME content description)
+  fileName:           // Ein vorgeschlagener Dateiname, der diesem Anhang zugeordnet ist
+  transferEncoding:   // Wie wurde der ursprüngliche E-Mail-Anhang verschlüsselt?
+  contentDisposition: // Unbekannt
+  generatedFileName:  // Ein vorgeschlagener Dateiname, der diesem Anhang zugeordnet ist
+  contentId:          // Eine eindeutige generierte ID für diesen Anhang
+  checksum:           // Eine Prüfsumme gegen die Daten
+  length:             // Datengröße in Bytes
+  content:            // Der tatsächliche Inhalt der in einem Node.js-Pufferobjekt enthaltenen Daten
+                      // Wir können dies in eine base64-Datenzeichenfolge mit content.toString('base64') umwandeln
+}
+</pre>
+<p><b>Hinweis</b>: Bei POP3 sind die Standard-Portnummern 110 für ungesichertes TCP und 995 für SSL. Bei IMAP 143 für ungesichertes TCP und 993 für SSL.</p>
+<p><b>Hinweis</b>: Mit der Option 'STARTTLS' kann eine bestehende ungesicherte Verbindung zu einer gesicherten geupgraded werden. Die Einstellung 'immer' versucht dies immer, 'wenn erforderlich' wenn es erforderlich ist, und 'nie' gar nicht.</p>
+<p><b>Hinweis</b>: Das maximale Aktualisierungsintervall ist 2147483 Sekunden (24,8 Tage).</p>
+
+</script>
+
+<script type="text/html" data-help-name="e-mail mta">
+    <p>Mail Transfer Agent - Portüberwachung für eingehende SMTP-Mails.</p>
+    <p><b>Hinweis</b>: "NICHT für Produktivbetrieb", da keine Sicherheitsfunktionen eingebaut sind!
+    Dies dient hauptsächlich zum lokalen Testen des Versands ausgehender E-Mails,
+    kann jedoch bei Bedarf verwendet werden als Mail-Weiterleitung an einen echten E-Mail-Dienst.</p>
+    <p>Um Ports unter 1024 (z.B. 25 or 465) zu benutzen, könnten höhere Zugriffsrechte nötig sein.
+    Auf Linux-Systemen kann dieses erreicht werden durch Starten von
+    <pre>sudo setcap 'cap_net_bind_service=+eip' $(which node)</pre>
+    und Neustart von Node-RED.
+    Es ist zu beachten, dass dadurch alle Knotenanwendungen auf alle Ports zugreifen können.</p>
+</script>

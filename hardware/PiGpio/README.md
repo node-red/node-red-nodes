@@ -21,7 +21,7 @@ command in your Node-RED user directory - typically `~/.node-red`
 The python library may also work with other distros running on a Pi (like Ubuntu or Debian) - you will need to install the PIGPIO package and run the following commands in order to gain full access to the GPIO pins as this ability is not part of the default distro. This is NOT necessary on Raspbian.
 
         sudo apt-get install python-pip python-dev
-        sudo pip install RPi.GPIO  
+        sudo pip install RPi.GPIO
         sudo addgroup gpio
         sudo chown root:gpio /dev/gpiomem
         sudo adduser $USER gpio
@@ -30,7 +30,7 @@ The python library may also work with other distros running on a Pi (like Ubuntu
 
 ## Usage
 
-**Note:** the pin numbers refer the physical pin numbers on connector P1 as they are easier to locate.
+**Note:** the diagram in the configuration shows pin numbers - the BCM GPIO field allows you to enter the GPIO number directly (this allows you to  use the node for other devices that have other BCM GPIO like the Pi Compute modules.)
 
 ### Input node
 

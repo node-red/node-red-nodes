@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-irc",
-    "version"       : "0.0.8",
+    "version"       : "0.1.0",
     "description"   : "A Node-RED node to talk to an IRC server",
     "dependencies"  : {
-        "irc"   : "~0.4.0"
+        "irc"   : "^0.5.2"
     },
     "repository" : {
         "type":"git",

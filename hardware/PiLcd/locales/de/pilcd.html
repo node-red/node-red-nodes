@@ -1,0 +1,15 @@
+<script type="text/html" data-help-name="rpi-lcd">
+    <p>Raspberry-Pi-Ausgabe auf ein HD44780-artiges LCD mit üblicherweise 1, 2, oder 4 Schriftzeilen.</p>
+    <h3>Eingangsdaten</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">string</span></dt>
+        <dd>Anzuzeigender Text</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Der Node erwartet einen <code>msg.payload</code> mit der anzuzeigenden Text-Zeichenfolge (string).</p>
+    <p>Die Texte für die zweite Zeile des Displays müssen mit <code>2:</code> beginnen, die dritte Zeile mit <code>3:</code> und die vierte mit <code>4:</code></p>
+    <p>Um das Display zu leeren ist der Text <code>clr:</code> zu senden.</p>
+    <p>Es muss selbst darauf geachtet werden, dass die Textlängen in das Displayfenster hineinpassen.</p>
+    <p>Zum Betrieb wird die RPi.GPIO-Python-Bibliothek Version 0.5.8 (oder besser) benötigt.</p>
+    <p><b>Hinweis</b>: Die Pinnummern beziehen sich auf die physischen Pinnummern des Steckverbinders P1, wodurch sie einfacher zu lokalisieren sind.</p>
+</script>

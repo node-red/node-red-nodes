@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-annotate-image",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A Node-RED node that can annotate an image",
     "dependencies": {
         "pureimage": "^0.2.5"

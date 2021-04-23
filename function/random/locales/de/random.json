@@ -1,0 +1,13 @@
+{
+    "random": {
+        "label": {
+            "generate": "Generiere",
+            "wholeNumber": "eine Ganzzahl (integer)",
+            "realNumber": "eine reelle Zahl (floating point)",
+            "from": "Von",
+            "lowestNumber": "kleinste Zahl",
+            "to": "Bis",
+            "highestNumber": "größte Zahl"
+        }
+    }
+}

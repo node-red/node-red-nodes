@@ -1,0 +1,10 @@
+
+<script type="text/html" data-help-name="smooth">
+    <p>A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.</p>
+    <p>Messages arriving with different <code>msg.topic</code> can be treated as separate streams if so configured.</p>
+    <p>Max, Min and Mean work over a specified number of previous values.</p>
+    <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the time is based on events arriving.</p>
+    <p>Enabling the Reduce option causes the node to only emit one message per N values (available for the Max, Min and Mean functions). E.g. if set to Mean over 10 values, there will only be one outgoing message per 10 incoming ones.</p>
+    <p>If <code>msg.reset</code> is received (with any value), all the counters and intermediate values are reset to an initial state.</p>
+    <p><b>Note:</b> This only operates on <b>numbers</b>. Anything else will try to be made into a number and rejected if that fails.</p>
+</script>

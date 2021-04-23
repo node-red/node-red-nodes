@@ -11,7 +11,8 @@
             "debounce": "Debounce",
             "limits": "Limits",
             "min": "min",
-            "max": "max"
+            "max": "max",
+            "freq": "Frequency"
         },
         "place": {
             "host": "local or remote ip",
@@ -33,7 +34,8 @@
             "in": "Only Digital Input is supported - input must be 0 or 1.",
             "dig": "Digital output - input must be 0 or 1.",
             "pwm": "PWM output - input must be between 0 to 100.",
-            "ser": "Servo output - input must be between 0 to 100. 50 is centre.<br/>Min must be 500uS or more, Max must be 2500uS or less."
+            "ser": "Servo output - input must be between 0 to 100. 50 is centre.<br/>min. must be 500 us or more, max. must be 2500 us or less.",
+            "dual": "Pins marked in blue are dual use. Make sure they are not enabled for their other use before using as GPIO."
         },
         "types": {
             "digout": "digital output",

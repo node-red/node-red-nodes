@@ -1,5 +1,5 @@
 
-<script type="text/x-red" data-template-name="emoncms">
+<script type="text/html" data-template-name="emoncms">
     <div class="form-row">
         <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
         <input type="text" id="node-input-emonServer">
@@ -21,10 +21,9 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Emoncms">
     </div>
-
 </script>
 
-<script type="text/x-red" data-help-name="emoncms">
+<script type="text/html" data-help-name="emoncms">
     <p>Posts data to Emoncms.</p>
     <p>The <code>msg.payload</code> can contain either a comma separated list of name
     value pairs (legacy) e.g. <pre>name:value,...</pre> or a comma separated list of values (CSV) e.g. <pre>1,2,...</pre>
@@ -33,7 +32,7 @@
     <p>The node must be specified either by the <i>Node</i> element or if left blank by <code>msg.nodegroup</code></p>
     <p>Data Type must be one of <pre>legacy, json, fulljson, CSV</pre></p>
     <p>Insertion time can be set by using <code>msg.time</code>.
-    This can either be a valid ISO 8601 format or seconds since 1970. Not setting a time or setting an incorrect 
+    This can either be a valid ISO 8601 format or seconds since 1970. Not setting a time or setting an incorrect
     time format will result in data being pushed to Emoncms without the time element.</p>
     <p>The output node contains the server response</p>
 </script>
@@ -66,7 +65,8 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="emoncms in">
+
+<script type="text/html" data-template-name="emoncms in">
     <div class="form-row">
         <label for="node-input-emonServer"><i class="fa fa-globe"></i> Emoncms server</label>
         <input type="text" id="node-input-emonServer">
@@ -81,9 +81,11 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="emoncms in">
+<script type="text/html" data-help-name="emoncms in">
     <p>Fetches data from emoncms.</p>
-    <p>The <code>msg.payload</code> contains last emoncms feed value
+    <p>The <code>msg.topic</code> contains the name of the Feed</p>
+    <p>The <code>msg.payload</code> contains last emoncms feed value</p>
+    <p>The <code>msg.feed_data</code> contains all the feed data</p>
 </script>
 
 <script type="text/javascript">
@@ -109,18 +111,7 @@
 </script>
 
 
-
-
-
-
-
-
-
-
-
-
-
-<script type="text/x-red" data-template-name="emoncms-server">
+<script type="text/html" data-template-name="emoncms-server">
     <div class="form-row">
         <label for="node-config-input-server"><i class="fa fa-globe"></i> Base URL</label>
         <input type="text" id="node-config-input-server">
@@ -133,7 +124,7 @@
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name">
     </div>
-<div class="form-tips">The <b>Base URL</b> is the URL to the Emoncms root directory.</div>
+    <div class="form-tips">The <b>Base URL</b> is the URL to the Emoncms root directory.</div>
 </script>
 
 <script type="text/javascript">

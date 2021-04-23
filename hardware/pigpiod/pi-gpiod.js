@@ -86,6 +86,7 @@ module.exports = function(RED) {
         this.set = n.set || false;
         this.level = parseInt(n.level || 0);
         this.out = n.out || "out";
+        this.freq = parseInt(n.freq) || 800;
         this.sermin = Number(n.sermin)/100;
         this.sermax = Number(n.sermax)/100;
         if (this.sermin > this.sermax) {
@@ -120,6 +121,7 @@ module.exports = function(RED) {
                             PiGPIO.write(node.pin, out);
                         }
                         if (node.out === "pwm") {
+                            PiGPIO.set_PWM_frequency(node.pin, node.freq);
                             PiGPIO.set_PWM_dutycycle(node.pin, parseInt(out * 2.55));
                         }
                         if (node.out === "ser") {
