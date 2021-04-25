@@ -4,6 +4,7 @@ matrix:
   allow_failures:
     - node_js: 16
   include:
+    - node_js: 16
     - node_js: 14
     - node_js: 12
     - node_js: 10
