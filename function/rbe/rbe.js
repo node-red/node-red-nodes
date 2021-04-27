@@ -13,7 +13,8 @@ module.exports = function(RED) {
             this.gap = parseFloat(this.gap);
         }
         this.g = this.gap;
-        this.property = n.property||"payload";
+        this.property = n.property || "payload";
+        this.topi = n.topi || "topic";
         this.septopics = true;
         if (n.septopics !== undefined && n.septopics === false) {
             this.septopics = false;
@@ -23,8 +24,13 @@ module.exports = function(RED) {
 
         node.previous = {};
         this.on("input",function(msg) {
+            var topic;
+            try {
+                topic = RED.util.getMessageProperty(msg,node.topi);
+            }
+            catch(e) { }
             if (msg.hasOwnProperty("reset")) {
-                if (node.septopics && msg.hasOwnProperty("topic") && (typeof msg.topic === "string") && (msg.topic !== "")) {
+                if (node.septopics && topic && (typeof topic === "string") && (topic !== "")) {
                     delete node.previous[msg.topic];
                 }
                 else { node.previous = {}; }
@@ -32,7 +38,7 @@ module.exports = function(RED) {
             var value = RED.util.getMessageProperty(msg,node.property);
             if (value !== undefined) {
                 var t = "_no_topic";
-                if (node.septopics) { t = msg.topic || t; }
+                if (node.septopics) { t = topic || t; }
                 if ((this.func === "rbe") || (this.func === "rbei")) {
                     var doSend = (this.func !== "rbei") || (node.previous.hasOwnProperty(t)) || false;
                     if (typeof(value) === "object") {
