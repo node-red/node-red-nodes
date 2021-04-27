@@ -45,7 +45,7 @@
             "lengths": "into fixed lengths of"
         },
         "output": {
-            "ascii": "ascii strings",
+            "ascii": "ASCII strings",
             "binary": "binary buffers"
         },
         "addsplit": "Add character to output messages",
