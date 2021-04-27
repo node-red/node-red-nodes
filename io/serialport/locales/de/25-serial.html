@@ -36,7 +36,7 @@
     </dl>
     <p>Nur <code>msg.payload</code> wird gesendet.</p>
     <p>Optional kann die Baudrate geändert werden über <code>msg.baudrate</code></p>
-    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird, 
+    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird,
        auch jeder zu sendenden Nachricht angefügt werden.</p>
     <p>Binäre Nutzdaten (Payload) können unter Verwendung von Buffer-Objekten gesendet werden.</p>
 </script>
@@ -44,7 +44,7 @@
 <script type="text/html" data-help-name="serial request">
     <p>Verbindung zu einer seriellen Schnittstelle mit Request/Response-Protokoll (Anfrage/Antwort).</p>
     <p>Dieser Node verhält sich wie eine fest gekoppelte Kombination aus einem
-       <span style="background-color:Gainsboro">serial in</span>- und einem 
+       <span style="background-color:Gainsboro">serial in</span>- und einem
        <span style="background-color:Gainsboro">serial out</span>-Node,
        welche sich eine Konfiguration teilen.</p>
     <p>Die Anfrage-Nachricht wird über <code>msg.payload</code> so versendet,
@@ -56,7 +56,7 @@
        oder wenn ein Zeitablauf aufgetreten ist, wird eine Nachricht ausgegeben (siehe Ausgangsdaten unten)
        mit <code>msg.payload</code>, die empfangene Antwort enthaltend (oder fehlend im Falle eines Zeitablaufs),
        und allen anderen unveränderten Eigenschaften der Eingangsnachricht.</p>
-    <p>Für die Konsistenz mit dem <span style="background-color:Gainsboro">serial in</span>-Node ist 
+    <p>Analog zum  <span style="background-color:Gainsboro">serial in</span>-Node ist
        <code>msg.port</code> ebenso auf den Namen der seriellen Schnittstelle gesetzt.</p>
     <h3>Eingangsdaten</h3>
     <ul>
@@ -101,6 +101,6 @@
     <p>Wenn kein Aufteilungszeichen vorgegeben ist oder ein Zeitlimit oder eine Puffergröße von 0 angegeben ist,
        wird ein Strom von einzelnen Zeichen ausgegeben -
        wieder entweder als ASCII-Zeichen oder als binärer Buffer, jeweils der Größe 1.</p>
-    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird, 
+    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird,
        auch jeder zu sendenden Nachricht angefügt werden.</p>
 </script>

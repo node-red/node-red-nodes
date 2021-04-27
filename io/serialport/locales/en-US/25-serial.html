@@ -1,6 +1,6 @@
 
 <script type="text/html" data-help-name="serial in">
-    <p>Receives data via a local serial port.</p>
+    <p>Reads data from a local serial port.</p>
     <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string | buffer</span></dt>
@@ -8,7 +8,7 @@
         <dt>port <span class="property-type">string</span></dt>
         <dd>name of the serial port</dd>
     </dl>
-    <p>The node can either 
+    <p>The node can either
         <ul>
             <li>wait for a "split" character (default \n).
                 Also accepts escaped shortcut (e.g. \n) or hex notation (0x0d).</li>
@@ -79,7 +79,7 @@
     <p>The DTR, RTS, CTS and DSR switches can be used to permanently pull the corresponding flow control pin high or low,
        e.g. in order to power devices via those pins.</p>
     <p>The node can optionally wait until it matches a pre-defined character.</p>
-    <p>The serial data reception can either 
+    <p>The serial data reception can either
         <ul>
             <li>wait for a "split" character (default \n). Also accepts escaped shortcut (e.g. \n) or hex notation (0x0d).</li>
             <li>wait for a timeout in milliseconds from the first character received.</li>
