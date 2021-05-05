@@ -16,11 +16,13 @@
             "copy-accessToken": "Create a new 'Access token & access token secret' and copy them",
             "access_key": "Access token",
             "access_secret": "Access token secret",
-            "enter-id": "Set your Twitter ID"
+            "enter-id": "Set your Twitter ID",
+            "pollInterval": "Poll Interval"
         },
         "placeholder": {
             "for": "comma-separated words, @ids, #tags",
-            "user": "comma-separated @twitter handles"
+            "user": "comma-separated @twitter handles",
+            "pollInterval": "Time in milliseconds, default 60000 (1 minute)"
         },
         "search": {
             "public": "all public tweets",
