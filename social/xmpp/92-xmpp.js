@@ -42,9 +42,11 @@ module.exports = function(RED) {
         this.client = client({
             service: proto+'://' + this.server + ':' + this.port,
             username: this.username,
-            password: this.password
+            password: this.password,
+            timeout: 60000
         });
 
+        this.client.timeout = 60000;
         // helper variable for checking against later, maybe we should be using the client
         // object directly...
         this.connected = false;
