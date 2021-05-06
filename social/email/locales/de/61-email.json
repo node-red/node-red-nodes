@@ -29,7 +29,11 @@
             "seen": "Gesichtet",
             "unanswered": "Unbeantwortet",
             "unflagged": "Unmarkiert",
-            "unseen": "Ungesehen"
+            "unseen": "Ungesehen",
+            "autotls": "STARTTLS?",
+            "never": "nie",
+            "required": "wenn erforderlich",
+            "always": "immer"
         },
         "default-message": "__description__\n\nDatei von Node-RED ist angehängt: __filename__",
         "tip": {

@@ -26,6 +26,7 @@ module.exports = function(RED) {
             msg.ping = hostOptions
         }
 
+        var cmd = "ping";
         //User Selected Protocol
         if (plat == "linux" || plat == "android") {
             if (node.protocol === "IPv4") {
@@ -33,7 +34,7 @@ module.exports = function(RED) {
             } else if (node.protocol === "IPv6") {
                 commandLineOptions = ["-n", "-6", "-w", timeoutS, "-c", "1"]; //IPv6
             } else {
-              commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"]; //Automatic
+                commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"]; //Automatic
             }
         } else if (plat.match(/^win/)) {
             if (node.protocol === "IPv4") {
@@ -45,9 +46,10 @@ module.exports = function(RED) {
             }
         } else if (plat == "darwin" || plat == "freebsd") {
             if (node.protocol === "IPv4") {
-                commandLineOptions = ["-n", "-4", "-t", timeoutS, "-c", "1"]; //IPv4
+                commandLineOptions = ["-n", "-t", timeoutS, "-c", "1"]; //IPv4
             } else if (node.protocol === "IPv6") {
-                commandLineOptions = ["-n", "-6", "-t", timeoutS, "-c", "1"]; //IPv6
+                cmd = "ping6";
+                commandLineOptions = ["-n", "-t", timeoutS, "-c", "1"]; //IPv6
             } else {
                 commandLineOptions = ["-n", "-t", timeoutS, "-c", "1"]; //Automatic
             }
@@ -58,7 +60,7 @@ module.exports = function(RED) {
         }
 
         //spawn with timeout in case of os issue
-        ex = spawn("ping", [...commandLineOptions, hostOptions.host]);
+        ex = spawn(cmd, [...commandLineOptions, hostOptions.host]);
 
         //monitor every spawned process & SIGINT if too long
         var spawnTout = setTimeout(() => {
@@ -82,11 +84,15 @@ module.exports = function(RED) {
             if (!data.includes('Usage')) { // !data: only get the error and not how to use the ping command
                 if (data.includes('invalid') && data.includes('6')) { //if IPv6 not supported in version of ping try ping6
                     tryPing6 = true;
-                    //node.error(data, msg); // used for testing output of -6 on ping command. Keep this line untill out of beta testing please.  Contact---> https://discourse.nodered.org/u/meeki007
-                } else if (data.includes('Network is unreachable')) {
+                }
+                else if (data.includes('Network is unreachable')) {
+                    node.status({shape:"ring",fill:"red"});
                     node.error(data + "  Please check that your service provider or network device has IPv6 enabled", msg);
-                } else {
-                    node.error(data, msg);
+                    node.hadErr = true;
+                }
+                else {
+                    node.status({shape:"ring",fill:"grey"});
+                    node.hadErr = true;
                 }
             }
         });
@@ -121,7 +127,8 @@ module.exports = function(RED) {
                 try { node.send(msg); }
                 catch(e) {console.warn(e)}
 
-            } else {
+            }
+            else {
                 //fallback to ping6 for OS's that have not updated/out of date
                 if (plat == "linux" || plat == "android") {
                     commandLineOptions = ["-n", "-w", timeoutS, "-c", "1"];
@@ -147,10 +154,13 @@ module.exports = function(RED) {
                 ex6.stderr.on("data", function (data) {
                     if (!data.includes('Usage')) { // !data: only get the error and not how to use the ping6 command
                         if (data.includes('Network is unreachable')) {
-                              node.error(data + "  Please check that your service provider or network device has IPv6 enabled", msg);
-                          } else {
-                              node.error(data, msg);
+                            node.error(data + "  Please check that your service provider or network device has IPv6 enabled", msg);
+                            node.status({shape:"ring",fill:"red"});
                         }
+                        else {
+                            node.status({shape:"ring",fill:"grey"});
+                        }
+                        node.hadErr = true;
                     }
                 });
 
@@ -184,9 +194,7 @@ module.exports = function(RED) {
                     catch(e) {console.warn(e)}
                 });
             }
-
         });
-
     }
 
     function PingNode(n) {
@@ -195,6 +203,7 @@ module.exports = function(RED) {
         this.mode = n.mode;
         this.host = n.host;
         this.timer = n.timer * 1000;
+        this.hadErr = false;
         var node = this;
 
         function generatePingList(str) {
@@ -208,6 +217,7 @@ module.exports = function(RED) {
             clearPingInterval();
         } else if (node.timer) {
             node.tout = setInterval(function() {
+                if (node.hadErr) { node.hadErr = false; node.status({}); }
                 let pingables = generatePingList(node.host);
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
@@ -218,6 +228,7 @@ module.exports = function(RED) {
 
         this.on("input", function (msg) {
             let node = this;
+            if (node.hadErr) { node.hadErr = false; node.status({}); }
             let payload = node.host || msg.payload;
             if (typeof payload == "string") {
                 let pingables = generatePingList(payload)

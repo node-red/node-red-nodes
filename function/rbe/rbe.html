@@ -30,7 +30,7 @@
     <div class="form-row">
         <label> </label>
         <input type="checkbox" id="node-input-septopics" style="display:inline-block; width:20px; vertical-align:baseline;">
-        <span data-i18n="rbe.label.septopics"></span>
+        <span data-i18n="rbe.label.septopics"></span> <input type="text" id="node-input-topi" style="width:27%;"/>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="rbe.label.name"></span></label>
@@ -49,7 +49,8 @@
             start: {value:""},
             inout: {value:"out"},
             septopics: {value:true},
-            property: {value:"payload",required:true}
+            property: {value:"payload",required:true},
+            topi: {value:"topic",required:true}
         },
         inputs:1,
         outputs:1,
@@ -69,6 +70,7 @@
                 $("#node-input-septopics").prop('checked', true);
             }
             $("#node-input-property").typedInput({default:'msg',types:['msg']});
+            $("#node-input-topi").typedInput({default:'msg',types:['msg']});
             //$( "#node-input-gap" ).spinner({min:0});
             if ($("#node-input-inout").val() === null) {
                 $("#node-input-inout").val("out");

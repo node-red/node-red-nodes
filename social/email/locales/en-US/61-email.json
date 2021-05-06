@@ -29,7 +29,11 @@
             "seen": "Seen",
             "unanswered": "Unanswered",
             "unflagged": "Unflagged",
-            "unseen": "Unseen"
+            "unseen": "Unseen",
+            "autotls": "Start TLS?",
+            "never": "never",
+            "required": "if required",
+            "always": "always"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {

@@ -123,7 +123,8 @@ module.exports = function(RED) {
                 }
             });
 
-            node.on("input", function(msg) {
+            node.on("input", function(msg, send, done) {
+                send = send || function() { node.send.apply(node,arguments) };
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
@@ -154,25 +155,36 @@ module.exports = function(RED) {
                                     msg.payload = JSON.parse(JSON.stringify(rows));
                                 }
                                 else if (rows.constructor.name === "Array") {
-                                    msg.payload = rows.map(v => Object.assign({}, v));
+                                    if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
+                                        msg.payload = rows.map(v => Object.assign({}, v));
+                                    }
+                                    else if (rows[0] && rows[0].constructor.name === "Array") {
+                                        if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
+                                            msg.payload = rows.map(v => v.map(w => Object.assign({}, w)));
+                                        }
+                                        else { msg.payload = rows; }
+                                    }
+                                    else  { msg.payload = rows; }
                                 }
                                 else { msg.payload = rows; }
-                                node.send(msg);
+                                send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
+                            done();
                             // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
                             //     node.mydbConfig.connection.release();
                             // }
                         });
                     }
                     else {
-                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); done(); }
                     }
                 }
                 else {
                     node.error("Database not connected",msg);
                     status = {fill:"red",shape:"ring",text:"not yet connected"};
+                    done();
                 }
                 if (!busy) {
                     busy = true;

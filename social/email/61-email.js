@@ -189,6 +189,7 @@ module.exports = function(RED) {
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
+        this.autotls= n.autotls;
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
@@ -491,6 +492,7 @@ module.exports = function(RED) {
                 host: node.inserver,
                 port: node.inport,
                 tls: node.useSSL,
+                autotls: node.autotls,
                 tlsOptions: { rejectUnauthorized: false },
                 connTimeout: tout,
                 authTimeout: tout

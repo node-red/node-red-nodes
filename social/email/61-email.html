@@ -127,6 +127,14 @@
         <input type="checkbox" id="node-input-useSSL" style="width: auto;">
     </div>
     <div class="form-row">
+        <label for="node-input-autotls"><i class="fa fa-lock"></i> <span data-i18n="email.label.autotls"></label>
+        <select type="text" id="node-input-autotls" style="width: 150px;">
+            <option value="never" data-i18n="email.label.never"></option>
+            <option value="required" data-i18n="email.label.required"></option>
+            <option value="always" data-i18n="email.label.always"></option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="email.label.server"></span></label>
         <input type="text" id="node-input-server" placeholder="imap.gmail.com">
     </div>
@@ -202,10 +210,12 @@
         $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
+                $(".node-input-autotls").show();
                 $(".node-input-box").show();
                 $(".node-input-disposition").show();
                 $(".node-input-criteria").show();
             } else {
+                $(".node-input-autotls").hide();
                 $(".node-input-box").hide();
                 $(".node-input-disposition").hide();
                 $(".node-input-criteria").hide();
@@ -225,6 +235,7 @@
             protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
             server: {value:"imap.gmail.com",required:true},
             useSSL: {value: true},
+            autotls: {value: "never"},
             port: {value:"993",required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email
@@ -264,6 +275,10 @@
             if (typeof this.criteria === 'undefined') {
                 $("#node-input-criteria").val("UNSEEN");
                 this.criteria = "UNSEEN";
+            }
+            if (typeof this.autotls === 'undefined') {
+                $("#node-input-autotls").val("never");
+                this.autotls = "never";
             }
             if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
             $("#node-input-fetch").change(function() {
