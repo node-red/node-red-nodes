@@ -443,7 +443,7 @@ module.exports = function(RED) {
                         }
                         else { msg.topic = ids[0]; }
                         // if (RED.settings.verbose || LOGITALL) { node.log("Received a message from "+stanza.attrs.from); }
-                        if (!node.join && ((node.from[0] === "") || (node.from.includes(stanza.attrs.to)))) {
+                        if (!node.join && ((node.from[0] === "") || (node.from.includes(stanza.attrs.from.split('/')[0])) || (node.from.includes(stanza.attrs.from.split('/')[1]))  )) {
                             node.send([msg,null]);
                         }
                     }
@@ -514,7 +514,7 @@ module.exports = function(RED) {
                             payload: {
                                 presence:state,
                                 status:statusText,
-                                name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                                name:stanza.attrs.from.split('/')[1]
                             }
                         };
                         node.send([null,msg]);
