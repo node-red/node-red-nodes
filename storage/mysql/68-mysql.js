@@ -151,22 +151,26 @@ module.exports = function(RED) {
                                 node.error(err,msg);
                             }
                             else {
-                                if (rows.constructor.name === "OkPacket") {
-                                    msg.payload = JSON.parse(JSON.stringify(rows));
-                                }
-                                else if (rows.constructor.name === "Array") {
-                                    if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
-                                        msg.payload = rows.map(v => Object.assign({}, v));
-                                    }
-                                    else if (rows[0] && rows[0].constructor.name === "Array") {
-                                        if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
-                                            msg.payload = rows.map(v => v.map(w => Object.assign({}, w)));
-                                        }
-                                        else { msg.payload = rows; }
-                                    }
-                                    else  { msg.payload = rows; }
-                                }
-                                else { msg.payload = rows; }
+                                // if (rows.constructor.name === "OkPacket") {
+                                //     msg.payload = JSON.parse(JSON.stringify(rows));
+                                // }
+                                // else if (rows.constructor.name === "Array") {
+                                //     if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
+                                //         msg.payload = rows.map(v => Object.assign({}, v));
+                                //     }
+                                //     else if (rows[0] && rows[0].constructor.name === "Array") {
+                                //         if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
+                                //             msg.payload = rows.map(function(v) {
+                                //                 if (!Array.isArray(v)) { return v; }
+                                //                 v.map(w => Object.assign({}, w))
+                                //             });
+                                //         }
+                                //         else { msg.payload = rows; }
+                                //     }
+                                //     else  { msg.payload = rows; }
+                                // }
+                                // else { msg.payload = rows; }
+                                msg.payload = rows;
                                 send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
