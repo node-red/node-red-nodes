@@ -12,6 +12,7 @@
             "folder": "フォルダ",
             "protocol": "プロトコル",
             "useSSL": "SSLを使用",
+            "useTLS": "TLSオプション",
             "disposition": "受信後の処理",
             "none": "なし",
             "read": "既読",
@@ -20,7 +21,8 @@
             "autotls": "TLSを開始?",
             "never": "なし",
             "always": "常時",
-            "required": "必要な場合"
+            "required": "必要な場合",
+            "rejectUnauthorised": "チェックサーバ証明書は有効です"
         },
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
         "tip": {

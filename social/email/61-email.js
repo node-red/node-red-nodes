@@ -58,9 +58,7 @@ module.exports = function(RED) {
         if (flag) {
             RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
-        if (n.tls === false) {
-            this.tls = false;
-        }
+        if (n.tls === false) { this.tls = false; }
         var node = this;
 
         var smtpOptions = {
