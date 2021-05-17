@@ -48,6 +48,7 @@ module.exports = function(RED) {
                 });
             }
 
+            // connection test
             node.pool.getConnection(function(err, connection) {
                 node.connecting = false;
                 if (err) {
@@ -56,25 +57,10 @@ module.exports = function(RED) {
                     node.tick = setTimeout(doConnect, reconnect);
                 }
                 else {
-                    node.connection = connection;
                     node.connected = true;
                     node.emit("state","connected");
-                    node.connection.on('error', function(err) {
-                        node.connected = false;
-                        node.connection.release();
-                        node.emit("state",err.code);
-                        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-                            doConnect(); // silently reconnect...
-                        }
-                        else if (err.code === 'ECONNRESET') {
-                            doConnect(); // silently reconnect...
-                        }
-                        else {
-                            node.error(err);
-                            doConnect();
-                        }
-                    });
                     if (!node.check) { node.check = setInterval(checkVer, 290000); }
+                    connection.release();
                 }
             });
         }
@@ -117,8 +103,6 @@ module.exports = function(RED) {
                 if (info === "connecting") { node.status({fill:"grey",shape:"ring",text:info}); }
                 else if (info === "connected") { node.status({fill:"green",shape:"dot",text:info}); }
                 else {
-                    if (info === "ECONNREFUSED") { info = "connection refused"; }
-                    if (info === "PROTOCOL_CONNECTION_LOST") { info = "connection lost"; }
                     node.status({fill:"red",shape:"ring",text:info});
                 }
             });
@@ -132,7 +116,7 @@ module.exports = function(RED) {
                         if (Array.isArray(msg.payload)) { bind = msg.payload; }
                         else if (typeof msg.payload === 'object' && msg.payload !== null) {
                             bind = msg.payload;
-                            node.mydbConfig.connection.config.queryFormat = function(query, values) {
+                            node.mydbConfig.pool.config.queryFormat = function(query, values) {
                                 if (!values) {
                                     return query;
                                 }
@@ -144,7 +128,7 @@ module.exports = function(RED) {
                                 }.bind(this));
                             };
                         }
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 status = {fill:"red",shape:"ring",text:"Error: "+err.code};
                                 node.status(status);
