@@ -75,7 +75,6 @@ module.exports = function(RED) {
             if (this.tick) { clearTimeout(this.tick); }
             if (this.check) { clearInterval(this.check); }
             node.connected = false;
-            // node.connection.release();
             node.emit("state"," ");
             node.pool.end(function(err) { done(); });
         });
