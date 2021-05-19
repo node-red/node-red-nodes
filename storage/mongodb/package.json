@@ -1,27 +1,27 @@
 {
-    "name"          : "node-red-node-mongodb",
-    "version"       : "0.2.5",
-    "description"   : "Node-RED nodes to talk to a Mongo database",
-    "dependencies"  : {
-        "mongodb"   : "^3.6.3"
-    },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/storage/mongodb"
-    },
-    "license": "Apache-2.0",
-    "keywords": [ "node-red", "mongodb" ],
-    "node-red"      : {
-        "nodes"     : {
-            "mongo": "66-mongodb.js"
-        }
-    },
-    "author": {
-        "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
-        "url": "http://nodered.org"
-    },
-    "contributors": [
+  "name": "node-red-node-mongodb",
+  "version": "0.2.6",
+  "description": "Node-RED nodes to talk to a Mongo database",
+  "dependencies": {
+    "mongodb": "^3.6.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red/node-red-nodes/tree/master/storage/mongodb"
+  },
+  "license": "Apache-2.0",
+  "keywords": [ "node-red", "mongodb" ],
+  "node-red": {
+    "nodes": {
+      "mongo": "66-mongodb.js"
+    }
+  },
+  "author": {
+    "name": "Dave Conway-Jones",
+    "email": "ceejay@vnet.ibm.com",
+    "url": "http://nodered.org"
+  },
+  "contributors": [
     {
       "name": "Ross Cruickshank",
       "email": "ross@vnet.ibm.com"
