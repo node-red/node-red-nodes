@@ -502,6 +502,7 @@ module.exports = function(RED) {
                                 // ignore 404 error
                             }
                         }
+                        return;
                     }
 
                     var state = stanza.getChild('show');
@@ -513,12 +514,17 @@ module.exports = function(RED) {
                         statusText = "offline";
                         state = "offline";
                     }
-                    var status = stanza.getChild('status');
-                    if (typeof status !== "undefined") {
-                        statusText = status.getText();
+                    else {
+                        statusText = "online";
+                        state = "online";
                     }
-                    // right, do we care if there's no status?
-                    if (statusText !== "") {
+
+                    var status = stanza.getChild('status');
+                    if (status !== undefined) {
+                        statusText = status.getText() || "online";
+                    }
+
+                    if (statusText !== "" && (stanza.attrs.from !== stanza.attrs.to)) {
                         var from = stanza.attrs.from;
                         var msg = {
                             topic:from,
