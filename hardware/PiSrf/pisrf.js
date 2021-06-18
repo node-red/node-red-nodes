@@ -5,7 +5,7 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
-    var gpioCommand = __dirname + '/nrsrf.py';
+    var gpioCommand = __dirname + '/nrsrf';
     var allOK = true;
 
     try {
