@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import sys
 try:
     import RPi.GPIO as GPIO
