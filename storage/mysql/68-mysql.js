@@ -159,7 +159,7 @@ module.exports = function(RED) {
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
-                            done();
+                            if (done) { done(); }
                             // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
                             //     node.mydbConfig.connection.release();
                             // }
@@ -172,7 +172,7 @@ module.exports = function(RED) {
                 else {
                     node.error("Database not connected",msg);
                     status = {fill:"red",shape:"ring",text:"not yet connected"};
-                    done();
+                    if (done) { done(); }
                 }
                 if (!busy) {
                     busy = true;
