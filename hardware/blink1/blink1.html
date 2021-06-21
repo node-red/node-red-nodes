@@ -1,5 +1,8 @@
-
 <script type="text/x-red" data-template-name="blink1">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
     <div class="form-row">
         <label for="node-input-serial"><i class="fa fa-random"></i> Device ID</label>
         <input type="text" id="node-input-serial" placeholder="defaults to first found" style="width:60%">
@@ -8,10 +11,6 @@
     <div class="form-row">
         <label for="node-input-fade"><i class="fa fa-signal"></i> Fade (mS)</label>
         <input type="text" id="node-input-fade" placeholder="between 0 and 60,000 mS (1 min)">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
@@ -26,8 +25,9 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('blink1',{
-        category: 'output',
+        category: "blink1",
         color:"GoldenRod",
+        paletteLabel: "blink1 out",
         defaults: {
             serial: {value:""},
             fade: {value:"500",required:true,validate:RED.validators.number()},
@@ -38,7 +38,58 @@
         icon: "light.png",
         align: "right",
         label: function() {
-            return this.name||"blink1";
+            return this.name||"blink1 out";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $("#node-lookup-serial").click(function() {
+                $.getJSON('blink1list',function(data) {
+                      $("#node-input-serial").autocomplete({
+                          source:data,
+                          minLength:0,
+                          close: function( event, ui ) {
+                              $("#node-input-serial").autocomplete( "destroy" );
+                          }
+                      }).autocomplete("search","");
+                  });
+              });
+          }
+      });
+</script>
+
+<script type="text/x-red" data-template-name="blink1 in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-serial"><i class="fa fa-random"></i> Device ID</label>
+        <input type="text" id="node-input-serial" placeholder="defaults to first found" style="width:60%">
+        <a id="node-lookup-serial" class="btn"><i id="node-lookup-serial-icon" class="fa fa-search"></i></a>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="blink1 in">
+    <p>ThingM Blink1 input node.</p>
+    <p>Outputs the current RGB value as array <code>[r,g,b]</code> or "off" as string if RGB is 0,0,0 to <code>msg.payload</code>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('blink1 in',{
+        category: 'blink1',
+        color:"GoldenRod",
+        paletteLabel:"blink1 in",
+        defaults: {
+            serial: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "light.png",
+        align: "left",
+        label: function() {
+            return this.name||"blink1 in";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
