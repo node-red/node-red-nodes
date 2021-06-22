@@ -13,7 +13,7 @@
     "keywords": [ "node-red", "blink1" ],
     "node-red"      : {
         "nodes"     : {
-            "blink1": "blink1.js"
+            "blink1": "77-blink1.js"
         }
     },
     "author": {
