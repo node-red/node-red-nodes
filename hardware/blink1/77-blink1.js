@@ -4,7 +4,7 @@ module.exports = function(RED) {
     var Blink1 = require("node-blink1");
     var blink1 = {};
 
-    function Blink1OutNode(n) {
+    function Blink1Node(n) {
         RED.nodes.createNode(this,n);
         this.serial = n.serial;
         if (!this.serial) { delete this.serial; }
@@ -83,7 +83,8 @@ module.exports = function(RED) {
             node.error("No Blink1 found (" + e + ")");
         }
     }
-    RED.nodes.registerType("blink1",Blink1OutNode);
+    RED.nodes.registerType("blink1",Blink1Node);
+
 
     function Blink1InNode(n) {
         RED.nodes.createNode(this,n);
