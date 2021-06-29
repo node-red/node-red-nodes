@@ -62,6 +62,7 @@ module.exports = function(RED) {
             else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
+            if (!msg.location) { msg.location = {}; }
             msg.location.arc = {
                 ranges: [500,1000,2000],
                 pan: gpsData.GPSImgDirection,
