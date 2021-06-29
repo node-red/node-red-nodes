@@ -347,7 +347,7 @@ module.exports = function(RED) {
                             if (err) {
                                 if (err.toString() !== olderr) {
                                     olderr = err.toString();
-                                    RED.log.error(RED._("serial.errors.error",{port:port,error:olderr}), {});
+                                    RED.log.error("[serialconfig:"+serialConfig.id+"] "+RED._("serial.errors.error",{port:port,error:olderr}), {});
                                 }
                                 obj.tout = setTimeout(function() {
                                     setupSerial();
@@ -355,7 +355,7 @@ module.exports = function(RED) {
                             }
                         });
                         obj.serial.on('error', function(err) {
-                            RED.log.error(RED._("serial.errors.error",{port:port,error:err.toString()}), {});
+                            RED.log.error("[serialconfig:"+serialConfig.id+"] "+RED._("serial.errors.error",{port:port,error:err.toString()}), {});
                             obj._emitter.emit('closed');
                             if (obj.tout) { clearTimeout(obj.tout); }
                             obj.tout = setTimeout(function() {
@@ -366,7 +366,7 @@ module.exports = function(RED) {
                             if (!obj._closing) {
                                 if (olderr !== "unexpected") {
                                     olderr = "unexpected";
-                                    RED.log.error(RED._("serial.errors.unexpected-close",{port:port}), {});
+                                    RED.log.error("[serialconfig:"+serialConfig.id+"] "+RED._("serial.errors.unexpected-close",{port:port}), {});
                                 }
                                 obj._emitter.emit('closed');
                                 if (obj.tout) { clearTimeout(obj.tout); }
@@ -377,7 +377,7 @@ module.exports = function(RED) {
                         });
                         obj.serial.on('open',function() {
                             olderr = "";
-                            RED.log.info(RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
+                            RED.log.info("[serialconfig:"+serialConfig.id+"] "+RED._("serial.onopen",{port:port,baud:baud,config: databits+""+parity.charAt(0).toUpperCase()+stopbits}));
                             // Set flow control pins if necessary. Must be set all in same command.
                             var flags = {};
                             if (dtr != "none") { flags.dtr = (dtr!="low"); }

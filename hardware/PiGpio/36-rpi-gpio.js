@@ -5,7 +5,7 @@ module.exports = function(RED) {
     var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
 
-    var testCommand = __dirname+'/testgpio.py'
+    var testCommand = __dirname+'/testgpio'
     var gpioCommand = __dirname+'/nrgpio';
     var allOK = true;
 
@@ -225,7 +225,7 @@ module.exports = function(RED) {
         var node = this;
 
         if (allOK === true) {
-            node.child = spawn(gpioCommand+".py", ["mouse",node.butt]);
+            node.child = spawn(gpioCommand, ["mouse",node.butt]);
             node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {
@@ -276,7 +276,7 @@ module.exports = function(RED) {
         var node = this;
 
         var doConnect = function() {
-            node.child = spawn(gpioCommand+".py", ["kbd","0"]);
+            node.child = spawn(gpioCommand, ["kbd","0"]);
             node.status({fill:"green",shape:"dot",text:"rpi-gpio.status.ok"});
 
             node.child.stdout.on('data', function (data) {

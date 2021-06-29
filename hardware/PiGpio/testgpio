@@ -5,4 +5,4 @@ python_cmd='python3'
 command -v python3 > /dev/null || python_cmd=`python`
 
 BASEDIR=$(dirname $0)
-sudo $python_cmd -u $BASEDIR/unihat.py $@
+$python_cmd -u $BASEDIR/testgpio.py $@

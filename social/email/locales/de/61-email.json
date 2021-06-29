@@ -33,7 +33,8 @@
             "autotls": "STARTTLS?",
             "never": "nie",
             "required": "wenn erforderlich",
-            "always": "immer"
+            "always": "immer",
+            "rejectUnauthorised": "Überprüfen sie, ob das serverzertifikat gültig ist"
         },
         "default-message": "__description__\n\nDatei von Node-RED ist angehängt: __filename__",
         "tip": {
