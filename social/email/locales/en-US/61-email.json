@@ -16,7 +16,7 @@
             "folder": "Folder",
             "protocol": "Protocol",
             "useSSL": "Use SSL?",
-            "useTLS": "Use TLS?",
+            "useTLS": "TLS option",
             "disposition": "Disposition",
             "none": "None",
             "read": "Mark Read",
@@ -29,7 +29,12 @@
             "seen": "Seen",
             "unanswered": "Unanswered",
             "unflagged": "Unflagged",
-            "unseen": "Unseen"
+            "unseen": "Unseen",
+            "autotls": "Start TLS?",
+            "never": "never",
+            "required": "if required",
+            "always": "always",
+            "rejectUnauthorised": "Check server certificate is valid"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {

@@ -3,7 +3,6 @@ node-red-node-email
 
 <a href="http://nodered.org" target="info">Node-RED</a> nodes to send and receive simple emails.
 
-
 Pre-requisite
 -------------
 
@@ -12,13 +11,10 @@ getting an application password if you have two-factor authentication enabled.
 
 **Note :** Version 1.x of this node requires **Node.js v8** or newer.
 
-
 Install
 -------
 
-Version 0.x of this node is usually installed by default by Node-RED.
-As long as you have at least version 0.19.x of Node-RED you can install the new version
-by using the `Menu - Manage Palette` option, or running the following command in your
+You can install by using the `Menu - Manage Palette` option, or running the following command in your
 Node-RED user directory - typically `~/.node-red`
 
         cd ~/.node-red
@@ -35,9 +31,9 @@ Usage
 
 Nodes to send and receive simple emails.
 
-### Input
+### Input node
 
-Repeatedly gets emails from an IMAP or POP3 server and forwards them onwards as messages if not already seen.
+Fetches emails from an IMAP or POP3 server and forwards them onwards as messages if not already seen.
 
 The subject is loaded into `msg.topic` and `msg.payload` is the plain text body.
 If there is text/html then that is returned in `msg.html`. `msg.from` and
@@ -46,24 +42,19 @@ If there is text/html then that is returned in `msg.html`. `msg.from` and
 Additionally `msg.header` contains the complete header object including
 **to**, **cc** and other potentially useful properties.
 
-**Note:** this node *only* gets the most recent single email from the inbox,
-so set the repeat (polling) time appropriately.
-
-Uses the *imap* npm module.
-
-### Output
+### Output node
 
 Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 
 The default message recipient can be configured in the node, if it is left
 blank it should be set using the `msg.to` property of the incoming message.
 
-The email *from* can be set using `msg.from` but not all mail services allow 
-this unless `msg.from` is also a valid userid or email address associated with 
-the password. Note: if `userid` or msg.from does not contain a valid email 
-address (userxx@some_domain.com), you may see (No Sender) in the email.
+The email *from* can be set using `msg.from` but not all mail services allow
+this unless `msg.from` is also a valid userid or email address associated with
+the password. Note: if `userid` or msg.from does not contain a valid email
+address (userxx@some_domain.com), you may see *(No Sender)* in the email.
 
-The payload can be html format.
+The payload can be html format. You can also specify `msg.plaintext` if the main payload is html.
 
 If the payload is a binary buffer then it will be converted to an attachment.
 

@@ -29,10 +29,16 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 Usage
 -----
 
+__Out__
 Sends the `msg.payload` to a Thingm Blink(1) LED device. The payload can be any of the following:
 
- - a three part csv string of r,g,b - e.g. red is  255,0,0
- - a hex colour #rrggbb - e.g. green is  #00FF00
+ - a three part csv string of r,g,b - e.g. red is 255,0,0
+ - a hex colour #rrggbb - e.g. green is #00FF00
  - a <a href="http://www.cheerlights.com/control-cheerlights">@cheerlights</a> colour name - e.g. blue
 
  The colours it accepts are - red, amber, green, blue, cyan, magenta, yellow, orange, pink, purple, white, warmwhite (or oldlace), black, (and off)
+
+__In__
+Outputs the current color value of the Blink(1) LED device in the `msg.payload` with the r,g,b values as an array e.g. [255,0,0].
+
+If the Blink(1) is off the device returns 0,0,0. Instead of [0,0,0] the node returns "off".

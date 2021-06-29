@@ -48,6 +48,7 @@ module.exports = function(RED) {
                 });
             }
 
+            // connection test
             node.pool.getConnection(function(err, connection) {
                 node.connecting = false;
                 if (err) {
@@ -56,25 +57,10 @@ module.exports = function(RED) {
                     node.tick = setTimeout(doConnect, reconnect);
                 }
                 else {
-                    node.connection = connection;
                     node.connected = true;
                     node.emit("state","connected");
-                    node.connection.on('error', function(err) {
-                        node.connected = false;
-                        node.connection.release();
-                        node.emit("state",err.code);
-                        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-                            doConnect(); // silently reconnect...
-                        }
-                        else if (err.code === 'ECONNRESET') {
-                            doConnect(); // silently reconnect...
-                        }
-                        else {
-                            node.error(err);
-                            doConnect();
-                        }
-                    });
                     if (!node.check) { node.check = setInterval(checkVer, 290000); }
+                    connection.release();
                 }
             });
         }
@@ -117,13 +103,12 @@ module.exports = function(RED) {
                 if (info === "connecting") { node.status({fill:"grey",shape:"ring",text:info}); }
                 else if (info === "connected") { node.status({fill:"green",shape:"dot",text:info}); }
                 else {
-                    if (info === "ECONNREFUSED") { info = "connection refused"; }
-                    if (info === "PROTOCOL_CONNECTION_LOST") { info = "connection lost"; }
                     node.status({fill:"red",shape:"ring",text:info});
                 }
             });
 
-            node.on("input", function(msg) {
+            node.on("input", function(msg, send, done) {
+                send = send || function() { node.send.apply(node,arguments) };
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
@@ -131,7 +116,7 @@ module.exports = function(RED) {
                         if (Array.isArray(msg.payload)) { bind = msg.payload; }
                         else if (typeof msg.payload === 'object' && msg.payload !== null) {
                             bind = msg.payload;
-                            node.mydbConfig.connection.config.queryFormat = function(query, values) {
+                            node.mydbConfig.pool.config.queryFormat = function(query, values) {
                                 if (!values) {
                                     return query;
                                 }
@@ -143,36 +128,51 @@ module.exports = function(RED) {
                                 }.bind(this));
                             };
                         }
-                        node.mydbConfig.connection.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
                             if (err) {
                                 status = {fill:"red",shape:"ring",text:"Error: "+err.code};
                                 node.status(status);
                                 node.error(err,msg);
                             }
                             else {
-                                if (rows.constructor.name === "OkPacket") {
-                                    msg.payload = JSON.parse(JSON.stringify(rows));
-                                }
-                                else if (rows.constructor.name === "Array") {
-                                    msg.payload = rows.map(v => Object.assign({}, v));
-                                }
-                                else { msg.payload = rows; }
-                                node.send(msg);
+                                // if (rows.constructor.name === "OkPacket") {
+                                //     msg.payload = JSON.parse(JSON.stringify(rows));
+                                // }
+                                // else if (rows.constructor.name === "Array") {
+                                //     if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
+                                //         msg.payload = rows.map(v => Object.assign({}, v));
+                                //     }
+                                //     else if (rows[0] && rows[0].constructor.name === "Array") {
+                                //         if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
+                                //             msg.payload = rows.map(function(v) {
+                                //                 if (!Array.isArray(v)) { return v; }
+                                //                 v.map(w => Object.assign({}, w))
+                                //             });
+                                //         }
+                                //         else { msg.payload = rows; }
+                                //     }
+                                //     else  { msg.payload = rows; }
+                                // }
+                                // else { msg.payload = rows; }
+                                msg.payload = rows;
+                                send(msg);
                                 status = {fill:"green",shape:"dot",text:"OK"};
                                 node.status(status);
                             }
+                            if (done) { done(); }
                             // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
                             //     node.mydbConfig.connection.release();
                             // }
                         });
                     }
                     else {
-                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); }
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); done(); }
                     }
                 }
                 else {
                     node.error("Database not connected",msg);
                     status = {fill:"red",shape:"ring",text:"not yet connected"};
+                    if (done) { done(); }
                 }
                 if (!busy) {
                     busy = true;

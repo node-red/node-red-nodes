@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-physical-web",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Node-RED nodes to interact with the Physical Web",
   "main": "physical-web.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "ble"
   ],
   "node-red": {
-    "nodes"     : {
+    "nodes": {
       "physical-web": "physical-web.js"
     }
   },
@@ -29,7 +29,7 @@
   },
   "license": "APACHE-2.0",
   "dependencies": {
-    "eddystone-beacon": "~1.0.4",
-    "eddystone-beacon-scanner": "~3.0.0"
+    "eddystone-beacon": "natcl/node-eddystone-beacon",
+    "@abandonware/eddystone-beacon-scanner": "3.0.1-2"
   }
 }

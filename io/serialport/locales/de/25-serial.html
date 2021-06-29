@@ -1,0 +1,106 @@
+
+<script type="text/html" data-help-name="serial in">
+    <p>Datenempfang von lokaler serieller Schnittstelle.</p>
+    <h3>Ausgangsdaten</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string | buffer</span></dt>
+        <dd>Empfangene Daten von serieller Schnittstelle</dd>
+        <dt>port <span class="property-type">string</span></dt>
+        <dd>Name der seriellen Schnittstelle</dd>
+    </dl>
+    <p>Der Node kann entweder
+        <ul>
+            <li>warten auf ein Aufteilungszeichen (standardmäßig \n).
+            Escape-Sequenzen (z.B. \n) und Hex-Notation (0x0d) werden ebenso akzeptiert.</li>
+            <li>warten auf Zeitablauf in Millisekunden seit Empfang des ersten Zeichens.</li>
+            <li>eine Ruhezeit in Millisekunden seit Empfang des letzten Zeichens abwarten.</li>
+            <li>warten bis ein Puffer mit fester Größer gefüllt ist.</li>
+        </ul>
+    </p>
+    <p>Dann wird <code>msg.payload</code> entweder als UTF-8 ASCII Zeichenfolge (string) oder
+       als binäres Buffer-Objekt ausgegeben.</p>
+    <p><code>msg.port</code> enthält den Namen der ausgewählten seriellen Schnittstelle.</p>
+    <p>Wenn kein Aufteilungszeichen vorgegeben ist oder ein Zeitlimit oder eine Puffergröße von 0 angegeben ist,
+       wird ein Strom von einzelnen Zeichen ausgegeben -
+       wieder entweder als ASCII-Zeichen oder als binärer Buffer, jeweils der Größe 1.</p>
+</script>
+
+<script type="text/html" data-help-name="serial out">
+    <p>Datenversand über lokale serielle Schnittstelle.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string | buffer</span></dt>
+        <dd>Zu sendende Daten über serielle Schnittstelle</dd>
+        <dt class="optional">baudrate <span class="property-type">string</span></dt>
+        <dd>Baudrate der seriellen Schnittstelle (optional)</dd>
+    </dl>
+    <p>Nur <code>msg.payload</code> wird gesendet.</p>
+    <p>Optional kann die Baudrate geändert werden über <code>msg.baudrate</code></p>
+    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird,
+       auch jeder zu sendenden Nachricht angefügt werden.</p>
+    <p>Binäre Nutzdaten (Payload) können unter Verwendung von Buffer-Objekten gesendet werden.</p>
+</script>
+
+<script type="text/html" data-help-name="serial request">
+    <p>Verbindung zu einer seriellen Schnittstelle mit Request/Response-Protokoll (Anfrage/Antwort).</p>
+    <p>Dieser Node verhält sich wie eine fest gekoppelte Kombination aus einem
+       <span style="background-color:Gainsboro">serial in</span>- und einem
+       <span style="background-color:Gainsboro">serial out</span>-Node,
+       welche sich eine Konfiguration teilen.</p>
+    <p>Die Anfrage-Nachricht wird über <code>msg.payload</code> so versendet,
+       wie man es den <span style="background-color:Gainsboro">serial out</span>-Node machen würde.
+       Die Nachrichten werden an die serielle Schnittstelle nach dem strikten FIFO-Prinzip (First In, First Out) weitergereicht,
+       d.h. nach jeder gesendeten Anfrage wird auf die Antwort der Gegenstelle gewartet,
+       bevor mit der nächsten Anfrage fortgefahren wird.
+       Wenn die Antwort empfangen wurde (mit der selben Logik eines <span style="background-color:Gainsboro">serial in</span>-Nodes)
+       oder wenn ein Zeitablauf aufgetreten ist, wird eine Nachricht ausgegeben (siehe Ausgangsdaten unten)
+       mit <code>msg.payload</code>, die empfangene Antwort enthaltend (oder fehlend im Falle eines Zeitablaufs),
+       und allen anderen unveränderten Eigenschaften der Eingangsnachricht.</p>
+    <p>Analog zum  <span style="background-color:Gainsboro">serial in</span>-Node ist
+       <code>msg.port</code> ebenso auf den Namen der seriellen Schnittstelle gesetzt.</p>
+    <h3>Eingangsdaten</h3>
+    <ul>
+        <li><code>msg.timeout</code> ist die Ablaufzeit (in ms), nach der eine unbeantwortete Eingangsnachricht
+            an den Ausgang mit <code>msg.status</code>, gesetzt auf <code>"ERR_TIMEOUT"</code>,
+            und den unbeantworteten Nutzdaten (Payload) weitergereicht wird.
+            Wenn nicht vorhanden, wird der Standardwert 10000 (10s) verwendet.</li>
+        <li>Falls <code>msg.count</code> gesetzt ist, überschreibt sie die konfigurierte Zeichenanzahl,
+            sofern sie kleiner als die konfigurierte ist.</li>
+        <li><code>msg.waitfor</code> muss ein Einzelzeichen, ein Escape-Code oder eine Hex-Code sein.
+            Wenn gesetzt, wartet der Node bis zum passenden Zeichen im Datenstrom und startet dann die Ausgabe.</li>
+        <li>Optional kann die Baudrate geändert werden über <code>msg.baudrate</code></li>
+    </ul>
+    <h3>Ausgangsdaten</h3>
+    <ul>
+        <li><code>msg.payload</code> ist die Antwort. Wenn keine Antwort erfolgte, ist die Eigenschaft nicht vorhanden.</li>
+        <li><code>msg.status</code> ist <code>"OK"</code> im Falle einer empfangenen Antwort oder
+            <code>"ERR_TIMEOUT"</code> im Falle eines Zeitablaufs.</li>
+        <li>Alle anderen Eigenschaften der Eingangsdaten werden beibehalten.</li>
+    </ul>
+</script>
+
+<script type="text/html" data-help-name="serial-port">
+    <p>Konfigurationsoptionen einer lokalen seriellen Schnittstelle.</p>
+    <p>Die Suchschaltfläche sollte eine Liste der verfügbaren seriellen Schnittstellen zur Auswahl zurückgeben.
+       Alternativ kann der Schnittstellenname direkt eingegeben werden, sofern bekannt.</p>
+    <p>Die DTR-, RTS-, CTS- und DSR-Einstellugnen können genutzt werden,
+       um den entsprechenden Flusskontroll-Pin permanent auf High- oder Low-Pegel zu ziehen,
+       z.B. um angeschlossene Geräte darüber mit Strom zu versorgen.</p>
+    <p>Der Node kann optional darauf warten, bis ein vorgegebenes Startzeichen empfangen wurde.</p>
+    <p>Der Node kann entweder
+        <ul>
+            <li>warten auf ein Aufteilungszeichen (standardmäßig \n).
+            Escape-Sequenzen (z.B. \n) und Hex-Notation (0x0d) werden ebenso akzeptiert.</li>
+            <li>warten auf Zeitablauf in Millisekunden seit Empfang des ersten Zeichens.</li>
+            <li>eine Ruhezeit in Millisekunden seit Empfang des letzten Zeichens abwarten.</li>
+            <li>warten bis ein Puffer mit fester Größer gefüllt ist.</li>
+        </ul>
+    </p>
+    <p>Dann wird <code>msg.payload</code> entweder als UTF-8 ASCII Zeichenfolge (string) oder
+       als binäres Buffer-Objekt ausgegeben.</p>
+    <p>Wenn kein Aufteilungszeichen vorgegeben ist oder ein Zeitlimit oder eine Puffergröße von 0 angegeben ist,
+       wird ein Strom von einzelnen Zeichen ausgegeben -
+       wieder entweder als ASCII-Zeichen oder als binärer Buffer, jeweils der Größe 1.</p>
+    <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird,
+       auch jeder zu sendenden Nachricht angefügt werden.</p>
+</script>

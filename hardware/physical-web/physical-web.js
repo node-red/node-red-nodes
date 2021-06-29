@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var eddystoneBeacon = require('eddystone-beacon');
-    var EddystoneBeaconScanner = require('eddystone-beacon-scanner');
+    var EddystoneBeaconScanner = require('@abandonware/eddystone-beacon-scanner');
     var eddyBeacon = false;
 
     var checkLength = function(text) {

@@ -10,8 +10,8 @@
     <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
     or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
     <h3>Details</h3>
-    <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>. 
-    If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext. 
+    <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>.
+    If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext.
     <code>msg.plaintext</code> will be ignored if <code>msg.payload</code> doesn't contain html.</p>
     <p>If the payload is a binary buffer then it will be converted to an attachment.
     The filename should be set using <code>msg.filename</code>. Optionally <code>msg.description</code> can be added for the body text.</p>
@@ -19,7 +19,7 @@
     more attachments in <a href="https://nodemailer.com/message/attachments/" target="_new">nodemailer</a> format.</p>
     <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
     <p>If you have own signed certificates, Nodemailer can complain about that and refuse sending the message. In this case you can try switching off TLS.</p>
-    <p>Note: uses SMTP with SSL to port 465.</p>
+    <p><b>Note</b>: uses SMTP with SSL to port 465.</p>
 </script>
 
 <script type="text/html" data-help-name="e-mail in">
@@ -48,6 +48,7 @@
 }
 </pre>
 <p><b>Note</b>: For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</p>
+<p><b>Note</b>: With option 'STARTTLS' an established plain connection is upgraded to an encrypted one. Set to 'always' to always attempt connection upgrades via STARTTLS, 'required' only if upgrading is required, or 'never' to never attempt upgrading.</p>
 <p><b>Note</b>: The maximum refresh interval is 2147483 seconds (24.8 days).</p>
 
 </script>
