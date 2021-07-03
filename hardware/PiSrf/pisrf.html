@@ -8,6 +8,10 @@
         <label for="node-input-pulse"><i class="fa fa-clock-o"></i> Repeat (S)</label>
         <input type="text" id="node-input-pulse" placeholder="time between readings">
     </div>
+	<div class="form-row">
+        <label for="node-input-precision"><i class="fa fa-balance-scale"></i>Decimal Places</label>
+        <input type="text" id="node-input-precision" placeholder="decimal places">
+    </div>
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-bars"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="optional topic">
@@ -35,7 +39,8 @@
             name: { value:"" },
             topic: { value:"SRF" },
             pulse: {value:"0.5" },
-            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) }
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) },
+			precision: {value:"0", validate:RED.validators.regex(/\d+/|"")}
         },
         inputs:0,
         outputs:1,

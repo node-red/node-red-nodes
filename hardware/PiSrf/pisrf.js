@@ -33,6 +33,7 @@ module.exports = function(RED) {
         this.topic = n.topic;
         this.pins = n.pins;
         this.pins += ","+(n.pulse || 0.5);
+		this.pins += ","+(n.precision || 0);
         var node = this;
 
         if (allOK === true) {
@@ -81,8 +82,8 @@ module.exports = function(RED) {
 
             node.on("close", function(done) {
                 if (node.child != null) {
-                    node.child.kill('SIGKILL');
-                }
+					node.child.kill('SIGKILL');
+					}
                 wfi(done);
             });
         }
