@@ -82,8 +82,8 @@ module.exports = function(RED) {
 
             node.on("close", function(done) {
                 if (node.child != null) {
-					node.child.kill('SIGKILL');
-					}
+                    node.child.kill('SIGKILL');
+                }
                 wfi(done);
             });
         }
