@@ -8,6 +8,10 @@
         <label for="node-input-pulse"><i class="fa fa-clock-o"></i> Repeat (S)</label>
         <input type="text" id="node-input-pulse" placeholder="time between readings">
     </div>
+	<div class="form-row">
+        <label for="node-input-precision"><i class="fa fa-balance-scale"></i>Decimal Places</label>
+        <input type="text" id="node-input-precision" placeholder="decimal places 0 or 1">
+    </div>
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-bars"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="optional topic">
@@ -24,6 +28,7 @@
     <p>Raspberry Pi input from an SRF04 or SRF05 ultrasonic range finder.</p>
     <p>Outputs a <code>msg.payload</code> with a number representing the range in cm.</p>
     <p>Produces one measurement every 0.5s (default) - but only if the distance is different from the previous reading.</p>
+    <p>You can specify resolution up to one decimal place.</p>
     <p><b>Note:</b> we are using the actual physical pin numbers on connector P1 as they are easier to locate.</p>
 </script>
 
@@ -35,7 +40,8 @@
             name: { value:"" },
             topic: { value:"SRF" },
             pulse: {value:"0.5" },
-            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) }
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+$/) },
+			precision: {value:"0", validate:RED.validators.regex(/^0|1|^$/)}
         },
         inputs:0,
         outputs:1,
