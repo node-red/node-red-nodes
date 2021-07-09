@@ -18,6 +18,7 @@ module.exports = function(RED) {
         //console.log(this);
 
         var clustered = (this.topology !== "direct") || false;
+        var dyndb = (!this.db || this.db.length === 0) || false;
 
         var url = "mongodb://";
         if (this.topology === "dnscluster") {
@@ -34,9 +35,11 @@ module.exports = function(RED) {
             url += this.user+":"+this.password+"@";
         }
         if (clustered) {
-            url += this.hostname + "/" + this.db
+            url += this.hostname + "/";
+            if (!dyndb) url += this.db;
         } else {
-            url += this.hostname + ":" + this.port + "/" + this.db;
+            url += this.hostname + ":" + this.port + "/";
+            if (!dyndb) url += this.db;
         }
         if (this.connectOptions){
             url += "?" + this.connectOptions;
@@ -63,6 +66,8 @@ module.exports = function(RED) {
     function MongoOutNode(n) {
         RED.nodes.createNode(this,n);
         this.collection = n.collection;
+        this.dbname = n.dbname;
+        this.dbnameType = n.dbnameType;
         this.mongodb = n.mongodb;
         this.payonly = n.payonly || false;
         this.upsert = n.upsert || false;
@@ -84,7 +89,20 @@ module.exports = function(RED) {
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.client = client;
-                    var db = client.db();
+                    var db = null;
+                    if (node.dbname && node.dbname.length > 0) {
+                      if (node.dbnameType === 'msg' || node.dbnameType === 'flow' || node.dbnameType === 'global') {
+                        var result_dbname = RED.util.evaluateNodeProperty(node.dbname);
+                        node.log("use db " + result_dbname + " from " + node.dbnameType + "." + node.dbname);
+                        db = client.db(result_dbname);
+                      } else {
+                        node.log("use db " + result_dbname + " from " + node.dbname);
+                        db = client.db(node.dbname)
+                      }
+                    } else {
+                      db = client.db()
+                    }
+                    node.log("active db " + db);
                     //console.log( db);
                     noerror = true;
                     var coll;
@@ -194,12 +212,133 @@ module.exports = function(RED) {
     function MongoInNode(n) {
         RED.nodes.createNode(this,n);
         this.collection = n.collection;
+        this.dbname = n.dbname;
+        this.dbnameType = n.dbnameType;
         this.mongodb = n.mongodb;
         this.operation = n.operation || "find";
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
         this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
         var node = this;
         var noerror = true;
+
+        function getDbname(node,msg,done) {
+            if (node.dbnameType === 'str') {
+                done(node.dbname, msg);
+            } else {
+                RED.util.evaluateNodeProperty(node.dbname,node.dbnameType,node,msg,(err,value) => {
+                    if (err) {
+                        done(undefined,msg);
+                    } else {
+                        done(value,msg);
+                    }
+                });
+            }
+        }
+
+        var connectToServer = function() {
+            console.log("connecting:  " + node.mongoConfig.url);
+            MongoClient.connect(node.mongoConfig.url, function(err,client) {
+                if (err) {
+                    node.status({fill:"red",shape:"ring",text:RED._("mongodb.status.error")});
+                    if (noerror) { node.error(err); }
+                    noerror = false;
+                    node.tout = setTimeout(connectToDB, 10000);
+                }
+                else {
+                    node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
+                    node.client = client;
+                    noerror = true;
+                    var coll;
+                    node.on("input", function(msg) {
+                        getDbname(node, msg, function(result_dbname, msg) {
+                            var db;
+                            if (typeof(result_dbname) !== 'unundefined') {
+                              node.log("use db " + result_dbname);
+                              db = client.db(result_dbname);
+                            } else {
+                              node.log("use db from url " + node.mongoConfig.url);
+                              db = client.db();
+                            }
+                            if (!node.collection) {
+                              if (msg.collection) {
+                                coll = db.collection(msg.collection);
+                              }
+                              else {
+                                node.error(RED._("mongodb.errors.nocollection"));
+                                return;
+                              }
+                            }
+                            else {
+                              coll = db.collection(node.collection);
+                            }
+                            var selector;
+                            if (node.operation === "find") {
+                              msg.projection = msg.projection || {};
+                              selector = ensureValidSelectorObject(msg.payload);
+                              var limit = msg.limit;
+                              if (typeof limit === "string" && !isNaN(limit)) {
+                                limit = Number(limit);
+                              } else if (typeof limit === "undefined") {
+                                limit = 0;
+                              }
+                              var skip = msg.skip;
+                              if (typeof skip === "string" && !isNaN(skip)) {
+                                skip = Number(skip);
+                              } else if (typeof skip === "undefined") {
+                                skip = 0;
+                              }
+
+                              coll.find(selector).project(msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
+                                if (err) {
+                                  node.error(err);
+                                }
+                                else {
+                                  msg.payload = items;
+                                  delete msg.projection;
+                                  delete msg.sort;
+                                  delete msg.limit;
+                                  delete msg.skip;
+                                  node.send(msg);
+                                }
+                              });
+                            }
+                            else if (node.operation === "count") {
+                              selector = ensureValidSelectorObject(msg.payload);
+                              coll.count(selector, function(err, count) {
+                                if (err) {
+                                  node.error(err);
+                                }
+                                else {
+                                  msg.payload = count;
+                                  node.send(msg);
+                                }
+                              });
+                            }
+                            else if (node.operation === "aggregate") {
+                              msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
+                              coll.aggregate(msg.payload, function(err, cursor) {
+                                if (err) {
+                                  node.error(err);
+                                }
+                                else {
+                                  cursor.toArray(function(cursorError, cursorDocs) {
+                                    //console.log(cursorDocs);
+                                    if (cursorError) {
+                                      node.error(cursorError);
+                                    }
+                                    else {
+                                      msg.payload = cursorDocs;
+                                      node.send(msg);
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                        });
+                    });
+                }
+            });
+        }
 
         var connectToDB = function() {
             console.log("connecting:  " + node.mongoConfig.url);
@@ -213,85 +352,89 @@ module.exports = function(RED) {
                 else {
                     node.status({fill:"green",shape:"dot",text:RED._("mongodb.status.connected")});
                     node.client = client;
-                    var db = client.db();
                     noerror = true;
                     var coll;
                     node.on("input", function(msg) {
-                        if (!node.collection) {
-                            if (msg.collection) {
-                                coll = db.collection(msg.collection);
-                            }
-                            else {
-                                node.error(RED._("mongodb.errors.nocollection"));
-                                return;
-                            }
-                        }
-                        else {
-                            coll = db.collection(node.collection);
-                        }
-                        var selector;
-                        if (node.operation === "find") {
-                            msg.projection = msg.projection || {};
-                            selector = ensureValidSelectorObject(msg.payload);
-                            var limit = msg.limit;
-                            if (typeof limit === "string" && !isNaN(limit)) {
-                                limit = Number(limit);
-                            } else if (typeof limit === "undefined") {
-                                limit = 0;
-                            }
-                            var skip = msg.skip;
-                            if (typeof skip === "string" && !isNaN(skip)) {
-                                skip = Number(skip);
-                            } else if (typeof skip === "undefined") {
-                                skip = 0;
-                            }
+                      getDbname(node, msg, function(result_dbname, msg) {
+                          var db;
+                          if (typeof(result_dbname) !== 'unundefined') db = client.db(result_dbname);
+                          else db = client.db();
+                          if (!node.collection) {
+                              if (msg.collection) {
+                                  coll = db.collection(msg.collection);
+                              }
+                              else {
+                                  node.error(RED._("mongodb.errors.nocollection"));
+                                  return;
+                              }
+                          }
+                          else {
+                              coll = db.collection(node.collection);
+                          }
+                          var selector;
+                          if (node.operation === "find") {
+                              msg.projection = msg.projection || {};
+                              selector = ensureValidSelectorObject(msg.payload);
+                              var limit = msg.limit;
+                              if (typeof limit === "string" && !isNaN(limit)) {
+                                  limit = Number(limit);
+                              } else if (typeof limit === "undefined") {
+                                  limit = 0;
+                              }
+                              var skip = msg.skip;
+                              if (typeof skip === "string" && !isNaN(skip)) {
+                                  skip = Number(skip);
+                              } else if (typeof skip === "undefined") {
+                                  skip = 0;
+                              }
 
-                            coll.find(selector).project(msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
-                                if (err) {
-                                    node.error(err);
-                                }
-                                else {
-                                    msg.payload = items;
-                                    delete msg.projection;
-                                    delete msg.sort;
-                                    delete msg.limit;
-                                    delete msg.skip;
-                                    node.send(msg);
-                                }
-                            });
-                        }
-                        else if (node.operation === "count") {
-                            selector = ensureValidSelectorObject(msg.payload);
-                            coll.count(selector, function(err, count) {
-                                if (err) {
-                                    node.error(err);
-                                }
-                                else {
-                                    msg.payload = count;
-                                    node.send(msg);
-                                }
-                            });
-                        }
-                        else if (node.operation === "aggregate") {
-                            msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
-                            coll.aggregate(msg.payload, function(err, cursor) {
-                                if (err) {
-                                    node.error(err);
-                                }
-                                else {
-                                     cursor.toArray(function(cursorError, cursorDocs) {
-                                       //console.log(cursorDocs);
-                                       if (cursorError) {
-                                         node.error(cursorError);
-                                       }
-                                       else {
-                                         msg.payload = cursorDocs;
-                                         node.send(msg);
-                                       }
-                                     });
-                                }
-                            });
-                        }
+                              coll.find(selector).project(msg.projection).sort(msg.sort).limit(limit).skip(skip).toArray(function(err, items) {
+                                  if (err) {
+                                      node.error(err);
+                                  }
+                                  else {
+                                      msg.payload = items;
+                                      delete msg.projection;
+                                      delete msg.sort;
+                                      delete msg.limit;
+                                      delete msg.skip;
+                                      node.send(msg);
+                                  }
+                              });
+                          }
+                          else if (node.operation === "count") {
+                              selector = ensureValidSelectorObject(msg.payload);
+                              coll.count(selector, function(err, count) {
+                                  if (err) {
+                                      node.error(err);
+                                  }
+                                  else {
+                                      msg.payload = count;
+                                      node.send(msg);
+                                  }
+                              });
+                          }
+                          else if (node.operation === "aggregate") {
+                              msg.payload = (Array.isArray(msg.payload)) ? msg.payload : [];
+                              coll.aggregate(msg.payload, function(err, cursor) {
+                                  if (err) {
+                                      node.error(err);
+                                  }
+                                  else {
+                                       cursor.toArray(function(cursorError, cursorDocs) {
+                                         //console.log(cursorDocs);
+                                         if (cursorError) {
+                                           node.error(cursorError);
+                                         }
+                                         else {
+                                           msg.payload = cursorDocs;
+                                           node.send(msg);
+                                         }
+                                       });
+                                  }
+                              });
+                          }
+                      });
                     });
                 }
             });
