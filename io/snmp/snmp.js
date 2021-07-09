@@ -5,34 +5,91 @@ module.exports = function (RED) {
 
     var sessions = {};
 
-    function getSession(host, community, version, timeout) {
-        var sessionKey = host + ":" + community + ":" + version;
-        var port = 161;
+    function openSession(host, data, options) {
+        //console.log({data});
+        //console.log({options});
+        var sessionid = data.sessionid;
+        options.port = 161;
         if (host.indexOf(":") !== -1) {
-            port = host.split(":")[1];
+            options.port = host.split(":")[1];
             host = host.split(":")[0];
         }
-        if (!(sessionKey in sessions)) {
-            sessions[sessionKey] = snmp.createSession(host, community, { port:port, version:version, timeout:(timeout || 5000) });
+        // SNMPv3 call
+        if (options.version === "v3"){
+            var user = {};
+            options.version = snmp.Version3;
+            user.name = data.name || "";
+            user.level = snmp.SecurityLevel.noAuthNoPriv;
+            if (data.auth === "authNoPriv" || data.auth === "authPriv" ) {
+                user.level = snmp.SecurityLevel.authNoPriv;
+                user.authKey = data.authkey || "";
+                user.authProtocol = (data.authprot === "SHA") ? snmp.AuthProtocols.sha : snmp.AuthProtocols.md5;
+                if (data.auth === "authPriv" ) {
+                    user.level = snmp.SecurityLevel.authPriv;
+                    if (data.privprot === "DES" || data.privprot === "AES"){
+                        user.privProtocol = (data.privprot === "AES") ? snmp.PrivProtocols.aes : snmp.PrivProtocols.des;
+                        user.privKey = data.privkey || "";
+                    }
+                }
+            }
+            sessions[sessionid] = snmp.createV3Session(host, user, options);
         }
-        return sessions[sessionKey];
+        // SNMPv1 or SNMPv2c call
+        else{
+            var community = data.community;
+            options.version = (options.version === "v2c") ? snmp.Version2c : snmp.Version1;
+            sessions[sessionid] = snmp.createSession(host, community, options);
+        }
+        return sessions[sessionid];
+    }
+
+    // Any session needs to be closed after completion
+    function closeSession(sessionid) {
+        //console.log("closing session");
+        sessions[sessionid].close();
     }
 
     function SnmpNode(n) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
-        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.version = n.version;
+        this.username = n.username;
+        this.auth = n.auth;
+        this.authprot = n.authprot;
+        this.privprot = n.privprot;
+        this.authkey = n.authkey;
+        this.privkey = n.privkey;
         this.oids = n.oids.replace(/\s/g, "");
         this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
 
         this.on("input", function (msg) {
             var host = node.host || msg.host;
+            var version = node.version;
             var community = node.community || msg.community;
+            var username = node.username || msg.username;
+            var auth = node.auth;
+            var authprot = node.authprot;
+            var privprot = node.privprot;
+            var authkey = node.authkey || msg.authkey;
+            var privkey = node.privkey || msg.privkey;
             var oids = node.oids || msg.oid;
+            var sessionid = Date.now(); // Create an unique session ID for each call
+            var data = {};
+            data.community = community;
+            data.name = username;
+            data.auth = auth;
+            data.authprot = authprot;
+            data.privprot = privprot;
+            data.authkey = authkey;
+            data.privkey = privkey;
+            data.sessionid = sessionid;
+            var options = {};
+            options.version = version;
+            options.timeout = node.timeout;
             if (oids) {
-                getSession(host, community, node.version, node.timeout).get(oids.split(","), function (error, varbinds) {
+                openSession(host, data, options).get(oids.split(","), function (error, varbinds) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -44,13 +101,14 @@ module.exports = function (RED) {
                             else {
                                 if (varbinds[i].type == 4) { varbinds[i].value = varbinds[i].value.toString(); }
                                 varbinds[i].tstr = snmp.ObjectType[varbinds[i].type];
-                                //node.log(varbinds[i].oid + "|" + varbinds[i].tstr + "|" + varbinds[i].value);
+                                // node.log(varbinds[i].oid + "|" + varbinds[i].tstr + "|" + varbinds[i].value);
                             }
                         }
                         msg.oid = oids;
                         msg.payload = varbinds;
                         node.send(msg);
                     }
+                    closeSession(sessionid); // Needed to close the session else a bad or good read could affect future readings
                 });
             }
             else {
@@ -64,20 +122,46 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
-        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
-        this.varbinds = n.varbinds;
+        this.version = n.version;
+        this.username = n.username;
+        this.auth = n.auth;
+        this.authprot = n.authprot;
+        this.privprot = n.privprot;
+        this.authkey = n.authkey;
+        this.privkey = n.privkey;
         this.timeout = Number(n.timeout || 5) * 1000;
+        this.varbinds = n.varbinds;
         if (this.varbinds && this.varbinds.trim().length === 0) { delete this.varbinds; }
         var node = this;
         this.on("input", function (msg) {
             var host = node.host || msg.host;
+            var version = node.version;
             var community = node.community || msg.community;
+            var username = node.username || msg.username;
+            var auth = node.auth;
+            var authprot = node.authprot;
+            var privprot = node.privprot;
+            var authkey = node.authkey || msg.authkey;
+            var privkey = node.privkey || msg.privkey;
+            var sessionid = Date.now();
+            var data = {};
+            data.community = community;
+            data.name = username;
+            data.auth = auth;
+            data.authprot = authprot;
+            data.privprot = privprot;
+            data.authkey = authkey;
+            data.privkey = privkey;
+            data.sessionid = sessionid;
+            var options = {};
+            options.version = version;
+            options.timeout = node.timeout;
             var varbinds = (node.varbinds) ? JSON.parse(node.varbinds) : msg.varbinds;
             if (varbinds) {
                 for (var i = 0; i < varbinds.length; i++) {
                     varbinds[i].type = snmp.ObjectType[varbinds[i].type];
                 }
-                getSession(host, community, node.version, node.timeout).set(varbinds, function (error, varbinds) {
+                openSession(host, data, options).set(varbinds, function (error, varbinds) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -89,6 +173,7 @@ module.exports = function (RED) {
                             }
                         }
                     }
+                    closeSession(sessionid);
                 });
             }
             else {
@@ -104,7 +189,13 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
-        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.version = n.version;
+        this.username = n.username;
+        this.auth = n.auth;
+        this.authprot = n.authprot;
+        this.privprot = n.privprot;
+        this.authkey = n.authkey;
+        this.privkey = n.privkey;
         this.oids = n.oids.replace(/\s/g, "");
         this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
@@ -118,11 +209,32 @@ module.exports = function (RED) {
 
         this.on("input", function (msg) {
             var host = node.host || msg.host;
+            var version = node.version;
             var community = node.community || msg.community;
+            var username = node.username || msg.username;
+            var auth = node.auth;
+            var authprot = node.authprot;
+            var privprot = node.privprot;
+            var authkey = node.authkey || msg.authkey;
+            var privkey = node.privkey || msg.privkey;
             var oids = node.oids || msg.oid;
+            var sessionid = Date.now();
+            var data = {};
+            data.community = community;
+            data.name = username;
+            data.auth = auth;
+            data.authprot = authprot;
+            data.privprot = privprot;
+            data.authkey = authkey;
+            data.privkey = privkey;
+            data.sessionid = sessionid;
+            var options = {};
+            options.version = version;
+            options.timeout = node.timeout;
+            node.log({options});
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version, node.timeout).table(oids, maxRepetitions, function (error, table) {
+                openSession(host, data, options).table(oids, maxRepetitions, function (error, table) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -150,6 +262,7 @@ module.exports = function (RED) {
                         msg.payload = table;
                         node.send(msg);
                     }
+                    closeSession(sessionid);
                 });
             }
             else {
@@ -164,7 +277,13 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
-        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.version = n.version;
+        this.username = n.username;
+        this.auth = n.auth;
+        this.authprot = n.authprot;
+        this.privprot = n.privprot;
+        this.authkey = n.authkey;
+        this.privkey = n.privkey;
         this.oids = n.oids.replace(/\s/g, "");
         this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
@@ -185,11 +304,31 @@ module.exports = function (RED) {
 
         this.on("input", function (msg) {
             var host = node.host || msg.host;
+            var version = node.version;
             var community = node.community || msg.community;
+            var username = node.username || msg.username;
+            var auth = node.auth;
+            var authprot = node.authprot;
+            var privprot = node.privprot;
+            var authkey = node.authkey || msg.authkey;
+            var privkey = node.privkey || msg.privkey;
             var oids = node.oids || msg.oid;
+            var sessionid = Date.now();
+            var data = {};
+            data.community = community;
+            data.name = username;
+            data.auth = auth;
+            data.authprot = authprot;
+            data.privprot = privprot;
+            data.authkey = authkey;
+            data.privkey = privkey;
+            data.sessionid = sessionid;
+            var options = {};
+            options.version = version;
+            options.timeout = node.timeout;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version, node.timeout).subtree(msg.oid, maxRepetitions, feedCb, function (error) {
+                openSession(host, data, options).subtree(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -200,6 +339,7 @@ module.exports = function (RED) {
                         //Clears response
                         response.length = 0;
                     }
+                    closeSession(sessionid);
                 });
             }
             else {
@@ -214,7 +354,13 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         this.community = n.community;
         this.host = n.host;
-        this.version = (n.version === "2c") ? snmp.Version2c : snmp.Version1;
+        this.version = n.version;
+        this.username = n.username;
+        this.auth = n.auth;
+        this.authprot = n.authprot;
+        this.privprot = n.privprot;
+        this.authkey = n.authkey;
+        this.privkey = n.privkey;
         this.oids = n.oids.replace(/\s/g, "");
         this.timeout = Number(n.timeout || 5) * 1000;
         var node = this;
@@ -235,12 +381,32 @@ module.exports = function (RED) {
 
         this.on("input", function (msg) {
             node.msg = msg;
-            var oids = node.oids || msg.oid;
             var host = node.host || msg.host;
+            var version = node.version;
             var community = node.community || msg.community;
+            var username = node.username || msg.username;
+            var auth = node.auth;
+            var authprot = node.authprot;
+            var privprot = node.privprot;
+            var authkey = node.authkey || msg.authkey;
+            var privkey = node.privkey || msg.privkey;
+            var oids = node.oids || msg.oid;
+            var sessionid = Date.now();
+            var data = {};
+            data.community = community;
+            data.name = username;
+            data.auth = auth;
+            data.authprot = authprot;
+            data.privprot = privprot;
+            data.authkey = authkey;
+            data.privkey = privkey;
+            data.sessionid = sessionid;
+            var options = {};
+            options.version = version;
+            options.timeout = node.timeout;
             if (oids) {
                 msg.oid = oids;
-                getSession(host, community, node.version, node.timeout).walk(msg.oid, maxRepetitions, feedCb, function (error) {
+                openSession(host, data, options).walk(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
                     }
@@ -251,6 +417,7 @@ module.exports = function (RED) {
                         //Clears response
                         response.length = 0;
                     }
+                    closeSession(sessionid);
                 });
             }
             else {
