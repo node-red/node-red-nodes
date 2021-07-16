@@ -393,78 +393,96 @@ module.exports = function(RED) {
                             var criteria = ((node.criteria === '_msg_')?
                                 (msg.criteria || ["UNSEEN"]):
                                 ([node.criteria]));
-                            imap.search(criteria, function(err, results) {
-                                if (err) {
-                                    node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
-                                    node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
-                                    imap.end();
-                                    s = false;
-                                    setInputRepeatTimeout();
-                                    return;
-                                }
-                                else {
-                                //console.log("> search - err=%j, results=%j", err, results);
-                                    if (results.length === 0) {
-                                    //console.log(" [X] - Nothing to fetch");
-                                        node.status({results:0});
-                                        imap.end();
-                                        s = false;
-                                        setInputRepeatTimeout();
-                                        return;
-                                    }
-
-                                    var marks = false;
-                                    if (node.disposition === "Read") { marks = true; }
-                                    // We have the search results that contain the list of unseen messages and can now fetch those messages.
-                                    var fetch = imap.fetch(results, {
-                                        bodies: '',
-                                        struct: true,
-                                        markSeen: marks
-                                    });
-
-                                    // For each fetched message returned ...
-                                    fetch.on('message', function(imapMessage, seqno) {
-                                    //node.log(RED._("email.status.message",{number:seqno}));
-                                    //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
-                                        imapMessage.on('body', function(stream, info) {
-                                        //console.log("> message - body - stream=?, info=%j", info);
-                                            simpleParser(stream, {}, function(err, parsed) {
-                                                if (err) {
-                                                    node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
-                                                    node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
-                                                }
-                                                else {
-                                                    processNewMessage(msg, parsed);
-                                                }
-                                            });
-                                        }); // End of msg->body
-                                    }); // End of fetch->message
-
-                                    // When we have fetched all the messages, we don't need the imap connection any more.
-                                    fetch.on('end', function() {
-                                        node.status({results:results.length});
-                                        var cleanup = function() {
+                            if (Array.isArray(criteria)) {
+                                try {
+                                    imap.search(criteria, function(err, results) {
+                                        if (err) {
+                                            node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
+                                            node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
                                             imap.end();
                                             s = false;
                                             setInputRepeatTimeout();
-                                        };
-                                        if (node.disposition === "Delete") {
-                                            imap.addFlags(results, "\Deleted", cleanup);
-                                        } else if (node.disposition === "Read") {
-                                            imap.addFlags(results, "\Seen", cleanup);
-                                        } else {
-                                            cleanup();
+                                            return;
                                         }
-                                    });
+                                        else {
+                                        //console.log("> search - err=%j, results=%j", err, results);
+                                            if (results.length === 0) {
+                                            //console.log(" [X] - Nothing to fetch");
+                                                node.status({results:0});
+                                                imap.end();
+                                                s = false;
+                                                setInputRepeatTimeout();
+                                                return;
+                                            }
 
-                                    fetch.once('error', function(err) {
-                                        console.log('Fetch error: ' + err);
-                                        imap.end();
-                                        s = false;
-                                        setInputRepeatTimeout();
-                                    });
+                                            var marks = false;
+                                            if (node.disposition === "Read") { marks = true; }
+                                            // We have the search results that contain the list of unseen messages and can now fetch those messages.
+                                            var fetch = imap.fetch(results, {
+                                                bodies: '',
+                                                struct: true,
+                                                markSeen: marks
+                                            });
+
+                                            // For each fetched message returned ...
+                                            fetch.on('message', function(imapMessage, seqno) {
+                                            //node.log(RED._("email.status.message",{number:seqno}));
+                                            //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
+                                                imapMessage.on('body', function(stream, info) {
+                                                //console.log("> message - body - stream=?, info=%j", info);
+                                                    simpleParser(stream, {}, function(err, parsed) {
+                                                        if (err) {
+                                                            node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                                                            node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
+                                                        }
+                                                        else {
+                                                            processNewMessage(msg, parsed);
+                                                        }
+                                                    });
+                                                }); // End of msg->body
+                                            }); // End of fetch->message
+
+                                            // When we have fetched all the messages, we don't need the imap connection any more.
+                                            fetch.on('end', function() {
+                                                node.status({results:results.length});
+                                                var cleanup = function() {
+                                                    imap.end();
+                                                    s = false;
+                                                    setInputRepeatTimeout();
+                                                };
+                                                if (node.disposition === "Delete") {
+                                                    imap.addFlags(results, "\Deleted", cleanup);
+                                                } else if (node.disposition === "Read") {
+                                                    imap.addFlags(results, "\Seen", cleanup);
+                                                } else {
+                                                    cleanup();
+                                                }
+                                            });
+
+                                            fetch.once('error', function(err) {
+                                                console.log('Fetch error: ' + err);
+                                                imap.end();
+                                                s = false;
+                                                setInputRepeatTimeout();
+                                            });
+                                        }
+                                    }); // End of imap->search
                                 }
-                            }); // End of imap->search
+                                catch(e) {
+                                    node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
+                                    node.error(e.toString(),e);
+                                    s = ss = false;
+                                    imap.end();
+                                    return;
+                                }
+                            }
+                            else {
+                                node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
+                                node.error(RED._("email.errors.bad_criteria"),msg);
+                                s = ss = false;
+                                imap.end();
+                                return;
+                            }
                         }
                     }); // End of imap->openInbox
             }); // End of imap->ready

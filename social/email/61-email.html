@@ -291,6 +291,12 @@
                     that.inputs = 0;
                 }
             });
+            $("#node-input-criteria").change(function() {
+                if ($("#node-input-criteria").val() === "_msg_") {
+                    $("#node-input-fetch").val("trigger");
+                    $("#node-input-fetch").change();
+                }
+            });
         }
     });
 })();
