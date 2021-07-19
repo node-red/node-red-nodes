@@ -22,7 +22,15 @@ module.exports = function(RED) {
             if (udpport < 1 || udpport > 65535) {
                 node.warn("WOL: UDP port must be within 1 and 65535; it has been reset to 9.");
                 udpport = 9;
-            }            
+            }
+            if (numpackets < 1 || numpackets > Number.MAX_SAFE_INTEGER) {
+                node.warn("WOL: Number of packets must be within 1 and $(Number.MAX_SAFE_INTEGER); it has been reset to 3.");
+                interval = 3;
+            }
+            if (interval < 1 || interval > Number.MAX_SAFE_INTEGER) {
+                node.warn("WOL: Interval between packets must be within 1 and $(Number.MAX_SAFE_INTEGER); it has been reset to 100.");
+                interval = 100;
+            }
             if (mac != null) {
                 if (chk.test(mac)) {
                     try {
