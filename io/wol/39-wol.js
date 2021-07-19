@@ -23,12 +23,12 @@ module.exports = function(RED) {
                 node.warn("WOL: UDP port must be within 1 and 65535; it has been reset to 9.");
                 udpport = 9;
             }
-            if (numpackets < 1 || numpackets > Number.MAX_SAFE_INTEGER) {
-                node.warn("WOL: Number of packets must be within 1 and $(Number.MAX_SAFE_INTEGER); it has been reset to 3.");
-                interval = 3;
+            if (numpackets < 1 || numpackets > 500) {
+                node.warn("WOL: Number of packets must be within 1 and 500; it has been reset to 3.");
+                numpackets = 3;
             }
-            if (interval < 1 || interval > Number.MAX_SAFE_INTEGER) {
-                node.warn("WOL: Interval between packets must be within 1 and $(Number.MAX_SAFE_INTEGER); it has been reset to 100.");
+            if (interval < 1 || interval > 3600000) {
+                node.warn("WOL: Interval between packets must be within 1 and 3600000; it has been reset to 100.");
                 interval = 100;
             }
             if (mac != null) {
