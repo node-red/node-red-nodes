@@ -115,6 +115,8 @@ module.exports = function(RED) {
                                 coll.save(msg.payload,function(err, item) {
                                     if (err) {
                                         node.error(err,msg);
+                                    }else {
+                                        node.done();
                                     }
                                 });
                             }
@@ -122,6 +124,8 @@ module.exports = function(RED) {
                                 coll.save(msg,function(err, item) {
                                     if (err) {
                                         node.error(err,msg);
+                                    }else {
+                                        node.done();
                                     }
                                 });
                             }
@@ -137,6 +141,8 @@ module.exports = function(RED) {
                                 coll.insert(msg.payload, function(err, item) {
                                     if (err) {
                                         node.error(err,msg);
+                                    }else {
+                                        node.done();
                                     }
                                 });
                             }
@@ -144,6 +150,8 @@ module.exports = function(RED) {
                                 coll.insert(msg, function(err,item) {
                                     if (err) {
                                         node.error(err,msg);
+                                    }else {
+                                        node.done();
                                     }
                                 });
                             }
@@ -164,6 +172,8 @@ module.exports = function(RED) {
                             coll.update(query, payload, options, function(err, item) {
                                 if (err) {
                                     node.error(err,msg);
+                                }else {
+                                    node.done();
                                 }
                             });
                         }
@@ -171,6 +181,8 @@ module.exports = function(RED) {
                             coll.remove(msg.payload, function(err, items) {
                                 if (err) {
                                     node.error(err,msg);
+                                }else {
+                                    node.done();
                                 }
                             });
                         }
