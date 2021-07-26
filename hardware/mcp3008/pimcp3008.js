@@ -1,12 +1,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    var fs = require('fs');
+    var fs2 = require('fs');
     var allOK = false;
     var mcpadc;
     // unlikely if not on a Pi
     try {
-        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        var cpuinfo = fs2.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) {
             RED.log.warn("Info : mcp3xxx : Not running on a Pi - Ignoring node");
         }
@@ -19,7 +19,7 @@ module.exports = function(RED) {
         RED.log.warn("Info : mcp3xxx : Not running on a Pi - Ignoring node");
     }
 
-    var mcp3xxx = [];
+    //var mcp3xxx = [];
 
     function PiMcpNode(n) {
         RED.nodes.createNode(this,n);
@@ -28,23 +28,26 @@ module.exports = function(RED) {
         this.dnum = parseInt(n.dnum || 0);
         this.bus = parseInt(n.bus || 0);
         this.dev = n.dev || "3008";
+	this.fs = require('fs');
+        this.mcp3xxx = [];
         var node = this;
-        var cb = function (err) { if (err) { node.error("Error: "+err); } };
-        var opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
+        this.cb = function (err) { if (err) { node.error("Error: "+err); } };
+        this.opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
         var chans = parseInt(this.dev.substr(3));
+	var node = this;
 
         if (allOK === true) {
             try {
-                fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
-                if (mcp3xxx.length === 0) {
+                node.fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
+                if (node.mcp3xxx.length === 0) {
                     for (var i=0; i<chans; i++) {
-                        if (node.dev === "3002") { mcp3xxx.push(mcpadc.openMcp3002(i, opt, cb)); }
-                        if (node.dev === "3004") { mcp3xxx.push(mcpadc.openMcp3004(i, opt, cb)); }
-                        if (node.dev === "3008") { mcp3xxx.push(mcpadc.openMcp3008(i, opt, cb)); }
-                        if (node.dev === "3202") { mcp3xxx.push(mcpadc.openMcp3202(i, opt, cb)); }
-                        if (node.dev === "3204") { mcp3xxx.push(mcpadc.openMcp3204(i, opt, cb)); }
-                        if (node.dev === "3208") { mcp3xxx.push(mcpadc.openMcp3208(i, opt, cb)); }
-                        if (node.dev === "3304") { mcp3xxx.push(mcpadc.openMcp3304(i, opt, cb)); }
+                        if (node.dev === "3002") { node.mcp3xxx.push(mcpadc.openMcp3002(i, node.opt, node.cb)); }
+                        if (node.dev === "3004") { node.mcp3xxx.push(mcpadc.openMcp3004(i, node.opt, node.cb)); }
+                        if (node.dev === "3008") { node.mcp3xxx.push(mcpadc.openMcp3008(i, node.opt, node.cb)); }
+                        if (node.dev === "3202") { node.mcp3xxx.push(mcpadc.openMcp3202(i, node.opt, node.cb)); }
+                        if (node.dev === "3204") { node.mcp3xxx.push(mcpadc.openMcp3204(i, node.opt, node.cb)); }
+                        if (node.dev === "3208") { node.mcp3xxx.push(mcpadc.openMcp3208(i, node.opt, node.cb)); }
+                        if (node.dev === "3304") { node.mcp3xxx.push(mcpadc.openMcp3304(i, node.opt, node.cb)); }
                     }
                 }
                 node.on("input", function(msg) {
@@ -56,7 +59,7 @@ module.exports = function(RED) {
                     }
                     else { pin = parseInt(node.pin); }
                     if (pin !== null) {
-                        mcp3xxx[pin].read(function (err, reading) {
+                        node.mcp3xxx[pin].read(function (err, reading) {
                             if (err) { node.warn("Read error: "+err); }
                             else { node.send({payload:reading.rawValue, topic:"adc/"+pin}); }
                         });
@@ -64,14 +67,14 @@ module.exports = function(RED) {
                 });
             }
             catch(err) {
-                node.error("Error : Can't find SPI device - is SPI enabled in raspi-config ?");
+                node.error("Error : Can't find SPI device - is SPI enabled in raspi-config ?"+ err);
             }
 
             node.on("close", function(done) {
-                if (mcp3xxx.length !== 0) {
+                if (node.mcp3xxx.length !== 0) {
                     var j=0;
                     for (var i=0; i<chans; i++) {
-                        mcp3xxx[i].close(function() { j += 1; if (j === chans) {done()} });
+                        node.mcp3xxx[i].close(function() { j += 1; if (j === chans) {done()} });
                     }
                     mcp3xxx = [];
                 }
