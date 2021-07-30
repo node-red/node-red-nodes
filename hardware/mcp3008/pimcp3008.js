@@ -1,12 +1,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    var fs2 = require('fs');
+    var fs = require('fs');
     var allOK = false;
     var mcpadc;
     // unlikely if not on a Pi
     try {
-        var cpuinfo = fs2.readFileSync("/proc/cpuinfo").toString();
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
         if (cpuinfo.indexOf(": BCM") === -1) {
             RED.log.warn("Info : mcp3xxx : Not running on a Pi - Ignoring node");
         }
@@ -28,7 +28,6 @@ module.exports = function(RED) {
         this.dnum = parseInt(n.dnum || 0);
         this.bus = parseInt(n.bus || 0);
         this.dev = n.dev || "3008";
-	this.fs = require('fs');
         this.mcp3xxx = [];
         var node = this;
         this.cb = function (err) { if (err) { node.error("Error: "+err); } };
@@ -38,7 +37,7 @@ module.exports = function(RED) {
 
         if (allOK === true) {
             try {
-                node.fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
+                fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
                 if (node.mcp3xxx.length === 0) {
                     for (var i=0; i<chans; i++) {
                         if (node.dev === "3002") { node.mcp3xxx.push(mcpadc.openMcp3002(i, node.opt, node.cb)); }
