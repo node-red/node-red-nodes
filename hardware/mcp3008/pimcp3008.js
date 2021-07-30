@@ -33,7 +33,7 @@ module.exports = function(RED) {
         this.cb = function (err) { if (err) { node.error("Error: "+err); } };
         this.opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
         var chans = parseInt(this.dev.substr(3));
-	var node = this;
+        var node = this;
 
         if (allOK === true) {
             try {
