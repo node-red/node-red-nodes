@@ -46,7 +46,7 @@ Additionally `msg.header` contains the complete header object including
 
 Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 
-The default message recipient can be configured in the node, if it is left blank it should be set using the `msg.to` property of the incoming message. If left blank you can also specify any or all of: `msg.cc`, `msg.bcc`, `msg.replyTo`, `msg.inReplyTo`, `msg.references`, `msg.headers`, or `msg.priority` properties.
+The default message recipient can be configured in the node, if it is left blank it should be set using the `msg.to` property of the incoming message. You can also specify any or all of: `msg.cc`, `msg.bcc`, `msg.replyTo`, `msg.inReplyTo`, `msg.references`, `msg.headers`, or `msg.priority` properties.
 
 
 The email *from* can be set using `msg.from` but not all mail services allow
