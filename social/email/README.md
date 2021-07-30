@@ -46,8 +46,8 @@ Additionally `msg.header` contains the complete header object including
 
 Sends the `msg.payload` as an email, with a subject of `msg.topic`.
 
-The default message recipient can be configured in the node, if it is left
-blank it should be set using the `msg.to` property of the incoming message.
+The default message recipient can be configured in the node, if it is left blank it should be set using the `msg.to` property of the incoming message. If left blank you can also specify any or all of: `msg.cc`, `msg.bcc`, `msg.replyTo`, `msg.inReplyTo`, `msg.references`, `msg.headers`, or `msg.priority` properties.
+
 
 The email *from* can be set using `msg.from` but not all mail services allow
 this unless `msg.from` is also a valid userid or email address associated with
@@ -64,4 +64,10 @@ The filename should be set using `msg.filename`. Optionally
 Alternatively you may provide `msg.attachments` which should contain an array of one or
 more attachments in <a href="https://nodemailer.com/message/attachments/" target="_new">nodemailer</a> format.
 
-Uses the *nodemailer* npm module.
+If required by your recipient you may also pass in a `msg.envelope` object, typically containing extra from and to properties.
+
+If you have own signed certificates, Nodemailer can complain about that and refuse sending the message. In this case you can try switching off TLS.
+
+Use secure connection - If enabled the connection will use TLS when connecting to server. If disabled then TLS is used if server supports the STARTTLS extension. In most cases set this to enabled if you are connecting to port 465. For port 587 or 25 keep it disabled.
+
+This node uses the *nodemailer* npm module.
