@@ -20,6 +20,9 @@
     <p>If required by your recipient you may also pass in a <code>msg.envelope</code> object, typically containing extra from and to properties.</p>
     <p>If you have own signed certificates, Nodemailer can complain about that and refuse sending the message. In this case you can try switching off TLS.</p>
     <p><b>Note</b>: uses SMTP with SSL to port 465.</p>
+    <h3>Use secure connection</h3>
+    <p>If enabled the connection will use TLS when connecting to server. If disabled then TLS is used if server supports the STARTTLS extension. In most cases set this to enabled if you are connecting to port 465. For port 587 or 25 keep it disabled.</p>
+
 </script>
 
 <script type="text/html" data-help-name="e-mail in">
