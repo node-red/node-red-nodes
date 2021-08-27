@@ -37,7 +37,6 @@ module.exports = function(RED) {
             var sound = node.sound || msg.sound || null;
             var url = node.url || msg.url || null;
             var url_title = node.url_title || msg.url_title || null;
-            var callback = msg.callback || null;
             var html = node.html || msg.html || false;
             var attachment = msg.attachment || null;
             var retry = msg.retry || 30;
