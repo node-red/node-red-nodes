@@ -564,7 +564,7 @@ module.exports = function(RED) {
             });
 
             node.on("input", function(msg) {
-                if (msg.hasOwnProperty("payload")) {
+                if (msg.hasOwnProperty("payload") || msg.hasOwnProperty("retweet")) {
                     node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
                     if (msg.payload.slice(0,2).toLowerCase() === "d ") {
                         var dm_user;
@@ -604,6 +604,24 @@ module.exports = function(RED) {
                         }).catch(function(err) {
                             node.error(err,msg);
                             node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                        })
+                    } else if (msg.retweet) {
+                        node.twitterConfig.post("https://api.twitter.com/1.1/statuses/retweet/" + msg.retweet,{},msg.params || {})
+                        .then(function(result) {
+                            if (result.status === 200) {
+                                node.status({});
+                            } else {
+                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                
+                                if ('error' in result.body && typeof result.body.error === 'string') {
+                                    node.error(result.body.error,msg);
+                                } else {
+                                    node.error(result.body.errors[0].message,msg);
+                                }
+                            }
+                        }).catch(function(err) {
+                            node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                            node.error(err,msg);
                         })
                     } else {
                         if (msg.payload.length > 280) {
@@ -657,44 +675,6 @@ module.exports = function(RED) {
                             node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                             node.error(err,msg);
                         });
-                        // if (msg.payload.length > 280) {
-                        //     msg.payload = msg.payload.slice(0,279);
-                        //     node.warn(RED._("twitter.errors.truncated"));
-                        // }
-                        // if (msg.media && Buffer.isBuffer(msg.media)) {
-                        //     var apiUrl = "https://api.twitter.com/1.1/statuses/update_with_media.json";
-                        //     var signedUrl = oa.signUrl(apiUrl,credentials.access_token,credentials.access_token_secret,"POST");
-                        //     var r = request.post(signedUrl,function(err,httpResponse,body) {
-                        //         if (err) {
-                        //             node.error(err,msg);
-                        //             node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                        //         }
-                        //         else {
-                        //             var response = JSON.parse(body);
-                        //             if (response.errors) {
-                        //                 var errorList = response.errors.map(function(er) { return er.code+": "+er.message }).join(", ");
-                        //                 node.error(RED._("twitter.errors.sendfail",{error:errorList}),msg);
-                        //                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                        //             }
-                        //             else {
-                        //                 node.status({});
-                        //             }
-                        //         }
-                        //     });
-                        //     var form = r.form();
-                        //     form.append("status",msg.payload);
-                        //     form.append("media[]",msg.media,{filename:"image"});
-                        //
-                        // } else {
-                        //     if (typeof msg.params === 'undefined') { msg.params = {}; }
-                        //     twit.updateStatus(msg.payload, msg.params, function (err, data) {
-                        //         if (err) {
-                        //             node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                        //             node.error(err,msg);
-                        //         }
-                        //         node.status({});
-                        //     });
-                        // }
                     }
                 }
             });

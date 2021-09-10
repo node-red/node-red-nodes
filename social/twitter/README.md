@@ -59,3 +59,9 @@ To send a Direct Message (DM) - use a payload like.
 If `msg.media` exists and is a Buffer object, this node will treat it as an image and attach it to the tweet.
 
 If `msg.params` exists and is an object of name:value pairs, this node will treat it as parameters for the update request.
+
+#### Retweet
+
+To retweet an existing tweet, set `msg.retweet` to the tweet id. The tweet id can be found in the `id_str` field of the tweet object.
+
+Before retweeting, make sure the tweet is not a retweet itself.
