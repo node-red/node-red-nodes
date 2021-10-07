@@ -1,0 +1,24 @@
+{
+    "mysql": {
+        "label": {
+            "host": "ホスト",
+            "port": "ポート",
+            "user": "ユーザー",
+            "password": "パスワード",
+            "database": "データベース",
+            "timezone": "タイムゾーン",
+            "charset": "文字セット"
+        },
+        "status": {
+            "badping": "Bad Ping",
+            "error": "エラー",
+            "ok": "OK",
+            "notconnected": "未接続"
+        },
+        "errors": {
+            "notstring": "クエリが文字列として定義されていません",
+            "notconnected": "データベースに接続できません",
+            "notconfigured": "MySQLデータベース未設定"
+        }
+    }
+}
