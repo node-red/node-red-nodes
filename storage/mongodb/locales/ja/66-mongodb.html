@@ -1,0 +1,74 @@
+
+<script type="text/html" data-help-name="mongodb">
+    <p>MongoDBサーバーインスタンスに対する接続方法を定義します。</p>
+    <p>以下3つのオプションがあります:
+        <details><summary>標準/ダイレクト</summary>
+          以下の形式で接続を要求するデータベース用:
+          <code>
+            mongodb://[username]:[password]@[hostname]:[port]/[dbname]
+          </code>
+           ローカルのMongoDBインスタンス(localhost:27017)やその他のスタンドアロンのインスタンスでよく使用されます。
+        </details>
+        <details><summary>標準/レプリカセット</summary>
+          以下の形式で接続を要求するデータベース用:
+          <code>
+            mongodb://[username]:[password]@[hostnameA]:[port],[hostnameB]:[port]/[dbname]?replicaSet=[replsetname]
+          </code>
+          <q>サービスとしてのデータベース(database as a service)</q>や、可用性と耐障害性が設定されたオンプレミスのインスタンスでよく使用されます。
+        </details>
+        <details><summary>DNSシードリストによるクラスタ化</summary>
+            以下の形式で接続を要求するデータベース用:
+            <code>
+            mongodb+srv://[username]:[password]@[clustername]/[dbname]?retryWrites=true&w=majority
+            </code>
+            MongoDBインスタンスの設定で、レプリケーションとシャーディングによって可用性とパフォーマンスを実現する場合、特定の ホスト名:ポート ではなく、
+            クラスタのエイリアス名でアクセスします。これは<a href="https://www.mongodb.com/cloud/atlas" target="_blank">Atlasクラウドサービス</a>のMongoDBインスタンスにおけるデフォルト設定です。
+        </details>
+      </p>
+      <p><strong>接続オプション</strong>では、MongoDBインスタンスに要求されるオプションパラメータを設定します。
+        本設定では以下のような値を指定します:
+        <ul><li>w=majority</li><li>replicaSet=replset</li><li>authSource=admin</li></ul>詳細は
+        <a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">
+          MongoDBマニュアル — Connection String URI Format</a>参照。
+      </p>
+      <p><a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb-group" target="_blank">
+        IBM Databases for MongoDB</a>にレプリカセットとして接続する場合は、<strong>接続オプション</strong>に <code>ssl=true&tlsAllowInvalidCertificates=true</code>
+         を必ず追加してください。
+      </p>
+</script>
+
+<script type="text/html" data-help-name="mongodb out">
+    <p>シンプルなMongoDB outputノードです。指定したコレクションに対してオブジェクトのsave, insert, update, removeを行います。</p>
+    <p>saveは、既存のオブジェクトを更新もしくは存在しない場合、新しいオブジェクトを挿入します。</p>
+    <p>insertは、新しいオブジェクトを挿入します。</p>
+    <p>saveとinsertは、<code>msg</code> もしくは <code>msg.payload</code>を保存します。</p>
+    <p>updateは、既存のオブジェクトを更新します。更新するオブジェクトを選択するクエリには <code>msg.query</code> を使用し、
+      エレメントの更新には <code>msg.payload</code> を使用します。<code>msg.query._id</code>が適切なMongoのObjectId文字列の場合、
+      ObjectId型に変換されます。</p>
+    <p>updateは、存在しないオブジェクトを追加もしくは、複数のオブジェクトを更新できます。</p>
+    <p>removeは、<code>msg.payload</code> で指定したクエリにマッチしたオブジェクトを削除します。空白のクエリを指定した場合、
+    コレクション内の<i>全てのオブジェクト</i> を削除します。</p>
+    <p>コレクション操作はノードのプロパティ設定または<code>msg.collection</code>で設定します。ノードのプロパティで設定すると、
+    <code>msg.collection</code>を上書きします。</p>
+    <p>MongoDBはデフォルトで<i>_id</i>プロパティをプライマリキーとして生成します - このため、同じ<code>msg</code>を繰り返し送信すると
+    データベースに多数のエントリが作成されます。</p>
+    <p>この挙動が望ましくない場合、つまり、エントリを繰り返し上書きしたい場合、functionノードを使用して<code>msg._id</code>プロパティを
+    定数に設定する必要があります。</p>
+    <p>これは固有の定数でも良いですし、他のmsgプロパティを元に作成しても良いでしょう。</p>
+    <p>現在のところ、コレクションサイズに制限や上限はありませんが、これは変更される可能性があります。</p>
+</script>
+
+<script type="text/html" data-help-name="mongodb in">
+    <p>選択した演算子に基づいてMongoDBのコレクション操作を呼び出します。</p>
+    <p>findは、.find()関数のように<code>msg.payload</code>をクエリ・ステートメントとして使用してコレクションを検索します。
+    また、functionノードを利用して、MongoDBが返すフィールドを制限する<code>msg.projection</code>オブジェクト、
+    <code>msg.sort</code>オブジェクト、<code>msg.limit</code>数、<code>msg.skip</code>数を設定することもできます。</p>
+    <p>countは、コレクション内のドキュメント数、または<code>msg.payload</code>をステートメントとして使用したクエリにマッチする
+    ドキュメント数を返します。</p>
+    <p>aggregateは、<code>msg.payload</code>をパイプライン配列として使用したアグリゲーション・パイプラインへのアクセスを提供します。</p>
+    <p>コレクション操作はノードのプロパティ設定または<code>msg.collection</code>で設定できます。ノードのプロパティで設定すると、
+    <code>msg.collection</code>を上書きします。</p>
+    <p>例については、<a href="http://docs.mongodb.org/manual/reference/method/db.collection.find/" target="new"><i>MongoDB
+    のコレクション操作ドキュメント</i></a>を参照してください。</p>
+    <p>結果は、<code>msg.payload</code>で返ります。</p>
+</script>
