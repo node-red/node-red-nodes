@@ -1,0 +1,11 @@
+
+<script type="text/html" data-help-name="exif">
+    <p>JPEG画像内の<a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">Exif</a>情報を展開します。</p>
+    <p>このノードは、指定したプロパティでJPEG画像データを受け取ります。Exifデータが存在する場合、
+    このノードは受け取ったデータを<code>msg.exif</code>プロパティに展開します。</p>
+    <p>このノードは、Exifデータに位置情報が含まれていれば、<code>msg.location</code>に位置情報を追加します。
+    また、worldmapノードで使用するのに適したアイコン、方角、視野角を表す情報も含みます。
+    選択したプロパティに入力された元のイメージバッファは変更されることなく保持されます。</p>
+    <p>worldmap inノードを使うよう設定した場合、ペイロードに含まれる画像は位置情報に置き換えられるため、
+    地図に直接フィードバックすることができます。</p>
+</script>
