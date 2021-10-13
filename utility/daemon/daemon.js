@@ -18,7 +18,7 @@ module.exports = function(RED) {
         if (this.args.match(/^\[.*\]$/)) {
             try { this.args = JSON.parse(this.args); }
             catch(e) {
-                node.warn("Bad parameters - should be a JSON array or space separated")
+                node.warn(RED._("daemon.errors.badparams"))
             }
         }
         else { this.args = this.args.match(/("[^"]*")|[^ ]+/g); }
@@ -42,7 +42,7 @@ module.exports = function(RED) {
                     }
                     if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
                     if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
-                    else { node.warn("Command not running"); }
+                    else { node.warn(RED._("daemon.errors.notrunning")); }
                     lastmsg = msg;
                 }
             }
@@ -51,13 +51,13 @@ module.exports = function(RED) {
         function runit() {
             var line = "";
             if (!node.cmd || (typeof node.cmd !== "string") || (node.cmd.length < 1)) {
-                node.status({fill:"grey",shape:"ring",text:"no command"});
+                node.status({fill:"grey",shape:"ring",text:RED._("daemon.status.nocommand")});
                 return;
             }
             try {
                 node.child = spawn(node.cmd, node.args);
                 if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
-                node.status({fill:"green",shape:"dot",text:"running"});
+                node.status({fill:"green",shape:"dot",text:RED._("daemon.status.running")});
                 node.running = true;
 
                 node.child.stdout.on('data', function (data) {
@@ -97,21 +97,21 @@ module.exports = function(RED) {
                     var rc = code;
                     if (code === null) { rc = signal; }
                     node.send([null,null,{payload:rc}]);
-                    node.status({fill:"red",shape:"ring",text:"stopped"});
+                    node.status({fill:"red",shape:"ring",text:RED._("daemon.status.stopped")});
                 });
 
                 node.child.on('error', function (err) {
-                    if (err.errno === "ENOENT") { node.warn('Command not found'); }
-                    else if (err.errno === "EACCES") { node.warn('Command not executable'); }
+                    if (err.errno === "ENOENT") { node.warn(RED._("daemon.errors.notfound")); }
+                    else if (err.errno === "EACCES") { node.warn(RED._("daemon.errors.notexecutable")); }
                     else { node.log('error: ' + err); }
-                    node.status({fill:"red",shape:"ring",text:"error"});
+                    node.status({fill:"red",shape:"ring",text:RED._("daemon.status.error")});
                 });
             }
             catch(e) {
-                if (e.errno === "ENOENT") { node.warn('Command not found'); }
-                else if (e.errno === "EACCES") { node.warn('Command not executable'); }
+                if (e.errno === "ENOENT") { node.warn(RED._("daemon.errors.notfound")); }
+                else if (e.errno === "EACCES") { node.warn(RED._("daemon.errors.notexecutable")); }
                 else { node.error(e); }
-                node.status({fill:"red",shape:"ring",text:"error"});
+                node.status({fill:"red",shape:"ring",text:RED._("daemon.status.error")});
                 node.running = false;
             }
         }
@@ -119,7 +119,7 @@ module.exports = function(RED) {
         if (node.redo === true) {
             var loop = setInterval( function() {
                 if (!node.running) {
-                    node.warn("Restarting : " + node.cmd);
+                    node.warn(RED._("daemon.errors.restarting") + " : " + node.cmd);
                     runit();
                 }
             }, 10000);  // Restart after 10 secs if required
