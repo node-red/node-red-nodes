@@ -41,6 +41,7 @@ module.exports = function(RED) {
                         if (node.dev === "3002") { mcp3xxx.push(mcpadc.openMcp3002(i, opt, cb)); }
                         if (node.dev === "3004") { mcp3xxx.push(mcpadc.openMcp3004(i, opt, cb)); }
                         if (node.dev === "3008") { mcp3xxx.push(mcpadc.openMcp3008(i, opt, cb)); }
+                        if (node.dev === "3201") { mcp3xxx.push(mcpadc.openMcp3201(i, opt, cb)); }
                         if (node.dev === "3202") { mcp3xxx.push(mcpadc.openMcp3202(i, opt, cb)); }
                         if (node.dev === "3204") { mcp3xxx.push(mcpadc.openMcp3204(i, opt, cb)); }
                         if (node.dev === "3208") { mcp3xxx.push(mcpadc.openMcp3208(i, opt, cb)); }

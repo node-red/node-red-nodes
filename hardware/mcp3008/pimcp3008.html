@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<script type="text/x-red" data-template-name="pimcp3008">
+<script type="text/html" data-template-name="pimcp3008">
     <div class="form-row">
         <label for="node-input-dev"><i class="fa fa-server"></i> Device</label>
         <select type="text" id="node-input-dev" style="width:150px;">
             <option value="3008">mcp3008</option>
             <option value="3002">mcp3002</option>
             <option value="3004">mcp3004</option>
+            <option value="3201">mcp3201</option>
             <option value="3202">mcp3202</option>
             <option value="3204">mcp3204</option>
             <option value="3208">mcp3208</option>
@@ -46,7 +47,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="pimcp3008">
+<script type="text/html" data-help-name="pimcp3008">
    <p>Reads from an MCP3xxx Series Analogue to Digital Converter (ADC) chip on the Pi SPI CE0 or CE1 connection,
    such as the rasp.io/analogzero.</p>
    <p>You can either set a channel in the edit dialogue, or you can set the <code>msg.payload</code>
