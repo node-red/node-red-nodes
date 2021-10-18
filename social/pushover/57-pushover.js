@@ -42,6 +42,7 @@ module.exports = function(RED) {
             var retry = msg.retry || 30;
             var expire = msg.expire || 600;
             var callback = msg.callback || null;
+            var tags = msg.tags || null;
             if (isNaN(pri)) {pri=0;}
             if (pri > 2) {pri = 2;}
             if (pri < -2) {pri = -2;}
@@ -80,6 +81,7 @@ module.exports = function(RED) {
                 if (typeof(url) === 'string') { pushmsg.url = url; }
                 if (typeof(url_title) === 'string') { pushmsg.url_title = url_title; }
                 if (typeof(callback) === 'string') { pushmsg.callback = callback; }
+                if (typeof(tags) === 'string') { pushmsg.tags = tags; }
                 if (html) { pushmsg.html = 1; }
                 if (typeof(attachment) === 'string') {
                     // Treat attachment as a path
