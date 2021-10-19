@@ -113,20 +113,27 @@ module.exports = function(RED) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
                         var bind = [];
-                        if (Array.isArray(msg.payload)) { bind = msg.payload; }
+                        if (Array.isArray(msg.payload)) {
+                            bind = msg.payload;
+                            node.mydbConfig.pool.on('acquire', function(connection) {
+                                    connection.config.queryFormat = null;
+                            });
+                        }
                         else if (typeof msg.payload === 'object' && msg.payload !== null) {
                             bind = msg.payload;
-                            node.mydbConfig.pool.config.queryFormat = function(query, values) {
-                                if (!values) {
-                                    return query;
-                                }
-                                return query.replace(/\:(\w+)/g, function(txt, key) {
-                                    if (values.hasOwnProperty(key)) {
-                                        return this.escape(values[key]);
+                            node.mydbConfig.pool.on('acquire', function(connection) {
+                                connection.config.queryFormat = function(query, values) {
+                                    if (!values) {
+                                        return query;
                                     }
-                                    return txt;
-                                }.bind(this));
-                            };
+                                    return query.replace(/\:(\w+)/g, function(txt, key) {
+                                        if (values.hasOwnProperty(key)) {
+                                            return this.escape(values[key]);
+                                        }
+                                        return txt;
+                                    }.bind(this));
+                                };
+                            });
                         }
                         node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
                             if (err) {
