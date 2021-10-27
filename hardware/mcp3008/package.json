@@ -7,7 +7,7 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware"
+        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/mcp3008"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "pi", "adc", "mcp", "a/d converter" ],
