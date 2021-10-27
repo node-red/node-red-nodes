@@ -1,9 +1,9 @@
 {
     "name": "node-red-node-xmpp",
-    "version": "0.5.5",
+    "version": "0.5.6",
     "description": "A Node-RED node to talk to an XMPP server",
     "dependencies": {
-        "@xmpp/client": "^0.12.0"
+        "@xmpp/client": "^0.13.0"
     },
     "bundledDependencies": [
         "@xmpp/client"
