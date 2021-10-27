@@ -1,0 +1,43 @@
+{
+    "daemon": {
+        "label": {
+            "command": "コマンド",
+            "arguments": "引数",
+            "autostart": "デプロイ時にデーモンを自動起動する",
+            "addenter": "全てのメッセージ送信に[enter]を追加する",
+            "relaunch": "終了またはエラー時にコマンドを再実行する",
+            "reply": "応答",
+            "onclose": "クローズ時"
+        },
+        "placeholder": {
+            "arguments": "スペースで区切られた引数"
+        },
+        "option": {
+            "reply": {
+                "buffer": "応答をバッファのままにする",
+                "string": "応答を文字列にフォーマットする",
+                "lines": "テキスト出力する",
+                "number": "応答を数字に変換するよう試みる"
+            },
+            "onclose": {
+                "sigkill": "プロセスを即時強制終了(kill)する",
+                "sigterm": "プロセスの終了(terminate)を試みる",
+                "sigint": "プロセスの中断(interrupt)を試みる"
+            }
+        },
+        "tip": "<b>注意:</b> コマンドは実際のコマンドのみとしてください。全てのパラメータは引数として渡す必要があります。",
+        "status": {
+            "nocommand": "コマンド未設定",
+            "running": "実行中",
+            "stopped": "停止",
+            "error": "エラー"
+        },
+        "errors": {
+            "badparams": "パラメータ不正 - JSON配列またはスペースで区切る必要があります",
+            "notrunning": "コマンドは実行されていません",
+            "notfound": "コマンドが見つかりません",
+            "notexecutable": "コマンドが実行できません",
+            "restarting": "再起動中"
+        }
+    }
+}

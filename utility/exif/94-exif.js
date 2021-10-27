@@ -62,14 +62,14 @@ module.exports = function(RED) {
             else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
-            if (msg.location) { 
+            if (msg.location) {
                 msg.location.arc = {
-                    ranges: [500,1000,2000],
+                    ranges: [100,300,500],
                     pan: gpsData.GPSImgDirection,
                     fov: (2 * Math.atan(36 / (2 * msg.exif.exif.FocalLengthIn35mmFormat)) * 180 / Math.PI),
-                    color: '#910000'
+                    color: '#aaaa00'
                 }
-                msg.location.icon = "fa-camera";
+                msg.location.icon = "fa-camera fa-1x";
                 var na;
                 if (val.hasOwnProperty("name")) { na = val.name; }
                 else if (msg.hasOwnProperty("filename")) { na = msg.filename.split('/').pop(); }

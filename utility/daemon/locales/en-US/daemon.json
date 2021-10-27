@@ -1,0 +1,43 @@
+{
+    "daemon": {
+        "label": {
+            "command": "Command",
+            "arguments": "Arguments",
+            "autostart": "Auto-start daemon on deploy ?",
+            "addenter": "Add [enter] to every message sent ?",
+            "relaunch": "Relaunch command on exit or error ?",
+            "reply": "and",
+            "onclose": "on close"
+        },
+        "placeholder": {
+            "arguments": "space separated arguments"
+        },
+        "option": {
+            "reply": {
+                "buffer": "leave reply as a buffer",
+                "string": "format reply as a string",
+                "lines": "output lines of text",
+                "number": "try to convert reply to a number"
+            },
+            "onclose": {
+                "sigkill": "kill process immediately",
+                "sigterm": "try to terminate process",
+                "sigint": "try to interrupt process"
+            }
+        },
+        "tip": "<b>Note:</b> The command should just be the actual command. All parameters should be passed in as arguments.",
+        "status": {
+            "nocommand": "no command",
+            "running": "running",
+            "stopped": "stopped",
+            "error": "error"
+        },
+        "errors": {
+            "badparams": "Bad parameters - should be a JSON array or space separated",
+            "notrunning": "Command not running",
+            "notfound": "Command not found",
+            "notexecutable": "Command not executable",
+            "restarting": "Restarting"
+        }
+    }
+}

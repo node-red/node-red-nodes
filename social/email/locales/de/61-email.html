@@ -22,6 +22,8 @@
     <p>Wenn ein selbstausgestelltes Zertifikates vorliegt, kann sich Nodemailer darüber beschweren und das Senden der Nachricht ablehnen.
        In diesem Fall kann versucht werden TLS abzuschalten.</p>
     <p><b>Hinweis</b>: Verwendet SMTP mit SSL über Port 465.</p>
+    <h3>Sichere Verbindung verwenden</h3>
+    <p>Wenn diese Option aktiviert ist, verwendet die Verbindung TLS, wenn eine Verbindung zum Server hergestellt wird. Wenn deaktiviert, wird TLS verwendet, wenn der Server die STARTTLS-Erweiterung unterstützt. In den meisten Fällen setzen Sie dies auf aktiviert, wenn Sie eine Verbindung zu Port 465 herstellen. Lassen Sie es für Port 587 oder 25 deaktiviert.</p>
 </script>
 
 <script type="text/html" data-help-name="e-mail in">
@@ -32,7 +34,7 @@
     <p>Zusätzlich enthält <code>msg.header</code> den kompletten Mailkopf (Header) als Objekt mit
     <i>to</i>, <i>cc</i> und anderen eventuell nützlichen Eigenschaften.</p>
     <p>Der Node kann optional die Nachricht als gelesen markieren (Standard-Einstellung), sie löschen oder sie als unmarkiert belassen.</p>
-    <p>Verwendet wird das <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap-Modul</a> - 
+    <p>Verwendet wird das <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap-Modul</a> -
        siehe dort für Informationen über das <code>msg.criteria</code>-Format, falls benötigt.</p>
     <p>Alle Dateianhänge mitgeliefert in eingehenden E-Mails können in der <code>msg.attachments</code>-Eigenschaft gefunden werden.
        Es wird dann ein Datenfeld (Array) von Objekten übergeben, wo jedes Objekt ein einzelner Dateianhang (attachment) darstellt.
