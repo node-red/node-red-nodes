@@ -8,13 +8,15 @@ module.exports = function(RED) {
         this.pin = n.pin;
         this.interrupt = n.interrupt;
         this.mode = n.mode;
+        this.initialMsg = n.initial;
         this.x = new m.Gpio(parseInt(this.pin));
         this.board = m.getPlatformName();
+        this.defaultTimeout = 100;
         var node = this;
         node.x.mode(parseInt(this.mode));
         node.x.dir(m.DIR_IN);
-        node.x.isr(m.EDGE_BOTH, function() {
-            var g = node.x.read();
+
+        var eventHandler = function(g) {
             var msg = { payload:g, topic:node.board+"/D"+node.pin };
             switch (g) {
                 case 0: {
@@ -35,8 +37,15 @@ module.exports = function(RED) {
                     node.status({fill:"grey",shape:"ring",text:"unknown"});
                 }
             }
-        });
-        switch (node.x.read()) {
+        }
+
+        var isrCallback = function() {
+            eventHandler(node.x.read());
+        }
+
+        node.x.isr(m.EDGE_BOTH, isrCallback);
+        var initialState = node.x.read();
+        switch (initialState) {
             case 0: {
                 node.status({fill:"green",shape:"ring",text:"low"});
                 break;
@@ -49,6 +58,13 @@ module.exports = function(RED) {
                 node.status({});
             }
         }
+
+        if (this.initialMsg) {
+            setTimeout(() => {
+                node.send( { payload: node.x.read(), topic:node.board+"/D"+node.pin } );
+            }, this.defaultTimeout);
+        }
+
         this.on('close', function() {
             node.x.isr(m.EDGE_BOTH, null);
             node.x.isrExit();

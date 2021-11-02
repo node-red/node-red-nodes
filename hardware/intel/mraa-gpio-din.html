@@ -8,7 +8,8 @@
             name: {value:""},
             pin:  {value:"", required: true},
             interrupt: {value:"", required: true},
-            mode: {value:"", required: true}
+            mode: {value:"", required: true},
+            initial: {value: false}
         },
         inputs:0,
         outputs:1,
@@ -87,6 +88,11 @@
             <option value="f">Falling </option>
             <option value="b">Both </option>
         </select>
+    </div>
+    <div class="form-row" id="node-initial-tick">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-initial" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-initial" style="width: 70%;">Send initial message with level of pin.</label>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
