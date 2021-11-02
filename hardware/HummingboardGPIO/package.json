@@ -6,7 +6,8 @@
     },
     "repository" : {
         "type":"tgz",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/HummingboardGPIO"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/HummingboardGPIO"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "hummingboard", "gpio" ],

@@ -7,7 +7,8 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-nodes/storage/tail/"
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/storage/tail"
     },
     "license": "Apache-2.0",
     "keywords": [

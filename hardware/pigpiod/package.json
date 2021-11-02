@@ -10,7 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/pigpiod"
+    "url": "https://github.com/node-red/node-red-nodes.git",
+    "directory" : "tree/master/hardware/pigpiod"
   },
   "keywords": [
     "node-red", "Pi", "GPIO", "PiGPIOd"

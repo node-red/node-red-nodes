@@ -6,7 +6,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/function/rbe"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/function/rbe"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "rbe", "bandgap", "deadband" ],

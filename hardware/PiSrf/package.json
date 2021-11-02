@@ -6,7 +6,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/PiSrf"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/PiSrf"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "SRF04", "SRF05", "ultrasonic", "range", "HC-SR04", "SR04" ],
