@@ -10,7 +10,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-nodes/tree/master/utility/exif"
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/utility/exif"
     },
     "license": "Apache-2.0",
     "keywords": [

@@ -4,7 +4,8 @@
     "description"   : "A Node-RED node to interact with a Raspberry Pi Sense HAT",
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/sensehat"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/sensehat"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "sensehat", "astropi" ],

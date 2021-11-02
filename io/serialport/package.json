@@ -7,7 +7,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/serialport"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/io/serialport"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "serial" ],

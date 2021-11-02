@@ -17,7 +17,8 @@
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/sensorTag"
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory" : "tree/master/hardware/sensorTag"
     },
     "node-red": {
         "nodes": {

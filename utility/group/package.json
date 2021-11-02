@@ -5,7 +5,8 @@
     "dependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-nodes/tree/master/utility/group"
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/utility/group"
     },
     "license": "Apache-2.0",
     "keywords": [

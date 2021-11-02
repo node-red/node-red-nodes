@@ -6,7 +6,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/PiLcd"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/PiLcd"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "lcd", "HD44780" ],
