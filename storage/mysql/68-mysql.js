@@ -112,65 +112,61 @@ module.exports = function(RED) {
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
-                        var bind = [];
-                        if (Array.isArray(msg.payload)) {
-                            bind = msg.payload;
-                            node.mydbConfig.pool.on('acquire', function(connection) {
-                                    connection.config.queryFormat = null;
-                            });
-                        }
-                        else if (typeof msg.payload === 'object' && msg.payload !== null) {
-                            bind = msg.payload;
-                            node.mydbConfig.pool.on('acquire', function(connection) {
-                                connection.config.queryFormat = function(query, values) {
-                                    if (!values) {
-                                        return query;
-                                    }
-                                    return query.replace(/\:(\w+)/g, function(txt, key) {
-                                        if (values.hasOwnProperty(key)) {
-                                            return this.escape(values[key]);
-                                        }
-                                        return txt;
-                                    }.bind(this));
-                                };
-                            });
-                        }
-                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.getConnection(function (err, conn) {
                             if (err) {
-                                status = {fill:"red",shape:"ring",text:RED._("mysql.status.error")+": "+err.code};
+                                conn.release()
+                                status = { fill: "red", shape: "ring", text: RED._("mysql.status.error") + ": " + err.code };
                                 node.status(status);
-                                node.error(err,msg);
+                                node.error(err, msg);
+                                if (done) { done(); }
+                                return
                             }
-                            else {
-                                // if (rows.constructor.name === "OkPacket") {
-                                //     msg.payload = JSON.parse(JSON.stringify(rows));
-                                // }
-                                // else if (rows.constructor.name === "Array") {
-                                //     if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
-                                //         msg.payload = rows.map(v => Object.assign({}, v));
-                                //     }
-                                //     else if (rows[0] && rows[0].constructor.name === "Array") {
-                                //         if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
-                                //             msg.payload = rows.map(function(v) {
-                                //                 if (!Array.isArray(v)) { return v; }
-                                //                 v.map(w => Object.assign({}, w))
-                                //             });
-                                //         }
-                                //         else { msg.payload = rows; }
-                                //     }
-                                //     else  { msg.payload = rows; }
-                                // }
-                                // else { msg.payload = rows; }
-                                msg.payload = rows;
-                                send(msg);
-                                status = {fill:"green",shape:"dot",text:RED._("mysql.status.ok")};
-                                node.status(status);
+                            var bind = [];
+                            if (Array.isArray(msg.payload)) {
+                                bind = msg.payload;
                             }
-                            if (done) { done(); }
-                            // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
-                            //     node.mydbConfig.connection.release();
-                            // }
-                        });
+                            else if (typeof msg.payload === 'object' && msg.payload !== null) {
+                                bind = msg.payload;
+                            }
+                            conn.config.queryFormat = Array.isArray(msg.payload) ? null : customQueryFormat
+                            conn.query(msg.topic, bind, function (err, rows) {
+                                conn.release()
+                                if (err) {
+                                    status = { fill: "red", shape: "ring", text: RED._("mysql.status.error") + ": " + err.code };
+                                    node.status(status);
+                                    node.error(err, msg);
+                                }
+                                else {
+                                    // if (rows.constructor.name === "OkPacket") {
+                                    //     msg.payload = JSON.parse(JSON.stringify(rows));
+                                    // }
+                                    // else if (rows.constructor.name === "Array") {
+                                    //     if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
+                                    //         msg.payload = rows.map(v => Object.assign({}, v));
+                                    //     }
+                                    //     else if (rows[0] && rows[0].constructor.name === "Array") {
+                                    //         if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
+                                    //             msg.payload = rows.map(function(v) {
+                                    //                 if (!Array.isArray(v)) { return v; }
+                                    //                 v.map(w => Object.assign({}, w))
+                                    //             });
+                                    //         }
+                                    //         else { msg.payload = rows; }
+                                    //     }
+                                    //     else  { msg.payload = rows; }
+                                    // }
+                                    // else { msg.payload = rows; }
+                                    msg.payload = rows;
+                                    send(msg);
+                                    status = { fill: "green", shape: "dot", text: RED._("mysql.status.ok") };
+                                    node.status(status);
+                                }
+                                if (done) { done(); }
+                                // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
+                                //     node.mydbConfig.connection.release();
+                                // }
+                            });
+                        })
                     }
                     else {
                         if (typeof msg.topic !== 'string') { node.error("msg.topic : "+RED._("mysql.errors.notstring")); done(); }
@@ -199,4 +195,16 @@ module.exports = function(RED) {
         }
     }
     RED.nodes.registerType("mysql",MysqlDBNodeIn);
+}
+
+function customQueryFormat(query, values) {
+    if (!values) {
+        return query;
+    }
+    return query.replace(/\:(\w+)/g, function(txt, key) {
+        if (values.hasOwnProperty(key)) {
+            return this.escape(values[key]);
+        }
+        return txt;
+    }.bind(this));
 }
