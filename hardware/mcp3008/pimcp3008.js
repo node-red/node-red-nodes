@@ -29,7 +29,6 @@ module.exports = function(RED) {
         this.bus = parseInt(n.bus || 0);
         this.dev = n.dev || "3008";
         this.mcp3xxx = [];
-        var node = this;
         this.cb = function (err) { if (err) { node.error("Error: "+err); } };
         this.opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
         var chans = parseInt(this.dev.substr(3));
@@ -40,14 +39,14 @@ module.exports = function(RED) {
                 fs.statSync("/dev/spidev"+node.bus+"."+node.dnum);
                 if (node.mcp3xxx.length === 0) {
                     for (var i=0; i<chans; i++) {
-                        if (node.dev === "3002") { mcp3xxx.push(mcpadc.openMcp3002(i, opt, cb)); }
-                        if (node.dev === "3004") { mcp3xxx.push(mcpadc.openMcp3004(i, opt, cb)); }
-                        if (node.dev === "3008") { mcp3xxx.push(mcpadc.openMcp3008(i, opt, cb)); }
-                        if (node.dev === "3201") { mcp3xxx.push(mcpadc.openMcp3201(i, opt, cb)); }
-                        if (node.dev === "3202") { mcp3xxx.push(mcpadc.openMcp3202(i, opt, cb)); }
-                        if (node.dev === "3204") { mcp3xxx.push(mcpadc.openMcp3204(i, opt, cb)); }
-                        if (node.dev === "3208") { mcp3xxx.push(mcpadc.openMcp3208(i, opt, cb)); }
-                        if (node.dev === "3304") { mcp3xxx.push(mcpadc.openMcp3304(i, opt, cb)); }
+                        if (node.dev === "3002") { node.mcp3xxx.push(mcpadc.openMcp3002(i, node.opt, node.cb)); }
+                        if (node.dev === "3004") { node.mcp3xxx.push(mcpadc.openMcp3004(i, node.opt, node.cb)); }
+                        if (node.dev === "3008") { node.mcp3xxx.push(mcpadc.openMcp3008(i, node.opt, node.cb)); }
+                        if (node.dev === "3201") { node.mcp3xxx.push(mcpadc.openMcp3201(i, node.opt, node.cb)); }
+                        if (node.dev === "3202") { node.mcp3xxx.push(mcpadc.openMcp3202(i, node.opt, node.cb)); }
+                        if (node.dev === "3204") { node.mcp3xxx.push(mcpadc.openMcp3204(i, node.opt, node.cb)); }
+                        if (node.dev === "3208") { node.mcp3xxx.push(mcpadc.openMcp3208(i, node.opt, node.cb)); }
+                        if (node.dev === "3304") { node.mcp3xxx.push(mcpadc.openMcp3304(i, node.opt, node.cb)); }
                     }
                 }
                 node.on("input", function(msg) {
@@ -76,7 +75,7 @@ module.exports = function(RED) {
                     for (var i=0; i<chans; i++) {
                         node.mcp3xxx[i].close(function() { j += 1; if (j === chans) {done()} });
                     }
-                    mcp3xxx = [];
+                    node.mcp3xxx = [];
                 }
                 else { done(); }
             });
