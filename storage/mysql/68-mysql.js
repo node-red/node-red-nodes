@@ -116,7 +116,7 @@ module.exports = function(RED) {
                         if (Array.isArray(msg.payload)) {
                             bind = msg.payload;
                             node.mydbConfig.pool.on('acquire', function(connection) {
-                                    connection.config.queryFormat = null;
+                                connection.config.queryFormat = null;
                             });
                         }
                         else if (typeof msg.payload === 'object' && msg.payload !== null) {
@@ -142,34 +142,12 @@ module.exports = function(RED) {
                                 node.error(err,msg);
                             }
                             else {
-                                // if (rows.constructor.name === "OkPacket") {
-                                //     msg.payload = JSON.parse(JSON.stringify(rows));
-                                // }
-                                // else if (rows.constructor.name === "Array") {
-                                //     if (rows[0] && rows[0].constructor.name === "RowDataPacket") {
-                                //         msg.payload = rows.map(v => Object.assign({}, v));
-                                //     }
-                                //     else if (rows[0] && rows[0].constructor.name === "Array") {
-                                //         if (rows[0][0] && rows[0][0].constructor.name === "RowDataPacket") {
-                                //             msg.payload = rows.map(function(v) {
-                                //                 if (!Array.isArray(v)) { return v; }
-                                //                 v.map(w => Object.assign({}, w))
-                                //             });
-                                //         }
-                                //         else { msg.payload = rows; }
-                                //     }
-                                //     else  { msg.payload = rows; }
-                                // }
-                                // else { msg.payload = rows; }
                                 msg.payload = rows;
                                 send(msg);
                                 status = {fill:"green",shape:"dot",text:RED._("mysql.status.ok")};
                                 node.status(status);
                             }
                             if (done) { done(); }
-                            // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
-                            //     node.mydbConfig.connection.release();
-                            // }
                         });
                     }
                     else {
