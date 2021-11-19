@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
     var reconnect = RED.settings.mysqlReconnectTime || 20000;
-    var mysqldb = require('mysql');
+    var mysqldb = require('mysql2');
 
     function MySQLNode(n) {
         RED.nodes.createNode(this,n);
