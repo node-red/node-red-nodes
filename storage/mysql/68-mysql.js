@@ -44,7 +44,8 @@ module.exports = function(RED) {
                     connectionLimit: 50,
                     timeout: 30000,
                     connectTimeout: 30000,
-                    charset: node.charset
+                    charset: node.charset,
+                    decimalNumbers: true
                 });
             }
 
