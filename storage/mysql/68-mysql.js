@@ -42,7 +42,6 @@ module.exports = function(RED) {
                     insecureAuth: true,
                     multipleStatements: true,
                     connectionLimit: 50,
-                    timeout: 30000,
                     connectTimeout: 30000,
                     charset: node.charset,
                     decimalNumbers: true
