@@ -107,28 +107,32 @@ module.exports = function(RED) {
                 }
             });
 
+            node.mydbConfig.pool.on('acquire', function(connection) {
+              connection.config.queryFormat = function(query, values) {
+                if (!values) {
+                  return query;
+                }
+                if (Array.isArray(values)) {
+                  return mysqldb.format(query, values);
+                }
+                else if (typeof values === 'object' && values !== null) {
+                  return query.replace(/\:(\w+)/g, function(txt, key) {
+                    if (values.hasOwnProperty(key)) {
+                      return this.escape(values[key]);
+                    }
+                    return txt;
+                  }.bind(this));
+                }
+                return query
+              }
+            });
+
             node.on("input", function(msg, send, done) {
                 send = send || function() { node.send.apply(node,arguments) };
                 if (node.mydbConfig.connected) {
                     if (typeof msg.topic === 'string') {
                         //console.log("query:",msg.topic);
-                        var bind = [];
-                        if (Array.isArray(msg.payload)) { bind = msg.payload; }
-                        else if (typeof msg.payload === 'object' && msg.payload !== null) {
-                            bind = msg.payload;
-                            node.mydbConfig.pool.config.queryFormat = function(query, values) {
-                                if (!values) {
-                                    return query;
-                                }
-                                return query.replace(/\:(\w+)/g, function(txt, key) {
-                                    if (values.hasOwnProperty(key)) {
-                                        return this.escape(values[key]);
-                                    }
-                                    return txt;
-                                }.bind(this));
-                            };
-                        }
-                        node.mydbConfig.pool.query(msg.topic, bind, function(err, rows) {
+                        node.mydbConfig.pool.query(msg.topic, msg.payload, function(err, rows) {
                             if (err) {
                                 status = {fill:"red",shape:"ring",text:"Error: "+err.code};
                                 node.status(status);
