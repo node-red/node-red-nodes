@@ -54,7 +54,8 @@
             "sending": "sending",
             "sendfail": "send failed",
             "parseerror": "Failed to parse message",
-            "connecterror": "connect error"
+            "connecterror": "connect error",
+            "bad_criteria": "Invalid criteria"
         },
         "errors": {
             "nouserid": "No e-mail userid set",
@@ -66,7 +67,8 @@
             "parsefail": "Failed to parse message",
             "messageerror": "Fetch message error: __error__",
             "refreshtoolarge": "Refresh interval too large. Limiting to 2147483 seconds",
-            "invalidattachment": "Invalid attachment content. Must be String or buffer"
+            "invalidattachment": "Invalid attachment content. Must be String or buffer",
+            "bad_criteria": "Criteria must be a JSON array. See info."
         }
     }
 }

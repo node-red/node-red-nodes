@@ -13,6 +13,14 @@
         <input type="number" id="node-input-udpport" placeholder="9">
     </div>
     <div class="form-row">
+        <label for="node-input-numpackets" style="width:120px;"><i class="fa fa-envelope"></i> Number of Packets</label>
+        <input type="number" id="node-input-numpackets" placeholder="3">
+    </div>
+    <div class="form-row">
+        <label for="node-input-interval" style="width:120px;"><i class="fa fa-clock-o"></i> Interval Between Packets (ms)</label>
+        <input type="number" id="node-input-interval" placeholder="100">
+    </div>
+    <div class="form-row">
         <label for="node-input-name" style="width:120px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -23,10 +31,10 @@
     <p>Sends a Wake-On-LAN magic packet to the mac address specified.</p>
     <p>You may instead set <code>msg.mac</code> to dynamically set the target device mac to wake up.</p>
     <p>The address of the target machine can optionally be set using <code>msg.host</code></p>
-    <p>You can likewise set the destination UDP port using <code>msg.udpport</code></p>
+    <p>You can likewise set the destination UDP port, number of packets sent, and interval between packets using <code>msg.udpport</code>, <code>msg.numpackets</code>, <code>msg.interval</code>.</p>
     <p>Setting the target address to the broadcast address of the subnet that the target machine is attached to works best.
     For a class C address this is usually just the first three parts of the ip address followed by 255. eg 192.168.1.255.</p>
-    <p>You can specify the target UDP port, default is 9.</p>
+    <p>You can specify the target UDP port (default 9), number of packets sent (default 3), and interval between packets (default 100ms).</p>
 </script>
 
 <script type="text/javascript">
@@ -37,6 +45,8 @@
             mac: {value:""},
             host: {value:""},
             udpport: {value:9, validate:RED.validators.number()},
+            numpackets: {value:3},
+            interval: {value:100},
             name: {value:""}
         },
         inputs:1,

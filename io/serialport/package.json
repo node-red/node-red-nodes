@@ -1,23 +1,24 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "0.14.0",
+    "version"       : "0.15.0",
     "description"   : "Node-RED nodes to talk to serial ports",
     "dependencies"  : {
-        "serialport"   : "^9.0.7"
+        "serialport"   : "^9.2.5"
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/serialport"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/io/serialport"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "serial" ],
     "node-red": {
-        "version": ">=0.18.0",
+        "version": ">=1.0.0",
         "nodes": {
             "serialport": "25-serial.js"
         }
     },
-    "engines" : { "node" : ">=8.6.0" },
+    "engines" : { "node" : ">=10.0.0" },
     "author": {
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",

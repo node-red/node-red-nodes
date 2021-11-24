@@ -1,17 +1,3 @@
-#!/usr/bin/python
-#
-# Copyright JS Foundation and other contributors, http://js.foundation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# http://www.apache.org/licenses/LICENSE-2.0
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 
 # Import library functions we need
 import RPi.GPIO as GPIO
@@ -185,24 +171,19 @@ if len(sys.argv) > 2:
                 data = 0
 
     elif cmd == "mouse":  # catch mice button events
-        file = open( "/dev/input/mice", "rb" )
+        f = open( "/dev/input/mice", "rb" )
         oldbutt = 0
-
-        def getMouseEvent():
-          global oldbutt
-          global pin
-          buf = file.read(3)
-          pin = pin & 0x07
-          button = ord( buf[0] ) & pin # mask out just the required button(s)
-          if button != oldbutt:  # only send if changed
-              oldbutt = button
-              print(button)
 
         while True:
             try:
-                getMouseEvent()
+                buf = f.read(3)
+                pin = pin & 0x07
+                button = struct.unpack('3b',buf)[0] & pin # mask out just the required button(s)
+                if button != oldbutt:  # only send if changed
+                    oldbutt = button
+                    print(button)
             except:
-                file.close()
+                f.close()
                 sys.exit(0)
 
     elif cmd == "kbd":  # catch keyboard button events
@@ -210,7 +191,7 @@ if len(sys.argv) > 2:
             while not os.path.isdir("/dev/input/by-path"):
                 sleep(10)
             infile = subprocess.check_output("ls /dev/input/by-path/ | grep -m 1 'kbd'", shell=True).strip()
-            infile_path = "/dev/input/by-path/" + infile
+            infile_path = "/dev/input/by-path/" + infile.decode("utf-8")
             EVENT_SIZE = struct.calcsize('llHHI')
             file = open(infile_path, "rb")
             event = file.read(EVENT_SIZE)

@@ -5,7 +5,7 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
-    var gpioCommand = __dirname + '/nrsrf.py';
+    var gpioCommand = __dirname + '/nrsrf';
     var allOK = true;
 
     try {
@@ -33,6 +33,7 @@ module.exports = function(RED) {
         this.topic = n.topic;
         this.pins = n.pins;
         this.pins += ","+(n.pulse || 0.5);
+		this.pins += ","+(n.precision || 0);
         var node = this;
 
         if (allOK === true) {

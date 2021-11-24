@@ -27,14 +27,17 @@
             by specific host:port connections. This is the default for MongoDB instances in the
             <a href="https://www.mongodb.com/cloud/atlas" target="_blank">Atlas cloud service</a>.
         </details>
+      </p>
       <p><strong>Connect options</strong> is where you add the optional parameters required by your MongoDB instance.
         This might include:
         <ul><li>w=majority</li><li>replicaSet=replset</li><li>authSource=admin</li></ul> and any other options appropriate -
         full set available at <a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">
         Connection String URI Format — MongoDB Manual</a>.
+      </p>
       <p>If you are connecting to <a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb-group" target="_blank">
         IBM Databases for MongoDB</a>, as a replica-set, be sure to append <code>ssl=true&tlsAllowInvalidCertificates=true </code>
         to the <strong>Connect options</strong>.
+      </p>
 </script>
 
 <script type="text/html" data-help-name="mongodb out">

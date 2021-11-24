@@ -22,7 +22,7 @@ module.exports = function(RED) {
             node.pool.query("SELECT version();", [], function(err, rows, fields) {
                 if (err) {
                     node.error(err);
-                    node.status({fill:"red",shape:"ring",text:"Bad Ping"});
+                    node.status({fill:"red",shape:"ring",text:RED._("mysql.status.badping")});
                     doConnect();
                 }
             });
@@ -134,7 +134,7 @@ module.exports = function(RED) {
                         //console.log("query:",msg.topic);
                         node.mydbConfig.pool.query(msg.topic, msg.payload, function(err, rows) {
                             if (err) {
-                                status = {fill:"red",shape:"ring",text:"Error: "+err.code};
+                                status = {fill:"red",shape:"ring",text:RED._("mysql.status.error")+": "+err.code};
                                 node.status(status);
                                 node.error(err,msg);
                             }
@@ -160,23 +160,23 @@ module.exports = function(RED) {
                                 // else { msg.payload = rows; }
                                 msg.payload = rows;
                                 send(msg);
-                                status = {fill:"green",shape:"dot",text:"OK"};
+                                status = {fill:"green",shape:"dot",text:RED._("mysql.status.ok")};
                                 node.status(status);
                             }
-                            done();
+                            if (done) { done(); }
                             // if (node.mydbConfig.pool._freeConnections.indexOf(node.mydbConfig.connection) === -1) {
                             //     node.mydbConfig.connection.release();
                             // }
                         });
                     }
                     else {
-                        if (typeof msg.topic !== 'string') { node.error("msg.topic : the query is not defined as a string"); done(); }
+                        if (typeof msg.topic !== 'string') { node.error("msg.topic : "+RED._("mysql.errors.notstring")); done(); }
                     }
                 }
                 else {
-                    node.error("Database not connected",msg);
-                    status = {fill:"red",shape:"ring",text:"not yet connected"};
-                    done();
+                    node.error(RED._("mysql.errors.notconnected"),msg);
+                    status = {fill:"red",shape:"ring",text:RED._("mysql.status.notconnected")};
+                    if (done) { done(); }
                 }
                 if (!busy) {
                     busy = true;
@@ -192,7 +192,7 @@ module.exports = function(RED) {
             });
         }
         else {
-            this.error("MySQL database not configured");
+            this.error(RED._("mysql.errors.notconfigured"));
         }
     }
     RED.nodes.registerType("mysql",MysqlDBNodeIn);

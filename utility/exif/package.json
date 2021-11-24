@@ -1,13 +1,17 @@
 {
     "name": "node-red-node-exif",
-    "version": "0.2.1",
+    "version": "0.3.1",
     "description": "A Node-RED node that extracts Exif information from JPEG image buffers.",
     "dependencies": {
         "exif": "^0.6.0"
     },
+    "bundledDependencies": [
+        "exif"
+    ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-nodes/tree/master/utility/exif"
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/utility/exif"
     },
     "license": "Apache-2.0",
     "keywords": [

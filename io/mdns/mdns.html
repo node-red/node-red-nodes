@@ -37,7 +37,7 @@
         defaults: {
             name: {value:""},
             topic: {value:""},
-            service: {value:"",required:true,validate:RED.validators.regex(/^_.*\._(tc|ud)p$/)}
+            service: {value:"",validate:RED.validators.regex(/^$|^_.*\._(tc|ud)p$/)} // (/^(\d*|)$/)
         },
         inputs:0,
         outputs:1,

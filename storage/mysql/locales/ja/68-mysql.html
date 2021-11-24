@@ -1,0 +1,18 @@
+
+<script type="text/html" data-help-name="MySQLdatabase">
+    <p>データベースにアクセスするための認証情報を追加します。</p>
+    <p>タイムゾーンには、GMT, EST5EDT, UTC のような値を設定します。</p>
+    <p>文字セットのデフォルトは「古い」3バイトのMysql UTF8です。絵文字などをサポートする必要がある場合は、UTF8MB4 を使用してください。</p>
+</script>
+
+<script type="text/html" data-help-name="mysql">
+    <p>MySQLデータベースに対するアクセスを提供します。</p>
+    <p>このノードでは、設定したデータベースに対して <b>クエリ</b> 操作を行います。INSERTSとDELETESの両方が可能です。
+    その性質上、SQLインジェクションが可能になりますので、<i>ご注意ください</i>。</p>
+    <p><code>msg.topic</code> にはデータベースに対する <i>クエリ</i> を指定する必要があります。また、結果は <code>msg.payload</code> に格納されて返ります。</p>
+    <p><code>msg.payload</code> には topic にバインドする値の配列を含めることができます。</p>
+    <p>通常、返されるペイロードは、結果行の配列となります。 <b>注</b>: これらは<i>RowDataPacket</i>型であり、完全な標準オブジェクトではありません。</p>
+    <p>キーに該当するものが見つからない場合、<i>null</i> が返ります。</p>
+    <p>再接続のタイムアウト（ミリ秒）は、 <b>settings.js</b> に以下の1行追加することで変更できます。
+    <pre>mysqlReconnectTime: 30000,</pre></p>
+</script>

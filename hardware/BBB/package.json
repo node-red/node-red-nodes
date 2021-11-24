@@ -7,7 +7,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/BBB"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/BBB"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "beagleboneblack", "beaglebone", "bbb", "octalbonescript" ],

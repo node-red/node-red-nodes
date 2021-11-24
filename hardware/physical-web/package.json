@@ -20,7 +20,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/physical-web"
+    "url": "https://github.com/node-red/node-red-nodes.git",
+    "directory": "tree/master/hardware/physical-web"
   },
   "author": {
     "name": "Ben Hardill",

@@ -62,20 +62,22 @@ module.exports = function(RED) {
             else {
                 node.log("The location of this image cannot be determined safely so no location information has been added to the message.");
             }
-            msg.location.arc = {
-                ranges: [500,1000,2000],
-                pan: gpsData.GPSImgDirection,
-                fov: (2 * Math.atan(36 / (2 * msg.exif.exif.FocalLengthIn35mmFormat)) * 180 / Math.PI),
-                color: '#910000'
+            if (msg.location) {
+                msg.location.arc = {
+                    ranges: [100,300,500],
+                    pan: gpsData.GPSImgDirection,
+                    fov: (2 * Math.atan(36 / (2 * msg.exif.exif.FocalLengthIn35mmFormat)) * 180 / Math.PI),
+                    color: '#aaaa00'
+                }
+                msg.location.icon = "fa-camera fa-1x";
+                var na;
+                if (val.hasOwnProperty("name")) { na = val.name; }
+                else if (msg.hasOwnProperty("filename")) { na = msg.filename.split('/').pop(); }
+                else { na = msg.exif.image.Make+"_"+msg.exif.image.ModifyDate; }
+                msg.location.name = na;
+                msg.location.layer = "Images";
+                msg.location.popup = '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
             }
-            msg.location.icon = "fa-camera";
-            var na;
-            if (val.hasOwnProperty("name")) { na = val.name; }
-            else if (msg.hasOwnProperty("filename")) { na = msg.filename.split('/').pop(); }
-            else { na = msg.exif.image.Make+"_"+msg.exif.image.ModifyDate; }
-            msg.location.name = na;
-            msg.location.layer = "Images";
-            msg.location.popup = '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
         }
 
         this.on("input", function(msg) {

@@ -28,6 +28,8 @@ Optionally uses `msg.topic` to set the configuration, if not already set in the 
  - `msg.sound`: to set the alert sound, see the [available options](https://pushover.net/api#sounds)
  - `msg.retry`: to set retry interval for Emergency priority (2) messages, see [priority](https://pushover.net/api#priority)
  - `msg.expire`: to set retry duration for Emergency priority (2) messages, see [priority](https://pushover.net/api#priority)
+ - `msg.callback`: to set callback url for Emergency priority (2) messages, see [callback](https://pushover.net/api/receipts#callback)
+ - `msg.tags`: to set tags for Emergency priority (2) messages, see [tags](https://pushover.net/api/receipts#cancel_by_tag)
 
 The User-key and API-token are stored in a separate credentials file.
 

@@ -1,13 +1,14 @@
 {
     "name"          : "node-red-node-wol",
-    "version"       : "0.1.0",
+    "version"       : "0.2.0",
     "description"   : "A Node-RED node to send Wake-On-LAN (WOL) magic packets",
     "dependencies"  : {
         "wake_on_lan"   : "1.0.0"
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/io/wol"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory" : "tree/master/io/wol"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "wol", "wake_on_lan" ],

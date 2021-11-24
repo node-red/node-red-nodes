@@ -6,7 +6,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/Pibrella"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/Pibrella"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "pibrella" ],

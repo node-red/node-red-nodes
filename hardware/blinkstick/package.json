@@ -7,7 +7,8 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/hardware/blinkstick"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/hardware/blinkstick"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "blinkstick" ],

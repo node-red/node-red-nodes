@@ -1,12 +1,13 @@
 {
     "name"          : "node-red-node-daemon",
-    "version"       : "0.2.1",
+    "version"       : "0.3.0",
     "description"   : "A Node-RED node that runs and monitors a long running system command.",
     "dependencies"  : {
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/utility/daemon"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/utility/daemon"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "daemon", "shell", "exec" ],

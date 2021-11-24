@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-pi-gpio",
-  "version": "2.0.0-beta3",
+  "version": "2.0.1",
   "description": "The basic Node-RED node for Pi GPIO",
   "dependencies"  : {
   },
@@ -9,7 +9,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red/node-red-nodes/tree/master/hardware/PiGpio"
+    "url": "https://github.com/node-red/node-red-nodes.git",
+    "directory": "tree/master/hardware/PiGpio"
   },
   "keywords": [
     "node-red", "Pi", "GPIO", "PiGpio"

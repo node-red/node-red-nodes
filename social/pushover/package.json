@@ -1,13 +1,14 @@
 {
     "name"          : "node-red-node-pushover",
-    "version"       : "0.0.24",
+    "version"       : "0.1.1",
     "description"   : "A Node-RED node to send alerts via Pushover",
     "dependencies"  : {
         "pushover-notifications"   : "^1.2.2"
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes/tree/master/social/pushover"
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/social/pushover"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red", "pushover" ],

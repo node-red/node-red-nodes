@@ -9,7 +9,13 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.nickname = n.nickname;
         this.jid = n.user;
-        this.username = n.user.split('@')[0];
+        if (this.jid.match(/\@/)) {
+            this.username = n.user.split('@')[0];
+        }
+        else {
+            this.username = n.user;
+            this.jid = n.user+'@'+n.server;
+        }
         // The user may elect to just specify the jid in the settings,
         //  in which case extract the server from the jid and default the port
         if ("undefined" === typeof n.server || n.server === "") {
@@ -477,20 +483,26 @@ module.exports = function(RED) {
                                 reas = error.toString().split('><')[1].split(" xml")[0].trim();
                                 if (reas == "registration-required") { reas = "membership-required"; }
                             }
-                            catch(e) {}
-                            var msg = {
-                                topic:stanza.attrs.from,
-                                payload: {
-                                    code:error.attrs.code,
-                                    status:"error",
-                                    reason:reas,
-                                    name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
-                                }
-                            };
-                            node.send([null,msg]);
-                            node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
-                            node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                            catch(e) { }
+                            if (error.attrs.code !== '404' && (error.attrs.code !== '400' && error.attrs.type !== 'wait')) {
+                                var msg = {
+                                    topic:stanza.attrs.from,
+                                    payload: {
+                                        code:error.attrs.code,
+                                        status:"error",
+                                        reason:reas,
+                                        name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                                    }
+                                };
+                                node.send([null,msg]);
+                                node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
+                                node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                            }
+                            else {
+                                // ignore 404 error
+                            }
                         }
+                        return;
                     }
 
                     var state = stanza.getChild('show');
@@ -502,12 +514,17 @@ module.exports = function(RED) {
                         statusText = "offline";
                         state = "offline";
                     }
-                    var status = stanza.getChild('status');
-                    if (typeof status !== "undefined") {
-                        statusText = status.getText();
+                    else {
+                        statusText = "online";
+                        state = "online";
                     }
-                    // right, do we care if there's no status?
-                    if (statusText !== "") {
+
+                    var status = stanza.getChild('status');
+                    if (status !== undefined) {
+                        statusText = status.getText() || "online";
+                    }
+
+                    if (statusText !== "" && (stanza.attrs.from !== stanza.attrs.to)) {
                         var from = stanza.attrs.from;
                         var msg = {
                             topic:from,
@@ -701,17 +718,22 @@ module.exports = function(RED) {
                         if (reas == "registration-required") { reas = "membership-required"; }
                     }
                     catch(e) {}
-                    var msg = {
-                        topic:stanza.attrs.from,
-                        payload: {
-                            code:error.attrs.code,
-                            status:"error",
-                            reason:reas,
-                            name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
-                        }
-                    };
-                    node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
-                    node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                    if (error.attrs.code !== '404' && (error.attrs.code !== '400' && error.attrs.type !== 'wait')) {
+                        var msg = {
+                            topic:stanza.attrs.from,
+                            payload: {
+                                code:error.attrs.code,
+                                status:"error",
+                                reason:reas,
+                                name:node.serverConfig.MUCs[stanza.attrs.from.split('/')[0]]
+                            }
+                        };
+                        node.status({fill:"red",shape:"ring",text:"error : "+error.attrs.code+", "+error.attrs.type+", "+reas});
+                        node.error(error.attrs.type+" error. "+error.attrs.code+" "+reas,msg);
+                    }
+                    else {
+                        // ignore 404 error
+                    }
                 }
             }
         });
