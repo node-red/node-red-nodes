@@ -41,7 +41,7 @@ module.exports = function(RED) {
                     timezone : node.tz,
                     insecureAuth: true,
                     multipleStatements: true,
-                    connectionLimit: 50,
+                    connectionLimit: RED.settings.mysqlConnectionLimit || 50,
                     connectTimeout: 30000,
                     charset: node.charset,
                     decimalNumbers: true

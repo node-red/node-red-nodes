@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-mysql",
-    "version": "1.0.0-beta-3",
+    "version": "1.0.0-beta-5",
     "description": "A Node-RED node to read and write to a MySQL database",
     "dependencies": {
         "mysql2": "^2.3.3"
