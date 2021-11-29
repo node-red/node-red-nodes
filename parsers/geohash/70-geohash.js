@@ -69,6 +69,7 @@ module.exports = function(RED) {
                         var len = parseInt(value.precision || 9);
                         if (len < 1) { len = 1; }
                         if (len > 9) { len = 9; }
+                        value.precision = len;
                         if (typeof lat === 'number' && typeof lon === 'number') {
                             value.geohash = geohash.encode(lat, lon, len);
                             RED.util.setMessageProperty(msg,node.property,value);
