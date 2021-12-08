@@ -14,7 +14,7 @@ module.exports = function(RED) {
             RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
             allOK = false;
         }
-        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio") && !fs.existsSync("/usr/share/doc/python3-rpi.gpio")) {
             RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
             allOK = false;
         }
