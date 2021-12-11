@@ -14,7 +14,7 @@ module.exports = function(RED) {
             RED.log.warn("rpi-neopixels : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
             allOK = false;
         }
-        else if (execSync('python -c "import rpi_ws281x"').toString() !== "") {
+        else if (execSync(piCommand+" check").toString() !== "") {
             RED.log.warn("rpi-neopixels : Can't find neopixel python library");
             allOK = false;
         }
