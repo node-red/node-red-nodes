@@ -4,4 +4,8 @@ python_cmd='python3'
 command -v python3 > /dev/null || python_cmd=`python`
 
 BASEDIR=$(dirname $0)
-sudo $python_cmd -u $BASEDIR/neopix.py $@
+if [ "$1" == "check" ];then
+	$python_cmd -c "import rpi_ws281x"
+else
+	sudo $python_cmd -u $BASEDIR/neopix.py $@
+fi
