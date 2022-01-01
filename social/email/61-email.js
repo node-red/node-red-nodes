@@ -14,7 +14,7 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var Imap = require('imap');
-    var POP3Client = require("poplib");
+    var POP3Client = require("./poplib.js");
     var nodemailer = require("nodemailer");
     var simpleParser = require("mailparser").simpleParser;
     var SMTPServer = require("smtp-server").SMTPServer;
