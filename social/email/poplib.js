@@ -33,7 +33,7 @@ var net = require("net"),
 // Constructor
 function POP3Client(port, host, options) {
 
-    if (options === undefined) options = {};
+    if (options === undefined) { options = {}; }
 
     // Optional constructor arguments
     var enabletls = options.enabletls !== undefined ? options.enabletls: false;
@@ -113,10 +113,10 @@ function POP3Client(port, host, options) {
 
         var text = command;
 
-        if (argument !== undefined) text = text + " " + argument + "\r\n";
-        else text = text + "\r\n";
+        if (argument !== undefined) { text = text + " " + argument + "\r\n"; }
+        else { text = text + "\r\n"; }
 
-        if (debug) console.log("Client: " + util.inspect(text));
+        if (debug) { console.log("Client: " + util.inspect(text)); }
 
         socket.write(text);
 
@@ -178,7 +178,7 @@ function POP3Client(port, host, options) {
             cleartext.authorized = false;
 
             function onerror(e) {
-                if (cleartext._controlReleased) cleartext.emit('error', e);
+                if (cleartext._controlReleased) { cleartext.emit('error', e); }
             }
 
             function onclose() {
@@ -200,7 +200,7 @@ function POP3Client(port, host, options) {
         data = data.toString("ascii");
         bufferedData += data;
 
-        if (debug) console.log("Server: " + util.inspect(data));
+        if (debug) { console.log("Server: " + util.inspect(data)); }
 
         if (checkResp === true) {
 
@@ -256,10 +256,8 @@ function POP3Client(port, host, options) {
     }
 
     function onError(err) {
-
-        if (err.errno === 111) self.emit("connect", false, err);
-        else self.emit("error", err);
-
+        if (err.errno === 111) { self.emit("connect", false, err); }
+        else { self.emit("error", err); }
     }
 
     function onEnd(data) {
@@ -284,16 +282,16 @@ function POP3Client(port, host, options) {
             rejectUnauthorized: !self.data.ignoretlserrs
         }, function() {
 
-            if (tlssock.authorized === false &&
-                self.data["ignoretlserrs"] === false)
+            if (tlssock.authorized === false && self.data["ignoretlserrs"] === false) {
                 self.emit("tls-error", tlssock.authorizationError);
+            }
 
         }
         );
 
         socket = tlssock;
 
-    } else socket = new net.createConnection(port, host);
+    } else { socket = new net.createConnection(port, host); }
 
     // Set up event handlers
     socket.on("data", onData);
@@ -309,8 +307,8 @@ POP3Client.prototype.login = function (username, password) {
 
     var self = this;
 
-    if (self.getState() !== 1) self.emit("invalid-state", "login");
-    else if (self.getLocked() === true) self.emit("locked", "login");
+    if (self.getState() !== 1) { self.emit("invalid-state", "login"); }
+    else if (self.getLocked() === true) { self.emit("locked", "login"); }
     else {
 
         self.setLocked(true);
@@ -329,7 +327,7 @@ POP3Client.prototype.login = function (username, password) {
                     self.setLocked(false);
                     self.setCallback(function() {});
 
-                    if (resp !== false) self.setState(2);
+                    if (resp !== false) { self.setState(2); }
                     self.emit("login", resp, data);
 
                 });
@@ -355,8 +353,8 @@ POP3Client.prototype.auth = function (type, username, password) {
     var types = {"PLAIN": 1, "CRAM-MD5": 1};
     var initialresp = "";
 
-    if (self.getState() !== 1) self.emit("invalid-state", "auth");
-    else if (self.getLocked() === true) self.emit("locked", "auth");
+    if (self.getState() !== 1) { self.emit("invalid-state", "auth"); }
+    else if (self.getLocked() === true) { self.emit("locked", "auth"); }
 
     if ((type in types) === false) {
 
@@ -372,7 +370,7 @@ POP3Client.prototype.auth = function (type, username, password) {
             initialresp = " " + new Buffer(username + "\u0000" + username + "\u0000" + password).toString("base64") + "=";
             self.setCallback(function(resp, data) {
 
-                if (resp !== false) self.setState(2);
+                if (resp !== false) { self.setState(2); }
                 self.emit("auth", resp, data, data);
 
             });
@@ -381,7 +379,7 @@ POP3Client.prototype.auth = function (type, username, password) {
 
             self.setCallback(function(resp, data) {
 
-                if (resp === false) self.emit("auth", resp, "Server responded -ERR to AUTH CRAM-MD5", data);
+                if (resp === false) { self.emit("auth", resp, "Server responded -ERR to AUTH CRAM-MD5", data); }
                 else {
 
                     var challenge = new Buffer(data.trim().substr(2), "base64").toString();
@@ -392,8 +390,8 @@ POP3Client.prototype.auth = function (type, username, password) {
 
                         var errmsg = null;
 
-                        if (resp !== false) self.setState(2);
-                        else errmsg = "Server responded -ERR to response";
+                        if (resp !== false) { self.setState(2); }
+                        else {errmsg = "Server responded -ERR to response"; }
 
                         self.emit("auth", resp, null, data);
 
@@ -420,25 +418,25 @@ POP3Client.prototype.auth = function (type, username, password) {
 
                 // We (optionally) ignore self signed cert errors,
                 // in blatant violation of RFC 2595, Section 2.4
-                if (self.data["ignoretlserrs"] === true && rawdata === "DEPTH_ZERO_SELF_SIGNED_CERT") tlsok();
-                else self.emit("auth", false, "Unable to upgrade connection to STLS", rawdata);
+                if (self.data["ignoretlserrs"] === true && rawdata === "DEPTH_ZERO_SELF_SIGNED_CERT"){ tlsok(); }
+                else { self.emit("auth", false, "Unable to upgrade connection to STLS", rawdata); }
 
-            } else tlsok();
+            } else { tlsok(); }
 
         });
 
         self.stls();
 
-    } else tlsok();
+    } else { tlsok(); }
 };
 
 POP3Client.prototype.apop = function (username, password) {
 
     var self = this;
 
-    if (self.getState() !== 1) self.emit("invalid-state", "apop");
-    else if (self.getLocked() === true) self.emit("locked", "apop");
-    else if (self.data["apop"] === false) self.emit("apop", false, "APOP support not detected on remote server");
+    if (self.getState() !== 1) { self.emit("invalid-state", "apop"); }
+    else if (self.getLocked() === true) { self.emit("locked", "apop"); }
+    else if (self.data["apop"] === false) { self.emit("apop", false, "APOP support not detected on remote server"); }
     else {
 
         self.setLocked(true);
@@ -447,7 +445,7 @@ POP3Client.prototype.apop = function (username, password) {
             self.setLocked(false);
             self.setCallback(function() {});
 
-            if (resp === true) self.setState(2);
+            if (resp === true) { self.setState(2); }
             self.emit("apop", resp, data);
 
         });
@@ -462,9 +460,9 @@ POP3Client.prototype.stls = function() {
 
     var self = this;
 
-    if (self.getState() !== 1) self.emit("invalid-state", "stls");
-    else if (self.getLocked() === true) self.emit("locked", "stls");
-    else if (self.data["tls"] === true) self.emit("stls", false, "Unable to execute STLS as TLS connection already established");
+    if (self.getState() !== 1) { self.emit("invalid-state", "stls"); }
+    else if (self.getLocked() === true) { self.emit("locked", "stls"); }
+    else if (self.data["tls"] === true) { self.emit("stls", false, "Unable to execute STLS as TLS connection already established"); }
     else {
 
         self.setLocked(true);
@@ -477,9 +475,7 @@ POP3Client.prototype.stls = function() {
 
                 self.setCallback(function(resp, data) {
 
-                    if (resp === false && self.data["ignoretlserrs"] === true && data === "DEPTH_ZERO_SELF_SIGNED_CERT")
-                        resp = true;
-
+                    if (resp === false && self.data["ignoretlserrs"] === true && data === "DEPTH_ZERO_SELF_SIGNED_CERT") {resp = true; }
                     self.data["stls"] = true;
                     self.emit("stls", resp, data);
 
@@ -487,7 +483,7 @@ POP3Client.prototype.stls = function() {
 
                 self.starttls();
 
-            } else self.emit("stls", false, data);
+            } else { self.emit("stls", false, data); }
         });
 
         self.setMultiline(false);
@@ -501,8 +497,8 @@ POP3Client.prototype.top = function(msgnumber, lines) {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "top");
-    else if (self.getLocked() === true) self.emit("locked", "top");
+    if (self.getState() !== 2) { self.emit("invalid-state", "top"); }
+    else if (self.getLocked() === true) { self.emit("locked", "top"); }
     else {
 
         self.setCallback(function(resp, data) {
@@ -517,8 +513,7 @@ POP3Client.prototype.top = function(msgnumber, lines) {
                 var startOffset = data.indexOf("\r\n", 0) + 2;
                 var endOffset = data.indexOf("\r\n.\r\n", 0) + 2;
 
-                if (endOffset > startOffset)
-                    returnValue = data.substr(startOffset, endOffset-startOffset);
+                if (endOffset > startOffset) {returnValue = data.substr(startOffset, endOffset-startOffset); }
 
             }
 
@@ -536,8 +531,8 @@ POP3Client.prototype.list = function(msgnumber) {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "list");
-    else if (self.getLocked() === true) self.emit("locked", "list");
+    if (self.getState() !== 2) { self.emit("invalid-state", "list"); }
+    else if (self.getLocked() === true) { self.emit("locked", "list"); }
     else {
 
         self.setLocked(true);
@@ -551,7 +546,7 @@ POP3Client.prototype.list = function(msgnumber) {
             if (resp !== false) {
 
                 returnValue = [];
-
+                var listitem = "";
                 if (msgnumber !== undefined) {
 
                     msgcount = 1
@@ -561,7 +556,6 @@ POP3Client.prototype.list = function(msgnumber) {
                 } else {
 
                     var offset = 0;
-                    var listitem = "";
                     var newoffset = 0;
                     var returnValue = [];
                     var startOffset = data.indexOf("\r\n", 0) + 2;
@@ -573,13 +567,11 @@ POP3Client.prototype.list = function(msgnumber) {
 
                         while(true) {
 
-                            if (offset > endOffset)
-                                break;
+                            if (offset > endOffset) { break; }
 
                             newoffset = data.indexOf("\r\n", offset);
 
-                            if (newoffset < 0)
-                                break;
+                            if (newoffset < 0) { break; }
 
                             msgcount++;
                             listitem = data.substr(offset, newoffset-offset);
@@ -596,8 +588,8 @@ POP3Client.prototype.list = function(msgnumber) {
 
         });
 
-        if (msgnumber !== undefined) self.setMultiline(false);
-        else self.setMultiline(true);
+        if (msgnumber !== undefined) { self.setMultiline(false); }
+        else { self.setMultiline(true); }
 
         self.write("LIST", msgnumber);
 
@@ -608,8 +600,8 @@ POP3Client.prototype.stat = function() {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "stat");
-    else if (self.getLocked() === true) self.emit("locked", "stat");
+    if (self.getState() !== 2) { self.emit("invalid-state", "stat"); }
+    else if (self.getLocked() === true) { self.emit("locked", "stat"); }
     else {
 
         self.setLocked(true);
@@ -621,7 +613,7 @@ POP3Client.prototype.stat = function() {
 
             if (resp !== false) {
 
-                listitem = data.split(" ");
+                var listitem = data.split(" ");
                 returnValue = {
 
                     "count": listitem[1].trim(),
@@ -644,8 +636,8 @@ POP3Client.prototype.uidl = function(msgnumber) {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "uidl");
-    else if (self.getLocked() === true) self.emit("locked", "uidl");
+    if (self.getState() !== 2) { self.emit("invalid-state", "uidl"); }
+    else if (self.getLocked() === true) { self.emit("locked", "uidl"); }
     else {
 
         self.setLocked(true);
@@ -658,7 +650,7 @@ POP3Client.prototype.uidl = function(msgnumber) {
             if (resp !== false) {
 
                 returnValue = [];
-
+                var listitem = "";
                 if (msgnumber !== undefined) {
 
                     listitem = data.split(" ");
@@ -667,7 +659,7 @@ POP3Client.prototype.uidl = function(msgnumber) {
                 } else {
 
                     var offset = 0;
-                    var listitem = "";
+
                     var newoffset = 0;
                     var returnValue = [];
                     var startOffset = data.indexOf("\r\n", 0) + 2;
@@ -695,8 +687,8 @@ POP3Client.prototype.uidl = function(msgnumber) {
 
         });
 
-        if (msgnumber !== undefined) self.setMultiline(false);
-        else self.setMultiline(true);
+        if (msgnumber !== undefined) { self.setMultiline(false); }
+        else { self.setMultiline(true); }
 
         self.write("UIDL", msgnumber);
 
@@ -707,8 +699,8 @@ POP3Client.prototype.retr = function(msgnumber) {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "retr");
-    else if (self.getLocked() === true) self.emit("locked", "retr");
+    if (self.getState() !== 2) { self.emit("invalid-state", "retr"); }
+    else if (self.getLocked() === true) { self.emit("locked", "retr"); }
     else {
 
         self.setLocked(true);
@@ -740,8 +732,8 @@ POP3Client.prototype.dele = function(msgnumber) {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "dele");
-    else if (self.getLocked() === true) self.emit("locked", "dele");
+    if (self.getState() !== 2) { self.emit("invalid-state", "dele"); }
+    else if (self.getLocked() === true) { self.emit("locked", "dele"); }
     else {
 
         self.setLocked(true);
@@ -763,8 +755,8 @@ POP3Client.prototype.noop = function() {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "noop");
-    else if (self.getLocked() === true) self.emit("locked", "noop");
+    if (self.getState() !== 2) { self.emit("invalid-state", "noop"); }
+    else if (self.getLocked() === true) { self.emit("locked", "noop"); }
     else {
 
         self.setLocked(true);
@@ -786,8 +778,8 @@ POP3Client.prototype.rset = function() {
 
     var self = this;
 
-    if (self.getState() !== 2) self.emit("invalid-state", "rset");
-    else if (self.getLocked() === true) self.emit("locked", "rset");
+    if (self.getState() !== 2) { self.emit("invalid-state", "rset"); }
+    else if (self.getLocked() === true) { self.emit("locked", "rset"); }
     else {
 
         self.setLocked(true);
@@ -809,8 +801,8 @@ POP3Client.prototype.capa = function() {
 
     var self = this;
 
-    if (self.getState() === 0) self.emit("invalid-state", "quit");
-    else if (self.getLocked() === true) self.emit("locked", "capa");
+    if (self.getState() === 0) { self.emit("invalid-state", "quit"); }
+    else if (self.getLocked() === true) { self.emit("locked", "capa"); }
     else {
 
         self.setLocked(true);
@@ -843,8 +835,8 @@ POP3Client.prototype.quit = function() {
 
     var self = this;
 
-    if (self.getState() === 0) self.emit("invalid-state", "quit");
-    else if (self.getLocked() === true) self.emit("locked", "quit");
+    if (self.getState() === 0) { self.emit("invalid-state", "quit"); }
+    else if (self.getLocked() === true) { self.emit("locked", "quit"); }
     else {
 
         self.setLocked(true);
