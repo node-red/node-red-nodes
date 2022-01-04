@@ -7,7 +7,7 @@
     <p>SQL Type <i>Batch without response</i> uses <b>db.exec</b> which runs all SQL statements in the provided string. No result rows are returned.</p>
     <p>When using <i>Via msg.topic</i> or <i>Batch without response</i> <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
     <p>When using <i>Via msg.topic</i>, parameters can be passed in the query using a <code>msg.payload</code> array. Ex:<br />
-    <code>msg.topic = `INSERT INTO table (name, surname) VALUES ($name, $surname)`<br />
+    <code>msg.topic = `INSERT INTO user_table (name, surname) VALUES ($name, $surname)`<br />
     msg.payload = ["John", "Smith"]<br />
     return msg;</code><br />
     <p>When using Normal or Prepared Statement, the <i>query</i> must be entered in the node config.</p>
