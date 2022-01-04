@@ -37,7 +37,7 @@ When using Via msg.topic or Batch without response msg.topic must hold the query
 When using msg.topic, parameters can be passed in the query using a msg.payload array. Ex:
 
 ```
-msg.topic = `INSERT INTO test (name, surname) VALUES ($name, $surname)`
+msg.topic = `INSERT INTO table (name, surname) VALUES ($name, $surname)`
 msg.payload = ["John", "Smith"]
 return msg;
 ```
