@@ -34,7 +34,7 @@ SQL Type Batch without response uses db.exec which runs all SQL statements in th
 
 When using Via msg.topic or Batch without response msg.topic must hold the query for the database.
 
-When using msg.topic, parameters can be passed in the query using a msg.payload array. Ex:
+When using Via msg.topic, parameters can be passed in the query using a msg.payload array. Ex:
 
 ```
 msg.topic = `INSERT INTO table (name, surname) VALUES ($name, $surname)`
