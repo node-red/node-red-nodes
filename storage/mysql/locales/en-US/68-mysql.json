@@ -19,6 +19,7 @@
             "notstring": "the query is not defined as a string",
             "notconnected": "Database not connected",
             "notconfigured": "MySQL database not configured"
-        }
+        },
+        "tip": "Tip: The timezone should be specified as &#177;hh:mm or leave blank for 'local'."
     }
 }
