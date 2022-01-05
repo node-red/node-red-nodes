@@ -6,6 +6,10 @@
     <p>SQL Type <i>Prepared Statement</i> also uses <b>db.all</b> but sanitizes parameters passed, eliminating the possibility of SQL injection.</p>
     <p>SQL Type <i>Batch without response</i> uses <b>db.exec</b> which runs all SQL statements in the provided string. No result rows are returned.</p>
     <p>When using <i>Via msg.topic</i> or <i>Batch without response</i> <code>msg.topic</code> must hold the <i>query</i> for the database.</p>
+    <p>When using <i>Via msg.topic</i>, parameters can be passed in the query using a <code>msg.payload</code> array. Ex:<br />
+    <code>msg.topic = `INSERT INTO user_table (name, surname) VALUES ($name, $surname)`<br />
+    msg.payload = ["John", "Smith"]<br />
+    return msg;</code><br />
     <p>When using Normal or Prepared Statement, the <i>query</i> must be entered in the node config.</p>
     <p>Pass in the parameters as an object in <code>msg.params</code> for Prepared Statement. Ex:<br />
     <code>msg.params = {<br />
