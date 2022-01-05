@@ -50,6 +50,7 @@ module.exports = function(RED) {
             var bind = [];
 
             var doQuery = function(msg) {
+                bind = []
                 if (node.sqlquery == "msg.topic") {
                     if (typeof msg.topic === 'string') {
                         if (msg.topic.length > 0) {
