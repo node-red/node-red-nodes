@@ -57,7 +57,7 @@ module.exports = function(RED) {
                             if (Array.isArray(msg.payload)) {
                                 if (msg.payload.length === (msg.topic.split('$').length - 1) ) { bind = msg.payload; }
                                 else { bind = []; }
-                            } 
+                            }
                             node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
                                 if (err) { node.error(err,msg); }
                                 else {
