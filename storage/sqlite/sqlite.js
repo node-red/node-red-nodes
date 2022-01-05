@@ -50,13 +50,14 @@ module.exports = function(RED) {
             var bind = [];
 
             var doQuery = function(msg) {
+                bind = []
                 if (node.sqlquery == "msg.topic") {
                     if (typeof msg.topic === 'string') {
                         if (msg.topic.length > 0) {
                             if (Array.isArray(msg.payload)) {
                                 if (msg.payload.length === (msg.topic.split('$').length - 1) ) { bind = msg.payload; }
                                 else { bind = []; }
-                            } else { bind = []; }
+                            } 
                             node.mydbConfig.db.all(msg.topic, bind, function(err, row) {
                                 if (err) { node.error(err,msg); }
                                 else {
