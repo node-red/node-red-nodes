@@ -25,12 +25,12 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.pin = n.pin || 0;
         this.interval = n.interval || 1000;
-        this.dnum = parseInt(n.dnum || 0);
-        this.bus = parseInt(n.bus || 0);
+        this.dnum = parseInt(n.dnum) || 0;
+        this.bus = parseInt(n.bus) || 0;
         this.dev = n.dev || "3008";
         this.mcp3xxx = [];
         this.cb = function (err) { if (err) { node.error("Error: "+err); } };
-        this.opt = { speedHz:20000, deviceNumber:node.dnum, busNumber:node.bus };
+        this.opt = { speedHz:20000, deviceNumber:this.dnum, busNumber:this.bus };
         var chans = parseInt(this.dev.substr(3));
         var node = this;
 

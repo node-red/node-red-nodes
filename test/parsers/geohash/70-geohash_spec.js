@@ -111,6 +111,21 @@ describe('geohash node', function() {
         });
     });
 
+    it('should convert payload object lat,lon to geohash', function(done) {
+        var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            n2.on("input", function(msg) {
+                msg.should.have.a.property("payload");
+                msg.payload.should.have.a.property("geohash", "7zzzzzzzz");
+                done();
+            });
+            n1.emit("input", {payload:{latitude:0,longitude:0,precision:10}});
+        });
+    });
+
     it('should convert payload object lat,lon to geohash (low precision)', function(done) {
         var flow = [{"id":"n1", "type":"geohash", func:"geohash", gap:0, wires:[["n2"]] },
             {id:"n2", type:"helper"} ];

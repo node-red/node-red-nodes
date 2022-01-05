@@ -14,7 +14,7 @@ module.exports = function(RED) {
             RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.ignorenode"));
             allOK = false;
         }
-        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio") && !fs.existsSync("/usr/share/doc/python3-rpi.gpio")) {
             RED.log.warn("rpi-lcd : "+RED._("pilcd.errors.libnotfound"));
             allOK = false;
         }

@@ -40,7 +40,7 @@ module.exports = function(RED) {
                         if (typeof msg.payload !== "string") { msg.payload = msg.payload.toString(); }
                         if (node.cr === true) { msg.payload += "\n"; }
                     }
-                    if (RED.settings.verbose) { node.log("inp: "+msg.payload); }
+                    node.debug("inp: "+msg.payload);
                     if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
                     else { node.warn(RED._("daemon.errors.notrunning")); }
                     lastmsg = msg;
@@ -56,14 +56,14 @@ module.exports = function(RED) {
             }
             try {
                 node.child = spawn(node.cmd, node.args);
-                if (RED.settings.verbose) { node.log(node.cmd+" "+JSON.stringify(node.args)); }
+                node.debug(node.cmd+" "+JSON.stringify(node.args));
                 node.status({fill:"green",shape:"dot",text:RED._("daemon.status.running")});
                 node.running = true;
 
                 node.child.stdout.on('data', function (data) {
                     if (node.op === "string") { data = data.toString(); }
                     if (node.op === "number") { data = Number(data); }
-                    if (RED.settings.verbose) { node.log("out: "+data); }
+                    node.debug("out: "+data);
                     if (node.op === "lines") {
                         line += data.toString();
                         var bits = line.split("\n");
@@ -85,13 +85,13 @@ module.exports = function(RED) {
                 node.child.stderr.on('data', function (data) {
                     if (node.op === "string") { data = data.toString(); }
                     if (node.op === "number") { data = Number(data); }
-                    if (RED.settings.verbose) { node.log("err: "+data); }
+                    node.debug("err: "+data);
                     lastmsg.payload = data;
                     node.send([null,lastmsg,null]);
                 });
 
                 node.child.on('close', function (code,signal) {
-                    if (RED.settings.verbose) { node.log("ret: "+code+":"+signal); }
+                    node.debug("ret: "+code+":"+signal);
                     node.running = false;
                     node.child = null;
                     var rc = code;
@@ -138,7 +138,7 @@ module.exports = function(RED) {
                     done();
                 }, 3000);
                 node.child.kill(node.closer);
-                if (RED.settings.verbose) { node.log(node.cmd+" stopped"); }
+                node.debug(node.cmd+" stopped");
             }
             else { setTimeout(function() { done(); }, 100); }
             node.status({});
