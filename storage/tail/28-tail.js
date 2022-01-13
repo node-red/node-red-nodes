@@ -12,6 +12,8 @@ module.exports = function(RED) {
         this.split = new RegExp(n.split.replace(/\\r/g,'\r').replace(/\\n/g,'\n').replace(/\\t/g,'\t') || "[\r]{0,1}\n");
         var node = this;
 
+        node.tout = null;
+
         var fileTail = function() {
             if (fs.existsSync(node.filename)) {
                 if (node.filetype === "text") {
@@ -54,14 +56,14 @@ module.exports = function(RED) {
         };
 
         var cancelRestart = function() {
-            if (node.tout) {
+            if (isRestartPending()) {
                 clearTimeout(node.tout);
                 node.tout = null;
             }
         };
 
         var isRestartPending = function() {
-            return !!node.tout;
+            return node.tout !== null;
         };
 
         if (node.filename !== "") {
