@@ -12,6 +12,8 @@ module.exports = function(RED) {
         this.split = new RegExp(n.split.replace(/\\r/g,'\r').replace(/\\n/g,'\n').replace(/\\t/g,'\t') || "[\r]{0,1}\n");
         var node = this;
 
+        node.tout = null;
+
         var fileTail = function() {
             if (fs.existsSync(node.filename)) {
                 if (node.filetype === "text") {
@@ -41,10 +43,28 @@ module.exports = function(RED) {
                 });
             }
             else {
-                node.tout = setTimeout(function() { fileTail(); },10000);
+                scheduleRestart();
                 node.warn(RED._("tail.errors.filenotfound") + ": "+node.filename);
             }
         }
+
+        var scheduleRestart = function() {
+            node.tout = setTimeout(function() {
+                node.tout = null;
+                fileTail();
+            }, 10000);
+        };
+
+        var cancelRestart = function() {
+            if (isRestartPending()) {
+                clearTimeout(node.tout);
+                node.tout = null;
+            }
+        };
+
+        var isRestartPending = function() {
+            return node.tout !== null;
+        };
 
         if (node.filename !== "") {
             node.status({});
@@ -57,12 +77,12 @@ module.exports = function(RED) {
                 } else if (msg.filename === "") {
                     node.filename = "";
                     if (node.tail) { node.tail.unwatch(); }
-                    if (node.tout) { clearTimeout(node.tout); }
+                    cancelRestart();
                     node.status({ fill: "grey", text: "tail.state.stopped" });
                 } else {
                     node.filename = msg.filename;
                     if (node.tail) { node.tail.unwatch(); }
-                    if (!node.tout) { fileTail(); }
+                    if (!isRestartPending()) { fileTail(); }
                     node.status({ fill: "green", text: node.filename });
                 }
             });
@@ -72,7 +92,7 @@ module.exports = function(RED) {
             /* istanbul ignore else */
             if (node.tail) { node.tail.unwatch(); }
             delete node.tail;
-            if (node.tout) { clearTimeout(node.tout); }
+            cancelRestart();
         });
     }
 
