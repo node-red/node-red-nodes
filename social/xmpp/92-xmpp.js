@@ -183,7 +183,7 @@ module.exports = function(RED) {
                 if (RED.settings.verbose || LOGITALL) {that.log("got an iq query"); }
                 if (stanza.attrs.type === 'error') {
                     if (RED.settings.verbose || LOGITALL) {that.log("oh noes, it's an error"); }
-                    if (stanza.attrs.id === that.lastUsed.id) {
+                    if (that && that.hasOwnProperty("lastUsed") && that.lastUsed.hasOwnProperty("id") && stanza.attrs.id === that.lastUsed.id) {
                         that.lastUsed.status({fill:"red", shape:"ring", text:stanza.getChild('error')});
                         that.lastUsed.warn(stanza.getChild('error'));
                     }
