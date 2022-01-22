@@ -22,11 +22,11 @@
         }
     },
     "contributors": [
-      {
-        "name": "Nick O'Leary"
-      },
-      {
-        "name": "Dave Conway-Jones"
-      }
+        {
+            "name": "Nick O'Leary"
+        },
+        {
+            "name": "Dave Conway-Jones"
+        }
     ]
 }

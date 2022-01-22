@@ -1,23 +1,29 @@
 {
-    "name"          : "node-red-node-arduino",
-    "version"       : "0.3.1",
-    "description"   : "A Node-RED node to talk to an Arduino running firmata",
-    "dependencies"  : {
-        "firmata"   : "^2.3.0"
+    "name": "node-red-node-arduino",
+    "version": "0.3.1",
+    "description": "A Node-RED node to talk to an Arduino running firmata",
+    "dependencies": {
+        "firmata": "^2.3.0"
     },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes.git",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes.git",
         "directory": "tree/master/hardware/Arduino"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "arduino", "firmata" ],
-    "node-red"      : {
-        "nodes"     : {
+    "keywords": [
+        "node-red",
+        "arduino",
+        "firmata"
+    ],
+    "node-red": {
+        "nodes": {
             "arduino": "35-arduino.js"
         }
     },
-    "engines" : { "node" : ">=8" },
+    "engines": {
+        "node": ">=8"
+    },
     "author": {
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
