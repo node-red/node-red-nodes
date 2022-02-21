@@ -114,7 +114,9 @@ module.exports = function(RED) {
                         //console.log("query:",msg.topic);
                         node.mydbConfig.pool.getConnection(function (err, conn) {
                             if (err) {
-                                conn.release()
+                                if (conn) {
+                                    conn.release()
+                                }
                                 status = { fill: "red", shape: "ring", text: RED._("mysql.status.error") + ": " + err.code };
                                 node.status(status);
                                 node.error(err, msg);
