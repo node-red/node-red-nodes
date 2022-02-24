@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pi-neopixel",
-    "version"       : "1.0.0",
+    "version"       : "2.0.0",
     "description"   : "A Node-RED node to output to a neopixel (ws2812) string of LEDS from a Raspberry Pi.",
     "dependencies"  : {
     },
@@ -16,6 +16,7 @@
         "neopixel"
     ],
     "node-red": {
+        "version": ">=2.0.0",
         "nodes": {
             "rpi-neopixels": "neopixel.js"
         }
@@ -27,5 +28,6 @@
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "engines" : { "node" : ">=12.0.0" }
 }
