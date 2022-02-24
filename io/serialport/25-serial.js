@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
     var settings = RED.settings;
     var events = require("events");
-    var serialp = require("serialport");
+    const { SerialPort } = require('serialport');
     var bufMaxSize = 32768;  // Max serial buffer size, for inputs...
     const serialReconnectTime = settings.serialReconnectTime || 15000;
 
@@ -336,7 +336,8 @@ module.exports = function(RED) {
                     //newline = newline.replace("\\n","\n").replace("\\r","\r");
                     var olderr = "";
                     var setupSerial = function() {
-                        obj.serial = new serialp(port,{
+                        obj.serial = new SerialPort({
+                            path: port,
                             baudRate: baud,
                             dataBits: databits,
                             parity: parity,
@@ -487,7 +488,7 @@ module.exports = function(RED) {
     }());
 
     RED.httpAdmin.get("/serialports", RED.auth.needsPermission('serial.read'), function(req,res) {
-        serialp.list().then(
+        SerialPort.list().then(
             ports => {
                 const a = ports.map(p => p.path);
                 res.json(a);
