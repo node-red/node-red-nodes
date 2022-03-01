@@ -1,0 +1,36 @@
+<script type="text/html" data-template-name="junction">
+    <div class="form-row">
+        <div class="form-tips">
+            <p>The current flow was created in a newer version of Node-RED and contains
+                <code>junctions</code>.</p>
+            <p>This version of Node-RED does not support <code>junctions</code> and
+                they have been replaced by this placeholder node by the
+                <code>node-red-node-junction</code> module.</p>
+            <p>To use <code>junctions</code>, upgrade to Node-RED 3.0.0 or later.</p>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="junction">
+    <p>A placeholder node for the junction feature added in Node-RED 3.0.0.</p>
+    <p>This version of Node-RED does not support <code>junctions</code> and
+        they have been replaced by this placeholder node by the
+        <code>node-red-node-junction</code> module.</p>
+    <p>To use <code>junctions</code>, upgrade to Node-RED 3.0.0 or later.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('junction',{
+        category: 'common',
+        inputs: 1,
+        outputs: 1,
+        icon: 'font-awesome/fa-circle-o',
+        defaults: {
+            l: {value: false}
+        },
+        label: function() {
+            return "junction";
+        },
+        labelStyle: "node_label_italic"
+    });
+</script>

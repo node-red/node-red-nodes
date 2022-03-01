@@ -1,0 +1,22 @@
+{
+    "name": "node-red-node-junction",
+    "version": "1.0.0",
+    "description": "A Node-RED node to allow flows containing junctions to be imported into Node-RED 2 or earlier.",
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/utility/junction"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "version": "<3.0.0",
+        "nodes": {
+            "junction": "junction.js"
+        }
+    },
+    "author": "Dave Conway-Jones <dceejay@gmail.com>"
+}
