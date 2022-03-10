@@ -1,6 +1,10 @@
 {
     "email": {
+        "email": "email",
         "label": {
+            "getmail": "メール受信",
+            "auto": "自動",
+            "trigger": "トリガ時",
             "to": "宛先",
             "server": "サーバ",
             "port": "ポート",
@@ -17,11 +21,19 @@
             "none": "なし",
             "read": "既読",
             "delete": "削除",
+            "criteria": "条件",
             "criteriaFromMsg": "- msg.criteriaから使用 -",
+            "all": "全て",
+            "answered": "返信済み",
+            "flagged": "フラグ付き",
+            "seen": "既読",
+            "unanswered": "未返信",
+            "unflagged": "フラグ無し",
+            "unseen": "未読",
             "autotls": "TLSを開始?",
             "never": "なし",
-            "always": "常時",
             "required": "必要な場合",
+            "always": "常時",
             "rejectUnauthorised": "チェックサーバ証明書は有効です"
         },
         "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
@@ -42,7 +54,8 @@
             "sending": "送信中",
             "sendfail": "送信が失敗しました",
             "parseerror": "メッセージのパースに失敗",
-            "connecterror": "接続エラー"
+            "connecterror": "接続エラー",
+            "bad_criteria": "条件が不正"
         },
         "errors": {
             "nouserid": "e-mailのユーザIDが設定されていません",
@@ -52,7 +65,10 @@
             "nopayload": "送信するペイロードがありません",
             "fetchfail": "フォルダの受信に失敗しました: __folder__",
             "parsefail": "メッセージのパースに失敗",
-            "messageerror": "メッセージ受信エラー: __error__"
+            "messageerror": "メッセージ受信エラー: __error__",
+            "refreshtoolarge": "更新間隔の時間が長すぎます。2147483秒以内に制限してください。",
+            "invalidattachment": "不正な添付コンテンツ。文字列またはバッファ形式にしてください。",
+            "bad_criteria": "条件はJSON配列である必要があります。情報を参照してください。"
         }
     }
 }
