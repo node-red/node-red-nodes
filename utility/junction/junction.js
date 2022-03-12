@@ -15,6 +15,5 @@ module.exports = function(RED) {
             done();
         });
     }
-    console.log("HERE!!!!!!",major)
     RED.nodes.registerType("junction",JunctionNode);
 }
