@@ -14,6 +14,15 @@ please read the [install instructions](https://www.npmjs.com/package/mdns) for t
 For Debian / Ubuntu this requires installing
 
         sudo apt-get install libavahi-compat-libdnssd-dev libudev-dev
+        
+> For DietPi installations, if you encounter this error when executing the node
+>
+>        Error: getaddrinfo -3008
+>        
+> You may need to install `libnss-mdns` as well
+>
+>        sudo apt-get install libnss-mdns
+
 
 Install
 -------
