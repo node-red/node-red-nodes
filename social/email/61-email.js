@@ -96,6 +96,10 @@ module.exports = function(RED) {
                         sendopts.priority = msg.priority;
                     }
                     sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
+                    if (msg.hasOwnProperty("header") && msg.header.hasOwnProperty("message-id")) {
+                        sendopts.inReplyTo = msg.header["message-id"];
+                        sendopts.subject = "Re: " + sendopts.subject;
+                    }
                     if (msg.hasOwnProperty("envelope")) { sendopts.envelope = msg.envelope; }
                     if (Buffer.isBuffer(msg.payload)) { // if it's a buffer in the payload then auto create an attachment instead
                         if (!msg.filename) {
