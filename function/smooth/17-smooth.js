@@ -55,14 +55,15 @@ module.exports = function(RED) {
                             value = v[top].tot / v[top].a.length;
                         }
                         if (node.action === "median") {
-                            var sortedForMedian = v[top].a.slice().sort((a, b) => a - b);
-                            var medianIndex = Math.floor(v[top].count / 2);
-                            if (v[top].count % 2 === 0) {
-                                value = (v[top].sortedForMedian[v[top].medianIndex - 1] + v[top].sortedForMedian[v[top].medianIndex]) / 2;
-                                }
-                            else {
-                                value = v[top].sortedForMedian[v[top].medianIndex]
+                            var sortedForMedian = v[top].a.slice().sort((a, b) => a - b);                            
+                            var medianIndex = Math.floor(v[top].iter / 2);
+                            if (v[top].iter % 2 === 0) {
+                                value = (sortedForMedian[medianIndex - 1] + sortedForMedian[medianIndex]) / 2;
                             }
+                            else {
+                                value = sortedForMedian[medianIndex]
+                            }
+                        }
                             
                         if (node.action === "sd") {
                             v[top].tot = v[top].tot + n - v[top].pop;
