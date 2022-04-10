@@ -48,6 +48,31 @@ describe('smooth node', function() {
         });
     });
 
+
+
+    it('should average over a number of inputs using median', function(done) {
+        var flow = [{"id":"n1", "type":"smooth", action:"median", count:"5", round:"true", wires:[["n2"]] },
+            {id:"n2", type:"helper"} ];
+        helper.load(testNode, flow, function() {
+            var n1 = helper.getNode("n1");
+            var n2 = helper.getNode("n2");
+            var c = 0;
+            n2.on("input", function(msg) {
+                c += 1;
+                if (c === 4) { msg.should.have.a.property("payload", 55); }
+                if (c === 5) { msg.should.have.a.property("payload", 100); }
+                if (c === 6) { msg.should.have.a.property("payload", 550); done(); }
+            });
+            n1.emit("input", {payload:1});
+            n1.emit("input", {payload:10});
+            n1.emit("input", {payload:100});
+            n1.emit("input", {payload:1000});
+            n1.emit("input", {payload:10000});
+            n1.emit("input", {payload:100000});
+        });
+    });
+
+
     it('should average over a number of inputs - another property - foo', function(done) {
         var flow = [{"id":"n1", "type":"smooth", action:"mean", count:"5", round:"true", property:"foo", wires:[["n2"]] },
             {id:"n2", type:"helper"} ];
