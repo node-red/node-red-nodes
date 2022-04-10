@@ -444,7 +444,7 @@ module.exports = function(RED) {
                     if (body) {
                         var msg = { payload:body.getText(), subject:node.subject[stanza.attrs.from.split('/')[0]] };
                         var ids = stanza.attrs.from.split('/');
-                        if (ids[1].length !== 36) {
+                        if (ids.length > 1 && ids[1].length !== 36) {
                             msg.topic = stanza.attrs.from
                         }
                         else { msg.topic = ids[0]; }
