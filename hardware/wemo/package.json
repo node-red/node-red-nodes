@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-wemo",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Input and Output nodes for Belkin WeMo devices",
   "repository" : {
     "type":"git",
