@@ -338,6 +338,17 @@ WeMoNG.prototype.get = function get(deviceID) {
 }
 
 WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
+
+  var body = [
+      postbodyheader,
+      '<u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">',
+      '<BinaryState>%s</BinaryState>',
+      '</u:SetBinaryState>',
+      postbodyfooter
+    ].join('\n');
+
+  var data = util.format(body, on);
+
   var postoptions = {
     host: socket.ip,
     port: socket.port,
@@ -346,7 +357,8 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
     headers: {
       'SOAPACTION': '"urn:Belkin:service:basicevent:1#SetBinaryState"',
       'Content-Type': 'text/xml; charset="utf-8"',
-      'Accept': ''
+      'Accept': '',
+      'Content-Length': data.length
     }
   };
 
@@ -372,15 +384,7 @@ WeMoNG.prototype.toggleSocket = function toggleSocket(socket, on) {
       post_request.abort();
     });
 
-    var body = [
-      postbodyheader,
-      '<u:SetBinaryState xmlns:u="urn:Belkin:service:basicevent:1">',
-      '<BinaryState>%s</BinaryState>',
-      '</u:SetBinaryState>',
-      postbodyfooter
-    ].join('\n');
-
-    post_request.write(util.format(body, on));
+    post_request.write(data);
     post_request.end();
 }
 
@@ -394,6 +398,7 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
       'SOAPACTION': getSocketState.action,
       'Content-Type': 'text/xml; charset="utf-8"',
       'Accept': ''
+      'Content-Length': getSocketState.body.length 
     }
   }
 
