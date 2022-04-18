@@ -397,7 +397,7 @@ WeMoNG.prototype.getSocketStatus = function getSocketStatus(socket) {
     headers: {
       'SOAPACTION': getSocketState.action,
       'Content-Type': 'text/xml; charset="utf-8"',
-      'Accept': ''
+      'Accept': '',
       'Content-Length': getSocketState.body.length 
     }
   }
