@@ -3,7 +3,7 @@
     "version"       : "0.1.0",
     "description"   : "A Node-RED node that looks for SNMP oids.",
     "dependencies"  : {
-        "net-snmp"  : "3.6.2"
+        "net-snmp"  : "^3.6.3"
     },
     "repository" : {
         "type":"git",
