@@ -1,8 +1,13 @@
 node-red-node-snmp
 ==================
 
-A pair of <a href="http://nodered.org" target="_new">Node-RED</a> nodes that
-fetch either individual oids, or a table oid from a SNMP enabled host.
+A set of <a href="http://nodered.org" target="_new">Node-RED</a> nodes that
+fetch values from SNMP enabled hosts. Supports v1, v2c and v3.
+* SNMP get - Simple SNMP oid or oid list fetcher
+* SNMP set - Simple snmp Set node.
+* SNMP subtree - Simple sub tree fetcher
+* SNMP table - Simple SNMP oid table fetcher
+* SNMP walker - Simple SNMP oid walker fetcher
 
 Install
 -------
