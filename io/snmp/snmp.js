@@ -61,15 +61,20 @@ module.exports = function (RED) {
         const sessionid = generateUUID();
         const user = {}
         const options = {};
-
+        const compat = { "v1": "1", "v2": "2c", "v2c": "2c", "v3": "3" };
+        if(compat[node.version]) {
+            node.version = compat[node.version];
+        } else if(["1","2c","3"].indexOf(node.version) < 0) {
+            node.version = "1";
+        }
         options.version = node.version;
-        if (node.version === "v1") {
+        if (node.version === "1") {
             options.version = SNMP.Version1;
             user.community = node.community || msg.community;
-        } else if (node.version === "v2c") {
+        } else if (node.version === "2c") {
             options.version = SNMP.Version2c;
             user.community = node.community || msg.community;
-        } else if (node.version === "v3") {
+        } else if (node.version === "3") {
             user.name = node.username || msg.username || "";
             user.level = SNMP.SecurityLevel.noAuthNoPriv;
             user.authProtocol = SNMP.AuthProtocols.none;
