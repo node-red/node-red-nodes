@@ -12,14 +12,20 @@
 <script type="text/javascript" id="node-red-node-snmp-common-script">
     const node_snmp_common = {
         oneditprepare: function (node) {
+            const compat = { "v1": "1", "v2": "2c", "v2c": "2c", "v3": "3" };
+            if(compat[node.version]) {
+                node.version = compat[node.version];
+            } else if(["1","2c","3"].indexOf(node.version) < 0) {
+                node.version = "1";
+            }
             $("#node-input-version").on("change", function(evt) {
-                const isV3 = $("#node-input-version").val() === "v3";
+                const isV3 = $("#node-input-version").val() === "3";
                 $(".form-row-snmpv1v2").toggleClass("hidden", isV3);
                 $(".form-row-snmpv3").toggleClass("hidden", !isV3);
                 $("#node-input-auth").trigger("change");
             });
             $("#node-input-auth").on("change", function(evt) {
-                const isV3 = $("#node-input-version").val() === "v3";
+                const isV3 = $("#node-input-version").val() === "3";
                 const auth = $("#node-input-auth").val();
                 if(isV3) {
                     switch (auth) {
@@ -38,6 +44,10 @@
                     }  
                 }
             });
+            $("#node-input-version").val(node.version);
+            if(!$("#node-input-auth").val()) {
+                $("#node-input-auth").val("noAuthNoPriv");
+            }
             $("#node-input-version").trigger("change");
         }
     }
@@ -50,9 +60,9 @@
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
-            <option value="v1">v1</option>
-            <option value="v2c">v2c</option>
-           <option value="v3">v3</option>
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
+           <option value="3">v3</option>
         </select>
         <span style="margin-left:50px;">Timeout</span>
         <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
@@ -126,7 +136,7 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            version: { value: "v1", required: true },
+            version: { value: "1", required: true },
             timeout: { value: 5 },
             community: { value: "public" },
             auth: { value: "noAuthNoPriv", required: true },
@@ -163,10 +173,10 @@
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
-            <option value="v1">v1</option>
-            <option value="v2c">v2c</option>
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
-            <option value="v3">v3</option>
+            <option value="3">v3</option>
 			<!-- End of unique data for V3 -->	
         </select>
         <span style="margin-left:50px;">Timeout</span>
@@ -251,7 +261,7 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            version: { value: "v1", required: true },
+            version: { value: "1", required: true },
             timeout: { value: 5 },
             community: { value: "public" },
             auth: { value: "noAuthNoPriv", required: true },
@@ -295,10 +305,10 @@
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
-            <option value="v1">v1</option>
-            <option value="v2c">v2c</option>
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
-            <option value="v3">v3</option>
+            <option value="3">v3</option>
 			<!-- End of unique data for V3 -->	
         </select>
         <span style="margin-left:50px;">Timeout</span>
@@ -373,7 +383,7 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            version: { value: "v1", required: true },
+            version: { value: "1", required: true },
             timeout: { value: 5 },
             community: { value: "public" },
             auth: { value: "noAuthNoPriv", required: true },
@@ -410,10 +420,10 @@
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
-            <option value="v1">v1</option>
-            <option value="v2c">v2c</option>
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
-            <option value="v3">v3</option>
+            <option value="3">v3</option>
 			<!-- End of unique data for V3 -->	
         </select>
         <span style="margin-left:50px;">Timeout</span>
@@ -488,7 +498,7 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            version: { value: "v1", required: true },
+            version: { value: "1", required: true },
             timeout: { value: 5 },
             community: { value: "public" },
             auth: { value: "noAuthNoPriv", required: true },
@@ -526,10 +536,10 @@
     <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
-            <option value="v1">v1</option>
-            <option value="v2c">v2c</option>
+            <option value="1">v1</option>
+            <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
-            <option value="v3">v3</option>
+            <option value="3">v3</option>
 			<!-- End of unique data for V3 -->	
         </select>
         <span style="margin-left:50px;">Timeout</span>
@@ -607,7 +617,7 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            version: { value: "v1", required: true },
+            version: { value: "1", required: true },
             timeout: { value: 5 },
             community: { value: "public" },
             auth: { value: "noAuthNoPriv", required: true },
