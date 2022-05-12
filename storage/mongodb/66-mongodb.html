@@ -42,37 +42,6 @@
     </div>
 </script>
 
-<script type="text/javascript">
-    RED.nodes.registerType('mongodb', {
-        category: 'config',
-        color: "rgb(218, 196, 180)",
-        defaults: {
-            hostname: {value: "127.0.0.1", required: true},
-            topology: {value: "direct", required: true},
-            connectOptions: {value: "", required: false},
-            port: {value: 27017, required: true},
-            db: {value: "", required: true},
-            name: {value: ""}
-        },
-        credentials: {
-            user: {type: "text"},
-            password: {type: "password"}
-        },
-        label: function() {
-            return this.name || this.db + "@" + this.hostname;
-        },
-        oneditprepare: function() {
-          $("#node-config-input-topology").on("change", function() {
-            var topology = $("#node-config-input-topology option:selected").val();
-            if (topology === "direct") {
-              $(".node-config-input-port").show();
-            } else {
-              $(".node-config-input-port").hide();
-            }
-          });
-        },
-    });
-</script>
 
 <script type="text/html" data-template-name="mongodb out">
     <div class="form-row">
@@ -114,58 +83,6 @@
     <div class="form-tips" id="node-warning" style="display: none"><span data-i18n="[html]mongodb.tip"></span></div>
 </script>
 
-<script type="text/javascript">
-    function oneditprepare() {
-        $("#node-input-operation").change(function () {
-            var id = $("#node-input-operation option:selected").val();
-
-            if (id === "update") {
-                $(".node-input-payonly").hide();
-                $(".node-input-upsert, .node-input-multi").show();
-            } else if (id === "delete") {
-                $(".node-input-payonly, .node-input-upsert, .node-input-multi").hide();
-            } else {
-                $(".node-input-payonly").show();
-                $(".node-input-upsert, .node-input-multi").hide();
-            }
-        });
-
-        $("#node-input-collection").change(function () {
-            if($("#node-input-collection").val() === "") {
-                $("#node-warning").show();
-            } else {
-                $("#node-warning").hide();
-            }
-        });
-    }
-
-    RED.nodes.registerType('mongodb out', {
-        category: 'storage-output',
-        color: "rgb(218, 196, 180)",
-        defaults: {
-            mongodb: {type: "mongodb", required: true},
-            name: {value: ""},
-            collection: {value: ""},
-            payonly: {value: false},
-            upsert: {value: false},
-            multi: {value: false},
-            operation: {value: "store"}
-        },
-        inputs: 1,
-        outputs: 0,
-        icon: "mongodb.png",
-        align: "right",
-        label: function() {
-            var mongoNode = RED.nodes.node(this.mongodb);
-            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
-        },
-        labelStyle: function() {
-            return this.name ? "node_label_italic" : "";
-        },
-        oneditprepare: oneditprepare
-    });
-</script>
-
 <script type="text/html" data-template-name="mongodb in">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
@@ -191,25 +108,108 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('mongodb in', {
-        category: 'storage-input',
-        color: "rgb(218, 196, 180)",
-        defaults: {
-            mongodb: {type: "mongodb", required: true},
-            name: {value: ""},
-            collection: {value: ""},
-            operation: {value: "find"}
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "mongodb.png",
-        label: function() {
-            var mongoNode = RED.nodes.node(this.mongodb);
-            return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
-        },
-        labelStyle: function() {
-            return this.name ? "node_label_italic" : "";
-        },
-        oneditprepare: oneditprepare
-    });
+    (function () {
+        
+        function _oneditprepare() {
+            $("#node-input-operation").change(function () {
+                var id = $("#node-input-operation option:selected").val();
+
+                if (id === "update") {
+                    $(".node-input-payonly").hide();
+                    $(".node-input-upsert, .node-input-multi").show();
+                } else if (id === "delete") {
+                    $(".node-input-payonly, .node-input-upsert, .node-input-multi").hide();
+                } else {
+                    $(".node-input-payonly").show();
+                    $(".node-input-upsert, .node-input-multi").hide();
+                }
+            });
+
+            $("#node-input-collection").change(function () {
+                if($("#node-input-collection").val() === "") {
+                    $("#node-warning").show();
+                } else {
+                    $("#node-warning").hide();
+                }
+            });
+        }
+
+        RED.nodes.registerType('mongodb', {
+            category: 'config',
+            color: "rgb(218, 196, 180)",
+            defaults: {
+                hostname: {value: "127.0.0.1", required: true},
+                topology: {value: "direct", required: true},
+                connectOptions: {value: "", required: false},
+                port: {value: 27017, required: true},
+                db: {value: "", required: true},
+                name: {value: ""}
+            },
+            credentials: {
+                user: {type: "text"},
+                password: {type: "password"}
+            },
+            label: function() {
+                return this.name || this.db + "@" + this.hostname;
+            },
+            oneditprepare: function() {
+            $("#node-config-input-topology").on("change", function() {
+                var topology = $("#node-config-input-topology option:selected").val();
+                if (topology === "direct") {
+                $(".node-config-input-port").show();
+                } else {
+                $(".node-config-input-port").hide();
+                }
+            });
+            },
+        });
+
+        RED.nodes.registerType('mongodb out', {
+            category: 'storage-output',
+            color: "rgb(218, 196, 180)",
+            defaults: {
+                mongodb: {type: "mongodb", required: true},
+                name: {value: ""},
+                collection: {value: ""},
+                payonly: {value: false},
+                upsert: {value: false},
+                multi: {value: false},
+                operation: {value: "store"}
+            },
+            inputs: 1,
+            outputs: 0,
+            icon: "mongodb.png",
+            align: "right",
+            label: function() {
+                var mongoNode = RED.nodes.node(this.mongodb);
+                return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
+            },
+            labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: _oneditprepare
+        });
+
+        RED.nodes.registerType('mongodb in', {
+            category: 'storage-input',
+            color: "rgb(218, 196, 180)",
+            defaults: {
+                mongodb: {type: "mongodb", required: true},
+                name: {value: ""},
+                collection: {value: ""},
+                operation: {value: "find"}
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "mongodb.png",
+            label: function() {
+                var mongoNode = RED.nodes.node(this.mongodb);
+                return this.name || (mongoNode ? mongoNode.label() + " " + this.collection : "mongodb");
+            },
+            labelStyle: function() {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: _oneditprepare
+        });
+    })()
 </script>
