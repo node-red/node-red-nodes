@@ -3,7 +3,7 @@
     "version"       : "0.0.4",
     "description"   : "A Node-RED node that that provides a simple PID controller.",
     "dependencies"  : {
-    "node-pid-controller": "0.0.3"
+    "node-pid-controller": "0.1.2"
     },
     "repository" : {
         "type":"git",
