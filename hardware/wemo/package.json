@@ -29,7 +29,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "node-ssdp": "~3.2.5",
-    "request": "~2.74.0",
+    "request": "~2.88.2",
     "xml2js": "~0.4.13",
     "util": "~0.10.3",
     "url": "~0.11.0",
