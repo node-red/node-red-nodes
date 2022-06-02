@@ -11,11 +11,13 @@ module.exports = function(RED) {
         if (n.interval > 35790) { this.warn(RED._("feedparse.errors.invalidinterval")) }
         this.interval = (parseInt(n.interval)||15) * 60000;
         this.interval_id = null;
+        this.ignorefirst = n.ignorefirst || false;
         this.seen = {};
+        this.donefirst = false;
         var node = this;
         var parsedUrl = url.parse(this.url);
         if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
-            node.error(RED._("feedparse.errors.invalidurl"));
+            node.error(RED._("feedparse.errors.invalidurl"),RED._("feedparse.errors.invalidurl"));
         }
         else {
             var getFeed = function() {
@@ -33,19 +35,24 @@ module.exports = function(RED) {
                     else { res.pipe(feedparser); }
                 });
 
-                feedparser.on('error', function(error) { node.error(error); });
+                feedparser.on('error', function(error) { node.error(error,error); });
 
                 feedparser.on('readable', function () {
                     var stream = this, article;
                     while (article = stream.read()) {  // jshint ignore:line
                         if (!(article.guid in node.seen) || ( node.seen[article.guid] !== 0 && node.seen[article.guid] != article.date.getTime())) {
-                            node.seen[article.guid] = article.date?article.date.getTime():0;
+                            node.seen[article.guid] = article.date ? article.date.getTime() : 0;
                             var msg = {
                                 topic: article.origlink || article.link,
                                 payload: article.description,
                                 article: article
                             };
-                            node.send(msg);
+                            if (node.ignorefirst === true && node.donefirst === false) {
+                                // do nothing
+                            }
+                            else {
+                                node.send(msg);
+                            }
                         }
                     }
                 });
@@ -53,7 +60,7 @@ module.exports = function(RED) {
                 feedparser.on('meta', function (meta) {});
                 feedparser.on('end', function () {});
             };
-            node.interval_id = setInterval(function() { getFeed(); }, node.interval);
+            node.interval_id = setInterval(function() { node.donefirst = true; getFeed(); }, node.interval);
             getFeed();
         }
 
