@@ -61,45 +61,45 @@
 </script>
 
 <script type="text/javascript">
-(function() {
-    RED.nodes.registerType('e-mail',{
-        category: 'social-output',
-        color:"#c7e9c0",
-        defaults: {
-            server: {value:"smtp.gmail.com",required:true},
-            port: {value:"465",required:true},
-            secure: {value: true},
-            tls: {value: true},
-            name: {value:""},
-            dname: {value:""}
-        },
-        credentials: {
-            userid: {type:"text"},
-            password: {type: "password"},
-            global: { type:"boolean"}
-        },
-        inputs:1,
-        outputs:0,
-        icon: "envelope.png",
-        align: "right",
-        paletteLabel: function() {
-            return this._("email.email");
-        },
-        label: function() {
-            return this.dname||this.name||this._("email.email");
-        },
-        labelStyle: function() {
-            return (this.dname)?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            if (this.credentials.global) {
-                $('#node-tip').show();
-            } else {
-                $('#node-tip').hide();
+    (function () {
+        RED.nodes.registerType('e-mail', {
+            category: 'social-output',
+            color: "#c7e9c0",
+            defaults: {
+                server: { value: "smtp.gmail.com", required: true },
+                port: { value: "465", required: true },
+                secure: { value: true },
+                tls: { value: true },
+                name: { value: "" },
+                dname: { value: "" }
+            },
+            credentials: {
+                userid: { type: "text" },
+                password: { type: "password" },
+                global: { type: "boolean" }
+            },
+            inputs: 1,
+            outputs: 0,
+            icon: "envelope.png",
+            align: "right",
+            paletteLabel: function () {
+                return this._("email.email");
+            },
+            label: function () {
+                return this.dname || this.name || this._("email.email");
+            },
+            labelStyle: function () {
+                return (this.dname) ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                if (this.credentials.global) {
+                    $('#node-tip').show();
+                } else {
+                    $('#node-tip').hide();
+                }
             }
-        }
-    });
-})();
+        });
+    })();
 </script>
 
 
@@ -190,24 +190,24 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <script>
-        var checkPorts = function() {
+        var checkPorts = function () {
             var currentPort = $("#node-input-port").val();
             if (currentPort === "143" || currentPort === "993" || currentPort === "110" || currentPort == "995") {
                 if ($("#node-input-useSSL").prop("checked") === true) {
-                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"993":"995");
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP" ? "993" : "995");
                 } else {
-                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"143":"110");
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP" ? "143" : "110");
                 }
             }
         };
 
-        $("#node-input-useSSL").change(function(x, y) {
-          // console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
-          // console.log("Value: " + $("#node-input-useSSL").prop("checked"));
-          checkPorts();
+        $("#node-input-useSSL").change(function (x, y) {
+            // console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+            // console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+            checkPorts();
         });
 
-        $("#node-input-protocol").change(function() {
+        $("#node-input-protocol").change(function () {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
                 $(".node-input-autotls").show();
@@ -226,88 +226,128 @@
 </script>
 
 <script type="text/javascript">
-(function() {
-    RED.nodes.registerType('e-mail in',{
-        category: 'social-input',
-        color:"#c7e9c0",
-        defaults: {
-            name: {value:""},
-            protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
-            server: {value:"imap.gmail.com",required:true},
-            useSSL: {value: true},
-            autotls: {value: "never"},
-            port: {value:"993",required:true},
-            box: {value:"INBOX"}, // For IMAP, The mailbox to process
-            disposition: { value: "Read" }, // For IMAP, the disposition of the read email
-	        criteria: {value: "UNSEEN"},
-            repeat: {value:"300",required:true},
-            fetch: {value:"auto"},
-            inputs: {value:0}
-        },
-        credentials: {
-            userid: {type:"text"},
-            password: {type: "password"},
-            global: { type:"boolean"}
-        },
-        inputs: 0,
-        outputs: 1,
-        icon: "envelope.png",
-        paletteLabel: function() {
-            return this._("email.email");
-        },
-        label: function() {
-            return this.name||this._("email.email");
-        },
-        labelStyle: function() {
-            return (this.name)?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-            var that = this;
-            if (this.credentials.global) {
-                $('#node-tip').show();
-            } else {
-                $('#node-tip').hide();
-            }
-            if (typeof this.box === 'undefined') {
-                $("#node-input-box").val("INBOX");
-                this.box = "INBOX";
-            }
-            if (typeof this.criteria === 'undefined') {
-                $("#node-input-criteria").val("UNSEEN");
-                this.criteria = "UNSEEN";
-            }
-            if (typeof this.autotls === 'undefined') {
-                $("#node-input-autotls").val("never");
-                this.autotls = "never";
-            }
-            if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
-            $("#node-input-fetch").change(function() {
-                if ($("#node-input-fetch").val() === "trigger") {
-                    $('#node-repeatTime').hide();
-                    that.inputs = 1;
+    (function () {
+        RED.nodes.registerType('e-mail in', {
+            category: 'social-input',
+            color: "#c7e9c0",
+            defaults: {
+                name: { value: "" },
+                protocol: { value: "IMAP", required: true }, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
+                server: { value: "imap.gmail.com", required: true },
+                useSSL: { value: true },
+                autotls: { value: "never" },
+                port: { value: "993", required: true },
+                box: { value: "INBOX" }, // For IMAP, The mailbox to process
+                disposition: { value: "Read" }, // For IMAP, the disposition of the read email
+                criteria: { value: "UNSEEN" },
+                repeat: { value: "300", required: true },
+                fetch: { value: "auto" },
+                inputs: { value: 0 }
+            },
+            credentials: {
+                userid: { type: "text" },
+                password: { type: "password" },
+                global: { type: "boolean" }
+            },
+            inputs: 0,
+            outputs: 1,
+            icon: "envelope.png",
+            paletteLabel: function () {
+                return this._("email.email");
+            },
+            label: function () {
+                return this.name || this._("email.email");
+            },
+            labelStyle: function () {
+                return (this.name) ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                var that = this;
+                if (this.credentials.global) {
+                    $('#node-tip').show();
+                } else {
+                    $('#node-tip').hide();
                 }
-                else  {
-                    $('#node-repeatTime').show();
-                    that.inputs = 0;
+                if (typeof this.box === 'undefined') {
+                    $("#node-input-box").val("INBOX");
+                    this.box = "INBOX";
                 }
-            });
-            $("#node-input-criteria").change(function() {
-                if ($("#node-input-criteria").val() === "_msg_") {
-                    $("#node-input-fetch").val("trigger");
-                    $("#node-input-fetch").change();
+                if (typeof this.criteria === 'undefined') {
+                    $("#node-input-criteria").val("UNSEEN");
+                    this.criteria = "UNSEEN";
                 }
-            });
-        }
-    });
-})();
+                if (typeof this.autotls === 'undefined') {
+                    $("#node-input-autotls").val("never");
+                    this.autotls = "never";
+                }
+                if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
+                $("#node-input-fetch").change(function () {
+                    if ($("#node-input-fetch").val() === "trigger") {
+                        $('#node-repeatTime').hide();
+                        that.inputs = 1;
+                    }
+                    else {
+                        $('#node-repeatTime').show();
+                        that.inputs = 0;
+                    }
+                });
+                $("#node-input-criteria").change(function () {
+                    if ($("#node-input-criteria").val() === "_msg_") {
+                        $("#node-input-fetch").val("trigger");
+                        $("#node-input-fetch").change();
+                    }
+                });
+            }
+        });
+    })();
 </script>
 
 
 <script type="text/html" data-template-name="e-mail mta">
     <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
-        <input type="text" id="node-input-port" style="width:70%;"/>
+        <input type="text" id="node-input-port" style="width:100px">
+        <label style="width:40px"> </label>
+        <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="email.label.enableSecure"></span>
+    </div>  
+    <div class="form-row">
+        <label for="node-input-starttls"><i class="fa fa-lock"></i> <span data-i18n="email.label.enableStarttls"></span></label>
+        <input type="checkbox" id="node-input-starttls" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="email.label.starttlsUpgrade"></span>
+    </div>     
+    <div class="form-row">
+        <label for="node-input-certFile"><i class="fa fa-file"></i>
+        <span data-i18n="email.label.certFile"></span></label>
+        <input type="text" id="node-input-certFile" placeholder="server.crt" style="width:100%">
+    </div>  
+    <div class="form-row">
+        <label for="node-input-keyFile"><i class="fa fa-key"></i>
+        <span data-i18n="email.label.keyFile"></span></label>
+        <input type="text" id="node-input-keyFile" placeholder="private.key" style="width:100%">
+    </div>       
+    <div class="form-row">
+        <label for="node-input-auth"><i class="fa fa-user"></i> <span data-i18n="email.label.users"></span></label>
+        <label style="width:144px"> </label>
+        <input type="checkbox" id="node-input-auth" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="email.label.auth"></span>
     </div>
+    <div class="form-row node-input-email-users-container-row" style="margin-bottom: 0px;">
+        <div id="node-input-email-users-container-div" style="box-sizing: border-box; border-radius: 5px;
+                height: 200px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+            <ol id="node-input-email-users-container" style="list-style-type:none; margin: 0;"></ol>
+        </div>
+    </div>
+    <div class="form-row">
+        <a href="#" class="editor-button editor-button-small" id="node-input-email-users-add" style="margin-top: 4px;">
+            <i class="fa fa-plus"></i>
+            <span data-i18n="email.label.addButton"></span>
+        </a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-expert"><i class="fa fa-cog"></i> <span data-i18n="email.label.expert"></span></label>
+        <input type="text" id="node-input-expert">
+    </div>     
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
@@ -316,22 +356,127 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('e-mail mta',{
+    RED.nodes.registerType('e-mail mta', {
         category: 'social',
-        color:"#c7e9c0",
+        color: "#c7e9c0",
         defaults: {
-            name: {value:""},
-            port: {value:"1025",required:true},
+            name: { value: "" },
+            port: { value: "1025", required: true, validate: RED.validators.number() },
+            secure: { value: false },
+            starttls: { value: false },
+            certFile: { value: "" },
+            keyFile: { value: "" },
+            users: { value: [] },
+            auth: { value: false },
+            expert: { value: '{"logger":false}' }
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "envelope.png",
-        paletteLabel: function() { return this._("email.email") + " MTA" },
-        label: function() {
-            return this.name||this._("email.email") + " MTA";
+        paletteLabel: function () { return this._("email.email") + " MTA" },
+        label: function () {
+            return this.name || this._("email.email") + " MTA";
         },
-        labelStyle: function() {
-            return this.name?"node_label_italic":"";
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            let node = this;
+            // Expert settings
+            $("#node-input-expert").typedInput({
+                type: "json",
+                types: ["json"]
+            })
+            // User Management
+            let cacheItemCount = 0;
+            if (node.users && node.users.length > 0) {
+                cacheItemCount = node.users.length;
+                node.users.forEach(function (element, index, array) {
+                    generateUserEntry(element, index);
+                });
+            }
+            function generateUserEntry(user, id) {
+                let container = $("<li/>", {
+                    style: "background: #fefefe; margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"
+                });
+                let row = $('<div id="row' + id + '"/>').appendTo(container);
+
+                $('<i style="color: #eee; cursor: move;" class="node-input-email-users-handle fa fa-bars"></i>').appendTo(row);
+
+                let userField = $("<input/>", {
+                    id: "node-input-email-users-name" + id,
+                    class: "userName",
+                    type: "text",
+                    style: "margin-left:5px;width:100px;",
+                    placeholder: "name"
+                }).appendTo(row);
+
+                let passwordField = $("<input/>", {
+                    id: "node-input-email-users-password" + id,
+                    class: "userPassword",
+                    type: "password",
+                    style: "margin: 0 auto;width:50%;min-width:20px;margin-left:5px",
+                    placeholder: "password"
+                }).appendTo(row);
+
+                userField.val(user.name);
+                passwordField.val(user.password);
+
+                let finalspan = $("<span/>", {
+                    style: "float: right;margin-right: 10px;"
+                }).appendTo(row);
+
+                let removeUserButton = $("<a/>", {
+                    href: "#",
+                    id: "node-button-user-remove" + id,
+                    class: "editor-button editor-button-small",
+                    style: "margin-top: 7px; margin-left: 5px;"
+                }).appendTo(finalspan);
+
+                $("<i/>", { class: "fa fa-remove" }).appendTo(removeUserButton);
+
+                removeUserButton.click(function () {
+                    container.css({ background: "#fee" });
+                    container.fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                });
+
+                $("#node-input-email-users-container").append(container);
+            }
+
+            $("#node-input-email-users-container").sortable({
+                axis: "y",
+                handle: ".node-input-email-users-handle",
+                cursor: "move"
+            });
+
+            $("#node-input-email-users-container .node-input-email-users-handle").disableSelection();
+
+            $("#node-input-email-users-add").click(function () {
+                if (!cacheItemCount || cacheItemCount < 0) {
+                    cacheItemCount = 0;
+                }
+                generateUserEntry({ name: "", password: "" }, cacheItemCount++);
+                $("#node-input-email-users-container-div").scrollTop(
+                    $("#node-input-email-users-container-div").get(0).scrollHeight
+                );
+            });
+        },
+        oneditsave: function () {
+            let node = this;
+            let cacheUsers = $("#node-input-email-users-container").children();
+            node.users = [];
+            cacheUsers.each(function () {
+                node.users.push({
+                    name: $(this)
+                        .find(".userName")
+                        .val(),
+                    password: $(this)
+                        .find(".userPassword")
+                        .val()
+                });
+            });
         }
     });
 </script>

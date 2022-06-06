@@ -34,7 +34,16 @@
             "never": "never",
             "required": "if required",
             "always": "always",
-            "rejectUnauthorised": "Check server certificate is valid"
+            "rejectUnauthorised": "Check server certificate is valid",
+            "enableSecure": "Secure connection",
+            "enableStarttls": "Start TLS",
+            "starttlsUpgrade": "Upgrade cleartext connection with STARTTLS",
+            "certFile": "Certificate",
+            "keyFile":"Private key",
+            "users": "Users",
+            "auth": "Authenticate users",
+            "addButton": "Add",   
+            "expert": "Expert"
         },
         "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
         "tip": {
