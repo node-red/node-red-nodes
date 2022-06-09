@@ -61,45 +61,45 @@
 </script>
 
 <script type="text/javascript">
-    (function () {
-        RED.nodes.registerType('e-mail', {
-            category: 'social-output',
-            color: "#c7e9c0",
-            defaults: {
-                server: { value: "smtp.gmail.com", required: true },
-                port: { value: "465", required: true },
-                secure: { value: true },
-                tls: { value: true },
-                name: { value: "" },
-                dname: { value: "" }
-            },
-            credentials: {
-                userid: { type: "text" },
-                password: { type: "password" },
-                global: { type: "boolean" }
-            },
-            inputs: 1,
-            outputs: 0,
-            icon: "envelope.png",
-            align: "right",
-            paletteLabel: function () {
-                return this._("email.email");
-            },
-            label: function () {
-                return this.dname || this.name || this._("email.email");
-            },
-            labelStyle: function () {
-                return (this.dname) ? "node_label_italic" : "";
-            },
-            oneditprepare: function () {
-                if (this.credentials.global) {
-                    $('#node-tip').show();
-                } else {
-                    $('#node-tip').hide();
-                }
+(function() {
+    RED.nodes.registerType('e-mail',{
+        category: 'social-output',
+        color:"#c7e9c0",
+        defaults: {
+            server: {value:"smtp.gmail.com",required:true},
+            port: {value:"465",required:true},
+            secure: {value: true},
+            tls: {value: true},
+            name: {value:""},
+            dname: {value:""}
+        },
+        credentials: {
+            userid: {type:"text"},
+            password: {type: "password"},
+            global: { type:"boolean"}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "envelope.png",
+        align: "right",
+        paletteLabel: function() {
+            return this._("email.email");
+        },
+        label: function() {
+            return this.dname||this.name||this._("email.email");
+        },
+        labelStyle: function() {
+            return (this.dname)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.credentials.global) {
+                $('#node-tip').show();
+            } else {
+                $('#node-tip').hide();
             }
-        });
-    })();
+        }
+    });
+})();
 </script>
 
 
@@ -190,24 +190,24 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <script>
-        var checkPorts = function () {
+        var checkPorts = function() {
             var currentPort = $("#node-input-port").val();
             if (currentPort === "143" || currentPort === "993" || currentPort === "110" || currentPort == "995") {
                 if ($("#node-input-useSSL").prop("checked") === true) {
-                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP" ? "993" : "995");
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"993":"995");
                 } else {
-                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP" ? "143" : "110");
+                    $("#node-input-port").val($("#node-input-protocol").val() === "IMAP"?"143":"110");
                 }
             }
         };
 
-        $("#node-input-useSSL").change(function (x, y) {
-            // console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
-            // console.log("Value: " + $("#node-input-useSSL").prop("checked"));
-            checkPorts();
+        $("#node-input-useSSL").change(function(x, y) {
+          // console.log("useSSL: x="+ JSON.stringify(x) + ", y=" + y);
+          // console.log("Value: " + $("#node-input-useSSL").prop("checked"));
+          checkPorts();
         });
 
-        $("#node-input-protocol").change(function () {
+        $("#node-input-protocol").change(function() {
             var protocol = $("#node-input-protocol").val();
             if (protocol === "IMAP") {
                 $(".node-input-autotls").show();
@@ -226,80 +226,80 @@
 </script>
 
 <script type="text/javascript">
-    (function () {
-        RED.nodes.registerType('e-mail in', {
-            category: 'social-input',
-            color: "#c7e9c0",
-            defaults: {
-                name: { value: "" },
-                protocol: { value: "IMAP", required: true }, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
-                server: { value: "imap.gmail.com", required: true },
-                useSSL: { value: true },
-                autotls: { value: "never" },
-                port: { value: "993", required: true },
-                box: { value: "INBOX" }, // For IMAP, The mailbox to process
-                disposition: { value: "Read" }, // For IMAP, the disposition of the read email
-                criteria: { value: "UNSEEN" },
-                repeat: { value: "300", required: true },
-                fetch: { value: "auto" },
-                inputs: { value: 0 }
-            },
-            credentials: {
-                userid: { type: "text" },
-                password: { type: "password" },
-                global: { type: "boolean" }
-            },
-            inputs: 0,
-            outputs: 1,
-            icon: "envelope.png",
-            paletteLabel: function () {
-                return this._("email.email");
-            },
-            label: function () {
-                return this.name || this._("email.email");
-            },
-            labelStyle: function () {
-                return (this.name) ? "node_label_italic" : "";
-            },
-            oneditprepare: function () {
-                var that = this;
-                if (this.credentials.global) {
-                    $('#node-tip').show();
-                } else {
-                    $('#node-tip').hide();
-                }
-                if (typeof this.box === 'undefined') {
-                    $("#node-input-box").val("INBOX");
-                    this.box = "INBOX";
-                }
-                if (typeof this.criteria === 'undefined') {
-                    $("#node-input-criteria").val("UNSEEN");
-                    this.criteria = "UNSEEN";
-                }
-                if (typeof this.autotls === 'undefined') {
-                    $("#node-input-autotls").val("never");
-                    this.autotls = "never";
-                }
-                if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
-                $("#node-input-fetch").change(function () {
-                    if ($("#node-input-fetch").val() === "trigger") {
-                        $('#node-repeatTime').hide();
-                        that.inputs = 1;
-                    }
-                    else {
-                        $('#node-repeatTime').show();
-                        that.inputs = 0;
-                    }
-                });
-                $("#node-input-criteria").change(function () {
-                    if ($("#node-input-criteria").val() === "_msg_") {
-                        $("#node-input-fetch").val("trigger");
-                        $("#node-input-fetch").change();
-                    }
-                });
+(function() {
+    RED.nodes.registerType('e-mail in',{
+        category: 'social-input',
+        color:"#c7e9c0",
+        defaults: {
+            name: {value:""},
+            protocol: {value: "IMAP", required:true}, // Which protocol to use to connect to the mail server ("IMAP" or "POP3")
+            server: {value:"imap.gmail.com",required:true},
+            useSSL: {value: true},
+            autotls: {value: "never"},
+            port: {value:"993",required:true},
+            box: {value:"INBOX"}, // For IMAP, The mailbox to process
+            disposition: { value: "Read" }, // For IMAP, the disposition of the read email
+	        criteria: {value: "UNSEEN"},
+            repeat: {value:"300",required:true},
+            fetch: {value:"auto"},
+            inputs: {value:0}
+        },
+        credentials: {
+            userid: {type:"text"},
+            password: {type: "password"},
+            global: { type:"boolean"}
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "envelope.png",
+        paletteLabel: function() {
+            return this._("email.email");
+        },
+        label: function() {
+            return this.name||this._("email.email");
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var that = this;
+            if (this.credentials.global) {
+                $('#node-tip').show();
+            } else {
+                $('#node-tip').hide();
             }
-        });
-    })();
+            if (typeof this.box === 'undefined') {
+                $("#node-input-box").val("INBOX");
+                this.box = "INBOX";
+            }
+            if (typeof this.criteria === 'undefined') {
+                $("#node-input-criteria").val("UNSEEN");
+                this.criteria = "UNSEEN";
+            }
+            if (typeof this.autotls === 'undefined') {
+                $("#node-input-autotls").val("never");
+                this.autotls = "never";
+            }
+            if ($("#node-input-fetch").val() === null) { $("#node-input-fetch").val("auto"); }
+            $("#node-input-fetch").change(function() {
+                if ($("#node-input-fetch").val() === "trigger") {
+                    $('#node-repeatTime').hide();
+                    that.inputs = 1;
+                }
+                else  {
+                    $('#node-repeatTime').show();
+                    that.inputs = 0;
+                }
+            });
+            $("#node-input-criteria").change(function() {
+                if ($("#node-input-criteria").val() === "_msg_") {
+                    $("#node-input-fetch").val("trigger");
+                    $("#node-input-fetch").change();
+                }
+            });
+        }
+    });
+})();
 </script>
 
 
