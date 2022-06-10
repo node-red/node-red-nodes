@@ -58,11 +58,19 @@
 
 <script type="text/html" data-help-name="e-mail mta">
     <p>Mail Transfer Agent - listens on a port for incoming SMTP mails.</p>
-    <p><b>Note</b>: "NOT for production use" as there is no security built in.
+    <p><b>Note</b>: Default configuration is "NOT for production use" as security is not enabled.
     This is primarily for local testing of outbound mail sending, but could be used
     as a mail forwarder to a real email service if required.</p>
     <p>To use ports below 1024, for example 25 or 465, you may need to get privileged access.
     On linux systems this can be done by running
     <pre>sudo setcap 'cap_net_bind_service=+eip' $(which node)</pre>
     and restarting Node-RED. Be aware - this gives all node applications access to all ports.</p>
+    <h3>Security</h3>
+    <p>When <i>Secure connection</i> is checked, the connection will use TLS. 
+    If not it is still possible to upgrade clear text socket to TLS socket by checking <i>Start TLS</i>.
+    If you do no specify your own certificate (path to file) then a pregenerated self-signed certificate is used. Any respectful client refuses to accept such certificate.</p>
+    <h3>Authentication</h3>
+    <p>Authentication can be enabled (PLAIN or LOGIN). Add at least one user.</p>
+    <h3>Expert</h3>
+    <p>All options as described in <a href="https://nodemailer.com/extras/smtp-server/" target="_new">nodemailer SMTP server</a> can be made here.</p>    
 </script>
