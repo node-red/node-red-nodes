@@ -4,7 +4,8 @@
         "label": {
             "feedurl": "Feed url",
             "refresh": "Refresh",
-            "minutes": "minutes"
+            "minutes": "minutes",
+            "ignorefirst": "Ignore any stories older than restart"
         },
         "errors": {
             "badstatuscode": "error - Bad status code",
