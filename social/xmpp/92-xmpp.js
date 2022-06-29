@@ -55,7 +55,6 @@ module.exports = function(RED) {
             timeout: 60000
         }
         if (this.resource !== "") { opts.resource = this.resource; }
-        console.log("OPTS",opts)
         this.client = client(opts);
 
         this.client.timeout = 60000;
