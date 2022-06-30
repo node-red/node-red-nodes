@@ -3,7 +3,7 @@
     "version"       : "0.0.11",
     "description"   : "A Node-RED node to send and receive message from IBM MQ Light",
     "dependencies"  : {
-        "mqlight"   : "1.0.x"
+        "mqlight"   : "2.0.2016102600"
     },
     "repository" : {
         "type":"git",
