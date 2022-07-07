@@ -7,7 +7,8 @@
         defaults: {
             name: {value:""},
             pin:  {value:"", required: true},
-            interrupt: {value:"", required: true}
+            interrupt: {value:"", required: true},
+            mode: {value:"", required: true}
         },
         inputs:0,
         outputs:1,
@@ -66,6 +67,16 @@
             <option value="17">D17</option>
             <option value="18">D18</option>
             <option value="19">D19</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa-level-up"></i> Mode</label>
+        <select type="text" id="node-input-mode" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'>select mode</option>
+            <option value="0">Strong </option>
+            <option value="1">Pull-up </option>
+            <option value="2">Pull-down </option>
+            <option value="3">Hiz </option>
         </select>
     </div>
     <div class="form-row">

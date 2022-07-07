@@ -7,10 +7,11 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.pin = n.pin;
         this.interrupt = n.interrupt;
+        this.mode = n.mode;
         this.x = new m.Gpio(parseInt(this.pin));
         this.board = m.getPlatformName();
         var node = this;
-        node.x.mode(m.PIN_GPIO);
+        node.x.mode(parseInt(this.mode));
         node.x.dir(m.DIR_IN);
         node.x.isr(m.EDGE_BOTH, function() {
             var g = node.x.read();
