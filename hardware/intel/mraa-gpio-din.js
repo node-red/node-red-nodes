@@ -50,6 +50,8 @@ module.exports = function(RED) {
         }
         this.on('close', function() {
             node.x.isr(m.EDGE_BOTH, null);
+            node.x.isrExit();
+            node.x.close();
         });
     }
     RED.nodes.registerType("mraa-gpio-din", gpioDin);
