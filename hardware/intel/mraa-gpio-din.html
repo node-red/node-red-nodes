@@ -1,7 +1,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('mraa-gpio-din',{
-        category: 'Intel gpio',
+        category: 'GPIO',
         color: '#a6bbcf',
         paletteLabel: 'digital',
         defaults: {
@@ -30,6 +30,7 @@
                 if (data === 5) { t = "Raspberry Pi"; }
                 if (data === 6) { t = "Beaglebone"; }
                 if (data === 7) { t = "Banana"; }
+                if (data === 25) { t = "IOT2050"; }
                 $('#type-tip').text(t);
                 $('#node-input-pin').val(pinnow);
             });
@@ -78,7 +79,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="mraa-gpio-din">
-    <p>A digital input pin for an Intel Galileo or Edison board.</p>
+    <p>A digital input pin for an Intel Galileo/Edison/Siemens IOT2050 board.</p>
     <p>The <code>msg.payload</code> contains the value (0 or 1), and <code>msg.topic</code>
     contains "{the_board_name}/D{the pin number}".</p>
 </script>
