@@ -108,10 +108,12 @@ module.exports = function(RED) {
             delete pinsInUse[node.pin];
             if (node.child != null) {
                 node.finished = done;
-                node.child.stdin.write("close "+node.pin);
-                node.child.kill('SIGKILL');
+                node.child.stdin.write("close "+node.pin, () => {
+                    node.child.kill('SIGKILL');
+                    setTimeout(function() { if (done) { done(); } }, 25);
+                });
             }
-            else { done(); }
+            else { if (done) { done(); } }
         });
     }
     RED.nodes.registerType("rpi-gpio in",GPIOInNode);
@@ -210,10 +212,12 @@ module.exports = function(RED) {
             delete pinsInUse[node.pin];
             if (node.child != null) {
                 node.finished = done;
-                node.child.stdin.write("close "+node.pin);
-                node.child.kill('SIGKILL');
+                node.child.stdin.write("close "+node.pin, () => {
+                    node.child.kill('SIGKILL');
+                    setTimeout(function() { if (done) { done(); } }, 25);
+                });
             }
-            else { done(); }
+            else { if (done) { done(); } }
         });
 
     }
