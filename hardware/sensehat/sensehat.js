@@ -7,7 +7,7 @@ module.exports = function(RED) {
 
     var hatCommand = __dirname+'/sensehat';
 
-    if (!fs.existsSync('/usr/lib/python2.7/dist-packages/sense_hat')) {
+    if (!fs.existsSync('/usr/lib/python2.7/dist-packages/sense_hat') && !fs.existsSync('/usr/lib/python3/dist-packages/sense_hat')) {
         throw "Error: Can't find Sense HAT python libraries. Run sudo apt-get install sense-hat";
     }
 
