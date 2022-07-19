@@ -1,5 +1,7 @@
 /* eslint-disable indent */
 
+const { domainToUnicode } = require("url");
+
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
  *
@@ -224,7 +226,7 @@ module.exports = function(RED) {
         }
 
         var node = this;
-        this.interval_id = null;
+        node.interval_id = null;
 
         // Process a new email message by building a Node-RED message to be passed onwards
         // in the message flow.  The parameter called `msg` is the template message we
@@ -253,7 +255,7 @@ module.exports = function(RED) {
         // Check the POP3 email mailbox for any new messages.  For any that are found,
         // retrieve each message, call processNewMessage to process it and then delete
         // the messages from the server.
-        function checkPOP3(msg) {
+        function checkPOP3(msg,send,done) {
             var currentMessage;
             var maxMessage;
             //node.log("Checking POP3 for new messages");
@@ -270,6 +272,7 @@ module.exports = function(RED) {
                 if (currentMessage > maxMessage) {
                     pop3Client.quit();
                     setInputRepeatTimeout();
+                    done();
                     return;
                 }
                 pop3Client.retr(currentMessage);
@@ -294,6 +297,7 @@ module.exports = function(RED) {
             pop3Client.on("error", function(err) {
                 setInputRepeatTimeout();
                 node.log("error: " + JSON.stringify(err));
+                done();
             });
 
             pop3Client.on("connect", function() {
@@ -309,13 +313,13 @@ module.exports = function(RED) {
                     node.log(util.format("login error: %s %j", status, rawData));
                     pop3Client.quit();
                     setInputRepeatTimeout();
+                    done();
                 }
             });
 
             pop3Client.on("retr", function(status, msgNumber, data, rawData) {
                 // node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
                 if (status) {
-
                     // We have now received a new email message.  Create an instance of a mail parser
                     // and pass in the email message.  The parser will signal when it has parsed the message.
                     simpleParser(data, {}, function(err, parsed) {
@@ -334,6 +338,7 @@ module.exports = function(RED) {
                     node.log(util.format("retr error: %s %j", status, rawData));
                     pop3Client.quit();
                     setInputRepeatTimeout();
+                    done();
                 }
             });
 
@@ -359,7 +364,7 @@ module.exports = function(RED) {
         // Check the email sever using the IMAP protocol for new messages.
         var s = false;
         var ss = false;
-        function checkIMAP(msg) {
+        function checkIMAP(msg,send,done) {
             //console.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             s = true;
@@ -392,6 +397,7 @@ module.exports = function(RED) {
                             imap.end();
                             s = false;
                             setInputRepeatTimeout();
+                            done(err);
                             return;
                         }
                         else {
@@ -407,6 +413,7 @@ module.exports = function(RED) {
                                             imap.end();
                                             s = false;
                                             setInputRepeatTimeout();
+                                            done(err);
                                             return;
                                         }
                                         else {
@@ -417,6 +424,8 @@ module.exports = function(RED) {
                                                 imap.end();
                                                 s = false;
                                                 setInputRepeatTimeout();
+                                                msg.payload = 0;
+                                                done();
                                                 return;
                                             }
 
@@ -454,6 +463,8 @@ module.exports = function(RED) {
                                                     imap.end();
                                                     s = false;
                                                     setInputRepeatTimeout();
+                                                    msg.payload = results.length;
+                                                    done();
                                                 };
                                                 if (node.disposition === "Delete") {
                                                     imap.addFlags(results, "\Deleted", cleanup);
@@ -469,6 +480,7 @@ module.exports = function(RED) {
                                                 imap.end();
                                                 s = false;
                                                 setInputRepeatTimeout();
+                                                done(err);
                                             });
                                         }
                                     }); // End of imap->search
@@ -478,6 +490,7 @@ module.exports = function(RED) {
                                     node.error(e.toString(),e);
                                     s = ss = false;
                                     imap.end();
+                                    done(e);
                                     return;
                                 }
                             }
@@ -486,6 +499,7 @@ module.exports = function(RED) {
                                 node.error(RED._("email.errors.bad_criteria"),msg);
                                 s = ss = false;
                                 imap.end();
+                                done();
                                 return;
                             }
                         }
@@ -497,11 +511,11 @@ module.exports = function(RED) {
 
 
         // Perform a check of the email inboxes using either POP3 or IMAP
-        function checkEmail(msg) {
+        function checkEmail(msg,send,done) {
             if (node.protocol === "POP3") {
-                checkPOP3(msg);
+                checkPOP3(msg,send,done);
             } else if (node.protocol === "IMAP") {
-                if (s === false && ss == false) { checkIMAP(msg); }
+                if (s === false && ss == false) { checkIMAP(msg,send,done); }
             }
         }  // End of checkEmail
 
@@ -528,11 +542,12 @@ module.exports = function(RED) {
             });
         }
 
-        this.on("input", function(msg) {
-            checkEmail(msg);
+        node.on("input", function(msg, send, done) {
+            send = send || function() { node.send.apply(node,arguments) };
+            checkEmail(msg,send,done);
         });
 
-        this.on("close", function() {
+        node.on("close", function() {
             if (this.interval_id != null) {
                 clearTimeout(this.interval_id);
             }
