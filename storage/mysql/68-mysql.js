@@ -180,7 +180,7 @@ module.exports = function(RED) {
             });
         }
         else {
-            node.error(RED._("mysql.errors.notconfigured"));
+            this.error(RED._("mysql.errors.notconfigured"));
         }
     }
     RED.nodes.registerType("mysql",MysqlDBNodeIn);
