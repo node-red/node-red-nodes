@@ -141,7 +141,7 @@ module.exports = function (RED) {
         const IPV6_DOUBLE_COL_PAT = /^\[{0,1}([0-9a-f:]*)::([0-9a-f:]*)(?:\]:(\d+)){0,1}$/g;
         const ipv4Matcher = IPV4_PAT.exec(ip);
         let hex = "";
-        let port = undefined;
+        let port;
         let ipOnly = [];
         try {
 
@@ -165,7 +165,7 @@ module.exports = function (RED) {
             const IPV6_PAT = new RegExp(ipv6Pattern);
 
 
-            //  IPV6, double colon        
+            //  IPV6, double colon
             const ipv6DoubleColonMatcher = IPV6_DOUBLE_COL_PAT.exec(ip);
             if (ipv6DoubleColonMatcher && ipv6DoubleColonMatcher.length) {
                 let p1 = ipv6DoubleColonMatcher[1];
@@ -392,24 +392,25 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             const oids = node.oids || msg.oid;
             const { host, sessionid, user, options } = prepareSnmpOptions(node, msg);
+            function feedCb(varbinds) {
+                for (let i = 0; i < varbinds.length; i++) {
+                    if (SNMP.isVarbindError(varbinds[i])) {
+                        node.error(SNMP.varbindError(varbinds[i]), msg);
+                    } else {
+                        response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
+                    }
+                }
+            }
             if (oids) {
                 msg.oid = oids;
                 let sess = openSession(sessionid, host, user, options);
                 sess.on("error", function (err) {
                     node.error(err, msg);
                 })
-                //move response array & feedCb to inside `node.on("input",` to avoid subsequent 
+                //move response array & feedCb to inside `node.on("input",` to avoid subsequent
                 // calls overwriting results from previous operations (each call gets own result/response)
                 const response = [];
-                function feedCb(varbinds) {
-                    for (let i = 0; i < varbinds.length; i++) {
-                        if (SNMP.isVarbindError(varbinds[i])) {
-                            node.error(SNMP.varbindError(varbinds[i]), msg);
-                        } else {
-                            response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
-                        }
-                    }
-                }
+
                 sess.subtree(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
@@ -442,24 +443,25 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             const oids = node.oids || msg.oid;
             const { host, sessionid, user, options } = prepareSnmpOptions(node, msg);
+            function feedCb(varbinds) {
+                for (let i = 0; i < varbinds.length; i++) {
+                    if (SNMP.isVarbindError(varbinds[i])) {
+                        node.error(SNMP.varbindError(varbinds[i]), msg);
+                    } else {
+                        response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
+                    }
+                }
+            }
             if (oids) {
                 msg.oid = oids;
                 let sess = openSession(sessionid, host, user, options);
                 sess.on("error", function (err) {
                     node.error(err, msg);
                 })
-                //move response array & feedCb to inside `node.on("input",` to avoid subsequent 
+                //move response array & feedCb to inside `node.on("input",` to avoid subsequent
                 // calls overwriting results from previous operations (each call gets own result/response)
                 const response = [];
-                function feedCb(varbinds) {
-                    for (let i = 0; i < varbinds.length; i++) {
-                        if (SNMP.isVarbindError(varbinds[i])) {
-                            node.error(SNMP.varbindError(varbinds[i]), msg);
-                        } else {
-                            response.push({ oid: varbinds[i].oid, value: varbinds[i].value });
-                        }
-                    }
-                }
+
                 sess.walk(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
