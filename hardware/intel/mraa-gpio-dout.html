@@ -1,7 +1,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('mraa-gpio-dout',{
-        category: 'Intel gpio',
+        category: 'GPIO',
         color: '#a6bbcf',
         paletteLabel: 'digital',
         defaults: {
@@ -36,6 +36,7 @@
                 if (data === 5) { t = "Raspberry Pi"; }
                 if (data === 6) { t = "Beaglebone"; }
                 if (data === 7) { t = "Banana"; }
+                if (data === 25) { t = "IOT2050"; }
                 $('#btype').text(t);
                 if (data === 0) {
                     $('#node-input-pin').append($("<option></option>").attr("value",14).text("LED - Galileo v1"));
@@ -100,6 +101,6 @@
 </script>
 
 <script type="text/x-red" data-help-name="mraa-gpio-dout">
-    <p>A digital output pin for an Intel Galileo or Edison board.</p>
+    <p>A digital output pin for a board.</p>
     <p>The <code>msg.payload</code> should contain the value 0 or 1.</p>
 </script>
