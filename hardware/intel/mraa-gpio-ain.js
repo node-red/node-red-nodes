@@ -25,6 +25,7 @@ module.exports = function(RED) {
 
         this.on('close', function() {
             clearInterval(this.timer);
+            node.x.close();
         });
     }
     RED.nodes.registerType("mraa-gpio-ain", gpioAin);

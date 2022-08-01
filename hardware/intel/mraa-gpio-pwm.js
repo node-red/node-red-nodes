@@ -21,6 +21,7 @@ module.exports = function(RED) {
 
         this.on('close', function() {
             node.p.enable(false);
+            node.p.close();
         });
     }
     RED.nodes.registerType("mraa-gpio-pwm", gpioPWM);
