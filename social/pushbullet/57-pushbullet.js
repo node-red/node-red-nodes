@@ -221,8 +221,14 @@ module.exports = function(RED) {
             msg.payload = incoming.iden;
         }
         else if (incoming.type === 'sms_changed') {
-            msg.topic = "SMS: "+ incoming.notifications[0].title;
-            msg.payload = incoming.notifications[0].body;
+            if (incoming.notifications && incoming.notifications.length > 0) {
+                msg.topic = "SMS: "+ incoming.notifications[0].title;
+                msg.payload = incoming.notifications[0].body;
+            }
+            else {
+                msg.topic = "SMS: ";
+                msg.payload = "";
+            }
             msg.message = incoming;
         }
         else {
@@ -244,12 +250,11 @@ module.exports = function(RED) {
 
     function PushbulletOut(n) {
         RED.nodes.createNode(this, n);
-        var self = this;
-
         this.title = n.title;
         this.chan = n.chan;
         this.pushtype = n.pushtype;
         this.pusher = null;
+        var self = this;
 
         var configNode;
 
