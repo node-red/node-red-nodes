@@ -51,6 +51,7 @@ module.exports = function(RED) {
             var today = Math.round((nowMillis - midnightMillis) / 60000) % 1440;
             var starttime = Number(node.startt);
             var endtime = Number(node.endt);
+            var tzOff = (new Date()).getTimezoneOffset();
 
             if ((starttime >= 5000) || (endtime == 5000) || (endtime == 6000)) {
                 var times = SunCalc.getTimes(now, node.lat, node.lon);
@@ -109,13 +110,11 @@ module.exports = function(RED) {
             }
 
             if (proceed >= 2) {
-                var duration = newendtime - today;
-                if (today > newendtime) { duration += 1440; }
-                //node.status({fill:"yellow",shape:"dot",text:"on for " + duration + " mins"});
-                node.status({fill:"yellow", shape:"dot", text:"on until " + parseInt(newendtime / 60) + ":" + ("0" + newendtime % 60).substr(-2)});
+                node.status({fill:"yellow", shape:"dot", text:"on until " + parseInt((newendtime -tzOff) / 60) + ":" + ("0" + (newendtime - tzOff) % 60).substr(-2)});
             }
-            //else { node.status({fill:"blue",shape:"dot",text:"off"}); }
-            else { node.status({fill:"blue", shape:"dot", text:"off until " + parseInt(starttime / 60) + ":" + ("0" + starttime % 60).substr(-2)}); }
+            else {
+                node.status({fill:"blue", shape:"dot", text:"off until " + parseInt((starttime - tzOff) / 60) + ":" + ("0" + (starttime - tzOff) % 60).substr(-2)});
+            }
 
             var msg = {};
             if (node.mytopic) { msg.topic = node.mytopic; }
