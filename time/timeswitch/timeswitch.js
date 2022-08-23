@@ -3,6 +3,8 @@ module.exports = function(RED) {
     "use strict";
     var SunCalc = require('suncalc');
     const spacetime = require("spacetime")
+		const SUNRISE_KEY = "sunrise";
+		const SUNSET_KEY = "sunset";
 
     function TimeswitchNode(n) {
         RED.nodes.createNode(this, n);
@@ -43,83 +45,140 @@ module.exports = function(RED) {
 
         this.on("input", function(msg2) {
             if (msg2.payload === "reset") { ison = 0; }
+						
+						// current global time
+						const now = spacetime.now();
+						const nowNative = now.toNativeDate();
+						
+						// all sun events for the given lat/long
+            const sunEvents = SunCalc.getTimes(nowNative, node.lat, node.lon);
+						let sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
+						let sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
 
-            var timeOffset = spacetime(Date.now()).goto(this.timezone.toLowerCase()).timezone().current.offset * 60 * 60 * 1000;
-            var now = new Date(Date.now() + timeOffset);
-            var nowMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), 0);
-            var midnightMillis = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0);
-            var today = Math.round((nowMillis - midnightMillis) / 60000) % 1440;
-            var starttime = Number(node.startt);
-            var endtime = Number(node.endt);
-            var tzOff = (new Date()).getTimezoneOffset();
+						// check if sun event has already occurred today
+						if (now.isAfter(sunriseDateTime)) {
+							// get tomorrow's sunrise, since it'll be different
+							sunriseDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNRISE_KEY]).nearest("minute");
+						}
+						if (now.isAfter(sunsetDateTime)) {
+							// get tomorrow's sunset, since it'll be different
+							sunsetDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNSET_KEY]).nearest("minute");
+						}
 
-            if ((starttime >= 5000) || (endtime == 5000) || (endtime == 6000)) {
-                var times = SunCalc.getTimes(now, node.lat, node.lon);
-                var startMillis = Date.UTC(times[node.start].getUTCFullYear(), times[node.start].getUTCMonth(), times[node.start].getUTCDate(), times[node.start].getUTCHours(), times[node.start].getUTCMinutes());
-                var endMillis = Date.UTC(times[node.end].getUTCFullYear(), times[node.end].getUTCMonth(), times[node.end].getUTCDate(), times[node.end].getUTCHours(), times[node.end].getUTCMinutes());
-                var dawn = ((startMillis - midnightMillis) / 60000) + Number(node.dawnoff);
-                var dusk = ((endMillis - midnightMillis) / 60000) + Number(node.duskoff);
-                if (starttime == 5000) { starttime = dawn; }
-                if (starttime == 6000) { starttime = dusk; }
-                if (endtime == 5000) { endtime = dawn; }
-                if (endtime == 6000) { endtime = dusk; }
-                if (RED.settings.verbose) { node.log("Dawn " + parseInt(dawn / 60) + ":" + dawn % 60 + " - Dusk " + parseInt(dusk / 60) + ":" + dusk % 60); }
+						// log
+						if (RED.settings.verbose) { 
+							node.log(`Sunrise ${sunriseDateTime.format("time")} - Sunset ${sunsetDateTime.format("time")} `);
+						}
+
+						// apply selected timezone to selected times (not to sunrise/sunset-- those are based on lat/long)
+						const currentTimeZone = now.timezone();
+						const selectedTimeZone = spacetime(now.epoch, this.timezone.toLowerCase()).timezone();
+
+						let getSelectedTimeFromMinuteString = minuteString => {
+							const selectedTimeInMinutesAfterMidnight = Number(minuteString);
+							let selectedTime = spacetime.now();
+							// if less than 1440, what are the time values for the next start and stop time?
+							if (selectedTimeInMinutesAfterMidnight < 1440) {
+								// determine offset to get from selected time zone to current timezone
+								// e.g. current (EDT) is -4, selected (PDT) is -7
+								// to get from PDT to EDT, you must add 3
+								// (-4) - (-7) = +3
+								const offset = currentTimeZone.current.offset - selectedTimeZone.current.offset;
+								const selectedHourValue = Math.floor(selectedTimeInMinutesAfterMidnight / 60);
+								const selectedMinuteValue = Math.floor(selectedTimeInMinutesAfterMidnight % 60);
+								selectedTime = selectedTime.hour(selectedHourValue).minute(selectedMinuteValue).second(0).millisecond(0);
+								selectedTime = selectedTime.add(offset, "hours");
+								// select the next time if it's in the past
+								if(now.isAfter(selectedTime)) {
+									selectedTime = selectedTime.add(1, "day");
+								}
+							} else if (selectedTimeInMinutesAfterMidnight == 5000) { // sunrise
+								selectedTime = sunriseDateTime;
+							} else if (selectedTimeInMinutesAfterMidnight == 6000) { // sunset
+								selectedTime = sunsetDateTime;
+							}
+							return selectedTime;
+						};
+
+						let selectedOnTime = getSelectedTimeFromMinuteString(node.startt); // 8/22 22:45
+						let selectedOffTime = getSelectedTimeFromMinuteString(node.endt); // 8/23 06:31
+
+						// handle the "Start + X Minutes" cases
+						if (node.endt >= 10000) {
+							selectedOffTime = selectedOnTime.add(node.endt - 10000, "minutes");
+						}
+
+						// handler function for the node payload
+						let sendPayload = (payload, nextTime) => {
+							if (payload == 1) {
+								node.status({
+									fill: "yellow",
+									shape: "dot",
+									text: `on until ${nextTime.format("time")}`
+								});
+							}
+							else {
+								node.status({
+									fill: "blue",
+									shape: "dot",
+									text: `off until ${nextTime.format("time")}`
+								});
+							}
+							var msg = {};
+							if (node.mytopic) { msg.topic = node.mytopic; }
+							msg.payload = payload;
+							node.send(msg);
+						};
+
+            var proceed = true;
+						// if today is not among the selected days of the week, stop here
+            switch (nowNative.getDay()) {
+							case 0 : { if (!node.sun) { proceed &= false; } break; }
+							case 1 : { if (!node.mon) { proceed &= false; } break; }
+							case 2 : { if (!node.tue) { proceed &= false; } break; }
+							case 3 : { if (!node.wed) { proceed &= false; } break; }
+							case 4 : { if (!node.thu) { proceed &= false; } break; }
+							case 5 : { if (!node.fri) { proceed &= false; } break; }
+							case 6 : { if (!node.sat) { proceed &= false; } break; }
             }
 
-            var proceed = 0;
-            switch (now.getDay()) {
-                case 0 : { if (node.sun) { proceed++; } break; }
-                case 1 : { if (node.mon) { proceed++; } break; }
-                case 2 : { if (node.tue) { proceed++; } break; }
-                case 3 : { if (node.wed) { proceed++; } break; }
-                case 4 : { if (node.thu) { proceed++; } break; }
-                case 5 : { if (node.fri) { proceed++; } break; }
-                case 6 : { if (node.sat) { proceed++; } break; }
-            }
+						if (!proceed) {			
+							sendPayload(0, selectedOnTime);	
+							return;			
+						}
 
-            if (proceed) {
-                switch (now.getMonth()) {
-                    case 0 : { if (node.jan) { proceed++; } break; }
-                    case 1 : { if (node.feb) { proceed++; } break; }
-                    case 2 : { if (node.mar) { proceed++; } break; }
-                    case 3 : { if (node.apr) { proceed++; } break; }
-                    case 4 : { if (node.may) { proceed++; } break; }
-                    case 5 : { if (node.jun) { proceed++; } break; }
-                    case 6 : { if (node.jul) { proceed++; } break; }
-                    case 7 : { if (node.aug) { proceed++; } break; }
-                    case 8 : { if (node.sep) { proceed++; } break; }
-                    case 9 : { if (node.oct) { proceed++; } break; }
-                    case 10: { if (node.nov) { proceed++; } break; }
-                    case 11: { if (node.dec) { proceed++; } break; }
-                }
-            }
+						// if this month is not among the selected months, stop here
+						switch (nowNative.getMonth()) {
+							case 0 : { if (!node.jan) { proceed &= false; } break; }
+							case 1 : { if (!node.feb) { proceed &= false; } break; }
+							case 2 : { if (!node.mar) { proceed &= false; } break; }
+							case 3 : { if (!node.apr) { proceed &= false; } break; }
+							case 4 : { if (!node.may) { proceed &= false; } break; }
+							case 5 : { if (!node.jun) { proceed &= false; } break; }
+							case 6 : { if (!node.jul) { proceed &= false; } break; }
+							case 7 : { if (!node.aug) { proceed &= false; } break; }
+							case 8 : { if (!node.sep) { proceed &= false; } break; }
+							case 9 : { if (!node.oct) { proceed &= false; } break; }
+							case 10: { if (!node.nov) { proceed &= false; } break; }
+							case 11: { if (!node.dec) { proceed &= false; } break; }
+						}
 
-            if (proceed >= 2) { proceed = 1; }
-            else { proceed = 0; }
+						if (!proceed) {
+							sendPayload(0, selectedOnTime);	
+							return;			
+						}
 
-            newendtime = endtime;
-            if (endtime > 10000) { newendtime = starttime + (endtime - 10000); }
+						// if the chronological order is NOW, ON, OFF, then now should be OFF
+						if (proceed && selectedOffTime.isAfter(selectedOnTime)) {
+							sendPayload(0, selectedOnTime);	
+							return;
+						}
 
-            if (proceed) { // have to handle midnight wrap
-                if (starttime <= newendtime) {
-                    if ((today >= starttime) && (today <= newendtime)) { proceed++; }
-                }
-                else {
-                    if ((today >= starttime) || (today <= newendtime)) { proceed++; }
-                }
-            }
-
-            if (proceed >= 2) {
-                node.status({fill:"yellow", shape:"dot", text:"on until " + parseInt((newendtime -tzOff) / 60) + ":" + ("0" + (newendtime - tzOff) % 60).substr(-2)});
-            }
-            else {
-                node.status({fill:"blue", shape:"dot", text:"off until " + parseInt((starttime - tzOff) / 60) + ":" + ("0" + (starttime - tzOff) % 60).substr(-2)});
-            }
-
-            var msg = {};
-            if (node.mytopic) { msg.topic = node.mytopic; }
-            msg.payload = (proceed >= 2) ? 1 : 0;
-            node.send(msg);
+						// if the chronological order is NOW, OFF, ON, then now should be ON
+						if (proceed && selectedOffTime.isBefore(selectedOnTime)) {
+							sendPayload(1, selectedOnTime);	
+							return;
+						}
         });
 
         var tock = setTimeout(function() {
