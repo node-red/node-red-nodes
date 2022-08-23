@@ -76,6 +76,7 @@ module.exports = function (RED) {
             const currentTimeZone = now.timezone();
             const selectedTimeZone = spacetime(now.epoch, this.timezone.toLowerCase()).timezone();
 
+            // handler function to convert minute strings (from <option> tags) to spacetime objects, called below
             let getSelectedTimeFromMinuteString = minuteString => {
                 const selectedTimeInMinutesAfterMidnight = Number(minuteString);
                 let selectedTime = spacetime.now();
@@ -83,7 +84,7 @@ module.exports = function (RED) {
                 if (selectedTimeInMinutesAfterMidnight < 1440) {
                     // determine offset to get from selected time zone to current timezone
                     // e.g. current (EDT) is -4, selected (PDT) is -7
-                    // to get from PDT to EDT, you must add 3
+                    // in order to get from PDT to EDT, you must add 3
                     // (-4) - (-7) = +3
                     const offset = currentTimeZone.current.offset - selectedTimeZone.current.offset;
                     const selectedHourValue = Math.floor(selectedTimeInMinutesAfterMidnight / 60);
@@ -102,15 +103,25 @@ module.exports = function (RED) {
                 return selectedTime;
             };
 
-            let selectedOnTime = getSelectedTimeFromMinuteString(node.startt); // 8/22 22:45
-            let selectedOffTime = getSelectedTimeFromMinuteString(node.endt); // 8/23 06:31
+            // our definitive next ON time
+            let selectedOnTime = getSelectedTimeFromMinuteString(node.startt);
+            // our definitive next OFF time
+            let selectedOffTime = getSelectedTimeFromMinuteString(node.endt);
 
             // handle the "Start + X Minutes" cases
             if (node.endt >= 10000) {
-                selectedOffTime = selectedOnTime.add(node.endt - 10000, "minutes");
+                // even though the next start time might be tomorrow,
+                // the start time + X minutes might still be coming today,
+                // so we need to go back a day first
+                const selectedOnTimeMinus1Day = selectedOnTime.subtract(1, "day");
+                selectedOffTime = selectedOnTimeMinus1Day.add(node.endt - 10000, "minutes");
+                // _now_ we can check if the off time is in the past
+                if (now.isAfter(selectedOffTime)) {
+                    selectedOffTime = selectedOffTime.add(1, "day");
+                }
             }
 
-            // handler function for the node payload
+            // handler function for the node payload, called below
             let sendPayload = (payload, nextTime) => {
                 if (payload == 1) {
                     node.status({
@@ -134,6 +145,7 @@ module.exports = function (RED) {
             };
 
             var proceed = true;
+
             // if today is not among the selected days of the week, stop here
             switch (nowNative.getDay()) {
                 case 0 : { if (!node.sun) { proceed &= false; } break; }
@@ -171,17 +183,20 @@ module.exports = function (RED) {
                 return;
             }
 
-            // if the chronological order is NOW, ON, OFF, then now should be OFF
+            // if the chronological order is NOW --> ON --> OFF, then now should be OFF
             if (proceed && selectedOffTime.isAfter(selectedOnTime)) {
                 sendPayload(0, selectedOnTime);
                 return;
             }
 
-            // if the chronological order is NOW, OFF, ON, then now should be ON
+            // if the chronological order is NOW --> OFF --> ON, then now should be ON
             if (proceed && selectedOffTime.isBefore(selectedOnTime)) {
                 sendPayload(1, selectedOffTime);
                 return;
             }
+
+            // Note: we already ensured that all ON or OFF times would be in the future,
+            // so there is no midnight wrapping issue.
         });
 
         var tock = setTimeout(function () {
