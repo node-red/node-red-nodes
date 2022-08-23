@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-timeswitch",
-    "version"       : "0.2.1",
+    "version"       : "0.2.2",
     "description"   : "A Node-RED node to provide a simple timeswitch to schedule daily on/off events.",
     "dependencies"  : {
         "spacetime": "^6.16.3",
