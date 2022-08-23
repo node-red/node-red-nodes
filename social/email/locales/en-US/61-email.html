@@ -7,8 +7,7 @@
     <p>You may optionally set <code>msg.from</code> in the payload which will override the <code>userid</code>
     default value.</p>
     <h3>Gmail users</h3>
-    <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
-    or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
+    <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>.</p>
     <h3>Details</h3>
     <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>.
     If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext.
@@ -66,12 +65,12 @@
     <pre>sudo setcap 'cap_net_bind_service=+eip' $(which node)</pre>
     and restarting Node-RED. Be aware - this gives all node applications access to all ports.</p>
     <h3>Security</h3>
-    <p>When <i>Secure connection</i> is checked, the connection will use TLS. 
+    <p>When <i>Secure connection</i> is checked, the connection will use TLS.
     If not it is still possible to upgrade clear text socket to TLS socket by checking <i>Start TLS</i>.
     In most cases when using port 465, check <i>Secure connection</i>. For port 587 or 25 keep it disabled, use <i>Start TLS</i> instead.</p>
     <p>If you do no specify your own certificate (path to file) then a pregenerated self-signed certificate is used. Any respectful client refuses to accept such certificate.</p>
     <h3>Authentication</h3>
     <p>Authentication can be enabled (PLAIN or LOGIN). Add at least one user.</p>
     <h3>Expert</h3>
-    <p>All options as described in <a href="https://nodemailer.com/extras/smtp-server/" target="_new">nodemailer SMTP server</a> can be made here.</p>    
+    <p>All options as described in <a href="https://nodemailer.com/extras/smtp-server/" target="_new">nodemailer SMTP server</a> can be made here.</p>
 </script>
