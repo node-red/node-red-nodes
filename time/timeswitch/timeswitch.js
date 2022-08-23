@@ -208,12 +208,8 @@ module.exports = function (RED) {
         }, 60000); // trigger every 60 secs
 
         this.on("close", function () {
-            if (tock) {
-                clearTimeout(tock);
-            }
-            if (tick) {
-                clearInterval(tick);
-            }
+            if (tock) { clearTimeout(tock); }
+            if (tick) { clearInterval(tick); }
         });
     }
 
@@ -221,9 +217,7 @@ module.exports = function (RED) {
         var node = RED.nodes.getNode(req.params.id);
         if (node != null) {
             try {
-                node.emit("input", {
-                    payload: "reset"
-                });
+                node.emit("input", { payload: "reset" });
                 res.sendStatus(200);
             } catch (err) {
                 res.sendStatus(500);
