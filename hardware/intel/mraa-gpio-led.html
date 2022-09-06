@@ -1,24 +1,19 @@
 
 <script type="text/javascript">
-    RED.nodes.registerType('mraa-gpio-pwm',{
+    RED.nodes.registerType('mraa-gpio-led',{
         category: 'GPIO',
         color: '#a6bbcf',
-        paletteLabel: 'pwm',
+        paletteLabel: 'led',
         defaults: {
             name: {value:""},
             pin:  {value:"", required: true},
-            period: { value:"100", required: true }
         },
         inputs:1,
         outputs:0,
         icon: "arrow.png",
         align: "right",
         label: function() {
-            if (this.pin === "14") {
-                return "LED";
-            } else {
-                return this.name||"PWM D"+this.pin;
-            }
+            return this.name || "led";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -36,7 +31,7 @@
                 if (data === 6) { t = "Beaglebone"; }
                 if (data === 7) { t = "Banana"; }
                 if (data === 25) { t = "IOT2050"; }
-                $('#type-tip').text(t);
+                $('#btype').text(t);
                 $('#node-input-pin').val(pinnow);
             });
             $.getJSON('mraa-version/'+this.id,function(data) {
@@ -56,45 +51,27 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="mraa-gpio-pwm">
+<script type="text/x-red" data-template-name="mraa-gpio-led">
     <div class="form-row">
-        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Led</label>
         <select type="text" id="node-input-pin" style="width: 250px;">
             <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
-	    <optgroup label="Intel Galileo/Edison">
-                <option value="3">D3</option>
-                <option value="5">D5</option>
-                <option value="6">D6</option>
-                <option value="9">D9</option>
-                <option value="10">D10</option>
-                <option value="11">D11</option>
-            </optgroup>
-            <optgroup label="Siemens IOT2050">
-                <option value="4">D4</option>
-                <option value="5">D5</option>
-                <option value="6">D6</option>
-                <option value="7">D7</option>
-                <option value="8">D8</option>
-                <option value="9">D9</option>
-            </optgroup>
-       </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-period"><i class="fa fa-clock-o"></i> Period</label>
-        <input type="text" id="node-input-period" placeholder="number" style="width: 250px;"> mS
+            <option value="0">User1 Led Green</option>
+            <option value="1">User1 Led Red</option>
+            <option value="2">User1 Led Orange</option>
+            <option value="3">User2 Led Green</option>
+            <option value="4">User2 Led Red</option>
+            <option value="5">User2 Led Orange</option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
     </div>
-    <div class="form-tips">Board : <span id="type-tip">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
+    <div class="form-tips">Board : <span id="btype">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
 </script>
 
-<script type="text/x-red" data-help-name="mraa-gpio-pwm">
-    <p>A pulse width modulation (PWM) output pin for a board.</p>
-    <p>The <code>msg.payload</code> should contain a floating point number value
-    between 0 and 1, (or a string representation thereof.)</p>
-    <p>For servo control set the period to 20mS and vary the input between 0.05 and 0.10</p>
-    <p><b>Note</b> : Only pins 4, 5, 6, 7, 8 & 9 support PWM output for Siemens IOT2050.</p>
-    <p>Only pins 3, 5, 6, 9, 10 & 11 support PWM output for Intel Galileo/Edison.</p>
+<script type="text/x-red" data-help-name="mraa-gpio-led">
+    <p>Led Control for a board.</p>
+    <p>The <code>msg.payload</code> should contain the value 0 or 1.</p>
 </script>

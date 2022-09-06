@@ -11,6 +11,10 @@ module.exports = function(RED) {
         var node = this;
         var msg = { topic:node.board+"/A"+node.pin };
         var old = -99999;
+        // ADC set to 12 for IOT2050
+        if (this.board === "SIMATIC IOT2050") {
+            node.x.setBit(12);
+        }
         this.timer = setInterval(function() {
             msg.payload = node.x.read();
             if (msg.payload !== old) {
@@ -21,6 +25,7 @@ module.exports = function(RED) {
 
         this.on('close', function() {
             clearInterval(this.timer);
+            node.x.close();
         });
     }
     RED.nodes.registerType("mraa-gpio-ain", gpioAin);
