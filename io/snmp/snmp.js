@@ -392,6 +392,7 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             const oids = node.oids || msg.oid;
             const { host, sessionid, user, options } = prepareSnmpOptions(node, msg);
+            const response = [];
             function feedCb(varbinds) {
                 for (let i = 0; i < varbinds.length; i++) {
                     if (SNMP.isVarbindError(varbinds[i])) {
@@ -407,10 +408,6 @@ module.exports = function (RED) {
                 sess.on("error", function (err) {
                     node.error(err, msg);
                 })
-                //move response array & feedCb to inside `node.on("input",` to avoid subsequent
-                // calls overwriting results from previous operations (each call gets own result/response)
-                const response = [];
-
                 sess.subtree(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "1.0.2",
+    "version"       : "1.0.3",
     "description"   : "A Node-RED node that gets and sets SNMP oid values. Supports v1, v2c and v3",
     "dependencies"  : {
         "net-snmp"  : "^3.8.2"
@@ -26,6 +26,7 @@
         { "name": "Mika Karaila" },
         { "name": "Bryan Malyn" },
         { "name": "Steve-Mcl" },
-		{ "name": "Andres" }
+        { "name": "Andres" },
+        { "name": "@echobops" }
     ]
 }
