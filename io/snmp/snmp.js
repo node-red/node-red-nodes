@@ -440,6 +440,7 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             const oids = node.oids || msg.oid;
             const { host, sessionid, user, options } = prepareSnmpOptions(node, msg);
+            const response = [];
             function feedCb(varbinds) {
                 for (let i = 0; i < varbinds.length; i++) {
                     if (SNMP.isVarbindError(varbinds[i])) {
