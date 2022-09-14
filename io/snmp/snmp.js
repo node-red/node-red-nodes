@@ -456,10 +456,6 @@ module.exports = function (RED) {
                 sess.on("error", function (err) {
                     node.error(err, msg);
                 })
-                //move response array & feedCb to inside `node.on("input",` to avoid subsequent
-                // calls overwriting results from previous operations (each call gets own result/response)
-                const response = [];
-
                 sess.walk(msg.oid, maxRepetitions, feedCb, function (error) {
                     if (error) {
                         node.error(error.toString(), msg);
