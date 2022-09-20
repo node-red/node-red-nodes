@@ -33,7 +33,7 @@ Returns boolean `false` if no response received, or if the host is unresolveable
 
 `msg.error` will contain any error message if necessary.
 
-`msg.topic` contains the ip address of the target host.
+`msg.topic` contains the target host or ip address.
 
 There are 2 modes - `Timed` and `Triggered`.
 
