@@ -235,12 +235,12 @@ module.exports = function(RED) {
                 let pingables = generatePingList(payload)
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if (element) { doPing(node, element, msg, false); }
+                    if (element) { doPing(node, element, RED.util.cloneMessage(msg), false); }
                 }
             } else if (Array.isArray(payload) ) {
                 for (let index = 0; index < payload.length; index++) {
                     const element = payload[index];
-                    if (element) { doPing(node, element, msg, true); }
+                    if (element) { doPing(node, element, RED.util.cloneMessage(msg), true); }
                 }
             }
         });
