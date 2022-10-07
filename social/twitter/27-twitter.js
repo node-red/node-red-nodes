@@ -1,5 +1,5 @@
-
-module.exports = function(RED) {
+//new updated code on Oct 3rd 
+module.exports = function (RED) {
     "use strict";
     var Ntwitter = require('twitter-ng');
     var request = require('request');
@@ -11,9 +11,19 @@ module.exports = function(RED) {
     var localUserCache = {};
     var userObjectCache = {};
     var userSreenNameToIdCache = {};
+   
+    RED.nodes.registerType("twitter-credentials", TwitterCredentialsNode, {
+        credentials: {
+            consumer_key: { type: "password" },
+            consumer_secret: { type: "password" },
+            access_token: { type: "password" },
+            access_token_secret: { type: "password" },
+            access_token_bearer: { type: "password" }
+        }
+    });
 
     function TwitterCredentialsNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.screen_name = n.screen_name;
         if (this.screen_name && this.screen_name[0] === "@") {
             this.screen_name = this.screen_name.substring(1);
@@ -21,67 +31,106 @@ module.exports = function(RED) {
         if (this.credentials.consumer_key &&
             this.credentials.consumer_secret &&
             this.credentials.access_token &&
-            this.credentials.access_token_secret) {
+            this.credentials.access_token_secret &&
+            this.credentials.access_token_bearer) {
 
             this.oauth = {
                 consumer_key: this.credentials.consumer_key,
                 consumer_secret: this.credentials.consumer_secret,
                 token: this.credentials.access_token,
-                token_secret: this.credentials.access_token_secret
+                token_secret: this.credentials.access_token_secret,
+                token_bearer: this.credentials.access_token_bearer
             }
             this.credHash = crypto.createHash('sha1').update(
-                this.credentials.consumer_key+this.credentials.consumer_secret+
-                this.credentials.access_token+this.credentials.access_token_secret
+                this.credentials.consumer_key + this.credentials.consumer_secret +
+                this.credentials.access_token + this.credentials.access_token_secret
+                + this.credentials.access_token_bearer
             ).digest('base64');
             var self = this;
-            if (localUserCache.hasOwnProperty(self.credHash)) {
-                this.localIdentityPromise = Promise.resolve(localUserCache[self.credHash]);
-            } else {
-                this.localIdentityPromise = this.get("https://api.twitter.com/1.1/account/settings.json").then(function(body) {
-                    if (body.status === 200) {
-                        localUserCache[self.credHash] = body.body.screen_name;
-                        self.screen_name = body.body.screen_name;
-                    } else {
-                        self.warn("Failed to get user profile");
+
+            const needle = require('needle');
+            var credentials = RED.nodes.getCredentials(self);
+
+            // The code below sets the bearer token from your environment variables
+            // To set environment variables on macOS or Linux, run the export command below from the terminal:
+            // export BEARER_TOKEN='YOUR-TOKEN'
+
+            const token = this.credentials.access_token_bearer;
+
+            const endpointUserURL = "https://api.twitter.com/2/users/by?usernames="
+
+            async function getRequest() {
+
+                // These are the parameters for the API request
+                // specify User names to fetch, and any additional fields that are required
+                // by default, only the User ID, name and user name are returned
+
+                
+                const params = {
+                    usernames: `${self.screen_name}`, // Edit usernames to look up
+                    "user.fields": "created_at,description", // Edit optional query parameters here
+                    "expansions": "pinned_tweet_id"
+                }
+
+                console.log(self.screen_name);
+
+                // this is the HTTP header that adds bearer token authentication
+                const res = await needle('get', endpointUserURL, params, {
+                    headers: {
+                        "authorization": `Bearer ${token}`
                     }
-                });
+                })
+
+                if (res.statusCode === 200) {
+                    return res.body;
+                } else {
+                    node.send("Failed to get user profile");
+                }
             }
+
+            (async () => {
+
+                try {
+                    // Make request
+                    const response = await getRequest();
+                    // console.dir(response, {
+                    //     depth: null
+                    // });
+
+                } catch (e) {
+                    console.log(e);
+                }
+            })();
+
         }
     }
 
-    RED.nodes.registerType("twitter-credentials",TwitterCredentialsNode,{
-        credentials: {
-            consumer_key: { type: "password"},
-            consumer_secret: { type: "password" },
-            access_token: {type: "password"},
-            access_token_secret: {type:"password"}
-        }
-    });
-    TwitterCredentialsNode.prototype.get = function(url,opts) {
+
+    TwitterCredentialsNode.prototype.get = function (url, opts) {
         var node = this;
         opts = opts || {};
         opts.tweet_mode = 'extended';
-        return new Promise(function(resolve,reject) {
+        return new Promise(function (resolve, reject) {
             request.get({
                 url: url,
                 oauth: node.oauth,
                 json: true,
                 qs: opts
-            }, function(err, response,body) {
+            }, function (err, response, body) {
                 if (err) {
                     reject(err);
                 } else {
                     resolve({
                         status: response.statusCode,
                         rateLimitRemaining: response.headers['x-rate-limit-remaining'],
-                        rateLimitTimeout: 5000+parseInt(response.headers['x-rate-limit-reset'])*1000 - Date.now(),
+                        rateLimitTimeout: 5000 + parseInt(response.headers['x-rate-limit-reset']) * 1000 - Date.now(),
                         body: body
                     });
                 }
             });
         })
     }
-    TwitterCredentialsNode.prototype.post = function(url,data,opts,formData) {
+    TwitterCredentialsNode.prototype.post = function (url, data, opts, formData) {
         var node = this;
         opts = opts || {};
         var options = {
@@ -96,15 +145,15 @@ module.exports = function(RED) {
         if (formData) {
             options.formData = formData;
         }
-        return new Promise(function(resolve,reject) {
-            request.post(options, function(err, response,body) {
+        return new Promise(function (resolve, reject) {
+            request.post(options, function (err, response, body) {
                 if (err) {
                     reject(err);
                 } else {
                     resolve({
                         status: response.statusCode,
                         rateLimitRemaining: response.headers['x-rate-limit-remaining'],
-                        rateLimitTimeout: 5000+parseInt(response.headers['x-rate-limit-reset'])*1000 - Date.now(),
+                        rateLimitTimeout: 5000 + parseInt(response.headers['x-rate-limit-reset']) * 1000 - Date.now(),
                         body: body
                     });
                 }
@@ -113,14 +162,14 @@ module.exports = function(RED) {
     }
 
 
-    TwitterCredentialsNode.prototype.getUsers = function(users,getBy) {
+    TwitterCredentialsNode.prototype.getUsers = function (users, getBy) {
         if (users.length === 0) {
             return Promise.resolve();
         }
         var params = {};
-        params[getBy||"user_id"] = users;
+        params[getBy || "user_id"] = users;
 
-        return this.get("https://api.twitter.com/1.1/users/lookup.json",params).then(function(result) {
+        return this.get("https://api.twitter.com/1.1/users/lookup.json", params).then(function (result) {
             var res = result.body;
             if (res.errors) {
                 throw new Error(res.errors[0].message);
@@ -159,17 +208,16 @@ module.exports = function(RED) {
     }
 
     function TwitterInNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.active = true;
         this.user = n.user;
         //this.tags = n.tags.replace(/ /g,'');
-        this.tags = n.tags||"";
+        this.tags = n.tags || "";
         this.twitter = n.twitter;
         this.topic = "tweets";
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         this.poll_ids = [];
         this.timeout_ids = [];
-
         var credentials = RED.nodes.getCredentials(this.twitter);
         this.status({});
 
@@ -177,16 +225,16 @@ module.exports = function(RED) {
             var node = this;
             if (this.user === "true") {
                 // Poll User Home Timeline 1/min
-                this.poll(60000,"https://api.twitter.com/1.1/statuses/home_timeline.json");
+                this.poll(60000, "https://api.twitter.com/1.1/statuses/home_timeline.json");
             } else if (this.user === "user") {
-                var users = node.tags.split(/\s*,\s*/).filter(v=>!!v);
+                var users = node.tags.split(/\s*,\s*/).filter(v => !!v);
                 if (users.length === 0) {
                     node.error(RED._("twitter.warn.nousers"));
                     return;
                 }
                 // Poll User timeline
-                users.forEach(function(user) {
-                    node.poll(60000,"https://api.twitter.com/1.1/statuses/user_timeline.json",{screen_name: user});
+                users.forEach(function (user) {
+                    node.poll(60000, "https://api.twitter.com/1.1/statuses/user_timeline.json", { screen_name: user });
                 })
             } else if (this.user === "dm") {
                 node.pollDirectMessages();
@@ -198,103 +246,272 @@ module.exports = function(RED) {
                     consumer_key: credentials.consumer_key,
                     consumer_secret: credentials.consumer_secret,
                     access_token_key: credentials.access_token,
-                    access_token_secret: credentials.access_token_secret
+                    access_token_secret: credentials.access_token_secret,
+                    access_token_bearer: credentials.access_token_bearer
                 });
 
                 // Stream public tweets
-                try {
-                    var thing = 'statuses/filter';
-                    var tags = node.tags;
-                    var st = { track: [tags] };
 
-                    var setupStream = function() {
-                        if (node.restart) {
-                            node.status({fill:"green", shape:"dot", text:(tags||" ")});
-                            twit.stream(thing, st, function(stream) {
-                                //console.log("ST",st);
-                                node.stream = stream;
-                                stream.on('data', function(tweet) {
-                                    if (tweet.user !== undefined) {
-                                        var where = tweet.user.location;
-                                        var la = tweet.lang || tweet.user.lang;
-                                        var msg = { topic:node.topic+"/"+tweet.user.screen_name, payload:tweet.text, lang:la, tweet:tweet };
-                                        if (where) {
-                                            msg.location = {place:where};
-                                            addLocationToTweet(msg);
-                                        }
-                                        node.send(msg);
-                                        //node.status({fill:"green", shape:"dot", text:(tags||" ")});
-                                    }
-                                });
-                                stream.on('limit', function(tweet) {
-                                    //node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
-                                    node.status({fill:"grey", shape:"dot", text:(tags||" ")});
-                                    node.tout2 = setTimeout(function() { node.status({fill:"green", shape:"dot", text:(tags||" ")}); },10000);
-                                });
-                                stream.on('error', function(tweet,rc) {
-                                    //console.log("ERRO",rc,tweet);
-                                    if (rc == 420) {
-                                        node.status({fill:"red", shape:"ring", text:RED._("twitter.errors.ratelimit")});
-                                    }
-                                    else {
-                                        node.status({fill:"red", shape:"ring", text:tweet.toString()});
-                                        node.warn(RED._("twitter.errors.streamerror",{error:tweet.toString(),rc:rc}));
-                                    }
-                                    twitterRateTimeout = Date.now() + retry;
-                                    if (node.restart) {
-                                        node.tout = setTimeout(function() { setupStream() },retry);
-                                    }
-                                });
-                                stream.on('destroy', function (response) {
-                                    //console.log("DEST",response)
-                                    twitterRateTimeout = Date.now() + 15000;
-                                    if (node.restart) {
-                                        node.status({fill:"red", shape:"dot", text:" "});
-                                        node.warn(RED._("twitter.errors.unexpectedend"));
-                                        node.tout = setTimeout(function() { setupStream() },15000);
-                                    }
-                                });
-                            });
+                const needle = require('needle');
+
+                // The code below sets the bearer token from your environment variables
+                // To set environment variables on macOS or Linux, run the export command below from the terminal:
+                // export BEARER_TOKEN='YOUR-TOKEN'
+                const token = credentials.access_token_bearer;
+
+                const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
+                const streamURL = 'https://api.twitter.com/2/tweets/search/stream';
+
+                // this sets up two rules - the value is the search terms to match on, and the tag is an identifier that
+                // will be applied to the Tweets return to show which rule they matched
+                // with a standard project with Basic Access, you can add up to 25 concurrent rules to your stream, and
+                // each rule can be up to 512 characters long
+
+                // Edit rules as desired below
+                const rules = [{
+                    'value': node.tags,
+                    'tag': node.tags
+                }];
+
+                async function getAllRules() {
+
+                    const response = await needle('get', rulesURL, {
+                        headers: {
+                            "authorization": `Bearer ${token}`
+                        }
+                    })
+
+                    if (response.statusCode !== 200) {
+                        node.send("Error:", response.statusMessage, response.statusCode)
+                        throw new Error(response.body);
+                    }
+
+                    return (response.body);
+                }
+
+                async function deleteAllRules(rules) {
+
+                    if (!Array.isArray(rules.data)) {
+                        return null;
+                    }
+
+                    const ids = rules.data.map(rule => rule.id);
+
+                    const data = {
+                        "delete": {
+                            "ids": ids
                         }
                     }
 
-                    // if 4 numeric tags that look like a geo area then set geo area
-                    var bits = node.tags.split(",");
-                    if (bits.length == 4) {
-                        if ((Number(bits[0]) < Number(bits[2])) && (Number(bits[1]) < Number(bits[3]))) {
-                            st = { locations: node.tags };
-                            node.log(RED._("twitter.status.using-geo",{location:node.tags.toString()}));
+                    const response = await needle('post', rulesURL, data, {
+                        headers: {
+                            "content-type": "application/json",
+                            "authorization": `Bearer ${token}`
+                        }
+                    })
+
+                    if (response.statusCode !== 200) {
+                        throw new Error(response.body);
+                    }
+
+                    return (response.body);
+
+                }
+
+                async function setRules() {
+
+                    const data = {
+                        "add": rules
+                    }
+
+                    const response = await needle('post', rulesURL, data, {
+                        headers: {
+                            "content-type": "application/json",
+                            "authorization": `Bearer ${token}`
+                        }
+                    })
+
+                    if (response.statusCode !== 201) {
+                        throw new Error(response.body);
+                    }
+
+                    return (response.body);
+
+                }
+
+                function streamConnect(retryAttempt) {
+                    var flag = false;
+                    const stream = needle.get(streamURL, {
+                        headers: {
+                            "User-Agent": "v2FilterStreamJS",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        timeout: 20000
+                    });
+                    node.stream = stream;
+
+                    stream.on('data', data => {
+                        try {
+                            const json = JSON.parse(data);
+                            // console.log(json);
+                            node.status({ fill: "green", shape: "dot", text: (tags || " ") });
+                            node.send({ topic: "tweet", payload: json.data.text });
+
+                            // A successful connection resets retry count.
+                            retryAttempt = 0;
+                        } catch (e) {
+                            if (data.detail === "This stream is currently at the maximum allowed connection limit.") {
+                                console.log(data.detail)
+                                process.exit(1)
+                            } else {
+                                // Keep alive signal received. Do nothing.
+                            }
+                        }
+                    }).on('err', error => {
+                        if (error.code !== 'ECONNRESET') {
+                            console.log(error.code);
+                            process.exit(1);
+                        } else {
+                            // This reconnection logic will attempt to reconnect when a disconnection is detected.
+                            // To avoid rate limits, this logic implements exponential backoff, so the wait time
+                            // will increase if the client cannot reconnect to the stream. 
+                            setTimeout(() => {
+                                console.warn("A connection error occurred. Reconnecting...")
+                                streamConnect(++retryAttempt);
+                                node.status({ fill: "red", shape: "ring", text: RED._("twitter.errors") });
+                            }, 2 ** retryAttempt)
+                        }
+                        if (node.restart) {
+                            node.tout = setTimeout(function () { setupStream() }, retry);
+                        }
+                    }).on('limit', limit => {
+                        //node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
+                        node.status({ fill: "grey", shape: "dot", text: (tags || " ") });
+                    }).on('destroy', function (response) {
+                        twitterRateTimeout = Date.now() + 15000;
+                        if (node.restart) {
+                            node.status({ fill: "red", shape: "dot", text: " " });
+                            node.warn(RED._("twitter.errors.unexpectedend"));
+                            node.tout = setTimeout(function () { setupStream() }, 15000);
+                        }
+                    });
+
+                    return stream;
+
+                }
+
+                try {
+                    var tags = node.tags;
+                    var st = { track: [tags] };
+                    var setupStream = function () {
+                        if (node.restart) {
+                            (async () => {
+                                let currentRules;
+                                console.warn = ({ topic: "warning", payload: node.restart })
+                                try {
+                                    // Gets the complete list of rules currently applied to the stream
+                                    currentRules = await getAllRules();
+                                    // Delete all rules. Comment the line below if you want to keep your existing rules.
+                                    await deleteAllRules(currentRules);
+                                    // Add rules to the stream. Comment the line below if you don't want to add new rules.
+                                    await setRules();
+                                } catch (e) {
+                                    console.error(e);
+                                    process.exit(1);
+                                }
+                                // Listen to the stream.
+                                // node.status({fill:"green", shape:"dot", text:(node.tags||" ")});
+                                console.log("Twitter API is steraming public tweets with search term " + node.tags || " ");
+
+                                var flag = false;
+                                const stream = needle.get(streamURL, {
+                                    headers: {
+                                        "User-Agent": "v2FilterStreamJS",
+                                        "Authorization": `Bearer ${token}`
+                                    },
+                                    timeout: 20000
+                                });
+                                node.stream = stream;
+
+                                stream.on('data', data => {
+                                    try {
+                                        const json = JSON.parse(data);
+                                        // console.log(json);
+                                        node.status({ fill: "green", shape: "dot", text: (tags || " ") });
+                                        var msg = { topic: "tweet", payload: json.data.text };
+                                        node.send(msg);
+
+                                        // A successful connection resets retry count.
+                                        retryAttempt = 0;
+                                    } catch (e) {
+                                        if (data.detail === "This stream is currently at the maximum allowed connection limit.") {
+                                            console.log(data.detail)
+                                            // process.exit(1)
+                                        } else {
+                                            // Keep alive signal received. Do nothing.
+                                        }
+                                    }
+                                }).on('err', error => {
+                                    if (error.code !== 'ECONNRESET') {
+                                        console.log(error.code);
+                                        // process.exit(1);
+                                    } else {
+                                        // This reconnection logic will attempt to reconnect when a disconnection is detected.
+                                        // To avoid rate limits, this logic implements exponential backoff, so the wait time
+                                        // will increase if the client cannot reconnect to the stream. 
+                                        setTimeout(() => {
+                                            console.warn("A connection error occurred. Reconnecting...")
+                                            streamConnect(++retryAttempt);
+                                            node.status({ fill: "red", shape: "ring", text: RED._("twitter.errors") });
+                                        }, 2 ** retryAttempt)
+                                    }
+                                    if (node.restart) {
+                                        node.tout = setTimeout(function () { setupStream() }, retry);
+                                    }
+                                }).on('limit', limit => {
+                                    //node.status({fill:"grey", shape:"dot", text:RED._("twitter.errors.limitrate")});
+                                    node.status({ fill: "grey", shape: "dot", text: (tags || " ") });
+                                }).on('destroy', function (response) {
+                                    twitterRateTimeout = Date.now() + 15000;
+                                    if (node.restart) {
+                                        node.status({ fill: "red", shape: "dot", text: " " });
+                                        node.warn(RED._("twitter.errors.unexpectedend"));
+                                        node.tout = setTimeout(function () { setupStream() }, 15000);
+                                    }
+                                });
+
+                            })();
                         }
                     }
 
                     // all public tweets
                     if (this.user === "false") {
-                        node.on("input", function(msg) {
+                        node.on("input", function (msg) {
                             if (this.tags === '') {
                                 if (node.tout) { clearTimeout(node.tout); }
                                 if (node.tout2) { clearTimeout(node.tout2); }
                                 if (this.stream) {
                                     this.restart = false;
                                     node.stream.removeAllListeners();
-                                    this.stream.destroy();
+                                    this.stream.request.abort();
                                 }
                                 if ((typeof msg.payload === "string") && (msg.payload !== "")) {
-                                    st = { track:[msg.payload] };
+                                    st = { track: [msg.payload] };
                                     tags = msg.payload;
 
                                     this.restart = true;
-                                    if ((twitterRateTimeout - Date.now()) > 0 ) {
-                                        node.status({fill:"red", shape:"ring", text:tags});
-                                        node.tout = setTimeout(function() {
+                                    if ((twitterRateTimeout - Date.now()) > 0) {
+                                        node.status({ fill: "red", shape: "ring", text: tags });
+                                        node.tout = setTimeout(function () {
                                             setupStream();
-                                        }, twitterRateTimeout - Date.now() );
+                                        }, twitterRateTimeout - Date.now());
                                     }
                                     else {
                                         setupStream();
                                     }
                                 }
                                 else {
-                                    node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                                    node.status({ fill: "yellow", shape: "ring", text: RED._("twitter.warn.waiting") });
                                 }
                             }
                         });
@@ -302,7 +519,7 @@ module.exports = function(RED) {
 
                     // wait for input or start the stream
                     if ((this.user === "false") && (tags === '')) {
-                        node.status({fill:"yellow", shape:"ring", text:RED._("twitter.warn.waiting")});
+                        node.status({ fill: "yellow", shape: "ring", text: RED._("twitter.warn.waiting") });
                     }
                     else {
                         this.restart = true;
@@ -313,21 +530,21 @@ module.exports = function(RED) {
                     node.error(err);
                 }
             }
-            this.on('close', function() {
+            this.on('close', function () {
                 if (this.tout) { clearTimeout(this.tout); }
                 if (this.tout2) { clearTimeout(this.tout2); }
                 if (this.stream) {
                     this.restart = false;
-                    this.stream.removeAllListeners();
-                    this.stream.destroy();
+                    node.stream.removeAllListeners();
+                    this.stream.request.abort();
                 }
                 if (this.timeout_ids) {
-                    for (var i=0; i<this.timeout_ids.length; i++) {
+                    for (var i = 0; i < this.timeout_ids.length; i++) {
                         clearTimeout(this.timeout_ids[i]);
                     }
                 }
                 if (this.poll_ids) {
-                    for (var i=0; i<this.poll_ids.length; i++) {
+                    for (var i = 0; i < this.poll_ids.length; i++) {
                         clearInterval(this.poll_ids[i]);
                     }
                 }
@@ -337,40 +554,40 @@ module.exports = function(RED) {
         }
 
     }
-    RED.nodes.registerType("twitter in",TwitterInNode);
+    RED.nodes.registerType("twitter in", TwitterInNode);
 
-    TwitterInNode.prototype.poll = function(interval, url, opts) {
+    TwitterInNode.prototype.poll = function (interval, url, opts) {
         var node = this;
         var opts = opts || {};
         var pollId;
         opts.count = 1;
-        this.twitterConfig.get(url,opts).then(function(result) {
+        this.twitterConfig.get(url, opts).then(function (result) {
             if (result.status === 429) {
-                node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
-                node.timeout_ids.push(setTimeout(function() {
-                    node.poll(interval,url,opts);
-                },result.rateLimitTimeout))
+                node.warn("Rate limit hit. Waiting " + Math.floor(result.rateLimitTimeout / 1000) + " seconds to try again");
+                node.timeout_ids.push(setTimeout(function () {
+                    node.poll(interval, url, opts);
+                }, result.rateLimitTimeout))
                 return;
             }
-            node.debug("Twitter Poll, rateLimitRemaining="+result.rateLimitRemaining+" rateLimitTimeout="+Math.floor(result.rateLimitTimeout/1000)+"s");
+            node.debug("Twitter Poll, rateLimitRemaining=" + result.rateLimitRemaining + " rateLimitTimeout=" + Math.floor(result.rateLimitTimeout / 1000) + "s");
             var res = result.body;
             opts.count = 200;
             var since = "0";
             if (res.length > 0) {
                 since = res[0].id_str;
             }
-            pollId = setInterval(function() {
+            pollId = setInterval(function () {
                 opts.since_id = since;
-                node.twitterConfig.get(url,opts).then(function(result) {
+                node.twitterConfig.get(url, opts).then(function (result) {
                     if (result.status === 429) {
-                        node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
+                        node.warn("Rate limit hit. Waiting " + Math.floor(result.rateLimitTimeout / 1000) + " seconds to try again");
                         clearInterval(pollId);
-                        node.timeout_ids.push(setTimeout(function() {
-                            node.poll(interval,url,opts);
-                        },result.rateLimitTimeout))
+                        node.timeout_ids.push(setTimeout(function () {
+                            node.poll(interval, url, opts);
+                        }, result.rateLimitTimeout))
                         return;
                     }
-                    node.debug("Twitter Poll, rateLimitRemaining="+result.rateLimitRemaining+" rateLimitTimeout="+Math.floor(result.rateLimitTimeout/1000)+"s");
+                    node.debug("Twitter Poll, rateLimitRemaining=" + result.rateLimitRemaining + " rateLimitTimeout=" + Math.floor(result.rateLimitTimeout / 1000) + "s");
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
@@ -379,77 +596,77 @@ module.exports = function(RED) {
                             delete opts.since_id;
                         }
                         clearInterval(pollId);
-                        node.timeout_ids.push(setTimeout(function() {
-                            node.poll(interval,url,opts);
-                        },interval))
+                        node.timeout_ids.push(setTimeout(function () {
+                            node.poll(interval, url, opts);
+                        }, interval))
                         return;
                     }
                     if (res.length > 0) {
                         since = res[0].id_str;
                         var len = res.length;
-                        for (var i = len-1; i >= 0; i--) {
+                        for (var i = len - 1; i >= 0; i--) {
                             var tweet = res[i];
                             if (tweet.user !== undefined) {
                                 var where = tweet.user.location;
                                 var la = tweet.lang || tweet.user.lang;
                                 tweet.text = tweet.text || tweet.full_text;
                                 var msg = {
-                                    topic:"tweets/"+tweet.user.screen_name,
-                                    payload:tweet.text,
-                                    lang:la,
-                                    tweet:tweet
+                                    topic: "tweets/" + tweet.user.screen_name,
+                                    payload: tweet.text,
+                                    lang: la,
+                                    tweet: tweet
                                 };
                                 if (where) {
-                                    msg.location = {place:where};
+                                    msg.location = { place: where };
                                     addLocationToTweet(msg);
                                 }
                                 node.send(msg);
                             }
                         }
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     node.error(err);
                     clearInterval(pollId);
-                    node.timeout_ids.push(setTimeout(function() {
+                    node.timeout_ids.push(setTimeout(function () {
                         delete opts.since_id;
                         delete opts.count;
-                        node.poll(interval,url,opts);
-                    },interval))
+                        node.poll(interval, url, opts);
+                    }, interval))
                 })
-            },interval)
+            }, interval)
             node.poll_ids.push(pollId);
-        }).catch(function(err) {
+        }).catch(function (err) {
             node.error(err);
-            node.timeout_ids.push(setTimeout(function() {
+            node.timeout_ids.push(setTimeout(function () {
                 delete opts.since_id;
                 delete opts.count;
-                node.poll(interval,url,opts);
-            },interval))
+                node.poll(interval, url, opts);
+            }, interval))
         })
     }
 
-    TwitterInNode.prototype.pollDirectMessages = function() {
+    TwitterInNode.prototype.pollDirectMessages = function () {
         var interval = 70000;
         var node = this;
         var opts = {};
         var url = "https://api.twitter.com/1.1/direct_messages/events/list.json";
         var pollId;
         opts.count = 50;
-        this.twitterConfig.get(url,opts).then(function(result) {
+        this.twitterConfig.get(url, opts).then(function (result) {
             if (result.status === 429) {
-                node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
-                node.timeout_ids.push(setTimeout(function() {
+                node.warn("Rate limit hit. Waiting " + Math.floor(result.rateLimitTimeout / 1000) + " seconds to try again");
+                node.timeout_ids.push(setTimeout(function () {
                     node.pollDirectMessages();
-                },result.rateLimitTimeout))
+                }, result.rateLimitTimeout))
                 return;
             }
-            node.debug("Twitter DM Poll, rateLimitRemaining="+result.rateLimitRemaining+" rateLimitTimeout="+Math.floor(result.rateLimitTimeout/1000)+"s");
+            node.debug("Twitter DM Poll, rateLimitRemaining=" + result.rateLimitRemaining + " rateLimitTimeout=" + Math.floor(result.rateLimitTimeout / 1000) + "s");
             var res = result.body;
             if (res.errors) {
                 node.error(res.errors[0].message);
-                node.timeout_ids.push(setTimeout(function() {
+                node.timeout_ids.push(setTimeout(function () {
                     node.pollDirectMessages();
-                },interval))
+                }, interval))
                 return;
             }
             var since = "0";
@@ -457,24 +674,24 @@ module.exports = function(RED) {
             if (messages.length > 0) {
                 since = messages[0].id;
             }
-            pollId = setInterval(function() {
-                node.twitterConfig.get(url,opts).then(function(result) {
+            pollId = setInterval(function () {
+                node.twitterConfig.get(url, opts).then(function (result) {
                     if (result.status === 429) {
-                        node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
+                        node.warn("Rate limit hit. Waiting " + Math.floor(result.rateLimitTimeout / 1000) + " seconds to try again");
                         clearInterval(pollId);
-                        node.timeout_ids.push(setTimeout(function() {
+                        node.timeout_ids.push(setTimeout(function () {
                             node.pollDirectMessages();
-                        },result.rateLimitTimeout))
+                        }, result.rateLimitTimeout))
                         return;
                     }
-                    node.debug("Twitter DM Poll, rateLimitRemaining="+result.rateLimitRemaining+" rateLimitTimeout="+Math.floor(result.rateLimitTimeout/1000)+"s");
+                    node.debug("Twitter DM Poll, rateLimitRemaining=" + result.rateLimitRemaining + " rateLimitTimeout=" + Math.floor(result.rateLimitTimeout / 1000) + "s");
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
                         clearInterval(pollId);
-                        node.timeout_ids.push(setTimeout(function() {
+                        node.timeout_ids.push(setTimeout(function () {
                             node.pollDirectMessages();
-                        },interval))
+                        }, interval))
                         return;
                     }
                     var messages = res.events.filter(tweet => tweet.type === 'message_create' && tweet.id > since);
@@ -483,7 +700,7 @@ module.exports = function(RED) {
                         var len = messages.length;
                         var missingUsers = {};
                         var tweets = [];
-                        for (var i = len-1; i >= 0; i--) {
+                        for (var i = len - 1; i >= 0; i--) {
                             var tweet = messages[i];
                             // node.log(JSON.stringify(tweet," ",4));
                             var output = {
@@ -503,7 +720,7 @@ module.exports = function(RED) {
                         }
 
                         var missingUsernames = Object.keys(missingUsers).join(",");
-                        return node.twitterConfig.getUsers(missingUsernames).then(function() {
+                        return node.twitterConfig.getUsers(missingUsernames).then(function () {
                             var len = tweets.length;
                             for (var i = 0; i < len; i++) {
                                 var tweet = messages[i];
@@ -520,9 +737,9 @@ module.exports = function(RED) {
 
                                 if (output.sender_screen_name !== node.twitterConfig.screen_name) {
                                     var msg = {
-                                        topic:"tweets/"+output.sender_screen_name,
-                                        payload:output.text,
-                                        tweet:output
+                                        topic: "tweets/" + output.sender_screen_name,
+                                        payload: output.text,
+                                        tweet: output
                                     };
                                     node.send(msg);
                                 }
@@ -530,25 +747,25 @@ module.exports = function(RED) {
 
                         })
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     node.error(err);
                     clearInterval(pollId);
-                    node.timeout_ids.push(setTimeout(function() {
+                    node.timeout_ids.push(setTimeout(function () {
                         node.pollDirectMessages();
-                    },interval))
+                    }, interval))
                 })
-            },interval)
+            }, interval)
             node.poll_ids.push(pollId);
-        }).catch(function(err) {
+        }).catch(function (err) {
             node.error(err);
-            node.timeout_ids.push(setTimeout(function() {
+            node.timeout_ids.push(setTimeout(function () {
                 node.pollDirectMessages();
-            },interval))
+            }, interval))
         })
     }
 
     function TwitterOutNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.topic = n.topic;
         this.twitter = n.twitter;
         this.twitterConfig = RED.nodes.getNode(this.twitter);
@@ -563,10 +780,10 @@ module.exports = function(RED) {
                 access_token_secret: credentials.access_token_secret
             });
 
-            node.on("input", function(msg) {
+            node.on("input", function (msg) {
                 if (msg.hasOwnProperty("payload")) {
-                    node.status({fill:"blue",shape:"dot",text:"twitter.status.tweeting"});
-                    if (msg.payload.slice(0,2).toLowerCase() === "d ") {
+                    node.status({ fill: "blue", shape: "dot", text: "twitter.status.tweeting" });
+                    if (msg.payload.slice(0, 2).toLowerCase() === "d ") {
                         var dm_user;
                         // direct message syntax: "D user message"
                         var t = msg.payload.match(/D\s+(\S+)\s+(.*)/).slice(1);
@@ -576,38 +793,38 @@ module.exports = function(RED) {
                         if (userSreenNameToIdCache.hasOwnProperty(dm_user)) {
                             lookupPromise = Promise.resolve();
                         } else {
-                            lookupPromise = node.twitterConfig.getUsers(dm_user,"screen_name")
+                            lookupPromise = node.twitterConfig.getUsers(dm_user, "screen_name")
                         }
-                        lookupPromise.then(function() {
+                        lookupPromise.then(function () {
                             if (userSreenNameToIdCache.hasOwnProperty(dm_user)) {
                                 // Send a direct message
-                                node.twitterConfig.post("https://api.twitter.com/1.1/direct_messages/events/new.json",{
+                                node.twitterConfig.post("https://api.twitter.com/1.1/direct_messages/events/new.json", {
                                     event: {
                                         type: "message_create",
                                         "message_create": {
                                             "target": {
                                                 "recipient_id": userSreenNameToIdCache[dm_user]
                                             },
-                                            "message_data": {"text": msg.payload}
+                                            "message_data": { "text": msg.payload }
                                         }
                                     }
-                                }).then(function() {
+                                }).then(function () {
                                     node.status({});
-                                }).catch(function(err) {
-                                    node.error(err,msg);
-                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                }).catch(function (err) {
+                                    node.error(err, msg);
+                                    node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
                                 });
                             } else {
-                                node.error("Unknown user",msg);
-                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                                node.error("Unknown user", msg);
+                                node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
                             }
-                        }).catch(function(err) {
-                            node.error(err,msg);
-                            node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                        }).catch(function (err) {
+                            node.error(err, msg);
+                            node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
                         })
                     } else {
                         if (msg.payload.length > 280) {
-                            msg.payload = msg.payload.slice(0,279);
+                            msg.payload = msg.payload.slice(0, 279);
                             node.warn(RED._("twitter.errors.truncated"));
                         }
                         var mediaPromise;
@@ -618,9 +835,9 @@ module.exports = function(RED) {
                             //     node.error("msg.media is not a valid media object",msg);
                             //     return;
                             // }
-                            mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json",null,null,{
+                            mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json", null, null, {
                                 media: msg.media
-                            }).then(function(result) {
+                            }).then(function (result) {
                                 if (result.status === 200) {
                                     return result.body.media_id_string;
                                 } else {
@@ -631,31 +848,31 @@ module.exports = function(RED) {
                         } else {
                             mediaPromise = Promise.resolve();
                         }
-                        mediaPromise.then(function(mediaId) {
+                        mediaPromise.then(function (mediaId) {
                             var params = msg.params || {};
                             params.status = msg.payload;
                             if (mediaId) {
                                 params.media_ids = mediaId;
                             }
-                            node.twitterConfig.post("https://api.twitter.com/1.1/statuses/update.json",{},params).then(function(result) {
+                            node.twitterConfig.post("https://api.twitter.com/1.1/statuses/update.json", {}, params).then(function (result) {
                                 if (result.status === 200) {
                                     node.status({});
                                 } else {
-                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                    
+                                    node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
+
                                     if ('error' in result.body && typeof result.body.error === 'string') {
-                                        node.error(result.body.error,msg);
+                                        node.error(result.body.error, msg);
                                     } else {
-                                        node.error(result.body.errors[0].message,msg);
+                                        node.error(result.body.errors[0].message, msg);
                                     }
                                 }
-                            }).catch(function(err) {
-                                node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                node.error(err,msg);
+                            }).catch(function (err) {
+                                node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
+                                node.error(err, msg);
                             })
-                        }).catch(function(err) {
-                            node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                            node.error(err,msg);
+                        }).catch(function (err) {
+                            node.status({ fill: "red", shape: "ring", text: "twitter.status.failed" });
+                            node.error(err, msg);
                         });
                         // if (msg.payload.length > 280) {
                         //     msg.payload = msg.payload.slice(0,279);
@@ -702,5 +919,5 @@ module.exports = function(RED) {
             this.error(RED._("twitter.errors.missingcredentials"));
         }
     }
-    RED.nodes.registerType("twitter out",TwitterOutNode);
+    RED.nodes.registerType("twitter out", TwitterOutNode);
 }
