@@ -1,0 +1,7 @@
+import TwitterApiBase from './client.base';
+/**
+ * Base subclient for every v1 and v2 client.
+ */
+export default abstract class TwitterApiSubClient extends TwitterApiBase {
+    constructor(instance: TwitterApiBase);
+}
