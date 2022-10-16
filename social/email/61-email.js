@@ -534,8 +534,8 @@ module.exports = function(RED) {
             });
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
-                    node.log(err);
                     s = false;
+                    node.error(err.message,err);
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 }
                 setInputRepeatTimeout();
