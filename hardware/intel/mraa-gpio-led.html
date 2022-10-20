@@ -7,6 +7,7 @@
         defaults: {
             name: {value:""},
             pin:  {value:"", required: true},
+            color:  {value:"", required: true},
         },
         inputs:1,
         outputs:0,
@@ -56,14 +57,21 @@
         <label for="node-input-pin"><i class="fa fa-circle"></i> Led</label>
         <select type="text" id="node-input-pin" style="width: 250px;">
             <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
-            <option value="0">User1 Led Green</option>
-            <option value="1">User1 Led Red</option>
-            <option value="2">User1 Led Orange</option>
-            <option value="3">User2 Led Green</option>
-            <option value="4">User2 Led Red</option>
-            <option value="5">User2 Led Orange</option>
+            <option value="0">USER1</option>
+            <option value="1">USER2</option>
         </select>
     </div>
+
+    <div class="form-row">
+        <label for="node-input-color"><i class="fa fa-circle"></i> Color</label>
+        <select type="text" id="node-input-color" style="width:250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="0">GREEN</option>
+            <option value="1">RED</option>
+            <option value="2">ORANGE</option>
+        </select>
+    </div>
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
