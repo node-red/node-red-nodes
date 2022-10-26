@@ -15,15 +15,20 @@ module.exports = function(RED) {
         this.closer = n.closer || "SIGKILL";
         this.autorun = true;
         if (n.autorun === false) { this.autorun = false; }
-        if (this.args.match(/^\[.*\]$/)) {
-            try { this.args = JSON.parse(this.args); }
-            catch(e) {
-                node.warn(RED._("daemon.errors.badparams"))
-            }
-        }
-        else { this.args = this.args.match(/("[^"]*")|[^ ]+/g); }
+        this.args = parseArgs(this.args);
         var node = this;
         var lastmsg = {};
+
+        function parseArgs(args) {
+            if (args.match(/^\[.*\]$/)) {
+                try { args = JSON.parse(args); }
+                catch(e) {
+                    node.warn(RED._("daemon.errors.badparams"))
+                }
+            }
+            else { args = args.match(/("[^"]*")|[^ ]+/g); }
+            return args;
+        }
 
         function inputlistener(msg) {
             if (msg != null) {
@@ -32,7 +37,11 @@ module.exports = function(RED) {
                     node.child.kill(msg.kill.toUpperCase());
                 }
                 else if (msg.hasOwnProperty("start") && !node.running) {
-                    runit();
+                    let args = "";
+                    if (msg.hasOwnProperty("args") && msg.args.length > 0) {
+                        args = parseArgs(msg.args.trim());
+                    }
+                    runit(args);
                 }
                 else {
                     if (!Buffer.isBuffer(msg.payload)) {
@@ -48,15 +57,20 @@ module.exports = function(RED) {
             }
         }
 
-        function runit() {
+        function runit(appendArgs) {
             var line = "";
             if (!node.cmd || (typeof node.cmd !== "string") || (node.cmd.length < 1)) {
                 node.status({fill:"grey",shape:"ring",text:RED._("daemon.status.nocommand")});
                 return;
             }
+            let args = node.args;
+            if (appendArgs !== undefined && appendArgs.length > 0) {
+              args = args.concat(appendArgs);
+            }
+
             try {
-                node.child = spawn(node.cmd, node.args);
-                node.debug(node.cmd+" "+JSON.stringify(node.args));
+                node.child = spawn(node.cmd, args);
+                node.debug(node.cmd+" "+JSON.stringify(args));
                 node.status({fill:"green",shape:"dot",text:RED._("daemon.status.running")});
                 node.running = true;
 

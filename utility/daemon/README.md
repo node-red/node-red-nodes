@@ -34,7 +34,7 @@ to restart the command automatically.
 
 Setting `msg.kill` to a signal name (e.g. SIGINT, SIGHUP) will stop the process - but if the restart flag is set it will then auto restart.
 
-Sending `msg.start` will also re-start the process.
+Sending `msg.start` will also re-start the process. Additional arguments can be specified in `msg.args`.
 
 **Note:** Some applications will automatically buffer lines of output. It is advisable to turn off this behaviour.
 For example, if running a Python app, the `-u` parameter will stop the output being buffered.
