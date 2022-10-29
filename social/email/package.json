@@ -26,6 +26,8 @@
     "gmail",
     "imap",
     "pop",
+    "smtp",
+    "smtp-server",
     "mta"
   ],
   "node-red": {
