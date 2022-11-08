@@ -98,7 +98,8 @@ module.exports = function(RED) {
                         sendopts.headers = msg.headers;
                         sendopts.priority = msg.priority;
                     }
-                    sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
+                    if (msg.hasOwnProperty("topic") && msg.topic === '') { sendopts.subject = ""; }
+                    else { sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; } // subject line
                     if (msg.hasOwnProperty("header") && msg.header.hasOwnProperty("message-id")) {
                         sendopts.inReplyTo = msg.header["message-id"];
                         sendopts.subject = "Re: " + sendopts.subject;
@@ -119,7 +120,8 @@ module.exports = function(RED) {
                             sendopts.attachments[0].contentType = msg.headers["content-type"];
                         }
                         // Create some body text..
-                        sendopts.text = RED._("email.default-message",{filename:fname, description:(msg.description||"")});
+                        if (msg.hasOwnProperty("description")) { sendopts.text = msg.description; }
+                        else { sendopts.text = RED._("email.default-message",{filename:fname}); }
                     }
                     else {
                         var payload = RED.util.ensureString(msg.payload);

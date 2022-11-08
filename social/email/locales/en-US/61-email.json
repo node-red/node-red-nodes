@@ -42,10 +42,10 @@
             "keyFile":"Private key",
             "users": "Users",
             "auth": "Authenticate users",
-            "addButton": "Add",   
+            "addButton": "Add",
             "expert": "Expert"
         },
-        "default-message": "__description__\n\nFile from Node-RED is attached: __filename__",
+        "default-message": "\nFile from Node-RED is attached: __filename__",
         "tip": {
             "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
             "recent": "Tip: Only retrieves the single most recent email.",

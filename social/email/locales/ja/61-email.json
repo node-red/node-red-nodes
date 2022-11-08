@@ -36,7 +36,7 @@
             "always": "常時",
             "rejectUnauthorised": "チェックサーバ証明書は有効です"
         },
-        "default-message": "__description__\n\nNode-REDからファイルが添付されました: __filename__",
+        "default-message": "\nNode-REDからファイルが添付されました: __filename__",
         "tip": {
             "cred": "<b>注釈:</b> emailkeys.jsファイルから認証情報をコピーしました。",
             "recent": "注釈: 最新のメールを1件のみ取得します。",
