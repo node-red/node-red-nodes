@@ -50,9 +50,9 @@ module.exports = function(RED) {
                         if (node.cr === true) { msg.payload += "\n"; }
                     }
                     node.debug("inp: "+msg.payload);
+                    lastmsg = msg;
                     if (node.child !== null && node.running) { node.child.stdin.write(msg.payload); }
                     else { node.warn(RED._("daemon.errors.notrunning")); }
-                    lastmsg = msg;
                 }
             }
         }
@@ -65,7 +65,7 @@ module.exports = function(RED) {
             }
             let args = node.args;
             if (appendArgs !== undefined && appendArgs.length > 0) {
-              args = args.concat(appendArgs);
+                args = args.concat(appendArgs);
             }
 
             try {
@@ -117,6 +117,12 @@ module.exports = function(RED) {
                 node.child.on('error', function (err) {
                     if (err.errno === "ENOENT") { node.warn(RED._("daemon.errors.notfound")); }
                     else if (err.errno === "EACCES") { node.warn(RED._("daemon.errors.notexecutable")); }
+                    else { node.log('error: ' + err); }
+                    node.status({fill:"red",shape:"ring",text:RED._("daemon.status.error")});
+                });
+
+                node.child.stdin.on('error', function (err) {
+                    if (err.errno === "EPIPE") { node.error(RED._("daemon.errors.pipeclosed"),lastmsg); }
                     else { node.log('error: ' + err); }
                     node.status({fill:"red",shape:"ring",text:RED._("daemon.status.error")});
                 });
