@@ -107,7 +107,13 @@ module.exports = function(RED) {
                 // Any data on stderr means a bad thing has happened.
                 // Best to kill it and let it reconnect.
                 if (RED.settings.verbose) { RED.log.error("err: "+data+" :"); }
-                hat.kill('SIGKILL');
+                if (data.indexOf("WARNING") === 0) {
+                    if (data.indexOf("sensor not present") !== -1) { return; }
+                    else { RED.log.warn(data); }
+                }
+                else {
+                    hat.kill('SIGKILL');
+                }
             });
             hat.stderr.on('error', function(err) { });
             hat.stdin.on('error', function(err) { });
