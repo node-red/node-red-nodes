@@ -16,6 +16,7 @@ module.exports = function(RED) {
 
         var fileTail = function() {
             if (fs.existsSync(node.filename)) {
+                node.status({ });
                 if (node.filetype === "text") {
                     node.tail = new Tail(node.filename,{separator:node.split, flushAtEOF:true});
                 }
@@ -40,6 +41,7 @@ module.exports = function(RED) {
                 node.tail.on("error", function(err) {
                     node.status({ fill: "red",shape:"ring", text: "node-red:common.status.error" });
                     node.error(err.toString());
+                    if (err.code ==="ENOENT") { scheduleRestart(); }
                 });
             }
             else {
@@ -51,6 +53,8 @@ module.exports = function(RED) {
         var scheduleRestart = function() {
             node.tout = setTimeout(function() {
                 node.tout = null;
+                if (node.tail) { node.tail.unwatch(); }
+                delete node.tail;
                 fileTail();
             }, 10000);
         };
