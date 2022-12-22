@@ -469,9 +469,9 @@ module.exports = function(RED) {
                                                     done();
                                                 };
                                                 if (node.disposition === "Delete") {
-                                                    imap.addFlags(results, "\Deleted", cleanup);
+                                                    imap.addFlags(results, '\\Deleted', imap.expunge(cleanup) );
                                                 } else if (node.disposition === "Read") {
-                                                    imap.addFlags(results, "\Seen", cleanup);
+                                                    imap.addFlags(results, '\\Seen', cleanup);
                                                 } else {
                                                     cleanup();
                                                 }
