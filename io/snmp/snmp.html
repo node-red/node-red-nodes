@@ -41,7 +41,7 @@
                             $(".form-row-snmpv3-auth").toggleClass("hidden", true);
                             $(".form-row-snmpv3-priv").toggleClass("hidden", true);
                             break;
-                    }  
+                    }
                 }
             });
             $("#node-input-version").val(node.version);
@@ -65,7 +65,7 @@
            <option value="3">v3</option>
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row  form-row-snmpv1v2">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -106,7 +106,7 @@
         <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
         <input type="password" id="node-input-privkey" placeholder="Encryption key">
     </div>
-    <!-- End of unique data for V3 -->	
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OIDs</label>
         <textarea rows="4" cols="60" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0" style="width:70%;"></textarea>
@@ -177,10 +177,10 @@
             <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
             <option value="3">v3</option>
-			<!-- End of unique data for V3 -->	
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row  form-row-snmpv1v2">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -221,7 +221,7 @@
         <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
         <input type="password" id="node-input-privkey" placeholder="Encryption key">
     </div>
-    <!-- End of unique data for V3 -->	
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-varbinds"><i class="fa fa-tags"></i> Varbinds</label>
         <textarea rows="10" cols="60" id="node-input-varbinds" placeholder="e.g.  [ { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.5.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, &quot;value&quot;: &quot;host1&quot;}, { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.6.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, value: &quot;somewhere&quot; } ]"
@@ -268,7 +268,7 @@
             authprot: { value: "MD5", required: true },
             privprot: { value: "DES", required: true },
             oids: { value: "" },
-            varbinds: { value: "", validate:function(v) { 
+            varbinds: { value: "", validate:function(v) {
                 try {
                     return !v || !!JSON.parse(v);
                 } catch(e) {
@@ -309,10 +309,10 @@
             <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
             <option value="3">v3</option>
-			<!-- End of unique data for V3 -->	
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row  form-row-snmpv1v2">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -353,7 +353,7 @@
         <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
         <input type="password" id="node-input-privkey" placeholder="Encryption key">
     </div>
-    <!-- End of unique data for V3 -->	
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -424,10 +424,10 @@
             <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
             <option value="3">v3</option>
-			<!-- End of unique data for V3 -->	
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row  form-row-snmpv1v2">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -468,7 +468,7 @@
         <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
         <input type="password" id="node-input-privkey" placeholder="Encryption key">
     </div>
-    <!-- End of unique data for V3 -->	
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -540,10 +540,10 @@
             <option value="2c">v2c</option>
 			<!-- Following Data is used for V3 Only -->
             <option value="3">v3</option>
-			<!-- End of unique data for V3 -->	
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
     <div class="form-row  form-row-snmpv1v2">
         <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
@@ -584,7 +584,7 @@
         <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
         <input type="password" id="node-input-privkey" placeholder="Encryption key">
     </div>
-    <!-- End of unique data for V3 -->	
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -597,7 +597,7 @@
 </script>
 
 <script type="text/html" data-help-name="snmp walker">
-    <p>Simple SNMP oid walker fetcher. Triggered by any input. 
+    <p>Simple SNMP oid walker fetcher. Triggered by any input.
     Fetches all nodes from this OID to the end of the table.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
@@ -607,7 +607,7 @@
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
-    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to 
+    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to
     the typical snmpwalk command line app.</p>
 </script>
 
