@@ -23,7 +23,7 @@ module.exports = function (RED) {
         this.thu = n.thu;
         this.fri = n.fri;
         this.sat = n.sat;
-        
+
         this.jan = n.jan;
         this.feb = n.feb;
         this.mar = n.mar;
@@ -123,17 +123,20 @@ module.exports = function (RED) {
 
             // handler function for the node payload, called below
             let sendPayload = (payload, nextTime) => {
+                // var o = nextTime.goto(selectedTimeZone.name).offset()/60;
+                // if (o > 0) { o = "+" + o; }
+                // else {o = "-" + o; }
                 if (payload == 1) {
                     node.status({
                         fill: "yellow",
                         shape: "dot",
-                        text: `on until ${nextTime.format("time")}`
+                        text: `on until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
                     });
                 } else {
                     node.status({
                         fill: "blue",
                         shape: "dot",
-                        text: `off until ${nextTime.format("time")}`
+                        text: `off until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
                     });
                 }
                 var msg = {};
@@ -157,9 +160,9 @@ module.exports = function (RED) {
                 case 6 : { if (!node.sat) { proceed &= false; } break; }
             }
 
-            if (!proceed) {         
-                sendPayload(0, selectedOnTime); 
-                return;         
+            if (!proceed) {
+                sendPayload(0, selectedOnTime);
+                return;
             }
 
             // if this month is not among the selected months, stop here
