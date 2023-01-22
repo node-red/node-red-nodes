@@ -1,7 +1,9 @@
 
 module.exports = function(RED) {
     "use strict";
-    var spawn = require('child_process').spawn;
+    // RED.log.warn("rpi-neopixels : This node is for MCU Edition. Do not run.");
+	/**
+	var spawn = require('child_process').spawn;
     var execSync = require('child_process').execSync;
     var fs = require('fs');
     var colors = require('./colours.js');
@@ -30,7 +32,7 @@ module.exports = function(RED) {
 
     // the magic to make python print stuff immediately
     process.env.PYTHONUNBUFFERED = 1;
-
+**/
     function PiNeopixelNode(n) {
         RED.nodes.createNode(this,n);
         this.pixels = n.pixels || 1;
@@ -117,7 +119,8 @@ module.exports = function(RED) {
         }
 
         if (allOK === true) {
-            node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma, node.channel, node.gpio]);
+/**
+			node.child = spawn(piCommand, [node.pixels, node.wipe, node.mode, node.brightness, node.gamma, node.channel, node.gpio]);
             node.status({fill:"green",shape:"dot",text:"ok"});
 
             node.on("input", inputlistener);
@@ -169,7 +172,8 @@ module.exports = function(RED) {
                     node.fgnd = colors.getRGB(node.fgnd,node.rgb);
                 }
             }
-        }
+**/
+		}
         else {
             node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
         }

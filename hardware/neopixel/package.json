@@ -1,12 +1,10 @@
 {
-    "name"          : "node-red-node-pi-neopixel",
-    "version"       : "2.0.1",
-    "description"   : "A Node-RED node to output to a neopixel (ws2812) string of LEDS from a Raspberry Pi.",
-    "dependencies"  : {
-    },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/node-red/node-red-nodes.git",
+    "name": "node-red-contrib-node-pi-neopixel",
+    "version": "2.0.1",
+    "description": "A Node-RED node to output to a neopixel (ws2812) string of LEDS from a Node-RED MCU Edition.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NextWorldLab/node-red-nodes",
         "directory": "tree/master/hardware/neopixel"
     },
     "license": "Apache-2.0",
@@ -21,13 +19,7 @@
             "rpi-neopixels": "neopixel.js"
         }
     },
-    "scripts": {
-        "postinstall": "scripts/checklib.js"
-    },
-    "author": {
-        "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
-        "url": "http://nodered.org"
-    },
-    "engines" : { "node" : ">=12.0.0" }
+    "engines": {
+        "node": ">=12.0.0"
+    }
 }
