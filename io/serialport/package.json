@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "1.0.1",
+    "version"       : "1.0.2",
     "description"   : "Node-RED nodes to talk to serial ports",
     "dependencies"  : {
-        "serialport"   : "^10.3.0"
+        "serialport"   : "^10.5.0"
     },
     "repository" : {
         "type":"git",
@@ -21,7 +21,7 @@
     "engines" : { "node" : ">=12.0.0" },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }
