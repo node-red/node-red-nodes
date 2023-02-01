@@ -1,6 +1,6 @@
 {
-    "name": "node-red-node-pusher-js",
-    "version": "1.0.0",
+    "name": "node-red-node-pusher",
+    "version": "0.1.1",
     "description": "A Node-RED node to send and receive messages using Pusher.com",
     "dependencies": {
         "pusher": "^5.1.2",
@@ -8,7 +8,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/shaqaruden/node-red-nodes.git",
+        "url": "https://github.com/node-red/node-red-nodes.git",
         "directory": "tree/master/social/pusher"
     },
     "license": "Apache-2.0",
@@ -22,8 +22,8 @@
         }
     },
     "author": {
-        "name": "Shaqaruden",
-        "email": "shaqaruden@gmail.com",
+        "name": "Dave Conway-Jones",
+        "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
     }
 }
