@@ -21,7 +21,7 @@ module.exports = function (RED) {
         //create a subscription to the channel and event defined by user
         // var socket = new PusherClient(''+node.appkey, {cluster:node.cluster, encrypted:true});
         const pusher = new PusherClient('' + node.appkey, {
-            cluster: APP_CLUSTER
+            cluster: node.cluster
         });
         const channel = pusher.subscribe('' + node.channel);
 
