@@ -142,7 +142,7 @@ module.exports = function(RED) {
                             conn.query(msg.topic, bind, function (err, rows) {
                                 conn.release()
                                 if (err) {
-                                    msg.payload = rows;
+                                    msg.error = err;
                                     send(msg);
                                     status = { fill: "red", shape: "ring", text: RED._("mysql.status.error") + ": " + err.code };
                                     node.status(status);
