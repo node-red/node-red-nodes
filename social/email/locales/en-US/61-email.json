@@ -31,6 +31,8 @@
             "unflagged": "Unflagged",
             "unseen": "Unseen",
             "autotls": "Start TLS?",
+            "authtype": "Auth type",
+            "token": "Token",
             "never": "never",
             "required": "if required",
             "always": "always",

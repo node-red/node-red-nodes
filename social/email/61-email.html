@@ -143,12 +143,24 @@
         <input type="text" id="node-input-port" placeholder="993">
     </div>
     <div class="form-row">
+        <label for="node-input-authtype"><i class="fa fa-tasks"></i> <span data-i18n="email.label.authtype"></span></label>
+        <select type="text" id="node-input-authtype">
+            <option value="BASIC">Basic</option>
+            <option value="OAUTH">OAuth</option>
+            <option value="XOAUTH2">XOAuth2</option>
+        </select>
+    </div>
+    <div class="form-row node-input-userid">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
         <input type="text" id="node-input-userid">
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-password">
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
+    </div>
+    <div class="form-row node-input-token" style="display: none;">
+        <label for="node-input-token"><i class="fa fa-lock"></i> <span data-i18n="email.label.token"></span></label>
+        <input type="text" id="node-input-token">
     </div>
     <div class="form-row node-input-box">
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
@@ -222,6 +234,17 @@
             }
             checkPorts();
         });
+
+        $("#node-input-authtype").change(function() {
+            var protocol = $("#node-input-authtype").val();
+            if (protocol === "BASIC") {
+                $(".node-input-password").show();
+                $(".node-input-token").hide();
+            } else {
+                $(".node-input-password").hide();
+                $(".node-input-token").show();
+            }
+        });
     </script>
 </script>
 
@@ -237,6 +260,7 @@
             useSSL: {value: true},
             autotls: {value: "never"},
             port: {value:"993",required:true},
+            authentication: {value: "BASIC", required:true},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email
 	        criteria: {value: "UNSEEN"},
@@ -247,6 +271,7 @@
         credentials: {
             userid: {type:"text"},
             password: {type: "password"},
+            token: {type:"text"},
             global: { type:"boolean"}
         },
         inputs: 0,
