@@ -196,9 +196,7 @@ module.exports = function(RED) {
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
-        this.saslformat = n.saslformat;
         this.autotls= n.autotls;
-        this.token = n.token || "oAuth2Response.access_token";
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
@@ -216,14 +214,23 @@ module.exports = function(RED) {
                 this.error(RED._("email.errors.nouserid"));
             }
         }
-        if (this.credentials && this.credentials.hasOwnProperty("password")) {
-            this.password = this.credentials.password;
-        } else {
-            if (globalkeys) {
-                this.password = globalkeys.pass;
-                flag = true;
+        if(this.authtype === "BASIC" ) {
+            if (this.credentials && this.credentials.hasOwnProperty("password")) {
+                this.password = this.credentials.password;
             } else {
-                this.error(RED._("email.errors.nopassword"));
+                if (globalkeys) {
+                    this.password = globalkeys.pass;
+                    flag = true;
+                } else {
+                    this.error(RED._("email.errors.nopassword"));
+                }
+            }
+        } else {
+            this.saslformat = n.saslformat;
+            if(n.token!=="") {
+                this.token = n.token;
+            } else {
+                this.error(RED._("email.errors.notoken"));
             }
         }
         if (flag) {
