@@ -248,6 +248,8 @@
                 $(".node-input-password").hide();
                 $(".node-input-saslformat").show();
                 $(".node-input-token").show();
+                $("#node-input-fetch").val("trigger");
+                $("#node-input-fetch").change();
             }
         });
     </script>
@@ -320,6 +322,8 @@
                 else  {
                     $('#node-repeatTime').show();
                     that.inputs = 0;
+                    $("#node-input-authtype").val("BASIC");
+                    $("#node-input-authtype").change();
                 }
             });
             $("#node-input-criteria").change(function() {
