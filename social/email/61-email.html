@@ -146,7 +146,6 @@
         <label for="node-input-authtype"><i class="fa fa-tasks"></i> <span data-i18n="email.label.authtype"></span></label>
         <select type="text" id="node-input-authtype">
             <option value="BASIC">Basic</option>
-            <option value="OAUTH">OAuth</option>
             <option value="XOAUTH2">XOAuth2</option>
         </select>
     </div>
@@ -160,7 +159,7 @@
     </div>
     <div class="form-row node-input-token" style="display: none;">
         <label for="node-input-token"><i class="fa fa-lock"></i> <span data-i18n="email.label.token"></span></label>
-        <input type="text" id="node-input-token">
+        <input type="text" id="node-input-token" placeholder="oauth2Response.access_token">
     </div>
     <div class="form-row node-input-box">
         <label for="node-input-box"><i class="fa fa-inbox"></i> <span data-i18n="email.label.folder"></span></label>
@@ -260,7 +259,8 @@
             useSSL: {value: true},
             autotls: {value: "never"},
             port: {value:"993",required:true},
-            authentication: {value: "BASIC", required:true},
+            authtype: {value: "BASIC"},
+            token: {value: "oauth2Response.access_token"},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email
 	        criteria: {value: "UNSEEN"},
@@ -271,7 +271,6 @@
         credentials: {
             userid: {type:"text"},
             password: {type: "password"},
-            token: {type:"text"},
             global: { type:"boolean"}
         },
         inputs: 0,
@@ -321,6 +320,10 @@
                     $("#node-input-fetch").val("trigger");
                     $("#node-input-fetch").change();
                 }
+            });
+            $("#node-input-token").typedInput({
+                type:'msg',
+                types:['msg']
             });
         }
     });

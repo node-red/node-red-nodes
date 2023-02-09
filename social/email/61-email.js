@@ -197,9 +197,11 @@ module.exports = function(RED) {
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
         this.autotls= n.autotls;
+        this.token = n.token || "oAuth2Response.access_token";
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
+        this.authtype = n.authtype || "BASIC";
 
         var flag = false;
 
@@ -367,6 +369,45 @@ module.exports = function(RED) {
         var s = false;
         var ss = false;
         function checkIMAP(msg,send,done) {
+            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
+            var saslxoauth2 = "";
+            if(node.authtype == "XOAUTH2") {
+                var value = RED.util.getMessageProperty(msg,node.token);
+                if (value !== undefined) {
+                    //Make base64 string for access - compatible with outlook365 and gmail
+                    saslxoauth2 =  Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                }
+                imap = new Imap({
+                    xoauth2: saslxoauth2,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            } else {
+                imap = new Imap({
+                    user: node.userid,
+                    password: node.password,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            }
+            imap.on('error', function(err) {
+                if (err.errno !== "ECONNRESET") {
+                    s = false;
+                    node.error(err.message,err);
+                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+                }
+                setInputRepeatTimeout();
+            });
             //console.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             s = true;
@@ -521,19 +562,45 @@ module.exports = function(RED) {
             }
         }  // End of checkEmail
 
-        if (node.protocol === "IMAP") {
+/*        if (node.protocol === "IMAP") {
             var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
-            imap = new Imap({
-                user: node.userid,
-                password: node.password,
-                host: node.inserver,
-                port: node.inport,
-                tls: node.useSSL,
-                autotls: node.autotls,
-                tlsOptions: { rejectUnauthorized: false },
-                connTimeout: tout,
-                authTimeout: tout
-            });
+            if(node.authentication == "OAUTH") {
+                imap = new Imap({
+                    user: node.userid,
+                    oauth: node.token,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            } else if(node.authentication == "XOAUTH2") {
+                imap = new Imap({
+                    user: node.userid,
+                    xoauth2: node.token,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            } else {
+                imap = new Imap({
+                    user: node.userid,
+                    password: node.password,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            }
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     s = false;
@@ -542,7 +609,7 @@ module.exports = function(RED) {
                 }
                 setInputRepeatTimeout();
             });
-        }
+        }*/
 
         node.on("input", function(msg, send, done) {
             send = send || function() { node.send.apply(node,arguments) };
