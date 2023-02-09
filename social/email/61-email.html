@@ -157,6 +157,10 @@
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
+    <div class="form-row node-input-saslformat" style="display: none;">
+        <label for="node-input-saslformat"><i class="fa fa-code"></i> <span data-i18n="email.label.saslformat"></span></label>
+        <input type="checkbox" id="node-input-saslformat" style="width: auto;">
+    </div>
     <div class="form-row node-input-token" style="display: none;">
         <label for="node-input-token"><i class="fa fa-lock"></i> <span data-i18n="email.label.token"></span></label>
         <input type="text" id="node-input-token" placeholder="oauth2Response.access_token">
@@ -238,9 +242,11 @@
             var protocol = $("#node-input-authtype").val();
             if (protocol === "BASIC") {
                 $(".node-input-password").show();
+                $(".node-input-saslformat").hide();
                 $(".node-input-token").hide();
             } else {
                 $(".node-input-password").hide();
+                $(".node-input-saslformat").show();
                 $(".node-input-token").show();
             }
         });
@@ -260,6 +266,7 @@
             autotls: {value: "never"},
             port: {value:"993",required:true},
             authtype: {value: "BASIC"},
+            saslformat: {value: true},
             token: {value: "oauth2Response.access_token"},
             box: {value:"INBOX"}, // For IMAP, The mailbox to process
             disposition: { value: "Read" }, // For IMAP, the disposition of the read email

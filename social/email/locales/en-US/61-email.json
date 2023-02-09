@@ -32,6 +32,7 @@
             "unseen": "Unseen",
             "autotls": "Start TLS?",
             "authtype": "Auth type",
+            "saslformat": "Format to SASL",
             "token": "Token",
             "never": "never",
             "required": "if required",

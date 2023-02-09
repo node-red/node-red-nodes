@@ -196,6 +196,7 @@ module.exports = function(RED) {
         this.inport = n.port || (globalkeys && globalkeys.port) || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
+        this.saslformat = n.saslformat;
         this.autotls= n.autotls;
         this.token = n.token || "oAuth2Response.access_token";
         this.protocol = n.protocol || "IMAP";
@@ -374,8 +375,12 @@ module.exports = function(RED) {
             if(node.authtype == "XOAUTH2") {
                 var value = RED.util.getMessageProperty(msg,node.token);
                 if (value !== undefined) {
-                    //Make base64 string for access - compatible with outlook365 and gmail
-                    saslxoauth2 =  Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                    if(node.saslformat) {
+                        //Make base64 string for access - compatible with outlook365 and gmail
+                        saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                    } else {
+                        saslxoauth2 = value;
+                    }
                 }
                 imap = new Imap({
                     xoauth2: saslxoauth2,
