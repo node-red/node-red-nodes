@@ -201,6 +201,10 @@ module.exports = function(RED) {
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
         this.authtype = n.authtype || "BASIC";
+        if (this.authtype !== "BASIC") {
+            this.inputs = 1;
+            this.repeat = 0;
+        }
 
         var flag = false;
 

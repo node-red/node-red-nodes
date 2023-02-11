@@ -31,6 +31,25 @@ describe('email Node', function () {
                 n1.should.have.property("repeat", 300000);
                 n1.should.have.property("inserver", "imap.gmail.com");
                 n1.should.have.property("inport", "993");
+                n1.should.have.property("authtype", "BASIC");
+                done();
+            });
+        });
+
+        it('should force input on XOAuth2', function (done) {
+            var flow = [{
+                id: "n1",
+                type: "e-mail in",
+                name: "emailin",
+                authtype: "XOAUTH2",
+                wires: [
+                    []
+                ]
+            }];
+            helper.load(emailNode, flow, function () {
+                var n1 = helper.getNode("n1");
+                n1.should.have.property("repeat", 0);
+                n1.should.have.property("inputs", 1);
                 done();
             });
         });
