@@ -578,55 +578,6 @@ module.exports = function(RED) {
             }
         }  // End of checkEmail
 
-/*        if (node.protocol === "IMAP") {
-            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
-            if(node.authentication == "OAUTH") {
-                imap = new Imap({
-                    user: node.userid,
-                    oauth: node.token,
-                    host: node.inserver,
-                    port: node.inport,
-                    tls: node.useSSL,
-                    autotls: node.autotls,
-                    tlsOptions: { rejectUnauthorized: false },
-                    connTimeout: tout,
-                    authTimeout: tout
-                });
-            } else if(node.authentication == "XOAUTH2") {
-                imap = new Imap({
-                    user: node.userid,
-                    xoauth2: node.token,
-                    host: node.inserver,
-                    port: node.inport,
-                    tls: node.useSSL,
-                    autotls: node.autotls,
-                    tlsOptions: { rejectUnauthorized: false },
-                    connTimeout: tout,
-                    authTimeout: tout
-                });
-            } else {
-                imap = new Imap({
-                    user: node.userid,
-                    password: node.password,
-                    host: node.inserver,
-                    port: node.inport,
-                    tls: node.useSSL,
-                    autotls: node.autotls,
-                    tlsOptions: { rejectUnauthorized: false },
-                    connTimeout: tout,
-                    authTimeout: tout
-                });
-            }
-            imap.on('error', function(err) {
-                if (err.errno !== "ECONNRESET") {
-                    s = false;
-                    node.error(err.message,err);
-                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
-                }
-                setInputRepeatTimeout();
-            });
-        }*/
-
         node.on("input", function(msg, send, done) {
             send = send || function() { node.send.apply(node,arguments) };
             checkEmail(msg,send,done);
