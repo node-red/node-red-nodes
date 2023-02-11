@@ -230,6 +230,8 @@
                 $(".node-input-disposition").show();
                 $(".node-input-criteria").show();
             } else {
+                $("#node-input-authtype").val("BASIC");
+                $("#node-input-authtype").change();
                 $(".node-input-autotls").hide();
                 $(".node-input-box").hide();
                 $(".node-input-disposition").hide();
@@ -248,6 +250,8 @@
                 $(".node-input-password").hide();
                 $(".node-input-saslformat").show();
                 $(".node-input-token").show();
+                $("#node-input-protocol").val("IMAP"); //Remove when POP lib updated
+                $("#node-input-protocol").change();
                 $("#node-input-fetch").val("trigger");
                 $("#node-input-fetch").change();
             }

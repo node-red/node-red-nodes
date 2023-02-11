@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-email",
-  "version": "1.18.4",
+  "version": "1.19.0-beta+xoauth2.imap",
   "description": "Node-RED nodes to send and receive simple emails.",
   "dependencies": {
     "imap": "^0.8.19",

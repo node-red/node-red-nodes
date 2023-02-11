@@ -26,11 +26,12 @@ the [forum](https://discourse.nodered.org) or
 <!-- Describe the nature of this change. What problem does it address? -->
 
 Adds authentication option to the Email node (node-red-node-email) to use OAuth and XOAuth2
+********** This version: IMAP ONLY **********
 
 ## Checklist
 <!-- Put an `x` in the boxes that apply -->
 
 - [x] I have read the [contribution guidelines](https://github.com/node-red/node-red-nodes/blob/master/CONTRIBUTING.md)
-- [ ] For non-bugfix PRs, I have discussed this change on the forum/slack team.
-- [ ] I have run `grunt` to verify the unit tests pass
-- [ ] I have added suitable unit tests to cover the new/changed functionality
+- [x] For non-bugfix PRs, I have discussed this change on the forum/slack team.
+- [x] I have run `grunt` to verify the unit tests pass
+- [x] I have added suitable unit tests to cover the new/changed functionality

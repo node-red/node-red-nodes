@@ -204,6 +204,7 @@ module.exports = function(RED) {
         if (this.authtype !== "BASIC") {
             this.inputs = 1;
             this.repeat = 0;
+            this.protocol = "IMAP";
         }
 
         var flag = false;
