@@ -6,7 +6,7 @@ const { domainToUnicode } = require("url");
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
  *
  * Dependencies:
- * * poplib     - https://www.npmjs.com/package/poplib
+ * * node-pop3  - https://www.npmjs.com/package/node-pop3
  * * nodemailer - https://www.npmjs.com/package/nodemailer
  * * imap       - https://www.npmjs.com/package/imap
  * * mailparser - https://www.npmjs.com/package/mailparser
@@ -16,7 +16,7 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var Imap = require('imap');
-    var POP3Client = require("./poplib.js");
+    var Pop3Command = require("node-pop3");
     var nodemailer = require("nodemailer");
     var simpleParser = require("mailparser").simpleParser;
     var SMTPServer = require("smtp-server").SMTPServer;
@@ -178,6 +178,7 @@ module.exports = function(RED) {
     // Setup the EmailInNode
     function EmailInNode(n) {
         var imap;
+        var pop3;
 
         RED.nodes.createNode(this,n);
         this.name = n.name;
@@ -272,106 +273,75 @@ module.exports = function(RED) {
         // Check the POP3 email mailbox for any new messages.  For any that are found,
         // retrieve each message, call processNewMessage to process it and then delete
         // the messages from the server.
-        function checkPOP3(msg,send,done) {
-            var currentMessage;
-            var maxMessage;
-            //node.log("Checking POP3 for new messages");
-
-            // Form a new connection to our email server using POP3.
-            var pop3Client = new POP3Client(
-                node.inport, node.inserver,
-                {enabletls: node.useSSL} // Should we use SSL to connect to our email server?
-            );
-
-            // If we have a next message to retrieve, ask to retrieve it otherwise issue a
-            // quit request.
-            function nextMessage() {
-                if (currentMessage > maxMessage) {
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
-                    done();
-                    return;
-                }
-                pop3Client.retr(currentMessage);
-                currentMessage++;
-            } // End of nextMessage
-
-            pop3Client.on("stat", function(status, data) {
-                // Data contains:
-                // {
-                //   count: <Number of messages to be read>
-                //   octect: <size of messages to be read>
-                // }
-                if (status) {
-                    currentMessage = 1;
-                    maxMessage = data.count;
-                    nextMessage();
-                } else {
-                    node.log(util.format("stat error: %s %j", status, data));
-                }
+        async function checkPOP3(msg,send,done) {
+            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
+            var currentMessage = 1;
+            var maxMessage = 0;
+            var nextMessage;
+            
+            pop3 = new Pop3Command({
+                "host": node.inserver,
+                "tls": node.useSSL,
+                "timeout": tout,
+                "port": node.inport
             });
+            try {
+                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+                await pop3.connect();
 
-            pop3Client.on("error", function(err) {
+                    await pop3.command('USER', node.userid);
+                    await pop3.command('PASS', node.password);
+            } catch(err) {
+                node.error(err.message,err);
+                node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 setInputRepeatTimeout();
-                node.log("error: " + JSON.stringify(err));
                 done();
-            });
-
-            pop3Client.on("connect", function() {
-                //node.log("We are now connected");
-                pop3Client.login(node.userid, node.password);
-            });
-
-            pop3Client.on("login", function(status, rawData) {
-                //node.log("login: " + status + ", " + rawData);
-                if (status) {
-                    pop3Client.stat();
-                } else {
-                    node.log(util.format("login error: %s %j", status, rawData));
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
-                    done();
+                return;
+            }
+            maxMessage = (await pop3.STAT()).split(" ")[0];
+            if(maxMessage>0) {
+                node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
+                while(currentMessage<=maxMessage) {
+                    try {
+                        nextMessage = await pop3.RETR(currentMessage);
+                    } catch(err) {
+                        node.error(RED._("email.errors.fetchfail", err.message),err);
+                        node.status({fill:"red",shape:"ring",text:"email.status.fetcherror"});
+                        setInputRepeatTimeout();
+                        done();
+                        return;
+                    }
+                    try {
+                        // We have now received a new email message.  Create an instance of a mail parser
+                        // and pass in the email message.  The parser will signal when it has parsed the message.
+                        simpleParser(nextMessage, {}, function(err, parsed) {
+                            //node.log(util.format("simpleParser: on(end): %j", mailObject));
+                            if (err) {
+                                node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                                node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
+                            }
+                            else {
+                                processNewMessage(msg, parsed);
+                            }
+                        });
+                        //processNewMessage(msg, nextMessage);
+                    } catch(err) {
+                        node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
+                        node.status({fill:"red",shape:"ring",text:"email.status.parseerror"});
+                        setInputRepeatTimeout();
+                        done();
+                        return;
+                    }
+                    await pop3.DELE(currentMessage);
+                    currentMessage++;
                 }
-            });
+                await pop3.QUIT();
+                node.status({fill:"green",shape:"dot",text:"finished"});
+                setTimeout(status_clear, 5000);
+                setInputRepeatTimeout();
+                done();
+            }
 
-            pop3Client.on("retr", function(status, msgNumber, data, rawData) {
-                // node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
-                if (status) {
-                    // We have now received a new email message.  Create an instance of a mail parser
-                    // and pass in the email message.  The parser will signal when it has parsed the message.
-                    simpleParser(data, {}, function(err, parsed) {
-                        //node.log(util.format("simpleParser: on(end): %j", mailObject));
-                        if (err) {
-                            node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
-                            node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
-                        }
-                        else {
-                            processNewMessage(msg, parsed);
-                        }
-                    });
-                    pop3Client.dele(msgNumber);
-                }
-                else {
-                    node.log(util.format("retr error: %s %j", status, rawData));
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
-                    done();
-                }
-            });
-
-            pop3Client.on("invalid-state", function(cmd) {
-                node.log("Invalid state: " + cmd);
-            });
-
-            pop3Client.on("locked", function(cmd) {
-                node.log("We were locked: " + cmd);
-            });
-
-            // When we have deleted the last processed message, we can move on to
-            // processing the next message.
-            pop3Client.on("dele", function(status, msgNumber) {
-                nextMessage();
-            });
         } // End of checkPOP3
 
 
@@ -594,6 +564,10 @@ module.exports = function(RED) {
                 node.status({});
             }
         });
+
+        function status_clear() {
+            node.status({});
+        }
 
         function setInputRepeatTimeout() {
             // Set the repetition timer as needed
