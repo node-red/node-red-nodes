@@ -205,7 +205,6 @@ module.exports = function(RED) {
         if (this.authtype !== "BASIC") {
             this.inputs = 1;
             this.repeat = 0;
-            this.protocol = "IMAP";
         }
 
         var flag = false;
@@ -275,6 +274,7 @@ module.exports = function(RED) {
         // the messages from the server.
         async function checkPOP3(msg,send,done) {
             var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
+            var saslxoauth2 = "";
             var currentMessage = 1;
             var maxMessage = 0;
             var nextMessage;
@@ -288,9 +288,23 @@ module.exports = function(RED) {
             try {
                 node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
                 await pop3.connect();
+                if(node.authtype == "XOAUTH2") {
+                    var value = RED.util.getMessageProperty(msg,node.token);
+                    if (value !== undefined) {
+                        if(node.saslformat) {
+                            //Make base64 string for access - compatible with outlook365 and gmail
+                            saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                        } else {
+                            saslxoauth2 = value;
+                        }
+                    }
+                    await pop3.command('AUTH', "XOAUTH2");
+                    await pop3.command(saslxoauth2);
 
+                } else if(node.authtype == "BASIC") {
                     await pop3.command('USER', node.userid);
                     await pop3.command('PASS', node.password);
+                }
             } catch(err) {
                 node.error(err.message,err);
                 node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
