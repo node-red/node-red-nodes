@@ -42,6 +42,7 @@
     
     <h3>Module Used</h3>
     <p>The e-mail in node uses the <a href="https://github.com/mscdex/node-imap/blob/master/README.md" target="_new">node-imap module</a>, see that page for information on the <code>msg.criteria</code> format if needed.</p>
+    <p>It also makes use of <a href="https://github.com/node-pop3/node-pop3#readme" target="_new">node-pop3 module</a></p>
     
     <h3>Attachment Format</h3>
     <p>Each object in the <code>msg.attachments</code> array is formatted as follows:</p>
@@ -59,8 +60,8 @@
                             // We can turn this into a base64 data string with content.toString('base64')
     }
     </pre>
-    <h3>IMAP Authentication</h3>
-    <p>When connecting to an IMAP server, two authentication types are available: Basic and XOAuth2.</p>
+    <h3>Authentication</h3>
+    <p>When connecting to a POP3 or IMAP server, two authentication types are available: Basic and XOAuth2.</p>
     <ul>
         <li><b>Basic:</b> requires a username and password to be entered</li>
         <li><b>XOAuth2:</b> requires a username and a <code>msg</code> property to extract the access token</li>
@@ -76,7 +77,6 @@
         <li>For POP3, the default port numbers are 110 for plain TCP and 995 for SSL.  For IMAP the port numbers are 143 for plain TCP and 993 for SSL.</li>
         <li>With option 'STARTTLS' an established plain connection is upgraded to an encrypted one. Set to 'always' to always attempt connection upgrades via STARTTLS, 'required' only if upgrading is required, or 'never' to never attempt upgrading.</li>
         <li>The maximum refresh interval is 2147483 seconds (24.8 days).</li>
-        <li>POP XOAuth2 will be supported in future</li>
     </ul>
 
 </script>
