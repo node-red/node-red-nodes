@@ -40,12 +40,28 @@
         <span data-i18n="email.label.useSecureConnection"></span>
     </div>
     <div class="form-row">
+        <label for="node-input-authtype"><i class="fa fa-tasks"></i> <span data-i18n="email.label.authtype"></span></label>
+        <select type="text" id="node-input-authtype">
+            <option value="BASIC">Basic</option>
+            <option value="XOAUTH2">XOAuth2</option>
+        </select>
+    </div>
+    <div class="form-row node-input-userid">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
         <input type="text" id="node-input-userid">
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-password">
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
+    </div>
+    
+    <div class="form-row node-input-saslformat" style="display: none;">
+        <label for="node-input-saslformat"><i class="fa fa-code"></i> <span data-i18n="email.label.saslformat"></span></label>
+        <input type="checkbox" id="node-input-saslformat" style="width: auto;">
+    </div>
+    <div class="form-row node-input-token" style="display: none;">
+        <label for="node-input-token"><i class="fa fa-lock"></i> <span data-i18n="email.label.token"></span></label>
+        <input type="text" id="node-input-token" placeholder="oauth2Response.access_token">
     </div>
     <br/>
     <div class="form-row">
@@ -58,6 +74,22 @@
         <input type="text" id="node-input-dname" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
+    <script>
+        $("#node-input-authtype").change(function() {
+            var protocol = $("#node-input-authtype").val();
+            if (protocol === "BASIC") {
+                $(".node-input-password").show();
+                $(".node-input-saslformat").hide();
+                $(".node-input-token").hide();
+            } else {
+                $(".node-input-password").hide();
+                $(".node-input-saslformat").show();
+                $(".node-input-token").show();
+                $("#node-input-fetch").val("trigger");
+                $("#node-input-fetch").change();
+            }
+        });
+    </script>
 </script>
 
 <script type="text/javascript">
@@ -68,6 +100,9 @@
         defaults: {
             server: {value:"smtp.gmail.com",required:true},
             port: {value:"465",required:true},
+            authtype: {value: "BASIC"},
+            saslformat: {value: true},
+            token: {value: "oauth2Response.access_token"},
             secure: {value: true},
             tls: {value: true},
             name: {value:""},
@@ -97,6 +132,10 @@
             } else {
                 $('#node-tip').hide();
             }
+            $("#node-input-token").typedInput({
+                type:'msg',
+                types:['msg']
+            });
         }
     });
 })();
