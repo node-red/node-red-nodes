@@ -42,6 +42,11 @@ module.exports = function(RED) {
         this.secure = n.secure;
         this.tls = true;
         var flag = false;
+        this.authtype = n.authtype || "BASIC";
+        if (this.authtype !== "BASIC") {
+            this.inputs = 1;
+            this.repeat = 0;
+        }
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
         } else {
@@ -50,12 +55,23 @@ module.exports = function(RED) {
                 flag = true;
             }
         }
-        if (this.credentials && this.credentials.hasOwnProperty("password")) {
-            this.password = this.credentials.password;
+        if(this.authtype === "BASIC" ) {
+            if (this.credentials && this.credentials.hasOwnProperty("password")) {
+                this.password = this.credentials.password;
+            } else {
+                if (globalkeys) {
+                    this.password = globalkeys.pass;
+                    flag = true;
+                } else {
+                    this.error(RED._("email.errors.nopassword"));
+                }
+            }
         } else {
-            if (globalkeys) {
-                this.password = globalkeys.pass;
-                flag = true;
+            this.saslformat = n.saslformat;
+            if(n.token!=="") {
+                this.token = n.token;
+            } else {
+                this.error(RED._("email.errors.notoken"));
             }
         }
         if (flag) {
@@ -70,11 +86,26 @@ module.exports = function(RED) {
             secure: node.secure,
             tls: {rejectUnauthorized: node.tls}
         }
-
-        if (this.userid && this.password) {
+    
+        if(node.authtype === "BASIC" ) {
             smtpOptions.auth = {
                 user: node.userid,
                 pass: node.password
+            };
+        } else if(node.authtype == "XOAUTH2") {
+            var value = RED.util.getMessageProperty(msg,node.token);
+            if (value !== undefined) {
+                if(node.saslformat) {
+                    //Make base64 string for access - compatible with outlook365 and gmail
+                    saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                } else {
+                    saslxoauth2 = value;
+                }
+            }
+            smtpOptions.auth = {
+                type: "OAuth2",
+                user: node.userid,
+                accessToken: saslxoauth2
             };
         }
         var smtpTransport = nodemailer.createTransport(smtpOptions);
