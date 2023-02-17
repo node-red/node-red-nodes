@@ -8,6 +8,16 @@
     default value.</p>
     <h3>Gmail users</h3>
     <p>If you are accessing Gmail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>.</p>
+    <h3>Authentication</h3>
+    <p>When connecting to a SMTP server, two authentication types are available: Basic and XOAuth2.</p>
+    <ul>
+        <li><b>Basic:</b> requires a username and password to be entered</li>
+        <li><b>XOAuth2:</b> requires a username and a <code>msg</code> property to extract the access token</li>
+    </ul>
+    <h3>SASL Formatting:</h3>
+    <p>SASL XOAuth2 tokens are created by combining the username and token, encoding it in base64, and passing it to the mail server in the following format:</p>
+    <pre>base64("user=" + userName + "^Aauth=Bearer " + accessToken + "^A^A")</pre>
+    <p>If the checkbox is unticked, flow creators can format the token themselves before passing it to the node.</p>
     <h3>Details</h3>
     <p>The payload can be html format. You may supply a separate plaintext version using <code>msg.plaintext</code>.
     If you don't and <code>msg.payload</code> contains html, it will also be used for the plaintext.
