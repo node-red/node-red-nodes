@@ -53,6 +53,8 @@ module.exports = function(RED) {
             if (globalkeys) {
                 this.userid = globalkeys.user;
                 flag = true;
+            } else {
+                this.error(RED._("email.errors.nouserid"));
             }
         }
         if(this.authtype === "BASIC" ) {
