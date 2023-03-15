@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "1.0.6",
+    "version"       : "2.0.0",
     "description"   : "A Node-RED node that gets and sets SNMP oid values. Supports v1, v2c and v3",
     "dependencies"  : {
-        "net-snmp"  : "^3.8.2"
+        "net-snmp"  : "^3.9.0"
     },
     "repository" : {
         "type":"git",
