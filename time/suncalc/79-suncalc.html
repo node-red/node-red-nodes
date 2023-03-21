@@ -1,44 +1,44 @@
 
 <script type="text/html" data-template-name="sunrise">
-  <div class="form-row">
-    <label for="node-input-lat"><i class="fa fa-globe"></i> Latitude</label>
-    <input type="text" id="node-input-lat" placeholder="51.025">
-  </div>
-  <div class="form-row">
-    <label for="node-input-lon"><i class="fa fa-globe"></i> Longitude</label>
-    <input type="text" id="node-input-lon" placeholder="-1.4">
-  </div>
-  <div class="form-row">
-    <label for="node-input-start"><i class="fa fa-clock-o"></i> Start</label>
-    <select id="node-input-start" style='width:70%'>
-      <option value="nightEnd">Morning astronomical twilight starts</option>
-      <option value="nauticalDawn">Morning nautical twilight starts</option>
-      <option value="dawn">Dawn, morning civil twilight starts</option>
-      <option value="sunrise">Sunrise</option>
-      <option value="sunriseEnd">Sunrise end</option>
-      <option value="goldenHourEnd">End of morning golden hour</option>
-    </select>
-  </div>
-  <div class="form-row">
-    <label for="node-input-end"><i class="fa fa-clock-o"></i> End</label>
-    <select id="node-input-end" style='width:70%'>
-      <option value="goldenHour">Start of evening golden hour</option>
-      <option value="sunsetStart">Sunset start</option>
-      <option value="sunset">Sunset, civil twilight starts</option>
-      <option value="dusk">Dusk, Evening astronomical twilight starts</option>
-      <option value="nauticalDusk">Evening nautical twilight starts</option>
-      <option value="night">Dark enough for astronomy</option>
-    </select>
-  </div>
-  <div class="form-row">
-    <label><i class="fa fa-arrows-h"></i> Offset</label>
-    <span style="margin-right:4px">start</span> <input type="text" id="node-input-soff" placeholder="minutes" style='width:60px;'> mins
-    <span style="margin-left:14px; margin-right:4px">end</span> <input type="text" id="node-input-eoff" placeholder="minutes" style='width:60px;'> mins
-  </div>
-  <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name">
-  </div>
+    <div class="form-row">
+        <label for="node-input-lat"><i class="fa fa-globe"></i><span data-i18n="sunrise.label.latitude"></span></label>
+        <input type="text" id="node-input-lat" placeholder="51.025">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lon"><i class="fa fa-globe"></i><span data-i18n="sunrise.label.longitude"></span></label>
+        <input type="text" id="node-input-lon" placeholder="-1.4">
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-clock-o"></i><span data-i18n="sunrise.label.start"></label>
+        <select id="node-input-start" style='width:70%'>
+            <option value="nightEnd" data-i18n="sunrise.nightEnd"></option>
+            <option value="nauticalDawn" data-i18n="sunrise.nauticalDawn"></option>
+            <option value="dawn" data-i18n="sunrise.dawn"></option>
+            <option value="sunrise" data-i18n="sunrise.sunrise"></option>
+            <option value="sunriseEnd" data-i18n="sunrise.sunriseEnd"></option>
+            <option value="goldenHourEnd" data-i18n="sunrise.goldenHourEnd"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-end"><i class="fa fa-clock-o"></i><span data-i18n="sunrise.label.end"></label>
+        <select id="node-input-end" style='width:70%'>
+            <option value="goldenHour" data-i18n="sunrise.goldenHour"></option>
+            <option value="sunsetStart" data-i18n="sunrise.sunsetStart"></option>
+            <option value="sunset" data-i18n="sunrise.sunset"></option>
+            <option value="dusk" data-i18n="sunrise.dusk"></option>
+            <option value="nauticalDusk" data-i18n="sunrise.nauticalDusk"></option>
+            <option value="night" data-i18n="sunrise.night"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-arrows-h"></i><span data-i18n="sunrise.label.offset"></label>
+        <span style="margin-right:4px" data-i18n="sunrise.start"></span> <input type="text" id="node-input-soff" placeholder="minutes" style='width:60px;' > <span data-i18n="sunrise.mins"></span>
+        <span style="margin-left:14px; margin-right:4px" data-i18n="sunrise.end"></span> <input type="text" id="node-input-eoff" placeholder="minutes" style='width:60px;'><span data-i18n="sunrise.mins"></span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="sunrise.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]sunrise.label.name">
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -56,10 +56,15 @@
         },
         inputs:0,
         outputs:2,
-        outputLabels: ["once per minute","only on change"],
+        outputLabels: function(i) {
+            return [
+                this._("sunrise.onePerMin"),
+                this._("sunrise.onse")
+            ][i];
+        },
         icon: "sun.png",
         label: function() {
-            return this.name||"Sun rise/set";
+            return this.name||this._("sunrise.sunName");
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
