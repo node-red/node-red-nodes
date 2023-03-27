@@ -54,7 +54,7 @@
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
-    
+
     <div class="form-row node-input-saslformat" style="display: none;">
         <label for="node-input-saslformat"><i class="fa fa-code"></i> <span data-i18n="email.label.saslformat"></span></label>
         <input type="checkbox" id="node-input-saslformat" style="width: auto;">
@@ -127,6 +127,10 @@
             return (this.dname)?"node_label_italic":"";
         },
         oneditprepare: function() {
+            if (this.authtype === undefined) {
+                this.authtype = "BASIC";
+                $("#node-input-authtype").val('BASIC');
+            }
             if (this.credentials.global) {
                 $('#node-tip').show();
             } else {
@@ -335,6 +339,10 @@
         },
         oneditprepare: function() {
             var that = this;
+            if (this.authtype === undefined) {
+                this.authtype = "BASIC";
+                $("#node-input-authtype").val('BASIC');
+            }
             if (this.credentials.global) {
                 $('#node-tip').show();
             } else {
@@ -388,22 +396,22 @@
         <label style="width:40px"> </label>
         <input type="checkbox" id="node-input-secure" style="display:inline-block; width:20px; vertical-align:baseline;">
         <span data-i18n="email.label.enableSecure"></span>
-    </div>  
+    </div>
     <div class="form-row">
         <label for="node-input-starttls"><i class="fa fa-lock"></i> <span data-i18n="email.label.enableStarttls"></span></label>
         <input type="checkbox" id="node-input-starttls" style="display:inline-block; width:20px; vertical-align:baseline;">
         <span data-i18n="email.label.starttlsUpgrade"></span>
-    </div>     
+    </div>
     <div class="form-row" id="certRow">
         <label for="node-input-certFile"><i class="fa fa-file"></i>
         <span data-i18n="email.label.certFile"></span></label>
         <input type="text" id="node-input-certFile" placeholder="server.crt" style="width:100%">
-    </div>  
+    </div>
     <div class="form-row" id="keyRow">
         <label for="node-input-keyFile"><i class="fa fa-key"></i>
         <span data-i18n="email.label.keyFile"></span></label>
         <input type="text" id="node-input-keyFile" placeholder="private.key" style="width:100%">
-    </div>       
+    </div>
     <div class="form-row">
         <label for="node-input-auth"><i class="fa fa-user"></i> <span data-i18n="email.label.users"></span></label>
         <input type="checkbox" id="node-input-auth" style="display:inline-block; width:20px; vertical-align:baseline;">
@@ -424,7 +432,7 @@
     <div class="form-row">
         <label for="node-input-expert"><i class="fa fa-cog"></i> <span data-i18n="email.label.expert"></span></label>
         <input type="text" id="node-input-expert">
-    </div>     
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
@@ -545,7 +553,7 @@
                 $("#node-input-email-users-container-div").scrollTop(
                     $("#node-input-email-users-container-div").get(0).scrollHeight
                 );
-            }); 
+            });
             $("#node-input-auth").change(function () {
                 if ($("#node-input-auth").is(":checked")) {
                     $("#node-input-email-users-add").show();
@@ -554,12 +562,12 @@
                     $("#node-input-email-users-add").hide();
                     $("#node-input-email-users-container-div").hide();
                 }
-            });   
+            });
             // Expert settings
             $("#node-input-expert").typedInput({
                 type: "json",
                 types: ["json"]
-            })                              
+            })
         },
         oneditsave: function () {
             let node = this;

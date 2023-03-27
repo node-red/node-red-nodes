@@ -57,7 +57,7 @@ module.exports = function(RED) {
                 this.error(RED._("email.errors.nouserid"));
             }
         }
-        if(this.authtype === "BASIC" ) {
+        if (this.authtype === "BASIC" ) {
             if (this.credentials && this.credentials.hasOwnProperty("password")) {
                 this.password = this.credentials.password;
             } else {
@@ -88,8 +88,8 @@ module.exports = function(RED) {
             secure: node.secure,
             tls: {rejectUnauthorized: node.tls}
         }
-    
-        if(node.authtype === "BASIC" ) {
+
+        if (node.authtype === "BASIC" ) {
             smtpOptions.auth = {
                 user: node.userid,
                 pass: node.password
@@ -252,7 +252,7 @@ module.exports = function(RED) {
                 this.error(RED._("email.errors.nouserid"));
             }
         }
-        if(this.authtype === "BASIC" ) {
+        if (this.authtype === "BASIC" ) {
             if (this.credentials && this.credentials.hasOwnProperty("password")) {
                 this.password = this.credentials.password;
             } else {
@@ -311,7 +311,7 @@ module.exports = function(RED) {
             var currentMessage = 1;
             var maxMessage = 0;
             var nextMessage;
-            
+
             pop3 = new Pop3Command({
                 "host": node.inserver,
                 "tls": node.useSSL,
@@ -321,10 +321,10 @@ module.exports = function(RED) {
             try {
                 node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
                 await pop3.connect();
-                if(node.authtype == "XOAUTH2") {
+                if (node.authtype == "XOAUTH2") {
                     var value = RED.util.getMessageProperty(msg,node.token);
                     if (value !== undefined) {
-                        if(node.saslformat) {
+                        if (node.saslformat) {
                             //Make base64 string for access - compatible with outlook365 and gmail
                             saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
                         } else {
@@ -334,7 +334,7 @@ module.exports = function(RED) {
                     await pop3.command('AUTH', "XOAUTH2");
                     await pop3.command(saslxoauth2);
 
-                } else if(node.authtype == "BASIC") {
+                } else if (node.authtype == "BASIC") {
                     await pop3.command('USER', node.userid);
                     await pop3.command('PASS', node.password);
                 }
@@ -346,7 +346,7 @@ module.exports = function(RED) {
                 return;
             }
             maxMessage = (await pop3.STAT()).split(" ")[0];
-            if(maxMessage>0) {
+            if (maxMessage>0) {
                 node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
                 while(currentMessage<=maxMessage) {
                     try {
@@ -401,10 +401,10 @@ module.exports = function(RED) {
         function checkIMAP(msg,send,done) {
             var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
             var saslxoauth2 = "";
-            if(node.authtype == "XOAUTH2") {
+            if (node.authtype == "XOAUTH2") {
                 var value = RED.util.getMessageProperty(msg,node.token);
                 if (value !== undefined) {
-                    if(node.saslformat) {
+                    if (node.saslformat) {
                         //Make base64 string for access - compatible with outlook365 and gmail
                         saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
                     } else {
