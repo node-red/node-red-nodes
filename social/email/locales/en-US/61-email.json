@@ -31,6 +31,9 @@
             "unflagged": "Unflagged",
             "unseen": "Unseen",
             "autotls": "Start TLS?",
+            "authtype": "Auth type",
+            "saslformat": "Format to SASL",
+            "token": "Token",
             "never": "never",
             "required": "if required",
             "always": "always",
@@ -69,6 +72,7 @@
         "errors": {
             "nouserid": "No e-mail userid set",
             "nopassword": "No e-mail password set",
+            "notoken": "No token property set",
             "nocredentials": "No Email credentials found. See info panel.",
             "nosmtptransport": "No SMTP transport. See info panel.",
             "nopayload": "No payload to send",

@@ -9,6 +9,8 @@ Pre-requisite
 You will need valid email credentials for your email server. For GMail this may mean
 getting an application password if you have two-factor authentication enabled.
 
+For Exchange and Outlook 365 you must use OAuth2.0.
+
 **Note :** Version 1.x of this node requires **Node.js v8** or newer.
 
 Install
@@ -26,6 +28,13 @@ GMail users
 If you are accessing GMail you may need to either enable <a target="_new" href="https://support.google.com/mail/answer/185833?hl=en">an application password</a>,
 or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
 
+Office 365 users
+-----------
+
+If you are accessing Exchnage you will need to register an application through their platform and use OAuth2.0.
+<a target="_new" href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth#get-an-access-token">Details on how to do this can be found here.</a>
+
+
 Usage
 -----
 
@@ -41,6 +50,9 @@ If there is text/html then that is returned in `msg.html`. `msg.from` and
 
 Additionally `msg.header` contains the complete header object including
 **to**, **cc** and other potentially useful properties.
+
+Modern authentication through OAuth2.0 is supported, but must be triggered by an incoming access token and
+can only be automatically triggered upstream.
 
 ### Output node
 

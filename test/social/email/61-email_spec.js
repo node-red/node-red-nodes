@@ -31,6 +31,25 @@ describe('email Node', function () {
                 n1.should.have.property("repeat", 300000);
                 n1.should.have.property("inserver", "imap.gmail.com");
                 n1.should.have.property("inport", "993");
+                n1.should.have.property("authtype", "BASIC");
+                done();
+            });
+        });
+
+        it('should force input on XOAuth2', function (done) {
+            var flow = [{
+                id: "n1",
+                type: "e-mail in",
+                name: "emailin",
+                authtype: "XOAUTH2",
+                wires: [
+                    []
+                ]
+            }];
+            helper.load(emailNode, flow, function () {
+                var n1 = helper.getNode("n1");
+                n1.should.have.property("repeat", 0);
+                n1.should.have.property("inputs", 1);
                 done();
             });
         });
@@ -51,6 +70,7 @@ describe('email Node', function () {
             helper.load(emailNode, flow, function () {
                 var n1 = helper.getNode("n1");
                 n1.should.have.property('name', "emailout");
+                n1.should.have.property("authtype", "BASIC");
                 done();
             });
         });
@@ -83,7 +103,7 @@ describe('email Node', function () {
                     //console.log(helper.log());
                     //logEvents.should.have.length(3);
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("email.errors.nopayload");
+                    logEvents[2][0].msg.toString().should.startWith("email.errors.nopayload");
                     done();
                 } catch (e) {
                     done(e);
@@ -134,7 +154,7 @@ describe('email Node', function () {
                     // console.log(logEvents[0][0].msg.toString());
                     //logEvents.should.have.length(3);
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("Error:");
+                    logEvents[2][0].msg.toString().should.startWith("Error:");
                     done();
                 } catch (e) {
                     done(e);
@@ -179,7 +199,7 @@ describe('email Node', function () {
                     //console.log(helper.log().args);
                     //logEvents.should.have.length(3);
                     logEvents[0][0].should.have.a.property('msg');
-                    logEvents[0][0].msg.toString().should.startWith("Error:");
+                    logEvents[2][0].msg.toString().should.startWith("Error:");
                     done();
                 } catch (e) {
                     done(e);
