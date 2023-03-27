@@ -66,8 +66,8 @@
             "invalidinput": "Ungültige Eingabe",
             "needtobeexecutable": "__command__ muss ausführbar sein",
             "mustbeexecutable": "nrgpio muss ausführbar sein",
-            "commandnotfound": "nrgpio-Befehl nicht gefunden",
-            "commandnotexecutable": "nrgpio-Befehl nicht ausführbar",
+            "commandnotfound": "nrgpio-Befehl nicht gefunden ",
+            "commandnotexecutable": "nrgpio-Befehl nicht ausführbar ",
             "error": "Fehler: __error__",
             "pythoncommandnotfound": "nrgpio-Python-Befehl nicht aktiv"
         }

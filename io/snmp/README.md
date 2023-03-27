@@ -9,6 +9,9 @@ fetch values from SNMP enabled hosts. Supports v1, v2c and v3.
 * SNMP table - Simple SNMP oid table fetcher
 * SNMP walker - Simple SNMP oid walker fetcher
 
+## v2 Breaking Change
+v2 has a breaking change in that the single snmp node no longer tries to stringify an octet string type (04). This makes it consistent with the other nodes in this bundle. this means the user now has to convert to a string if required but has better control of how they wish to do that.
+
 Install
 -------
 

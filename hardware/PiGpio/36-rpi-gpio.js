@@ -83,9 +83,15 @@ module.exports = function(RED) {
             });
 
             node.child.on('error', function (err) {
-                if (err.errno === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")); }
-                else if (err.errno === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
-                else { node.error(RED._("rpi-gpio.errors.error",{error:err.errno})) }
+                if (err.code === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")+err.path,err); }
+                else if (err.code === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")+err.path,err); }
+                else { node.error(RED._("rpi-gpio.errors.error",{error:err.code}),err) }
+            });
+
+            node.child.stdin.on('error', function (err) {
+                if (!node.finished) {
+                    node.error(RED._("rpi-gpio.errors.error",{error:err.code}),err);
+                }
             });
         }
 
@@ -198,11 +204,16 @@ module.exports = function(RED) {
                 });
 
                 node.child.on('error', function (err) {
-                    if (err.errno === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")); }
-                    else if (err.errno === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")); }
-                    else { node.error(RED._("rpi-gpio.errors.error")+': ' + err.errno); }
+                    if (err.code === "ENOENT") { node.error(RED._("rpi-gpio.errors.commandnotfound")+err.path,err); }
+                    else if (err.code === "EACCES") { node.error(RED._("rpi-gpio.errors.commandnotexecutable")+err.path,err); }
+                    else { node.error(RED._("rpi-gpio.errors.error",{error:err.code}),err) }
                 });
 
+                node.child.stdin.on('error', function (err) {
+                    if (!node.finished) {
+                        node.error(RED._("rpi-gpio.errors.error",{error:err.code}),err);
+                    }
+                });
             }
             else {
                 node.warn(RED._("rpi-gpio.errors.invalidpin")+": "+node.pin);

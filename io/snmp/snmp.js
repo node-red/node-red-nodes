@@ -253,9 +253,9 @@ module.exports = function (RED) {
                                 node.error(SNMP.varbindError(vb), msg);
                                 vb._error = SNMP.varbindError(vb); //add _error to msg so users can determine the varbind is not valid
                             }
-                            else {
-                                if (vb.type == 4) { vb.value = vb.value.toString(); }
-                            }
+                            // else {
+                            //     if (vb.type == 4) { vb.value = vb.value.toString(); }
+                            // }
                             vb.tstr = SNMP.ObjectType[vb.type];
                         }
                         msg.payload = varbinds;
