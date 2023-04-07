@@ -57,6 +57,10 @@ module.exports = function(RED) {
             node.warn("reconnecting");
         });
 
+        node.client.on("reconnect", function() {
+            node.status({fill:"green",shape:"dot",text:"connected"});
+        });
+
         node.client.on("error", function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"});
             node.warn(error);
