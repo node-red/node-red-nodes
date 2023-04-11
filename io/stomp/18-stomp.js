@@ -9,6 +9,7 @@ module.exports = function(RED) {
         this.server = n.server;
         this.port = n.port;
         this.protocolversion = n.protocolversion;
+        this.ack = n.ack;
         this.vhost = n.vhost;
         this.reconnectretries = n.reconnectretries || 999999;
         this.reconnectdelay = (n.reconnectdelay || 15) * 1000;
@@ -43,6 +44,7 @@ module.exports = function(RED) {
         if (this.serverConfig.vhost) {
             this.stompClientOpts.vhost = this.serverConfig.vhost;
         }
+        this.subscribeHeaders = this.serverConfig.ack ? { "ack": "client" } : {};
 
         var node = this;
         var msg = {topic:this.topic};
@@ -69,7 +71,7 @@ module.exports = function(RED) {
         node.status({fill:"grey",shape:"ring",text:"connecting"});
         node.client.connect(function(sessionId) {
             node.log('subscribing to: '+node.topic);
-            node.client.subscribe(node.topic, function(body, headers) {
+            node.client.subscribe(node.topic, node.subscribeHeaders, function(body, headers) {
                 var newmsg={"headers":headers,"topic":node.topic}
                 try {
                     newmsg.payload = JSON.parse(body);
@@ -157,5 +159,73 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("stomp out",StompOutNode);
+
+    function StompAckNode(n) {
+        RED.nodes.createNode(this,n);
+        this.server = n.server;
+
+        this.serverConfig = RED.nodes.getNode(this.server);
+        this.stompClientOpts = {
+            address: this.serverConfig.server,
+            port: this.serverConfig.port * 1,
+            user: this.serverConfig.username,
+            pass: this.serverConfig.password,
+            protocolVersion: this.serverConfig.protocolversion,
+            reconnectOpts: {
+                retries: this.serverConfig.reconnectretries * 1,
+                delay: this.serverConfig.reconnectdelay * 1
+            }
+        };
+        if (this.serverConfig.vhost) {
+            this.stompClientOpts.vhost = this.serverConfig.vhost;
+        }
+
+        var node = this;
+
+        // only start connection etc. when acknowledgements are configured to be send by client
+        if (node.serverConfig.ack) {
+            node.client = new StompClient(node.stompClientOpts);
+
+            node.client.on("connect", function() {
+                node.status({fill:"green",shape:"dot",text:"connected"});
+            });
+
+            node.client.on("reconnecting", function() {
+                node.status({fill:"red",shape:"ring",text:"reconnecting"});
+                node.warn("reconnecting");
+            });
+
+            node.client.on("reconnect", function() {
+                node.status({fill:"green",shape:"dot",text:"connected"});
+            });
+
+            node.client.on("error", function(error) {
+                node.status({fill:"grey",shape:"dot",text:"error"});
+                node.warn(error);
+            });
+
+            node.status({fill:"grey",shape:"ring",text:"connecting"});
+            node.client.connect(function(sessionId) {
+            }, function(error) {
+                node.status({fill:"grey",shape:"dot",text:"error"});
+                node.warn(error);
+            });
+
+            node.on("input", function(msg) {
+                node.ack(msg.messageId, msg.subsriptionId, msg.transaction);
+            });
+
+            node.on("close", function(done) {
+                if (node.client) {
+                    // disconnect can accept a callback - but it is not always called.
+                    node.client.disconnect();
+                }
+                done();
+            });
+        } else {
+            node.error("ACK not configured in server (config node)");
+        }
+    }
+    RED.nodes.registerType("stomp ack",StompAckNode);
 
 };

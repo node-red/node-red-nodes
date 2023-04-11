@@ -123,6 +123,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-config-input-ack"><i class="fa fa-check"></i> Enable client acknowledgement</label>
+        <input type="checkbox" id="node-config-input-ack" />
+    </div>
+    <div class="form-tips">
+        Enabling the ACK (acknowledgement) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
+        This means the items on the broker queue will not be dequeue'd unless an ACK message is sent using the <code>ack</code> node.
+    </div>
+    <div class="form-row">
         <label for="node-config-input-vhost"><i class="fa fa-server"></i> vhost</label>
         <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
     </div>
@@ -147,6 +155,7 @@
             server: {required:true},
             port: {value:61613,required:true,validate:RED.validators.number()},
             protocolversion: {value:"1.0",required:true},
+            ack: {value: false},
             vhost: {},
             reconnectretries: {value:"0",required:true,validate:RED.validators.number()},
             reconnectdelay: {value:"0.5",required:true,validate:RED.validators.number()},
@@ -158,6 +167,55 @@
         },
         label: function() {
             return (this.name?this.name:this.server+":"+this.port);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="stomp ack">
+    <div class="form-row">
+        <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="stomp ack">
+    <p>
+        ACK is used to acknowledge consumption of a message from a subscription using client acknowledgment. When a client has issued a SUBSCRIBE frame with the ack header set to client any messages received from that destination will not be considered to have been consumed (by the server) until the message has been acknowledged via an ACK.
+    </p>
+    <p>
+        The node allows for following inputs:
+        <ul>
+            <li><code>msg.messageId</code>: The id of the message to acknowledge</li>
+            <li><code>msg.subscription</code>: The id of the subscription made using the stomp in node</li>
+            <li><code>msg.transaction</code>: Optional transaction name</li>
+        </ul>
+    </p>
+    <p>
+        See the <a href="https://stomp.github.io/stomp-specification-1.0.html#frame-ACK" target="new">Stomp 1.0 spec</a> for more details.
+    </p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('stomp ack',{
+        category: 'output',
+        color:"#e8cfe8",
+        defaults: {
+            name: {value:""},
+            server: {type:"stomp-server",required:true}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "bridge.png",
+        align: "right",
+        label: function() {
+            return this.name||"stomp";
+        },
+        labelStyle: function() {
+            return (this.name)?"node_label_italic":"";
         }
     });
 </script>
