@@ -16,6 +16,7 @@ module.exports = function(RED) {
         this.name = n.name;
         this.username = this.credentials.user;
         this.password = this.credentials.password;
+        this.clientConnection = null;
     }
     RED.nodes.registerType("stomp-server",StompServerNode,{
         credentials: {
@@ -57,7 +58,11 @@ module.exports = function(RED) {
 
         var node = this;
         var msg = {topic:this.topic};
-        node.client = new StompClient(node.stompClientOpts);
+        // Save the client connection to the shared server instance if needed
+        if (!node.server.clientConnection) {
+            node.server.clientConnection = new StompClient(node.stompClientOpts);
+        }
+        node.client = node.server.clientConnection;
 
         node.client.on("connect", function() {
             node.status({fill:"green",shape:"dot",text:"connected"});
@@ -128,7 +133,11 @@ module.exports = function(RED) {
         }
 
         var node = this;
-        node.client = new StompClient(node.stompClientOpts);
+        // Save the client connection to the shared server instance if needed
+        if (!node.server.clientConnection) {
+            node.server.clientConnection = new StompClient(node.stompClientOpts);
+        }
+        node.client = node.server.clientConnection;
 
         node.client.on("connect", function() {
             node.status({fill:"green",shape:"dot",text:"connected"});
@@ -193,7 +202,11 @@ module.exports = function(RED) {
 
         // only start connection etc. when acknowledgements are configured to be send by client
         if (node.serverConfig.ack) {
-            node.client = new StompClient(node.stompClientOpts);
+            // Save the client connection to the shared server instance if needed
+            if (!node.server.clientConnection) {
+                node.server.clientConnection = new StompClient(node.stompClientOpts);
+            }
+            node.client = node.server.clientConnection;
 
             node.client.on("connect", function() {
                 node.status({fill:"green",shape:"dot",text:"connected"});
