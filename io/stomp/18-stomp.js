@@ -14,10 +14,10 @@ module.exports = function(RED) {
         this.reconnectretries = n.reconnectretries || 999999;
         this.reconnectdelay = (n.reconnectdelay || 15) * 1000;
         this.name = n.name;
+        this.clientConnection = n.clientConnection;
+        this.connected = n.connected;
         this.username = this.credentials.user;
         this.password = this.credentials.password;
-        this.clientConnection = null;
-        this.connected = false;
     }
     RED.nodes.registerType("stomp-server",StompServerNode,{
         credentials: {
