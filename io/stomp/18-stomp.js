@@ -101,7 +101,7 @@ module.exports = function(RED) {
             });
         }
 
-        if (!node.server.connected) {
+        if (!node.serverConfig.connected) {
             node.status({fill:"grey",shape:"ring",text:"connecting"});
             node.client.connect(function(sessionId) {
                 node.serverConfig.connected = true;
