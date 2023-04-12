@@ -221,7 +221,7 @@ module.exports = function(RED) {
             });
 
             node.on("input", function(msg) {
-                node.ack(msg.messageId, msg.subsriptionId, msg.transaction);
+                node.client.ack(msg.messageId, msg.subsriptionId, msg.transaction);
             });
 
             node.on("close", function(done) {
