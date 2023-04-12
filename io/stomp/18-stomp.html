@@ -169,7 +169,9 @@
             vhost: {},
             reconnectretries: {value:"0",required:true,validate:RED.validators.number()},
             reconnectdelay: {value:"0.5",required:true,validate:RED.validators.number()},
-            name: {}
+            name: {},
+            clientConnection: {value: null},
+            connected: {value: false}
         },
         credentials: {
             user: {type:"text"},
