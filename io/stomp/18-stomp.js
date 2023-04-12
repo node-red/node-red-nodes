@@ -87,9 +87,7 @@ module.exports = function(RED) {
         });
 
         // Connect to server if needed and subscribe
-        node.status({fill:"grey",shape:"ring",text:"connecting"});
-
-        function subscribe() {
+        const subscribe = () => {
             node.log('subscribing to: '+node.topic);
             node.client.subscribe(node.topic, node.subscribeHeaders, function(body, headers) {
                 var newmsg={"headers":headers,"topic":node.topic}
@@ -104,6 +102,7 @@ module.exports = function(RED) {
         }
 
         if (!node.server.connected) {
+            node.status({fill:"grey",shape:"ring",text:"connecting"});
             node.client.connect(function(sessionId) {
                 subscribe();
             }, function(error) {
@@ -176,8 +175,8 @@ module.exports = function(RED) {
         });
 
         // Connect to server if needed
-        node.status({fill:"grey",shape:"ring",text:"connecting"});
         if(!node.serverConfig.connected) {
+            node.status({fill:"grey",shape:"ring",text:"connecting"});
             node.client.connect(function(sessionId) {}, function(error) {
                 node.status({fill:"grey",shape:"dot",text:"error"});
                 node.warn(error);
@@ -250,8 +249,8 @@ module.exports = function(RED) {
             });
 
             // Connect to server if needed
-            node.status({fill:"grey",shape:"ring",text:"connecting"});
             if(!node.serverConfig.connected) {
+                node.status({fill:"grey",shape:"ring",text:"connecting"});
                 node.client.connect(function(sessionId) {}, function(error) {
                     node.status({fill:"grey",shape:"dot",text:"error"});
                     node.warn(error);
