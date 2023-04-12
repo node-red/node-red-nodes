@@ -104,8 +104,10 @@ module.exports = function(RED) {
         if (!node.server.connected) {
             node.status({fill:"grey",shape:"ring",text:"connecting"});
             node.client.connect(function(sessionId) {
+                node.serverConfig.connected = true;
                 subscribe();
             }, function(error) {
+                node.serverConfig.connected = false;
                 node.status({fill:"grey",shape:"dot",text:"error"});
                 node.warn(error);
             });
@@ -177,7 +179,10 @@ module.exports = function(RED) {
         // Connect to server if needed
         if(!node.serverConfig.connected) {
             node.status({fill:"grey",shape:"ring",text:"connecting"});
-            node.client.connect(function(sessionId) {}, function(error) {
+            node.client.connect(function(sessionId) {
+                node.serverConfig.connected = true;
+            }, function(error) {
+                node.serverConfig.connected = false;
                 node.status({fill:"grey",shape:"dot",text:"error"});
                 node.warn(error);
             });
@@ -251,7 +256,10 @@ module.exports = function(RED) {
             // Connect to server if needed
             if(!node.serverConfig.connected) {
                 node.status({fill:"grey",shape:"ring",text:"connecting"});
-                node.client.connect(function(sessionId) {}, function(error) {
+                node.client.connect(function(sessionId) {
+                    node.serverConfig.connected = true;
+                }, function(error) {
+                    node.serverConfig.connected = false;
                     node.status({fill:"grey",shape:"dot",text:"error"});
                     node.warn(error);
                 });
