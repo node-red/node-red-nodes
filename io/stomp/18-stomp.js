@@ -28,6 +28,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
         this.topic = n.topic;
+        this.enableSubscriptionId = n.enable_subscriptionid;
+        this.subscriptionid = n.subscriptionid;
 
         this.serverConfig = RED.nodes.getNode(this.server);
         this.stompClientOpts = {
@@ -44,7 +46,14 @@ module.exports = function(RED) {
         if (this.serverConfig.vhost) {
             this.stompClientOpts.vhost = this.serverConfig.vhost;
         }
-        this.subscribeHeaders = this.serverConfig.ack ? { "ack": "client" } : {};
+
+        this.subscribeHeaders = {};
+        if (this.enableSubscriptionId) {
+            this.subscribeHeaders.id = this.subscriptionid;
+        }
+        if (this.serverConfig.ack) {
+            this.subscribeHeaders.ack = "client";
+        }
 
         var node = this;
         var msg = {topic:this.topic};

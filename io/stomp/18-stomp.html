@@ -9,6 +9,14 @@
         <input type="text" id="node-input-topic" placeholder="topic or queue">
     </div>
     <div class="form-row">
+        <label for="node-input-enable_subscriptionid" style="width: 110px;"><i class="fa fa-envelope"></i> Destination</label>
+        <input type="checkbox" id="node-input-enable_subscriptionid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subscriptionid" style="width: 110px;"><i class="fa fa-envelope"></i> Destination</label>
+        <input type="number" id="node-input-subscriptionid">
+    </div>
+    <div class="form-row">
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -33,6 +41,8 @@
         defaults: {
             name: {value:""},
             server: {type:"stomp-server",required:true},
+            enable_subscriptionid: {value: false},
+            subscriptionid: {value: 0, required:true},
             topic: {value:"",required:true}
         },
         inputs:0,
