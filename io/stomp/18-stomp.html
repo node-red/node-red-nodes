@@ -14,7 +14,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-subscriptionid" style="width: 110px;"><i class="fa fa-envelope"></i> Subscription ID</label>
-        <input type="number" id="node-input-subscriptionid">
+        <input type="number" id="node-input-subscriptionid" placeholder="Default: 0">
     </div>
     <div class="form-row">
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
@@ -42,7 +42,7 @@
             name: {value:""},
             server: {type:"stomp-server",required:true},
             enable_subscriptionid: {value: false},
-            subscriptionid: {value: 0, required:true},
+            subscriptionid: {value: 0},
             topic: {value:"",required:true}
         },
         inputs:0,
