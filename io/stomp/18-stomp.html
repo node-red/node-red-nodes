@@ -110,9 +110,9 @@
 </script>
 
 <script type="text/html" data-template-name="stomp-server">
-    <div class="form-row node-input-server">
-        <label for="node-config-input-server"><i class="fa fa-bookmark"></i> Server</label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 45%;" >
+    <div class="form-row node-input-address">
+        <label for="node-config-input-address"><i class="fa fa-bookmark"></i> Address</label>
+        <input class="input-append-left" type="text" id="node-config-input-address" placeholder="localhost" style="width: 45%;" >
         <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
         <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
     </div>
@@ -126,15 +126,15 @@
     </div>
 
     <div class="form-row">
-    <label for="node-config-input-protocolversion"><i class="fa fa-tag"></i> Protocol Version</label>
-        <select type="text" id="node-config-input-protocolversion" style="display: inline-block; width: 250px; vertical-align: top;">
+    <label for="node-config-input-protocolVersion"><i class="fa fa-tag"></i> Protocol Version</label>
+        <select type="text" id="node-config-input-protocolVersion" style="display: inline-block; width: 250px; vertical-align: top;">
             <option value="1.0">v1.0</option>
             <option value="1.1">v1.1</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-config-input-ack"><i class="fa fa-check"></i> Enable client acknowledgement</label>
-        <input type="checkbox" id="node-config-input-ack" />
+        <label for="node-config-input-clientAcknowledgement"><i class="fa fa-check"></i> Enable client acknowledgement</label>
+        <input type="checkbox" id="node-config-input-clientAcknowledgement" />
     </div>
     <div class="form-tips">
         Enabling the ACK (acknowledgement) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
@@ -145,12 +145,12 @@
         <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
     </div>
     <div class="form-row">
-        <label for="node-config-input-reconnectretries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
-        <input type="number" id="node-config-input-reconnectretries" />
+        <label for="node-config-input-reconnectRetries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
+        <input type="number" id="node-config-input-reconnectRetries" />
     </div>
     <div class="form-row">
-        <label for="node-config-input-reconnectdelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
-        <input type="number" id="node-config-input-reconnectdelay" />
+        <label for="node-config-input-reconnectDelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
+        <input type="number" id="node-config-input-reconnectDelay" />
     </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -162,16 +162,14 @@
     RED.nodes.registerType('stomp-server',{
         category: 'config',
         defaults: {
-            server: {required:true},
+            address: {required:true},
             port: {value:61613,required:true,validate:RED.validators.number()},
-            protocolversion: {value:"1.0",required:true},
-            ack: {value: false},
+            protocolVersion: {value:"1.0",required:true},
+            clientAcknowledgement: {value: false},
             vhost: {},
-            reconnectretries: {value:"0",required:true,validate:RED.validators.number()},
-            reconnectdelay: {value:"0.5",required:true,validate:RED.validators.number()},
-            name: {},
-            clientConnection: {value: null},
-            connected: {value: false}
+            reconnectRetries: {value:0,required:true,validate:RED.validators.number()},
+            reconnectDelay: {value:1,required:true,validate:RED.validators.number()},
+            name: {}
         },
         credentials: {
             user: {type:"text"},
