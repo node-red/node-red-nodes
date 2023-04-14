@@ -9,12 +9,16 @@
         <input type="text" id="node-input-topic" placeholder="topic or queue">
     </div>
     <div class="form-row">
-        <label for="node-input-enable_subscriptionid" style="width: 110px;"><i class="fa fa-envelope"></i> Enable subscription ID</label>
-        <input type="checkbox" id="node-input-enable_subscriptionid">
+        <label for="node-config-input-ack"><i class="fa fa-check"></i> Enable client acknowledgement</label>
+        <select type="text" id="node-config-input-ack" style="display: inline-block; width: 250px; vertical-align: top;">
+            <option value="auto">Auto</option>
+            <option value="client">Client</option>
+            <option value="client-individual">Client individual (only v1.1)</option>
+        </select>
     </div>
-    <div class="form-row">
-        <label for="node-input-subscriptionid" style="width: 110px;"><i class="fa fa-envelope"></i> Subscription ID</label>
-        <input type="number" id="node-input-subscriptionid" placeholder="Default: 0">
+    <div class="form-tips">
+        Enabling the ACK (acknowledgement) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
+        This means the items on the broker queue will not be dequeue'd unless an ACK message is sent using the <code>ack</code> node.
     </div>
     <div class="form-row">
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
@@ -41,8 +45,7 @@
         defaults: {
             name: {value:""},
             server: {type:"stomp-server",required:true},
-            enable_subscriptionid: {value: false},
-            subscriptionid: {value: 0},
+            ack: {value: "auto"},
             topic: {value:"",required:true}
         },
         inputs:0,
@@ -133,14 +136,6 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-config-input-clientAcknowledgement"><i class="fa fa-check"></i> Enable client acknowledgement</label>
-        <input type="checkbox" id="node-config-input-clientAcknowledgement" />
-    </div>
-    <div class="form-tips">
-        Enabling the ACK (acknowledgement) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
-        This means the items on the broker queue will not be dequeue'd unless an ACK message is sent using the <code>ack</code> node.
-    </div>
-    <div class="form-row">
         <label for="node-config-input-vhost"><i class="fa fa-server"></i> vhost</label>
         <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
     </div>
@@ -165,7 +160,6 @@
             address: {required:true},
             port: {value:61613,required:true,validate:RED.validators.number()},
             protocolVersion: {value:"1.0",required:true},
-            clientAcknowledgement: {value: false},
             vhost: {},
             reconnectRetries: {value:0,required:true,validate:RED.validators.number()},
             reconnectDelay: {value:1,required:true,validate:RED.validators.number()},
@@ -187,6 +181,10 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
+        <label for="node-input-topic" style="width: 110px;"><i class="fa fa-envelope"></i> Destination</label>
+        <input type="text" id="node-input-topic" placeholder="topic or queue">
+    </div>
+    <div class="form-row">
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -200,7 +198,6 @@
         The node allows for following inputs:
         <ul>
             <li><code>msg.messageId</code>: The id of the message to acknowledge</li>
-            <li><code>msg.subscription</code>: The id of the subscription made using the stomp in node</li>
             <li><code>msg.transaction</code>: Optional transaction name</li>
         </ul>
     </p>
@@ -215,7 +212,8 @@
         color:"#e8cfe8",
         defaults: {
             name: {value:""},
-            server: {type:"stomp-server",required:true}
+            server: {type:"stomp-server",required:true},
+            topic: {value:""}
         },
         inputs:1,
         outputs:0,
