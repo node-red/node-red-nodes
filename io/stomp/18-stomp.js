@@ -90,7 +90,7 @@ module.exports = function(RED) {
             }
 
             // Apply property changes (only if the property exists in the options object)
-            setIfHasProperty(options, node, "address", init);
+            setIfHasProperty(options, node, "server", init);
             setIfHasProperty(options, node, "port", init);
             setIfHasProperty(options, node, "protocolVersion", init);
             setIfHasProperty(options, node, "vhost", init);
@@ -110,7 +110,7 @@ module.exports = function(RED) {
 
             // Build options for passing to the stomp-client API
             node.options = {
-                address: node.address,
+                address: node.server,
                 port: node.port * 1,
                 user: node.username,
                 pass: node.password,
@@ -431,7 +431,7 @@ module.exports = function(RED) {
         } else {
             node.error("Missing server config");
         }
-        
+
         node.on("close", function(removed, done) {
             if (node.serverConnection) {
                 node.serverConnection.deregister(node, true, done);
