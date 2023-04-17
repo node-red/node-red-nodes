@@ -364,7 +364,7 @@ module.exports = function(RED) {
 
             if (node.topic) {
                 node.serverConnection.register(node);
-                node.serverConnection.subscribe(topic, ack, function(msg) {
+                node.serverConnection.subscribe(node.topic, ack, function(msg) {
                     node.send(msg);
                 });
 
@@ -405,7 +405,7 @@ module.exports = function(RED) {
 
             node.on("input", function(msg, send, done) {
                 if (node.topic && msg.payload) {
-                    node.serverConnection.publish(topic, msg.payload, msg.headers || {});
+                    node.serverConnection.publish(node.topic, msg.payload, msg.headers || {});
                     done();
                 }
             });
@@ -442,7 +442,7 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                node.client.ack(msg.messageId, n.topic, msg.transaction);
+                node.client.ack(msg.messageId, node.topic, msg.transaction);
                 done();
             });
 
