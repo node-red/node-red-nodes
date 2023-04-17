@@ -252,6 +252,7 @@ module.exports = function(RED) {
                 // Disconnection already in progress or not connected
                 callback();
             } else {
+                node.log('Disconnecting from STOMP server...');
                 waitDisconnect(node.client, 2000).then(() => {
                     node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
                 }).catch(() => {
@@ -338,7 +339,6 @@ module.exports = function(RED) {
         }
 
         node.on("close", function(done) {
-            node.log('Disconnecting...');
             node.disconnect(function() { done (); });
         });
     }
