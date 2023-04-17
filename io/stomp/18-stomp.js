@@ -364,7 +364,7 @@ module.exports = function(RED) {
 
             if (node.topic) {
                 node.serverConnection.register(node);
-                node.serverConnection.subscribe(node.topic, ack, function(msg) {
+                node.serverConnection.subscribe(node.topic, node.ack, function(msg) {
                     node.send(msg);
                 });
 
