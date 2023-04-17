@@ -336,9 +336,9 @@ module.exports = function(RED) {
 
         node.ack = function(queue, messageId, transaction = undefined) {
             if (node.connected) {
-                node.client.ack(messageId, subscriptionIds[queue], transaction);
+                node.client.ack(messageId, node.subscriptionIds[queue], transaction);
             } else {
-                node.error("Can't publish, not connected");
+                node.error("Can't send acknowledgement, not connected");
             }
         }
 
