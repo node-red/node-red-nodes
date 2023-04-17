@@ -248,8 +248,8 @@ module.exports = function(RED) {
             if (!node.client) {
                 node.warn("Can't disconnect, connection not initialized.");
                 callback();
-            } else if (node.closing) {
-                // Disconnection already in progress
+            } else if (node.closing || !node.connected) {
+                // Disconnection already in progress or not connected
                 callback();
             } else {
                 waitDisconnect(node.client, 2000).then(() => {
