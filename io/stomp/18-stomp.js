@@ -410,6 +410,11 @@ module.exports = function(RED) {
 
             node.on("input", function(msg, send, done) {
                 if (node.topic && msg.payload) {
+                    try {
+                        msg.payload = JSON.stringify(msg.payload);
+                    } catch {
+                        msg.payload = `${msg.payload}`;
+                    }
                     node.serverConnection.publish(node.topic, msg.payload, msg.headers || {});
                     done();
                 }
