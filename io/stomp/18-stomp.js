@@ -286,7 +286,7 @@ module.exports = function(RED) {
          * @param { "auto" | "client" | "client-individual" } clientAck Can be `auto`, `client` or `client-individual` (the latter only starting from STOMP v1.1)
          * @param { Function } callback 
          */
-        node.subscribe = function(queue, acknowledgement, callback) {
+        node.subscribe = function(queue, acknowledgment, callback) {
             node.log(`Subscribing to: ${queue}`);
 
             if (node.connected && !node.closing) {
@@ -297,7 +297,7 @@ module.exports = function(RED) {
                 const headers = {
                     id: node.subscriptionIds[queue],
                     // Only set client-individual if not v1.0
-                    ack: acknowledgement === "client-individual" && node.options.protocolVersion === "1.0" ? "client" : acknowledgement 
+                    ack: acknowledgment === "client-individual" && node.options.protocolVersion === "1.0" ? "client" : acknowledgment 
                 }
 
                 node.client.subscribe(queue, headers, function(body, responseHeaders) {
@@ -343,7 +343,7 @@ module.exports = function(RED) {
 
         /**
          * Acknowledge (a) message(s) that was received from the specified queue.
-         * @param {String} queue The queue/topic to send an acknowledgement for
+         * @param {String} queue The queue/topic to send an acknowledgment for
          * @param {String} messageId ID of the message that was received from the server, which can be found in the reponse header as `message-id`
          * @param {String} transaction Optional transaction name
          */
@@ -351,7 +351,7 @@ module.exports = function(RED) {
             if (node.connected && !node.closing) {
                 node.client.ack(messageId, node.subscriptionIds[queue], transaction);
             } else {
-                node.error("Can't send acknowledgement, not connected");
+                node.error("Can't send acknowledgment, not connected");
             }
         }
 
