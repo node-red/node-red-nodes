@@ -452,7 +452,7 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                node.client.ack(msg.messageId, node.topic, msg.transaction);
+                node.serverConnection.ack(msg.messageId, node.topic, msg.transaction);
                 done();
             });
 
