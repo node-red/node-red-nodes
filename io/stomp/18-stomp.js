@@ -231,6 +231,20 @@ module.exports = function(RED) {
          * @param {Function} callback 
          */
         node.disconnect = function(callback) {
+            const waitDisconnect = (client, timeout) => {
+                return new Promise((resolve, reject) => {
+                    // Set flag to avoid race conditions for disconnect as every node tries to call it directly or indirectly using deregister
+                    node.closing = true;
+                    const t = setTimeout(() => {
+                        reject();
+                    }, timeout);
+                    client.disconnect(() => {
+                        clearTimeout(t);
+                        resolve();
+                    });
+                });
+            }
+
             if (!node.client) {
                 node.warn("Can't disconnect, connection not initialized.");
                 callback();
@@ -238,10 +252,11 @@ module.exports = function(RED) {
                 // Disconnection already in progress
                 callback();
             } else {
-                node.closing = true;
-                node.client.disconnect(function() {
+                waitDisconnect(node.client, 2000).then(() => {
                     node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
-
+                }).catch(() => {
+                    node.log("Disconnect timeout closing node...");
+                }).finally(() => {
                     node.sessionId = null;
                     node.subscribtionIndex = 1;
                     node.subscriptionIds = {};
