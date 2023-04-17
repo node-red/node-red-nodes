@@ -9,8 +9,8 @@
         <input type="text" id="node-input-topic" placeholder="topic or queue">
     </div>
     <div class="form-row">
-        <label for="node-config-input-ack" style="width: 110px;"><i class="fa fa-check"></i> Message acknowledgement</label>
-        <select type="text" id="node-config-input-ack" style="display: inline-block; width: 250px; vertical-align: top;">
+        <label for="node-input-ack" style="width: 110px;"><i class="fa fa-check"></i> Message acknowledgement</label>
+        <select type="text" id="node-input-ack" style="display: inline-block; width: 250px; vertical-align: top;">
             <option value="auto">Auto</option>
             <option value="client">Client</option>
             <option value="client-individual">Client individual (only v1.1)</option>
@@ -45,7 +45,7 @@
         defaults: {
             name: {value:""},
             server: {type:"stomp-server",required:true},
-            ack: {value: "auto"},
+            ack: {value: "auto", required: true},
             topic: {value:"",required:true}
         },
         inputs:0,
