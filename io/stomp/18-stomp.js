@@ -334,6 +334,12 @@ module.exports = function(RED) {
             }
         }
 
+        /**
+         * Acknowledge (a) message(s) that was received from the specified queue.
+         * @param {String} queue The queue/topic to send an acknowledgement for
+         * @param {String} messageId ID of the message that was received from the server, which can be found in the reponse header as `message-id`
+         * @param {String} transaction Optional transaction name
+         */
         node.ack = function(queue, messageId, transaction = undefined) {
             if (node.connected) {
                 node.client.ack(messageId, node.subscriptionIds[queue], transaction);
@@ -452,7 +458,7 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                node.serverConnection.ack(msg.messageId, node.topic, msg.transaction);
+                node.serverConnection.ack(node.topic, msg.messageId, msg.transaction);
                 done();
             });
 
