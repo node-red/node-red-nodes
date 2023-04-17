@@ -119,7 +119,7 @@ module.exports = function(RED) {
                 protocolVersion: node.protocolVersion,
                 reconnectOpts: {
                     retries: node.reconnectRetries * 1,
-                    delay: node.reconnectDelay * 1
+                    delay: node.reconnectDelay * 1000
                 },
                 vhost: node.vhost
             };
