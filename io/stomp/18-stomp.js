@@ -77,7 +77,9 @@ module.exports = function(RED) {
         // Config node state
         node.connected = false;
         node.connecting = false;
+        /** Flag to avoid race conditions between `deregister` and the `close` event of the config node (ex. on redeploy) */
         node.closing = false;
+        /** Options to pass to the stomp-client API */
         node.options = {};
         node.sessionId = null;
         node.subscribtionIndex = 1;
@@ -232,7 +234,11 @@ module.exports = function(RED) {
             if (!node.client) {
                 node.warn("Can't disconnect, connection not initialized.");
                 callback();
+            } else if (node.closing) {
+                // Disconnection already in progress
+                callback();
             } else {
+                node.closing = true;
                 node.client.disconnect(function() {
                     node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
 
@@ -317,6 +323,7 @@ module.exports = function(RED) {
         }
 
         node.on("close", function(done) {
+            node.log('Disconnecting...');
             node.disconnect(function() { done (); });
         });
     }
