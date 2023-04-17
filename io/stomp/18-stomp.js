@@ -195,9 +195,11 @@ module.exports = function(RED) {
                     });
                     
                     node.client.on("reconnect", function(sessionId, numOfRetries) {
+                        node.closing = false;
                         node.connecting = false;
                         node.connected = true;
                         node.sessionId = sessionId;
+                        callback();
 
                         node.log("Reconnected to STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion, retries: numOfRetries});
                         setStatusConnected(node, true);
