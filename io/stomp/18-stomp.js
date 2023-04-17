@@ -256,6 +256,11 @@ module.exports = function(RED) {
                 // Disconnection already in progress or not connected
                 callback();
             } else {
+                node.log("Unsubscribing from STOMP queue's...");
+                const subscribedQueues = Object.keys(node.subscriptionIds);
+                subscribedQueues.forEach(function(queue) {
+                    node.unsubscribe(queue);
+                });
                 node.log('Disconnecting from STOMP server...');
                 waitDisconnect(node.client, 2000).then(() => {
                     node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
@@ -282,7 +287,7 @@ module.exports = function(RED) {
         node.subscribe = function(queue, acknowledgement, callback) {
             node.log(`Subscribing to: ${queue}`);
 
-            if (node.connected) {
+            if (node.connected && !node.closing) {
                 if (!node.subscriptionIds[queue]) {
                     node.subscriptionIds[queue] = node.subscribtionIndex++;
                 }
@@ -314,7 +319,7 @@ module.exports = function(RED) {
          */
         node.unsubscribe = function(queue, headers = {}) {
             delete node.subscriptionIds[queue];
-            if (node.connected) {
+            if (node.connected && !node.closing) {
                 node.client.unsubscribe(queue, headers);
                 node.log(`Unsubscribed from ${queue}`, headers);
             }
@@ -327,7 +332,7 @@ module.exports = function(RED) {
          * @param {Object} headers STOMP headers to add to the SEND command
          */
         node.publish = function(queue, message, headers = {}) {
-            if (node.connected) {
+            if (node.connected && !node.closing) {
                 node.client.publish(queue, message, headers);
             } else {
                 node.error("Can't publish, not connected");
@@ -341,7 +346,7 @@ module.exports = function(RED) {
          * @param {String} transaction Optional transaction name
          */
         node.ack = function(queue, messageId, transaction = undefined) {
-            if (node.connected) {
+            if (node.connected && !node.closing) {
                 node.client.ack(messageId, node.subscriptionIds[queue], transaction);
             } else {
                 node.error("Can't send acknowledgement, not connected");
@@ -389,9 +394,7 @@ module.exports = function(RED) {
 
         node.on("close", function(removed, done) {
             if (node.serverConnection) {
-                if (node.serverConnection.connected) {
-                    node.serverConnection.unsubscribe(node.topic);
-                }
+                node.serverConnection.unsubscribe(node.topic);
                 node.serverConnection.deregister(node, true, done);
                 node.serverConnection = null;
             } else {
