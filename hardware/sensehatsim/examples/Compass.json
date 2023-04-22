@@ -1,7 +1,7 @@
 [
     {
         "id": "104a54e7.6656cb",
-        "type": "rpi-sensehat out",
+        "type": "rpi-sensehatsim out",
         "z": "7756eff1.08d0a",
         "name": "",
         "x": 470,
@@ -10,7 +10,7 @@
     },
     {
         "id": "a3786fbb.b3ff9",
-        "type": "rpi-sensehat in",
+        "type": "rpi-sensehatsim in",
         "z": "7756eff1.08d0a",
         "name": "",
         "motion": true,
