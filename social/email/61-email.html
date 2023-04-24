@@ -44,6 +44,7 @@
         <select type="text" id="node-input-authtype">
             <option value="BASIC">Basic</option>
             <option value="XOAUTH2">XOAuth2</option>
+            <option value="NONE">None</option>
         </select>
     </div>
     <div class="form-row node-input-userid">
@@ -64,7 +65,7 @@
         <input type="text" id="node-input-token" placeholder="oauth2Response.access_token">
     </div>
     <br/>
-    <div class="form-row">
+    <div class="form-row node-input-useTLS">
         <label for="node-input-useTLS"><i class="fa fa-lock"></i> <span data-i18n="email.label.useTLS"></label>
         <input type="checkbox" id="node-input-tls" style="display:inline-block; width:20px; vertical-align:baseline;">
         <span data-i18n="email.label.rejectUnauthorised"></span>
@@ -74,22 +75,6 @@
         <input type="text" id="node-input-dname" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
-    <script>
-        $("#node-input-authtype").change(function() {
-            var protocol = $("#node-input-authtype").val();
-            if (protocol === "BASIC") {
-                $(".node-input-password").show();
-                $(".node-input-saslformat").hide();
-                $(".node-input-token").hide();
-            } else {
-                $(".node-input-password").hide();
-                $(".node-input-saslformat").show();
-                $(".node-input-token").show();
-                $("#node-input-fetch").val("trigger");
-                $("#node-input-fetch").change();
-            }
-        });
-    </script>
 </script>
 
 <script type="text/javascript">
@@ -131,6 +116,30 @@
                 this.authtype = "BASIC";
                 $("#node-input-authtype").val('BASIC');
             }
+            $("#node-input-authtype").change(function() {
+                var protocol = $("#node-input-authtype").val();
+                if (protocol === "BASIC") {
+                    $(".node-input-userid").show();
+                    $(".node-input-password").show();
+                    $(".node-input-saslformat").hide();
+                    $(".node-input-token").hide();
+                    $(".node-input-useTLS").show();
+                } else if (protocol === "NONE") {
+                    $(".node-input-userid").hide();
+                    $(".node-input-password").hide();
+                    $(".node-input-saslformat").hide();
+                    $(".node-input-token").hide();
+                    $(".node-input-useTLS").hide();
+                } else {
+                    $(".node-input-userid").show();
+                    $(".node-input-password").hide();
+                    $(".node-input-saslformat").show();
+                    $(".node-input-token").show();
+                    $("#node-input-fetch").val("trigger");
+                    $("#node-input-fetch").change();
+                    $(".node-input-useTLS").show();
+                }
+            });
             if (this.credentials.global) {
                 $('#node-tip').show();
             } else {
@@ -190,13 +199,14 @@
         <select type="text" id="node-input-authtype">
             <option value="BASIC">Basic</option>
             <option value="XOAUTH2">XOAuth2</option>
+            <option value="NONE">None</option>
         </select>
     </div>
-    <div class="form-row node-input-userid">
+    <div class="form-row node-input-userid" id="node-userid">
         <label for="node-input-userid"><i class="fa fa-user"></i> <span data-i18n="email.label.userid"></span></label>
         <input type="text" id="node-input-userid">
     </div>
-    <div class="form-row node-input-password">
+    <div class="form-row node-input-password" id="node-password">
         <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="email.label.password"></span></label>
         <input type="password" id="node-input-password">
     </div>
@@ -284,10 +294,18 @@
         $("#node-input-authtype").change(function() {
             var protocol = $("#node-input-authtype").val();
             if (protocol === "BASIC") {
+                $(".node-input-userid").show();
                 $(".node-input-password").show();
                 $(".node-input-saslformat").hide();
                 $(".node-input-token").hide();
-            } else {
+            } else if (protocol === "NONE") {
+                $(".node-input-userid").hide();
+                $(".node-input-password").hide();
+                $(".node-input-saslformat").hide();
+                $(".node-input-token").hide();
+            }
+            else {
+                $(".node-input-userid").show();
                 $(".node-input-password").hide();
                 $(".node-input-saslformat").show();
                 $(".node-input-token").show();

@@ -27,12 +27,6 @@ module.exports = function(RED) {
         throw "Error : Requires nodejs version >= 8.";
     }
 
-    try {
-        var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
-    }
-    catch(err) {
-    }
-
     function EmailNode(n) {
         RED.nodes.createNode(this,n);
         this.topic = n.topic;
@@ -41,7 +35,6 @@ module.exports = function(RED) {
         this.outport = n.port;
         this.secure = n.secure;
         this.tls = true;
-        var flag = false;
         this.authtype = n.authtype || "BASIC";
         if (this.authtype !== "BASIC") {
             this.inputs = 1;
@@ -49,35 +42,25 @@ module.exports = function(RED) {
         }
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
-        } else {
-            if (globalkeys) {
-                this.userid = globalkeys.user;
-                flag = true;
-            } else {
-                this.error(RED._("email.errors.nouserid"));
-            }
+        }
+        else if (this.authtype !== "NONE") {
+            this.error(RED._("email.errors.nouserid"));
         }
         if (this.authtype === "BASIC" ) {
             if (this.credentials && this.credentials.hasOwnProperty("password")) {
                 this.password = this.credentials.password;
-            } else {
-                if (globalkeys) {
-                    this.password = globalkeys.pass;
-                    flag = true;
-                } else {
-                    this.error(RED._("email.errors.nopassword"));
-                }
             }
-        } else {
+            else {
+                this.error(RED._("email.errors.nopassword"));
+            }
+        }
+        else if (this.authtype === "XOAUTH2") {
             this.saslformat = n.saslformat;
-            if(n.token!=="") {
+            if (n.token !== "") {
                 this.token = n.token;
             } else {
                 this.error(RED._("email.errors.notoken"));
             }
-        }
-        if (flag) {
-            RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
         if (n.tls === false) { this.tls = false; }
         var node = this;
@@ -94,10 +77,11 @@ module.exports = function(RED) {
                 user: node.userid,
                 pass: node.password
             };
-        } else if(node.authtype == "XOAUTH2") {
+        }
+        else if (node.authtype === "XOAUTH2") {
             var value = RED.util.getMessageProperty(msg,node.token);
             if (value !== undefined) {
-                if(node.saslformat) {
+                if (node.saslformat) {
                     //Make base64 string for access - compatible with outlook365 and gmail
                     saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
                 } else {
@@ -226,8 +210,8 @@ module.exports = function(RED) {
             this.repeat = 1500;
         }
         if (this.inputs === 1) { this.repeat = 0; }
-        this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
-        this.inport = n.port || (globalkeys && globalkeys.port) || "993";
+        this.inserver = n.server || "imap.gmail.com";
+        this.inport = n.port || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
         this.autotls= n.autotls;
@@ -240,39 +224,27 @@ module.exports = function(RED) {
             this.repeat = 0;
         }
 
-        var flag = false;
-
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
-        } else {
-            if (globalkeys) {
-                this.userid = globalkeys.user;
-                flag = true;
-            } else {
-                this.error(RED._("email.errors.nouserid"));
-            }
+        }
+        else if (this.authtype !== "NONE") {
+            this.error(RED._("email.errors.nouserid"));
         }
         if (this.authtype === "BASIC" ) {
             if (this.credentials && this.credentials.hasOwnProperty("password")) {
                 this.password = this.credentials.password;
-            } else {
-                if (globalkeys) {
-                    this.password = globalkeys.pass;
-                    flag = true;
-                } else {
-                    this.error(RED._("email.errors.nopassword"));
-                }
             }
-        } else {
+            else {
+                this.error(RED._("email.errors.nopassword"));
+            }
+        }
+        else if (this.authtype === "XOAUTH2") {
             this.saslformat = n.saslformat;
-            if(n.token!=="") {
+            if (n.token !== "") {
                 this.token = n.token;
             } else {
                 this.error(RED._("email.errors.notoken"));
             }
-        }
-        if (flag) {
-            RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
 
         var node = this;
@@ -321,7 +293,7 @@ module.exports = function(RED) {
             try {
                 node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
                 await pop3.connect();
-                if (node.authtype == "XOAUTH2") {
+                if (node.authtype === "XOAUTH2") {
                     var value = RED.util.getMessageProperty(msg,node.token);
                     if (value !== undefined) {
                         if (node.saslformat) {
@@ -334,7 +306,7 @@ module.exports = function(RED) {
                     await pop3.command('AUTH', "XOAUTH2");
                     await pop3.command(saslxoauth2);
 
-                } else if (node.authtype == "BASIC") {
+                } else if (node.authtype === "BASIC") {
                     await pop3.command('USER', node.userid);
                     await pop3.command('PASS', node.password);
                 }
@@ -401,7 +373,7 @@ module.exports = function(RED) {
         function checkIMAP(msg,send,done) {
             var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
             var saslxoauth2 = "";
-            if (node.authtype == "XOAUTH2") {
+            if (node.authtype === "XOAUTH2") {
                 var value = RED.util.getMessageProperty(msg,node.token);
                 if (value !== undefined) {
                     if (node.saslformat) {
