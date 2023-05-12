@@ -94,10 +94,10 @@ module.exports = function(RED) {
             // Apply property changes (only if the property exists in the options object)
             setIfHasProperty(options, node, "server", init);
             setIfHasProperty(options, node, "port", init);
-            setIfHasProperty(options, node, "protocolVersion", init);
+            setIfHasProperty(options, node, "protocolversion", init);
             setIfHasProperty(options, node, "vhost", init);
-            setIfHasProperty(options, node, "reconnectRetries", init);
-            setIfHasProperty(options, node, "reconnectDelay", init);
+            setIfHasProperty(options, node, "reconnectretries", init);
+            setIfHasProperty(options, node, "reconnectdelay", init);
 
             if (node.credentials) {
                 node.username = node.credentials.username;
@@ -116,10 +116,10 @@ module.exports = function(RED) {
                 port: node.port * 1,
                 user: node.username,
                 pass: node.password,
-                protocolVersion: node.protocolVersion,
+                protocolVersion: node.protocolversion,
                 reconnectOpts: {
-                    retries: node.reconnectRetries * 1,
-                    delay: node.reconnectDelay * 1000
+                    retries: node.reconnectretries * 1,
+                    delay: node.reconnectdelay * 1000
                 },
                 vhost: node.vhost
             };

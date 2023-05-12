@@ -129,8 +129,8 @@
     </div>
 
     <div class="form-row">
-    <label for="node-config-input-protocolVersion"><i class="fa fa-tag"></i> Protocol Version</label>
-        <select type="text" id="node-config-input-protocolVersion" style="display: inline-block; width: 250px; vertical-align: top;">
+    <label for="node-config-input-protocolversion"><i class="fa fa-tag"></i> Protocol Version</label>
+        <select type="text" id="node-config-input-protocolversion" style="display: inline-block; width: 250px; vertical-align: top;">
             <option value="1.0">v1.0</option>
             <option value="1.1">v1.1</option>
         </select>
@@ -140,12 +140,12 @@
         <input type="text" id="node-config-input-vhost" placeholder="Default is null" />
     </div>
     <div class="form-row">
-        <label for="node-config-input-reconnectRetries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
-        <input type="number" id="node-config-input-reconnectRetries" />
+        <label for="node-config-input-reconnectretries"><i class="fa fa-repeat"></i> Reconnect Retries</label>
+        <input type="number" id="node-config-input-reconnectretries" />
     </div>
     <div class="form-row">
-        <label for="node-config-input-reconnectDelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
-        <input type="number" id="node-config-input-reconnectDelay" />
+        <label for="node-config-input-reconnectdelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
+        <input type="number" id="node-config-input-reconnectdelay" />
     </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -159,10 +159,10 @@
         defaults: {
             server: {required:true},
             port: {value:61613,required:true,validate:RED.validators.number()},
-            protocolVersion: {value:"1.0",required:true},
+            protocolversion: {value:"1.0",required:true},
             vhost: {},
-            reconnectRetries: {value:0,required:true,validate:RED.validators.number()},
-            reconnectDelay: {value:1,required:true,validate:RED.validators.number()},
+            reconnectretries: {value:0,required:true,validate:RED.validators.number()},
+            reconnectdelay: {value:1,required:true,validate:RED.validators.number()},
             name: {}
         },
         credentials: {
