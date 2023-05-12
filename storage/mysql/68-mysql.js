@@ -65,19 +65,26 @@ module.exports = function(RED) {
             });
         }
 
-        this.connect = function() {
-            if (!this.connected && !this.connecting) {
+        node.connect = function() {
+            if (!node.connected && !node.connecting) {
                 doConnect();
             }
         }
 
-        this.on('close', function(done) {
-            if (this.tick) { clearTimeout(this.tick); }
-            if (this.check) { clearInterval(this.check); }
-            node.connected = false;
+        node.on('close', function(done) {
+            if (node.tick) { clearTimeout(node.tick); }
+            if (node.check) { clearInterval(node.check); }
             // node.connection.release();
             node.emit("state"," ");
-            node.pool.end(function(err) { done(); });
+            if (node.connected) {
+                node.connected = false;
+                node.pool.end(function(err) { done(); });
+            }
+            else {
+                delete node.pool;
+                done();
+            }
+
         });
     }
     RED.nodes.registerType("MySQLdatabase",MySQLNode, {

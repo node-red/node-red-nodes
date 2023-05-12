@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-pi-gpio",
-  "version": "2.0.3",
+  "version": "2.0.6",
   "description": "The basic Node-RED node for Pi GPIO",
   "dependencies"  : {
   },

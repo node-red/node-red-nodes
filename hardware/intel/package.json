@@ -1,7 +1,7 @@
 {
     "name"          : "node-red-node-intel-gpio",
-    "version"       : "0.0.6",
-    "description"   : "A Node-RED node to talk to an Intel Galileo or Edison using mraa",
+    "version"       : "0.3.0",
+    "description"   : "A Node-RED node to talk to an Intel Galileo, Edison or Siemens IOT2050 board using mraa",
     "dependencies"  : {
     },
     "repository" : {
@@ -10,18 +10,27 @@
         "directory" : "tree/master/hardware/intel"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "intel", "galileo", "edison" ],
+    "keywords": [ "node-red", "intel", "galileo", "edison", "siemens", "iot2050" ],
     "node-red"      : {
         "nodes"     : {
             "mraa-gpio-ain": "mraa-gpio-ain.js",
             "mraa-gpio-din": "mraa-gpio-din.js",
             "mraa-gpio-dout": "mraa-gpio-dout.js",
-            "mraa-gpio-pwm": "mraa-gpio-pwm.js"
+            "mraa-gpio-pwm": "mraa-gpio-pwm.js",
+            "mraa-gpio-led": "mraa-gpio-led.js"
         }
     },
     "author": {
         "name": "Dave Conway-Jones",
         "email": "ceejay@vnet.ibm.com",
         "url": "http://nodered.org"
-    }
+    },
+    "contributors": [
+        {
+            "name": "@fr0st61te"
+        },
+        {
+            "name": "@jan-kiszka"
+        }
+    ]
 }

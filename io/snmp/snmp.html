@@ -1,21 +1,112 @@
+<style id="node-red-node-snmp-common-style">
+    .form-row.form-row-snmpv1v2.hidden {
+        display: none !important;
+    }
+    .form-row.form-row-snmpv3.hidden {
+        display: none !important;
+    }
+    .form-row.form-row-snmpv3-auth.hidden {
+        display: none;
+    }
+</style>
+<script type="text/javascript" id="node-red-node-snmp-common-script">
+    const node_snmp_common = {
+        oneditprepare: function (node) {
+            const compat = { "v1": "1", "v2": "2c", "v2c": "2c", "v3": "3" };
+            if(compat[node.version]) {
+                node.version = compat[node.version];
+            } else if(["1","2c","3"].indexOf(node.version) < 0) {
+                node.version = "1";
+            }
+            $("#node-input-version").on("change", function(evt) {
+                const isV3 = $("#node-input-version").val() === "3";
+                $(".form-row-snmpv1v2").toggleClass("hidden", isV3);
+                $(".form-row-snmpv3").toggleClass("hidden", !isV3);
+                $("#node-input-auth").trigger("change");
+            });
+            $("#node-input-auth").on("change", function(evt) {
+                const isV3 = $("#node-input-version").val() === "3";
+                const auth = $("#node-input-auth").val();
+                if(isV3) {
+                    switch (auth) {
+                        case "authNoPriv":
+                            $(".form-row-snmpv3-auth").toggleClass("hidden", false);
+                            $(".form-row-snmpv3-priv").toggleClass("hidden", true);
+                            break;
+                        case "authPriv":
+                            $(".form-row-snmpv3-auth").toggleClass("hidden", false);
+                            $(".form-row-snmpv3-priv").toggleClass("hidden", false);
+                            break;
+                        default: //"noAuthNoPriv":
+                            $(".form-row-snmpv3-auth").toggleClass("hidden", true);
+                            $(".form-row-snmpv3-priv").toggleClass("hidden", true);
+                            break;
+                    }
+                }
+            });
+            $("#node-input-version").val(node.version);
+            if(!$("#node-input-auth").val()) {
+                $("#node-input-auth").val("noAuthNoPriv");
+            }
+            $("#node-input-version").trigger("change");
+        }
+    }
+</script>
 <script type="text/html" data-template-name="snmp">
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
-        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
-        <input type="text" id="node-input-community" placeholder="public">
-    </div>
-    <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
+           <option value="3">v3</option>
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
+    <div class="form-row  form-row-snmpv1v2">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+	<!-- Following Data is used for V3 Only -->
+	<div class="form-row form-row-snmpv3">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="username">
+    </div>
+    <div class="form-row form-row-snmpv3">
+        <label for="node-input-auth"><i class="fa fa-user-secret"></i> Auth.</label>
+        <select type="text" id="node-input-auth" style="width:150px;">
+            <option value="noAuthNoPriv">noAuthNoPriv</option>
+            <option value="authNoPriv">authNoPriv</option>
+            <option value="authPriv">authPriv</option>
+        </select>
+	</div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authprot"><i class="fa fa-shield"></i> Auth.Prot.</label>
+        <select type="text" id="node-input-authprot" style="width:150px;">
+            <option value="MD5">MD5</option>
+            <option value="SHA">SHA</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authkey"><i class="fa fa-key"></i> Auth.Key</label>
+        <input type="password" id="node-input-authkey" placeholder="Authentication key">
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privprot"><i class="fa fa-shield"></i> Priv.Prot.</label>
+        <select type="text" id="node-input-privprot" style="width:150px;">
+            <option value="DES">DES</option>
+            <option value="AES">AES</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
+        <input type="password" id="node-input-privkey" placeholder="Encryption key">
+    </div>
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OIDs</label>
         <textarea rows="4" cols="60" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0" style="width:70%;"></textarea>
@@ -31,6 +122,9 @@
     <p>Simple SNMP oid or oid list fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.username</code> may contain the username. (V3 only)</p>
+    <p><code>msg.authkey</code> may contain the digest security key. (V3 only)</p>
+    <p><code>msg.privkey</code> may contain the encryption security key. (V3 only)</p>
     <p><code>msg.oid</code> may contain a comma separated list of oids to request. (no spaces)</p>
     <p>OIDs must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
@@ -42,11 +136,19 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            community: { value: "public" },
             version: { value: "1", required: true },
-            oids: { value: "" },
             timeout: { value: 5 },
-            name: { value: "" }
+            community: { value: "public" },
+            auth: { value: "noAuthNoPriv", required: true },
+            authprot: { value: "MD5", required: true },
+            privprot: { value: "DES", required: true },
+            oids: { value: "" },
+            name: { value: "" },
+        },
+        credentials: {
+            username: { type: "text" },
+            authkey: { type: "password" },
+            privkey: { type: "password" }
         },
         inputs: 1,
         outputs: 1,
@@ -56,6 +158,9 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            node_snmp_common.oneditprepare(this);
         }
     });
 </script>
@@ -66,21 +171,60 @@
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
-        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
-        <input type="text" id="node-input-community" placeholder="public">
-    </div>
-    <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
+			<!-- Following Data is used for V3 Only -->
+            <option value="3">v3</option>
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
+    <div class="form-row  form-row-snmpv1v2">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+	<!-- Following Data is used for V3 Only -->
+	<div class="form-row form-row-snmpv3">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="username">
+    </div>
+    <div class="form-row form-row-snmpv3">
+        <label for="node-input-auth"><i class="fa fa-user-secret"></i> Auth.</label>
+        <select type="text" id="node-input-auth" style="width:150px;">
+            <option value="noAuthNoPriv">noAuthNoPriv</option>
+            <option value="authNoPriv">authNoPriv</option>
+            <option value="authPriv">authPriv</option>
+        </select>
+	</div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authprot"><i class="fa fa-shield"></i> Auth.Prot.</label>
+        <select type="text" id="node-input-authprot" style="width:150px;">
+            <option value="MD5">MD5</option>
+            <option value="SHA">SHA</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authkey"><i class="fa fa-key"></i> Auth.Key</label>
+        <input type="password" id="node-input-authkey" placeholder="Authentication key">
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privprot"><i class="fa fa-shield"></i> Priv.Prot.</label>
+        <select type="text" id="node-input-privprot" style="width:150px;">
+            <option value="DES">DES</option>
+            <option value="AES">AES</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
+        <input type="password" id="node-input-privkey" placeholder="Encryption key">
+    </div>
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-varbinds"><i class="fa fa-tags"></i> Varbinds</label>
-        <textarea rows="10" cols="60" id="node-input-varbinds" placeholder="e.g. [ { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.5.0&quot;,&quot;type&quot;: &quot;OctetString&quot;,&quot;value&quot;: &quot;host1&quot;},{&quot;oid&quot;: &quot;1.3.6.1.2.1.1.6.0&quot;,&quot;type&quot;: &quot;OctetString&quot;,value: &quot;somewhere&quot;}]"
+        <textarea rows="10" cols="60" id="node-input-varbinds" placeholder="e.g.  [ { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.5.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, &quot;value&quot;: &quot;host1&quot;}, { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.6.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, value: &quot;somewhere&quot; } ]"
             style="width:70%;"></textarea>
     </div>
     <div class="form-row">
@@ -94,15 +238,18 @@
     <p>Simple snmp Set node. Trigger by any input</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.username</code> may contain the username. (V3 only)</p>
+    <p><code>msg.authkey</code> may contain the digest security key. (V3 only)</p>
+    <p><code>msg.privkey</code> may contain the encryption security key. (V3 only)</p>
     <p><code>msg.varbinds</code> may contain varbinds as an array of json objects containing multiple oids, types and values.
-        <pre>[
-    {
-        "oid":   "1.3.6.1.2.1.1.5.0",
-        "type":  "OctetString",
-        "value": "host1"
-    },
-    {   "oid":   ... }
-]</pre>
+        <code style="font-size: smaller;"><pre style="white-space: pre;">[
+  {
+    "oid": "1.3.6.1.2.1.1.5.0",
+    "type": "OctetString",
+    "value": "host1"
+  },
+  { "oid": ... }
+]</pre></code>
     <p>Any numeric inputs must be numbers, not strings, e.g. 1  not "1".</p>
     <p>OIDs must be numeric. iso. is the same a 1.</p>
     </p>
@@ -114,11 +261,26 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            community: { value: "public" },
             version: { value: "1", required: true },
-            varbinds: { value: "" },
             timeout: { value: 5 },
+            community: { value: "public" },
+            auth: { value: "noAuthNoPriv", required: true },
+            authprot: { value: "MD5", required: true },
+            privprot: { value: "DES", required: true },
+            oids: { value: "" },
+            varbinds: { value: "", validate:function(v) {
+                try {
+                    return !v || !!JSON.parse(v);
+                } catch(e) {
+                    return false;
+                }
+            }},
             name: { value: "" }
+        },
+        credentials: {
+            username: { type: "text" },
+            authkey: { type: "password" },
+            privkey: { type: "password" }
         },
         inputs: 1,
         outputs: 0,
@@ -128,6 +290,9 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            node_snmp_common.oneditprepare(this);
         }
     });
 </script>
@@ -138,18 +303,57 @@
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
-        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
-        <input type="text" id="node-input-community" placeholder="public">
-    </div>
-    <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
+			<!-- Following Data is used for V3 Only -->
+            <option value="3">v3</option>
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
+    <div class="form-row  form-row-snmpv1v2">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+	<!-- Following Data is used for V3 Only -->
+	<div class="form-row form-row-snmpv3">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="username">
+    </div>
+    <div class="form-row form-row-snmpv3">
+        <label for="node-input-auth"><i class="fa fa-user-secret"></i> Auth.</label>
+        <select type="text" id="node-input-auth" style="width:150px;">
+            <option value="noAuthNoPriv">noAuthNoPriv</option>
+            <option value="authNoPriv">authNoPriv</option>
+            <option value="authPriv">authPriv</option>
+        </select>
+	</div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authprot"><i class="fa fa-shield"></i> Auth.Prot.</label>
+        <select type="text" id="node-input-authprot" style="width:150px;">
+            <option value="MD5">MD5</option>
+            <option value="SHA">SHA</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authkey"><i class="fa fa-key"></i> Auth.Key</label>
+        <input type="password" id="node-input-authkey" placeholder="Authentication key">
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privprot"><i class="fa fa-shield"></i> Priv.Prot.</label>
+        <select type="text" id="node-input-privprot" style="width:150px;">
+            <option value="DES">DES</option>
+            <option value="AES">AES</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
+        <input type="password" id="node-input-privkey" placeholder="Encryption key">
+    </div>
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -165,6 +369,9 @@
     <p>Simple SNMP oid table fetcher. Triggered by any input.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.username</code> may contain the username. (V3 only)</p>
+    <p><code>msg.authkey</code> may contain the digest security key. (V3 only)</p>
+    <p><code>msg.privkey</code> may contain the encryption security key. (V3 only)</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>OID must be numeric. iso. is the same a 1.</p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
@@ -176,11 +383,19 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            community: { value: "public" },
             version: { value: "1", required: true },
-            oids: { value: "" },
             timeout: { value: 5 },
+            community: { value: "public" },
+            auth: { value: "noAuthNoPriv", required: true },
+            authprot: { value: "MD5", required: true },
+            privprot: { value: "DES", required: true },
+            oids: { value: "" },
             name: { value: "" }
+        },
+        credentials: {
+            username: { type: "text" },
+            authkey: { type: "password" },
+            privkey: { type: "password" }
         },
         inputs: 1,
         outputs: 1,
@@ -190,6 +405,9 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            node_snmp_common.oneditprepare(this);
         }
     });
 </script>
@@ -200,18 +418,57 @@
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
-        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
-        <input type="text" id="node-input-community" placeholder="public">
-    </div>
-    <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
+			<!-- Following Data is used for V3 Only -->
+            <option value="3">v3</option>
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
+    <div class="form-row  form-row-snmpv1v2">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+	<!-- Following Data is used for V3 Only -->
+	<div class="form-row form-row-snmpv3">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="username">
+    </div>
+    <div class="form-row form-row-snmpv3">
+        <label for="node-input-auth"><i class="fa fa-user-secret"></i> Auth.</label>
+        <select type="text" id="node-input-auth" style="width:150px;">
+            <option value="noAuthNoPriv">noAuthNoPriv</option>
+            <option value="authNoPriv">authNoPriv</option>
+            <option value="authPriv">authPriv</option>
+        </select>
+	</div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authprot"><i class="fa fa-shield"></i> Auth.Prot.</label>
+        <select type="text" id="node-input-authprot" style="width:150px;">
+            <option value="MD5">MD5</option>
+            <option value="SHA">SHA</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authkey"><i class="fa fa-key"></i> Auth.Key</label>
+        <input type="password" id="node-input-authkey" placeholder="Authentication key">
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privprot"><i class="fa fa-shield"></i> Priv.Prot.</label>
+        <select type="text" id="node-input-privprot" style="width:150px;">
+            <option value="DES">DES</option>
+            <option value="AES">AES</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
+        <input type="password" id="node-input-privkey" placeholder="Encryption key">
+    </div>
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -227,6 +484,9 @@
     <p>Simple SNMP oid subtree fetcher. Triggered by any input. Reads all OIDS at and below the current base OID.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.username</code> may contain the username. (V3 only)</p>
+    <p><code>msg.authkey</code> may contain the digest security key. (V3 only)</p>
+    <p><code>msg.privkey</code> may contain the encryption security key. (V3 only)</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
@@ -238,11 +498,19 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            community: { value: "public" },
             version: { value: "1", required: true },
-            oids: { value: "" },
             timeout: { value: 5 },
+            community: { value: "public" },
+            auth: { value: "noAuthNoPriv", required: true },
+            authprot: { value: "MD5", required: true },
+            privprot: { value: "DES", required: true },
+            oids: { value: "" },
             name: { value: "" }
+        },
+        credentials: {
+            username: { type: "text" },
+            authkey: { type: "password" },
+            privkey: { type: "password" }
         },
         inputs: 1,
         outputs: 1,
@@ -252,6 +520,9 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            node_snmp_common.oneditprepare(this);
         }
     });
 </script>
@@ -263,18 +534,57 @@
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
     <div class="form-row">
-        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
-        <input type="text" id="node-input-community" placeholder="public">
-    </div>
-    <div class="form-row">
         <label for="node-input-version"><i class="fa fa-bookmark"></i> Version</label>
         <select type="text" id="node-input-version" style="width:150px;">
             <option value="1">v1</option>
             <option value="2c">v2c</option>
+			<!-- Following Data is used for V3 Only -->
+            <option value="3">v3</option>
+			<!-- End of unique data for V3 -->
         </select>
         <span style="margin-left:50px;">Timeout</span>
-        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; direction:rtl; vertical-align:baseline;">&nbsp;S
+        <input type="text" id="node-input-timeout" placeholder="secs" style="width:50px; vertical-align:baseline;">&nbsp;S
     </div>
+    <div class="form-row  form-row-snmpv1v2">
+        <label for="node-input-community"><i class="fa fa-user"></i> Community</label>
+        <input type="text" id="node-input-community" placeholder="public">
+    </div>
+	<!-- Following Data is used for V3 Only -->
+	<div class="form-row form-row-snmpv3">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="username">
+    </div>
+    <div class="form-row form-row-snmpv3">
+        <label for="node-input-auth"><i class="fa fa-user-secret"></i> Auth.</label>
+        <select type="text" id="node-input-auth" style="width:150px;">
+            <option value="noAuthNoPriv">noAuthNoPriv</option>
+            <option value="authNoPriv">authNoPriv</option>
+            <option value="authPriv">authPriv</option>
+        </select>
+	</div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authprot"><i class="fa fa-shield"></i> Auth.Prot.</label>
+        <select type="text" id="node-input-authprot" style="width:150px;">
+            <option value="MD5">MD5</option>
+            <option value="SHA">SHA</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-auth">
+        <label for="node-input-authkey"><i class="fa fa-key"></i> Auth.Key</label>
+        <input type="password" id="node-input-authkey" placeholder="Authentication key">
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privprot"><i class="fa fa-shield"></i> Priv.Prot.</label>
+        <select type="text" id="node-input-privprot" style="width:150px;">
+            <option value="DES">DES</option>
+            <option value="AES">AES</option>
+        </select>
+    </div>
+    <div class="form-row form-row-snmpv3 form-row-snmpv3-priv">
+        <label for="node-input-privkey"><i class="fa fa-key"></i> Priv.Key</label>
+        <input type="password" id="node-input-privkey" placeholder="Encryption key">
+    </div>
+    <!-- End of unique data for V3 -->
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
@@ -287,14 +597,17 @@
 </script>
 
 <script type="text/html" data-help-name="snmp walker">
-    <p>Simple SNMP oid walker fetcher. Triggered by any input. 
+    <p>Simple SNMP oid walker fetcher. Triggered by any input.
     Fetches all nodes from this OID to the end of the table.</p>
     <p><code>msg.host</code> may contain the host.</p>
     <p><code>msg.community</code> may contain the community.</p>
+    <p><code>msg.username</code> may contain the username. (V3 only)</p>
+    <p><code>msg.authkey</code> may contain the digest security key. (V3 only)</p>
+    <p><code>msg.privkey</code> may contain the encryption security key. (V3 only)</p>
     <p><code>msg.oid</code> may contain the oid of a table to request.</p>
     <p>OID must be numeric. iso. is the same a 1. </p>
     <p>The node will output <code>msg.payload</code> and <code>msg.oid</code>.</p>
-    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to 
+    <p><b>Note</b>: This node does indeed "walk" down the tree. This is different behaviour to
     the typical snmpwalk command line app.</p>
 </script>
 
@@ -304,11 +617,19 @@
         color: "YellowGreen",
         defaults: {
             host: { value: "127.0.0.1" },
-            community: { value: "public" },
             version: { value: "1", required: true },
-            oids: { value: "" },
             timeout: { value: 5 },
+            community: { value: "public" },
+            auth: { value: "noAuthNoPriv", required: true },
+            authprot: { value: "MD5", required: true },
+            privprot: { value: "DES", required: true },
+            oids: { value: "" },
             name: { value: "" }
+        },
+        credentials: {
+            username: { type: "text" },
+            authkey: { type: "password" },
+            privkey: { type: "password" }
         },
         inputs: 1,
         outputs: 1,
@@ -318,6 +639,9 @@
         },
         labelStyle: function () {
             return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            node_snmp_common.oneditprepare(this);
         }
     });
 </script>

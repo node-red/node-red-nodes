@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-tail",
-    "version": "0.3.2",
+    "version": "0.4.0",
     "description": "A node to tail files for Node-RED",
     "dependencies": {
         "tail": "^2.2.4"

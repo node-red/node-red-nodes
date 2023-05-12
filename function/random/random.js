@@ -18,9 +18,8 @@ module.exports = function(RED) {
             if (node.low) {             // if the the node has a value use it
                 tmp.low = Number(node.low);
             } else if ('from' in msg) { // else see if a 'from' is in the msg
-                if (Number(msg.from)) { // if it is, and is a number, use it
-                    tmp.low = Number(msg.from);
-                } else {                // otherwise setup NaN error
+                tmp.low = Number(msg.from);
+                if (isNaN(msg.from)) { // if it isn't a number setup NaN error
                     tmp.low = NaN;
                     tmp.low_e = " From: " + msg.from; // setup to show bad incoming msg.from
                 }
@@ -31,9 +30,8 @@ module.exports = function(RED) {
             if (node.high) {            // if the the node has a value use it
                 tmp.high = Number(node.high);
             } else if ('to' in msg) {   // else see if a 'to' is in the msg
-                if (Number(msg.to)) {   // if it is, and is a number, use it
-                    tmp.high = Number(msg.to);
-                } else {                // otherwise setup NaN error
+                tmp.high = Number(msg.to);
+                if (isNaN(msg.to)) {   // if it isn't a number setup NaN error
                     tmp.high = NaN
                     tmp.high_e = " To: " + msg.to // setup to show bad incoming msg.to
                 }

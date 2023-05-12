@@ -66,8 +66,8 @@
             "invalidinput": "入力が不正です",
             "needtobeexecutable": "__command__ は実行可能である必要があります",
             "mustbeexecutable": "nrgpio は実行可能である必要があります",
-            "commandnotfound": "nrgpio コマンドが見つかりません",
-            "commandnotexecutable": "nrgpio コマンドが実行可能ではありません",
+            "commandnotfound": "nrgpio コマンドが見つかりません ",
+            "commandnotexecutable": "nrgpio コマンドが実行可能ではありません ",
             "error": "エラー: __error__",
             "pythoncommandnotfound": "nrgpio python コマンドが実行されていません"
         }

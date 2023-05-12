@@ -36,7 +36,7 @@
             "always": "immer",
             "rejectUnauthorised": "Überprüfen sie, ob das serverzertifikat gültig ist"
         },
-        "default-message": "__description__\n\nDatei von Node-RED ist angehängt: __filename__",
+        "default-message": "\nDatei von Node-RED ist angehängt: __filename__",
         "tip": {
             "cred": "<b>Hinweis</b>: Berechtigungen von globaler emailkeys.js-Datei kopiert",
             "recent": "Tipp: Es wird nur die letzte E-Mail abgerufen",

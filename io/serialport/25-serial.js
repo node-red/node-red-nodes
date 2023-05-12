@@ -271,7 +271,7 @@ module.exports = function(RED) {
                                 if (addchar !== "") { payload += addchar; }
                             }
                             else if (addchar !== "") {
-                                payload = Buffer.concat([payload,addchar]);
+                                payload = Buffer.concat([payload,Buffer.from(addchar)]);
                             }
                             return payload;
                         },

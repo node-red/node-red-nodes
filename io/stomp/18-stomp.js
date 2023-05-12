@@ -57,6 +57,10 @@ module.exports = function(RED) {
             node.warn("reconnecting");
         });
 
+        node.client.on("reconnect", function() {
+            node.status({fill:"green",shape:"dot",text:"connected"});
+        });
+
         node.client.on("error", function(error) {
             node.status({fill:"grey",shape:"dot",text:"error"});
             node.warn(error);
@@ -122,6 +126,10 @@ module.exports = function(RED) {
         node.client.on("reconnecting", function() {
             node.status({fill:"red",shape:"ring",text:"reconnecting"});
             node.warn("reconnecting");
+        });
+
+        node.client.on("reconnect", function() {
+            node.status({fill:"green",shape:"dot",text:"connected"});
         });
 
         node.client.on("error", function(error) {

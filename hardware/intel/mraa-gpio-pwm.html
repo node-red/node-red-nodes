@@ -1,7 +1,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('mraa-gpio-pwm',{
-        category: 'Intel gpio',
+        category: 'GPIO',
         color: '#a6bbcf',
         paletteLabel: 'pwm',
         defaults: {
@@ -35,6 +35,7 @@
                 if (data === 5) { t = "Raspberry Pi"; }
                 if (data === 6) { t = "Beaglebone"; }
                 if (data === 7) { t = "Banana"; }
+                if (data === 26) { t = "IOT2050"; }
                 $('#type-tip').text(t);
                 $('#node-input-pin').val(pinnow);
             });
@@ -60,13 +61,23 @@
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
         <select type="text" id="node-input-pin" style="width: 250px;">
             <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
-            <option value="3">D3</option>
-            <option value="5">D5</option>
-            <option value="6">D6</option>
-            <option value="9">D9</option>
-            <option value="10">D10</option>
-            <option value="11">D11</option>
-        </select>
+	    <optgroup label="Intel Galileo/Edison">
+                <option value="3">D3</option>
+                <option value="5">D5</option>
+                <option value="6">D6</option>
+                <option value="9">D9</option>
+                <option value="10">D10</option>
+                <option value="11">D11</option>
+            </optgroup>
+            <optgroup label="Siemens IOT2050">
+                <option value="4">D4</option>
+                <option value="5">D5</option>
+                <option value="6">D6</option>
+                <option value="7">D7</option>
+                <option value="8">D8</option>
+                <option value="9">D9</option>
+            </optgroup>
+       </select>
     </div>
     <div class="form-row">
         <label for="node-input-period"><i class="fa fa-clock-o"></i> Period</label>
@@ -80,9 +91,10 @@
 </script>
 
 <script type="text/x-red" data-help-name="mraa-gpio-pwm">
-    <p>A pulse width modulation (PWM) output pin for an Intel Galileo or Edison board.</p>
+    <p>A pulse width modulation (PWM) output pin for a board.</p>
     <p>The <code>msg.payload</code> should contain a floating point number value
     between 0 and 1, (or a string representation thereof.)</p>
     <p>For servo control set the period to 20mS and vary the input between 0.05 and 0.10</p>
-    <p><b>Note</b> : Only pins 3, 5, 6, 9, 10 & 11 support PWM output.</p>
+    <p><b>Note</b> : Only pins 4, 5, 6, 7, 8 & 9 support PWM output for Siemens IOT2050.</p>
+    <p>Only pins 3, 5, 6, 9, 10 & 11 support PWM output for Intel Galileo/Edison.</p>
 </script>

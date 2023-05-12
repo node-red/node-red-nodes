@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-node-timeswitch",
-    "version"       : "0.1.0",
+    "version"       : "1.0.0",
     "description"   : "A Node-RED node to provide a simple timeswitch to schedule daily on/off events.",
     "dependencies"  : {
-        "spacetime": "^6.12.5",
+        "spacetime": "^7.4.0",
         "suncalc": "^1.8.0"
     },
     "repository" : {
@@ -25,7 +25,19 @@
     },
     "contributors": [
         {
-          "name": "@pmacostapdi"
+            "name": "@dceejay"
+        },
+        {
+            "name": "@pmacostapdi"
+        },
+        {
+            "name": "@heikokue"
+        },
+        {
+            "name": "@sammachin"
+        },
+        {
+            "name": "@jdmallen"
         }
     ]
 }

@@ -1,0 +1,32 @@
+{ 
+    "sunrise": { 
+        "label": { 
+            "latitude": " Latitude", 
+            "longitude": " Longitude", 
+            "start": " Start",
+			"end": " End",
+			"offset": " Offset",
+			"name": " Name"	
+        },
+		"nightEnd": "Morning astronomical twilight starts",
+		"nauticalDawn": "Morning nautical twilight starts",
+		"dawn": "Dawn, morning civil twilight starts",
+		"sunrise": "Sunrise",
+		"sunriseEnd": "Sunrise end",
+		"goldenHourEnd": "End of morning golden hour",	
+		"goldenHour": "Start of evening golden hour",
+		"sunsetStart": "Sunset start",
+		"sunset": "Sunset, civil twilight starts",
+		"dusk": "Dusk, Evening astronomical twilight starts",
+		"nauticalDusk": "Evening nautical twilight starts",
+		"night": "Dark enough for astronomy",
+		"start": " start",
+		"mins": " mins",
+		"end": " end",
+	    "dayState": "day",
+	    "nightState": "night",
+	    "onePerMin": "once per minute",
+	    "onse": "only on change",
+		"sunName": "Sun rise/set"
+    } 
+}

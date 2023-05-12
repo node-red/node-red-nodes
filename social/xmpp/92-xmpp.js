@@ -30,6 +30,8 @@ module.exports = function(RED) {
         else {
             this.port = parseInt(n.port);
         }
+        this.domain = this.jid.split('@')[1] || this.server;
+        this.resource = n.resource || "";
 
         // The password is obfuscated and stored in a separate location
         var credentials = this.credentials;
@@ -45,12 +47,15 @@ module.exports = function(RED) {
         if (RED.settings.verbose || LOGITALL) {
             this.log("Setting up connection xmpp: {service: "+proto+"://"+this.server+":"+this.port+", username: "+this.username+", password: "+this.password+"}");
         }
-        this.client = client({
+        var opts = {
             service: proto+'://' + this.server + ':' + this.port,
+            domain: this.domain,
             username: this.username,
             password: this.password,
             timeout: 60000
-        });
+        }
+        if (this.resource !== "") { opts.resource = this.resource; }
+        this.client = client(opts);
 
         this.client.timeout = 60000;
         // helper variable for checking against later, maybe we should be using the client

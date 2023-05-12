@@ -1,0 +1,85 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('mraa-gpio-led',{
+        category: 'GPIO',
+        color: '#a6bbcf',
+        paletteLabel: 'led',
+        defaults: {
+            name: {value:""},
+            pin:  {value:"", required: true},
+            color:  {value:"", required: true},
+        },
+        inputs:1,
+        outputs:0,
+        icon: "arrow.png",
+        align: "right",
+        label: function() {
+            return this.name || "led";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var pinnow = this.pin;
+            $.getJSON('mraa-gpio/'+this.id,function(data) {
+                var t = "unknown";
+                if (data === 0) { t = "Galileo v1"; }
+                if (data === 1) { t = "Galileo v2"; }
+                if (data === 2) { t = "Edison Fab C"; }
+                if (data === 3) { t = "DE3813 Baytrail"; }
+                if (data === 4) { t = "Minnow Max"; }
+                if (data === 5) { t = "Raspberry Pi"; }
+                if (data === 6) { t = "Beaglebone"; }
+                if (data === 7) { t = "Banana"; }
+                if (data === 26) { t = "IOT2050"; }
+                $('#btype').text(t);
+                $('#node-input-pin').val(pinnow);
+            });
+            $.getJSON('mraa-version/'+this.id,function(data) {
+                $('#ver-tip').text(data);
+            });
+
+            var setstate = function () {
+                if ($('#node-input-set').is(":checked")) {
+                    $("#node-set-state").show();
+                } else {
+                    $("#node-set-state").hide();
+                }
+            };
+            $("#node-input-set").change(function () { setstate(); });
+            setstate();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mraa-gpio-led">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Led</label>
+        <select type="text" id="node-input-pin" style="width: 250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="0">USER1</option>
+            <option value="1">USER2</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-color"><i class="fa fa-circle"></i> Color</label>
+        <select type="text" id="node-input-color" style="width:250px;">
+            <option value='' disabled selected style='display:none;'><span data-i18n="rpi-gpio.label.selectpin"></span></option>
+            <option value="0">GREEN</option>
+            <option value="1">RED</option>
+            <option value="2">ORANGE</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 250px;">
+    </div>
+    <div class="form-tips">Board : <span id="btype">n/a</span><br/>mraa version : <span id="ver-tip">n/a</span></div>
+</script>
+
+<script type="text/x-red" data-help-name="mraa-gpio-led">
+    <p>Led Control for a board.</p>
+    <p>The <code>msg.payload</code> should contain the value 0 or 1.</p>
+</script>

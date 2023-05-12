@@ -37,7 +37,8 @@
             "notrunning": "Command not running",
             "notfound": "Command not found",
             "notexecutable": "Command not executable",
-            "restarting": "Restarting"
+            "restarting": "Restarting",
+            "pipeclosed": "Process closed"
         }
     }
 }

@@ -1,0 +1,32 @@
+{
+    "name"          : "node-red-node-cbor",
+    "version"       : "1.0.1",
+    "description"   : "A Node-RED node to pack and unpack objects to cbor format",
+    "dependencies"  : {
+        "cbor-x"   : "^1.3.2"
+    },
+    "bundledDependencies": [
+        "cbor-x"
+    ],
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "tree/master/parsers/cbor"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "cbor" ],
+    "node-red" : {
+        "version": ">=1.0.0",
+        "nodes" : {
+            "cbor": "70-cbor.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "dceejay@gmail.com",
+        "url": "http://nodered.org"
+    },
+    "engines": {
+        "node": ">=14"
+    }
+}

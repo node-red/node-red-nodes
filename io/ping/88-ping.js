@@ -4,7 +4,7 @@ module.exports = function(RED) {
     var spawn = require("child_process").spawn;
     var plat = require("os").platform();
 
-    function doPing(node, host, arrayMode) {
+    function doPing(node, host, msg, arrayMode) {
         const defTimeout = 5000;
         var ex, ex6, hostOptions, commandLineOptions;
         if (typeof host === "string") {
@@ -20,7 +20,8 @@ module.exports = function(RED) {
         hostOptions.timeout = hostOptions.timeout < 1000 ? 1000 : hostOptions.timeout;
         hostOptions.timeout = hostOptions.timeout > 30000 ? 30000 : hostOptions.timeout;
         var timeoutS = Math.round(hostOptions.timeout / 1000); //whole numbers only
-        var msg = { payload:false, topic:hostOptions.host };
+        msg.payload = false;
+        msg.topic = hostOptions.host;
         //only include the extra msg object if operating in advance/array mode.
         if (arrayMode) {
             msg.ping = hostOptions
@@ -221,7 +222,7 @@ module.exports = function(RED) {
                 let pingables = generatePingList(node.host);
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if (element) { doPing(node, element, false); }
+                    if (element) { doPing(node, element, {}, false); }
                 }
             }, node.timer);
         }
@@ -234,12 +235,12 @@ module.exports = function(RED) {
                 let pingables = generatePingList(payload)
                 for (let index = 0; index < pingables.length; index++) {
                     const element = pingables[index];
-                    if (element) { doPing(node, element, false); }
+                    if (element) { doPing(node, element, RED.util.cloneMessage(msg), false); }
                 }
             } else if (Array.isArray(payload) ) {
                 for (let index = 0; index < payload.length; index++) {
                     const element = payload[index];
-                    if (element) { doPing(node, element, true); }
+                    if (element) { doPing(node, element, RED.util.cloneMessage(msg), true); }
                 }
             }
         });

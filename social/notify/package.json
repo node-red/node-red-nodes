@@ -1,9 +1,9 @@
 {
     "name": "node-red-node-notify",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "A Node-RED node to send local popup Notify alerts",
     "dependencies": {
-        "node-notifier": "^5.4.5"
+        "node-notifier": "^10.0.1"
     },
     "repository": {
         "type": "git",

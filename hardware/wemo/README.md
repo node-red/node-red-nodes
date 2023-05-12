@@ -16,7 +16,7 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
 The output node switches a socket, a light or group of lights on or off
 
-This should be backward compatible with the pervious version of this node but will benefit
+This should be backward compatible with the previous version of this node but will benefit
 from opening the config dialog and selecting the node you want.
 
 The node accepts the following `msg.payload` as input

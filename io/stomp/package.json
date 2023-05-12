@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-stomp",
-    "version"       : "0.0.12",
+    "version"       : "0.0.14",
     "description"   : "A Node-RED node to publish and subscribe to/from a Stomp server",
     "dependencies"  : {
         "stomp-client"   : "^0.9.0"
@@ -19,7 +19,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }

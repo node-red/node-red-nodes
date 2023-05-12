@@ -1,10 +1,12 @@
 /* eslint-disable indent */
 
+const { domainToUnicode } = require("url");
+
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt
  *
  * Dependencies:
- * * poplib     - https://www.npmjs.com/package/poplib
+ * * node-pop3  - https://www.npmjs.com/package/node-pop3
  * * nodemailer - https://www.npmjs.com/package/nodemailer
  * * imap       - https://www.npmjs.com/package/imap
  * * mailparser - https://www.npmjs.com/package/mailparser
@@ -14,20 +16,15 @@ module.exports = function(RED) {
     "use strict";
     var util = require("util");
     var Imap = require('imap');
-    var POP3Client = require("./poplib.js");
+    var Pop3Command = require("node-pop3");
     var nodemailer = require("nodemailer");
     var simpleParser = require("mailparser").simpleParser;
     var SMTPServer = require("smtp-server").SMTPServer;
     //var microMTA = require("micromta").microMTA;
+    var fs = require('fs');
 
     if (parseInt(process.version.split("v")[1].split(".")[0]) < 8) {
         throw "Error : Requires nodejs version >= 8.";
-    }
-
-    try {
-        var globalkeys = RED.settings.email || require(process.env.NODE_RED_HOME+"/../emailkeys.js");
-    }
-    catch(err) {
     }
 
     function EmailNode(n) {
@@ -38,25 +35,32 @@ module.exports = function(RED) {
         this.outport = n.port;
         this.secure = n.secure;
         this.tls = true;
-        var flag = false;
+        this.authtype = n.authtype || "BASIC";
+        if (this.authtype !== "BASIC") {
+            this.inputs = 1;
+            this.repeat = 0;
+        }
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
-        } else {
-            if (globalkeys) {
-                this.userid = globalkeys.user;
-                flag = true;
+        }
+        else if (this.authtype !== "NONE") {
+            this.error(RED._("email.errors.nouserid"));
+        }
+        if (this.authtype === "BASIC" ) {
+            if (this.credentials && this.credentials.hasOwnProperty("password")) {
+                this.password = this.credentials.password;
+            }
+            else {
+                this.error(RED._("email.errors.nopassword"));
             }
         }
-        if (this.credentials && this.credentials.hasOwnProperty("password")) {
-            this.password = this.credentials.password;
-        } else {
-            if (globalkeys) {
-                this.password = globalkeys.pass;
-                flag = true;
+        else if (this.authtype === "XOAUTH2") {
+            this.saslformat = n.saslformat;
+            if (n.token !== "") {
+                this.token = n.token;
+            } else {
+                this.error(RED._("email.errors.notoken"));
             }
-        }
-        if (flag) {
-            RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
         }
         if (n.tls === false) { this.tls = false; }
         var node = this;
@@ -68,10 +72,26 @@ module.exports = function(RED) {
             tls: {rejectUnauthorized: node.tls}
         }
 
-        if (this.userid && this.password) {
+        if (node.authtype === "BASIC" ) {
             smtpOptions.auth = {
                 user: node.userid,
                 pass: node.password
+            };
+        }
+        else if (node.authtype === "XOAUTH2") {
+            var value = RED.util.getMessageProperty(msg,node.token);
+            if (value !== undefined) {
+                if (node.saslformat) {
+                    //Make base64 string for access - compatible with outlook365 and gmail
+                    saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                } else {
+                    saslxoauth2 = value;
+                }
+            }
+            smtpOptions.auth = {
+                type: "OAuth2",
+                user: node.userid,
+                accessToken: saslxoauth2
             };
         }
         var smtpTransport = nodemailer.createTransport(smtpOptions);
@@ -95,7 +115,8 @@ module.exports = function(RED) {
                         sendopts.headers = msg.headers;
                         sendopts.priority = msg.priority;
                     }
-                    sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; // subject line
+                    if (msg.hasOwnProperty("topic") && msg.topic === '') { sendopts.subject = ""; }
+                    else { sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; } // subject line
                     if (msg.hasOwnProperty("header") && msg.header.hasOwnProperty("message-id")) {
                         sendopts.inReplyTo = msg.header["message-id"];
                         sendopts.subject = "Re: " + sendopts.subject;
@@ -116,7 +137,8 @@ module.exports = function(RED) {
                             sendopts.attachments[0].contentType = msg.headers["content-type"];
                         }
                         // Create some body text..
-                        sendopts.text = RED._("email.default-message",{filename:fname, description:(msg.description||"")});
+                        if (msg.hasOwnProperty("description")) { sendopts.text = msg.description; }
+                        else { sendopts.text = RED._("email.default-message",{filename:fname}); }
                     }
                     else {
                         var payload = RED.util.ensureString(msg.payload);
@@ -173,6 +195,7 @@ module.exports = function(RED) {
     // Setup the EmailInNode
     function EmailInNode(n) {
         var imap;
+        var pop3;
 
         RED.nodes.createNode(this,n);
         this.name = n.name;
@@ -187,43 +210,45 @@ module.exports = function(RED) {
             this.repeat = 1500;
         }
         if (this.inputs === 1) { this.repeat = 0; }
-        this.inserver = n.server || (globalkeys && globalkeys.server) || "imap.gmail.com";
-        this.inport = n.port || (globalkeys && globalkeys.port) || "993";
+        this.inserver = n.server || "imap.gmail.com";
+        this.inport = n.port || "993";
         this.box = n.box || "INBOX";
         this.useSSL= n.useSSL;
         this.autotls= n.autotls;
         this.protocol = n.protocol || "IMAP";
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
-
-        var flag = false;
+        this.authtype = n.authtype || "BASIC";
+        if (this.authtype !== "BASIC") {
+            this.inputs = 1;
+            this.repeat = 0;
+        }
 
         if (this.credentials && this.credentials.hasOwnProperty("userid")) {
             this.userid = this.credentials.userid;
-        } else {
-            if (globalkeys) {
-                this.userid = globalkeys.user;
-                flag = true;
-            } else {
-                this.error(RED._("email.errors.nouserid"));
-            }
         }
-        if (this.credentials && this.credentials.hasOwnProperty("password")) {
-            this.password = this.credentials.password;
-        } else {
-            if (globalkeys) {
-                this.password = globalkeys.pass;
-                flag = true;
-            } else {
+        else if (this.authtype !== "NONE") {
+            this.error(RED._("email.errors.nouserid"));
+        }
+        if (this.authtype === "BASIC" ) {
+            if (this.credentials && this.credentials.hasOwnProperty("password")) {
+                this.password = this.credentials.password;
+            }
+            else {
                 this.error(RED._("email.errors.nopassword"));
             }
         }
-        if (flag) {
-            RED.nodes.addCredentials(n.id,{userid:this.userid, password:this.password, global:true});
+        else if (this.authtype === "XOAUTH2") {
+            this.saslformat = n.saslformat;
+            if (n.token !== "") {
+                this.token = n.token;
+            } else {
+                this.error(RED._("email.errors.notoken"));
+            }
         }
 
         var node = this;
-        this.interval_id = null;
+        node.interval_id = null;
 
         // Process a new email message by building a Node-RED message to be passed onwards
         // in the message flow.  The parameter called `msg` is the template message we
@@ -252,103 +277,90 @@ module.exports = function(RED) {
         // Check the POP3 email mailbox for any new messages.  For any that are found,
         // retrieve each message, call processNewMessage to process it and then delete
         // the messages from the server.
-        function checkPOP3(msg) {
-            var currentMessage;
-            var maxMessage;
-            //node.log("Checking POP3 for new messages");
+        async function checkPOP3(msg,send,done) {
+            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
+            var saslxoauth2 = "";
+            var currentMessage = 1;
+            var maxMessage = 0;
+            var nextMessage;
 
-            // Form a new connection to our email server using POP3.
-            var pop3Client = new POP3Client(
-                node.inport, node.inserver,
-                {enabletls: node.useSSL} // Should we use SSL to connect to our email server?
-            );
-
-            // If we have a next message to retrieve, ask to retrieve it otherwise issue a
-            // quit request.
-            function nextMessage() {
-                if (currentMessage > maxMessage) {
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
-                    return;
-                }
-                pop3Client.retr(currentMessage);
-                currentMessage++;
-            } // End of nextMessage
-
-            pop3Client.on("stat", function(status, data) {
-                // Data contains:
-                // {
-                //   count: <Number of messages to be read>
-                //   octect: <size of messages to be read>
-                // }
-                if (status) {
-                    currentMessage = 1;
-                    maxMessage = data.count;
-                    nextMessage();
-                } else {
-                    node.log(util.format("stat error: %s %j", status, data));
-                }
+            pop3 = new Pop3Command({
+                "host": node.inserver,
+                "tls": node.useSSL,
+                "timeout": tout,
+                "port": node.inport
             });
+            try {
+                node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
+                await pop3.connect();
+                if (node.authtype === "XOAUTH2") {
+                    var value = RED.util.getMessageProperty(msg,node.token);
+                    if (value !== undefined) {
+                        if (node.saslformat) {
+                            //Make base64 string for access - compatible with outlook365 and gmail
+                            saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                        } else {
+                            saslxoauth2 = value;
+                        }
+                    }
+                    await pop3.command('AUTH', "XOAUTH2");
+                    await pop3.command(saslxoauth2);
 
-            pop3Client.on("error", function(err) {
+                } else if (node.authtype === "BASIC") {
+                    await pop3.command('USER', node.userid);
+                    await pop3.command('PASS', node.password);
+                }
+            } catch(err) {
+                node.error(err.message,err);
+                node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 setInputRepeatTimeout();
-                node.log("error: " + JSON.stringify(err));
-            });
-
-            pop3Client.on("connect", function() {
-                //node.log("We are now connected");
-                pop3Client.login(node.userid, node.password);
-            });
-
-            pop3Client.on("login", function(status, rawData) {
-                //node.log("login: " + status + ", " + rawData);
-                if (status) {
-                    pop3Client.stat();
-                } else {
-                    node.log(util.format("login error: %s %j", status, rawData));
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
+                done();
+                return;
+            }
+            maxMessage = (await pop3.STAT()).split(" ")[0];
+            if (maxMessage>0) {
+                node.status({fill:"blue", shape:"dot", text:"email.status.fetching"});
+                while(currentMessage<=maxMessage) {
+                    try {
+                        nextMessage = await pop3.RETR(currentMessage);
+                    } catch(err) {
+                        node.error(RED._("email.errors.fetchfail", err.message),err);
+                        node.status({fill:"red",shape:"ring",text:"email.status.fetcherror"});
+                        setInputRepeatTimeout();
+                        done();
+                        return;
+                    }
+                    try {
+                        // We have now received a new email message.  Create an instance of a mail parser
+                        // and pass in the email message.  The parser will signal when it has parsed the message.
+                        simpleParser(nextMessage, {}, function(err, parsed) {
+                            //node.log(util.format("simpleParser: on(end): %j", mailObject));
+                            if (err) {
+                                node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                                node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
+                            }
+                            else {
+                                processNewMessage(msg, parsed);
+                            }
+                        });
+                        //processNewMessage(msg, nextMessage);
+                    } catch(err) {
+                        node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
+                        node.status({fill:"red",shape:"ring",text:"email.status.parseerror"});
+                        setInputRepeatTimeout();
+                        done();
+                        return;
+                    }
+                    await pop3.DELE(currentMessage);
+                    currentMessage++;
                 }
-            });
+                await pop3.QUIT();
+                node.status({fill:"green",shape:"dot",text:"finished"});
+                setTimeout(status_clear, 5000);
+                setInputRepeatTimeout();
+                done();
+            }
 
-            pop3Client.on("retr", function(status, msgNumber, data, rawData) {
-                // node.log(util.format("retr: status=%s, msgNumber=%d, data=%j", status, msgNumber, data));
-                if (status) {
-
-                    // We have now received a new email message.  Create an instance of a mail parser
-                    // and pass in the email message.  The parser will signal when it has parsed the message.
-                    simpleParser(data, {}, function(err, parsed) {
-                        //node.log(util.format("simpleParser: on(end): %j", mailObject));
-                        if (err) {
-                            node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
-                            node.error(RED._("email.errors.parsefail", {folder:node.box}), err);
-                        }
-                        else {
-                            processNewMessage(msg, parsed);
-                        }
-                    });
-                    pop3Client.dele(msgNumber);
-                }
-                else {
-                    node.log(util.format("retr error: %s %j", status, rawData));
-                    pop3Client.quit();
-                    setInputRepeatTimeout();
-                }
-            });
-
-            pop3Client.on("invalid-state", function(cmd) {
-                node.log("Invalid state: " + cmd);
-            });
-
-            pop3Client.on("locked", function(cmd) {
-                node.log("We were locked: " + cmd);
-            });
-
-            // When we have deleted the last processed message, we can move on to
-            // processing the next message.
-            pop3Client.on("dele", function(status, msgNumber) {
-                nextMessage();
-            });
         } // End of checkPOP3
 
 
@@ -358,7 +370,50 @@ module.exports = function(RED) {
         // Check the email sever using the IMAP protocol for new messages.
         var s = false;
         var ss = false;
-        function checkIMAP(msg) {
+        function checkIMAP(msg,send,done) {
+            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
+            var saslxoauth2 = "";
+            if (node.authtype === "XOAUTH2") {
+                var value = RED.util.getMessageProperty(msg,node.token);
+                if (value !== undefined) {
+                    if (node.saslformat) {
+                        //Make base64 string for access - compatible with outlook365 and gmail
+                        saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                    } else {
+                        saslxoauth2 = value;
+                    }
+                }
+                imap = new Imap({
+                    xoauth2: saslxoauth2,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            } else {
+                imap = new Imap({
+                    user: node.userid,
+                    password: node.password,
+                    host: node.inserver,
+                    port: node.inport,
+                    tls: node.useSSL,
+                    autotls: node.autotls,
+                    tlsOptions: { rejectUnauthorized: false },
+                    connTimeout: tout,
+                    authTimeout: tout
+                });
+            }
+            imap.on('error', function(err) {
+                if (err.errno !== "ECONNRESET") {
+                    s = false;
+                    node.error(err.message,err);
+                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
+                }
+                setInputRepeatTimeout();
+            });
             //console.log("Checking IMAP for new messages");
             // We get back a 'ready' event once we have connected to imap
             s = true;
@@ -391,6 +446,7 @@ module.exports = function(RED) {
                             imap.end();
                             s = false;
                             setInputRepeatTimeout();
+                            done(err);
                             return;
                         }
                         else {
@@ -406,6 +462,7 @@ module.exports = function(RED) {
                                             imap.end();
                                             s = false;
                                             setInputRepeatTimeout();
+                                            done(err);
                                             return;
                                         }
                                         else {
@@ -416,6 +473,8 @@ module.exports = function(RED) {
                                                 imap.end();
                                                 s = false;
                                                 setInputRepeatTimeout();
+                                                msg.payload = 0;
+                                                done();
                                                 return;
                                             }
 
@@ -453,11 +512,13 @@ module.exports = function(RED) {
                                                     imap.end();
                                                     s = false;
                                                     setInputRepeatTimeout();
+                                                    msg.payload = results.length;
+                                                    done();
                                                 };
                                                 if (node.disposition === "Delete") {
-                                                    imap.addFlags(results, "\Deleted", cleanup);
+                                                    imap.addFlags(results, '\\Deleted', imap.expunge(cleanup) );
                                                 } else if (node.disposition === "Read") {
-                                                    imap.addFlags(results, "\Seen", cleanup);
+                                                    imap.addFlags(results, '\\Seen', cleanup);
                                                 } else {
                                                     cleanup();
                                                 }
@@ -468,6 +529,7 @@ module.exports = function(RED) {
                                                 imap.end();
                                                 s = false;
                                                 setInputRepeatTimeout();
+                                                done(err);
                                             });
                                         }
                                     }); // End of imap->search
@@ -477,6 +539,7 @@ module.exports = function(RED) {
                                     node.error(e.toString(),e);
                                     s = ss = false;
                                     imap.end();
+                                    done(e);
                                     return;
                                 }
                             }
@@ -485,6 +548,7 @@ module.exports = function(RED) {
                                 node.error(RED._("email.errors.bad_criteria"),msg);
                                 s = ss = false;
                                 imap.end();
+                                done();
                                 return;
                             }
                         }
@@ -496,42 +560,20 @@ module.exports = function(RED) {
 
 
         // Perform a check of the email inboxes using either POP3 or IMAP
-        function checkEmail(msg) {
+        function checkEmail(msg,send,done) {
             if (node.protocol === "POP3") {
-                checkPOP3(msg);
+                checkPOP3(msg,send,done);
             } else if (node.protocol === "IMAP") {
-                if (s === false && ss == false) { checkIMAP(msg); }
+                if (s === false && ss == false) { checkIMAP(msg,send,done); }
             }
         }  // End of checkEmail
 
-        if (node.protocol === "IMAP") {
-            var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
-            imap = new Imap({
-                user: node.userid,
-                password: node.password,
-                host: node.inserver,
-                port: node.inport,
-                tls: node.useSSL,
-                autotls: node.autotls,
-                tlsOptions: { rejectUnauthorized: false },
-                connTimeout: tout,
-                authTimeout: tout
-            });
-            imap.on('error', function(err) {
-                if (err.errno !== "ECONNRESET") {
-                    node.log(err);
-                    s = false;
-                    node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
-                }
-                setInputRepeatTimeout();
-            });
-        }
-
-        this.on("input", function(msg) {
-            checkEmail(msg);
+        node.on("input", function(msg, send, done) {
+            send = send || function() { node.send.apply(node,arguments) };
+            checkEmail(msg,send,done);
         });
 
-        this.on("close", function() {
+        node.on("close", function() {
             if (this.interval_id != null) {
                 clearTimeout(this.interval_id);
             }
@@ -541,6 +583,10 @@ module.exports = function(RED) {
                 node.status({});
             }
         });
+
+        function status_clear() {
+            node.status({});
+        }
 
         function setInputRepeatTimeout() {
             // Set the repetition timer as needed
@@ -565,47 +611,81 @@ module.exports = function(RED) {
 
 
     function EmailMtaNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.port = n.port;
+        this.secure = n.secure;
+        this.starttls = n.starttls;
+        this.certFile = n.certFile;
+        this.keyFile = n.keyFile;
+        this.users = n.users;
+        this.auth = n.auth;
+        try {
+            this.options = JSON.parse(n.expert);
+        } catch (error) {
+            this.options = {};
+        }
         var node = this;
+        if (!Array.isArray(node.options.disabledCommands)) {
+            node.options.disabledCommands = [];
+        }
+        node.options.secure = node.secure;
+        if (node.certFile) {
+            node.options.cert = fs.readFileSync(node.certFile);
+        }
+        if (node.keyFile) {
+            node.options.key = fs.readFileSync(node.keyFile);
+        }
+        if (!node.starttls) {
+            node.options.disabledCommands.push("STARTTLS");
+        }
+        if (!node.auth) {
+            node.options.disabledCommands.push("AUTH");
+        }
 
-        node.mta = new SMTPServer({
-            secure: false,
-            logger: false,
-            disabledCommands: ['AUTH', 'STARTTLS'],
-
-            onData: function (stream, session, callback) {
-                simpleParser(stream, { skipTextToHtml:true, skipTextLinks:true }, (err, parsed) => {
-                    if (err) { node.error(RED._("email.errors.parsefail"),err); }
-                    else {
-                        node.status({fill:"green", shape:"dot", text:""});
-                        var msg = {}
-                        msg.payload = parsed.text;
-                        msg.topic = parsed.subject;
-                        msg.date = parsed.date;
-                        msg.header = {};
-                        parsed.headers.forEach((v, k) => {msg.header[k] = v;});
-                        if (parsed.html) { msg.html = parsed.html; }
-                        if (parsed.to) {
-                            if (typeof(parsed.to) === "string" && parsed.to.length > 0) { msg.to = parsed.to; }
-                            else if (parsed.to.hasOwnProperty("text") && parsed.to.text.length > 0) { msg.to = parsed.to.text; }
-                        }
-                        if (parsed.cc) {
-                            if (typeof(parsed.cc) === "string" && parsed.cc.length > 0) { msg.cc = parsed.cc; }
-                            else if (parsed.cc.hasOwnProperty("text") && parsed.cc.text.length > 0) { msg.cc = parsed.cc.text; }
-                        }
-                        if (parsed.cc && parsed.cc.length > 0) { msg.cc = parsed.cc; }
-                        if (parsed.bcc && parsed.bcc.length > 0) { msg.bcc = parsed.bcc; }
-                        if (parsed.from && parsed.from.value && parsed.from.value.length > 0) { msg.from = parsed.from.value[0].address; }
-                        if (parsed.attachments) { msg.attachments = parsed.attachments; }
-                        else { msg.attachments = []; }
-                        node.send(msg); // Propagate the message down the flow
-                        setTimeout(function() { node.status({})}, 500);
+        node.options.onData = function (stream, session, callback) {
+            simpleParser(stream, { skipTextToHtml:true, skipTextLinks:true }, (err, parsed) => {
+                if (err) { node.error(RED._("email.errors.parsefail"),err); }
+                else {
+                    node.status({fill:"green", shape:"dot", text:""});
+                    var msg = {}
+                    msg.payload = parsed.text;
+                    msg.topic = parsed.subject;
+                    msg.date = parsed.date;
+                    msg.header = {};
+                    parsed.headers.forEach((v, k) => {msg.header[k] = v;});
+                    if (parsed.html) { msg.html = parsed.html; }
+                    if (parsed.to) {
+                        if (typeof(parsed.to) === "string" && parsed.to.length > 0) { msg.to = parsed.to; }
+                        else if (parsed.to.hasOwnProperty("text") && parsed.to.text.length > 0) { msg.to = parsed.to.text; }
                     }
-                    callback();
-                });
+                    if (parsed.cc) {
+                        if (typeof(parsed.cc) === "string" && parsed.cc.length > 0) { msg.cc = parsed.cc; }
+                        else if (parsed.cc.hasOwnProperty("text") && parsed.cc.text.length > 0) { msg.cc = parsed.cc.text; }
+                    }
+                    if (parsed.cc && parsed.cc.length > 0) { msg.cc = parsed.cc; }
+                    if (parsed.bcc && parsed.bcc.length > 0) { msg.bcc = parsed.bcc; }
+                    if (parsed.from && parsed.from.value && parsed.from.value.length > 0) { msg.from = parsed.from.value[0].address; }
+                    if (parsed.attachments) { msg.attachments = parsed.attachments; }
+                    else { msg.attachments = []; }
+                    node.send(msg); // Propagate the message down the flow
+                    setTimeout(function() { node.status({})}, 500);
+                }
+                callback();
+            });
+        }
+
+        node.options.onAuth = function (auth, session, callback) {
+            let id = node.users.findIndex(function (item) {
+                return item.name === auth.username;
+            });
+            if (id >= 0 && node.users[id].password === auth.password) {
+                callback(null, { user: id + 1 });
+            } else {
+                callback(new Error("Invalid username or password"));
             }
-        });
+        }
+
+        node.mta = new SMTPServer(node.options);
 
         node.mta.listen(node.port);
 

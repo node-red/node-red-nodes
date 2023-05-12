@@ -157,12 +157,16 @@
         <input type="text" id="node-config-input-user" placeholder="joe@blah.im">
     </div>
     <div class="form-row">
-        <label for="node-config-input-nickname"><i class="fa fa-user"></i> Nickname</label>
+        <label for="node-config-input-nickname"><i class="fa fa-heart"></i> Nickname</label>
         <input type="text" id="node-config-input-nickname" placeholder="Joe (optional)">
     </div>
     <div class="form-row">
         <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-config-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-resource"><i class="fa fa-globe"></i> Resource</label>
+        <input type="text" id="node-config-input-resource" placeholder="optional resource id">
     </div>
 </script>
 
@@ -173,7 +177,8 @@
             server: {value:"", required:false},
             port: {value:5222, required:false, validate:RED.validators.number()},
             user: {value:""},
-            nickname: {value:""}
+            nickname: {value:""},
+            resource: {value:""}
         },
         credentials: {
             password: {type:"password"}

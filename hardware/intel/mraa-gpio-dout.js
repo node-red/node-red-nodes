@@ -29,6 +29,7 @@ module.exports = function(RED) {
         });
 
         this.on('close', function() {
+            node.p.close();
         });
     }
     RED.nodes.registerType("mraa-gpio-dout", gpioDout);
