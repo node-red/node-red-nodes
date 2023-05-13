@@ -41,6 +41,7 @@ module.exports = function(RED) {
             var attachment = msg.attachment || null;
             var retry = msg.retry || 30;
             var expire = msg.expire || 600;
+            var ttl = msg.ttl || null;
             var callback = msg.callback || null;
             var tags = msg.tags || null;
             if (isNaN(pri)) {pri=0;}
@@ -62,6 +63,10 @@ module.exports = function(RED) {
                 expire = 10800;
                 node.warn("Expire time too high, using maximum setting of 10800s (3 hours) retry duration");
             }
+            if (!Number.isInteger(ttl) || ttl<=0) {
+                ttl = null;
+                node.warn("No valid number for TTL found, not set");
+            }
             if (typeof msg.payload === 'undefined') { msg.payload = "(undefined msg.payload)"; }
             if (typeof(msg.payload) === 'object') {
                 msg.payload = JSON.stringify(msg.payload);
@@ -74,6 +79,7 @@ module.exports = function(RED) {
                     priority: pri,
                     retry: retry,
                     expire: expire,
+                    ttl: ttl,
                     html: html
                 };
                 if (dev) { pushmsg.device = dev; }
