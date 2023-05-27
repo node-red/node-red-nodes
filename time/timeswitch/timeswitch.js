@@ -46,8 +46,15 @@ module.exports = function (RED) {
 
             // all sun events for the given lat/long
             const sunEvents = SunCalc.getTimes(nowNative, node.lat, node.lon);
+            const sunAlt = SunCalc.getPosition(nowNative, node.lat, node.lon).altitude;
             let sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
             let sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
+
+            var aday
+            if (sunEvents[SUNRISE_KEY] == "Invalid Date" || sunEvents[SUNSET_KEY] == "Invalid Date") {
+                if (sunAlt >= 0) { aday = 1; }
+                else { aday = 0; }
+            }
 
             // add optional sun event offset, if specified
             sunriseDateTime = sunriseDateTime.add(Number(node.sunriseOffset), "minutes");
@@ -126,19 +133,36 @@ module.exports = function (RED) {
                 // var o = nextTime.goto(selectedTimeZone.name).offset()/60;
                 // if (o > 0) { o = "+" + o; }
                 // else {o = "-" + o; }
-                if (payload == 1) {
-                    node.status({
-                        fill: "yellow",
-                        shape: "dot",
-                        text: `on until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
-                    });
+                if (nextTime) {
+                    if (payload == 1) {
+                        node.status({
+                            fill: "yellow",
+                            shape: "dot",
+                            text: `on until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
+                        });
+                    } else {
+                        node.status({
+                            fill: "blue",
+                            shape: "dot",
+                            text: `off until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
+                        });
+                    }
                 } else {
-                    node.status({
-                        fill: "blue",
-                        shape: "dot",
-                        text: `off until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
-                    });
+                    if (payload == 1) {
+                        node.status({
+                            fill: "yellow",
+                            shape: "dot",
+                            text: `on`
+                        });
+                    } else {
+                        node.status({
+                            fill: "blue",
+                            shape: "dot",
+                            text: `off`
+                        });
+                    }
                 }
+
                 var msg = {};
                 if (node.mytopic) {
                     msg.topic = node.mytopic;
@@ -183,6 +207,16 @@ module.exports = function (RED) {
 
             if (!proceed) {
                 sendPayload(0, selectedOnTime);
+                return;
+            }
+
+            if (proceed && aday === 1) {
+                sendPayload(1);
+                return;
+            }
+
+            if (proceed && aday === 0) {
+                sendPayload(0);
                 return;
             }
 
