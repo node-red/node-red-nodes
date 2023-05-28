@@ -47,13 +47,17 @@ module.exports = function (RED) {
             // all sun events for the given lat/long
             const sunEvents = SunCalc.getTimes(nowNative, node.lat, node.lon);
             const sunAlt = SunCalc.getPosition(nowNative, node.lat, node.lon).altitude;
-            let sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
-            let sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
+            var sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
+            var sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
 
-            var aday
-            if (sunEvents[SUNRISE_KEY] == "Invalid Date" || sunEvents[SUNSET_KEY] == "Invalid Date") {
-                if (sunAlt >= 0) { aday = 1; }
-                else { aday = 0; }
+            if (sunEvents[SUNRISE_KEY] == "Invalid Date") {
+                if (sunAlt >= 0) { sunriseDateTime = now.startOf("day"); }
+                else { sunriseDateTime = now.endOf("day"); }
+            }
+
+            if (sunEvents[SUNSET_KEY] == "Invalid Date") {
+                if (sunAlt >= 0) { sunsetDateTime = now.endOf("day"); }
+                else { sunsetDateTime = now.startOf("day"); }
             }
 
             // add optional sun event offset, if specified
@@ -63,13 +67,15 @@ module.exports = function (RED) {
             // check if sun event has already occurred today
             if (now.isAfter(sunriseDateTime)) {
                 // get tomorrow's sunrise, since it'll be different
-                sunriseDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNRISE_KEY]).nearest("minute");
+                // sunriseDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNRISE_KEY]).nearest("minute");
+                sunriseDateTime = sunriseDateTime.add(1, "day");
                 // add optional sun event offset, if specified (again)
                 sunriseDateTime = sunriseDateTime.add(Number(node.sunriseOffset), "minutes");
             }
             if (now.isAfter(sunsetDateTime)) {
                 // get tomorrow's sunset, since it'll be different
-                sunsetDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNSET_KEY]).nearest("minute");
+                // sunsetDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNSET_KEY]).nearest("minute");
+                sunsetDateTime = sunsetDateTime.add(1, "day");
                 // add optional sun event offset, if specified (again)
                 sunsetDateTime = sunsetDateTime.add(Number(node.sunsetOffset), "minutes");
             }
@@ -207,16 +213,6 @@ module.exports = function (RED) {
 
             if (!proceed) {
                 sendPayload(0, selectedOnTime);
-                return;
-            }
-
-            if (proceed && aday === 1) {
-                sendPayload(1);
-                return;
-            }
-
-            if (proceed && aday === 0) {
-                sendPayload(0);
                 return;
             }
 
