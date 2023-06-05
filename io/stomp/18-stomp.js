@@ -100,7 +100,7 @@ module.exports = function(RED) {
             setIfHasProperty(options, node, "reconnectdelay", init);
 
             if (node.credentials) {
-                node.username = node.credentials.username;
+                node.username = node.credentials.user;
                 node.password = node.credentials.password;
             }
             if (!init && hasProperty(options, "username")) {
