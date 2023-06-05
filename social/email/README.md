@@ -11,7 +11,10 @@ getting an application password if you have two-factor authentication enabled.
 
 For Exchange and Outlook 365 you must use OAuth2.0.
 
-**Note :** Version 1.x of this node requires **Node.js v8** or newer.
+**Notes **:
+    Version 2.x of this node requires **Node.js v14** or newer.
+    Version 1.91 of this node required **Node.js v14** or newer.
+    Previous versions of this node required **Node.js v8** or newer.
 
 Install
 -------
@@ -29,11 +32,10 @@ If you are accessing GMail you may need to either enable <a target="_new" href="
 or enable <a target="_new" href="https://support.google.com/accounts/answer/6010255?hl=en">less secure access</a> via your Google account settings.</p>
 
 Office 365 users
------------
+----------------
 
 If you are accessing Exchnage you will need to register an application through their platform and use OAuth2.0.
 <a target="_new" href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth#get-an-access-token">Details on how to do this can be found here.</a>
-
 
 Usage
 -----
