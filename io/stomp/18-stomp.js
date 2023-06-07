@@ -427,12 +427,12 @@ module.exports = function(RED) {
                     } catch {
                         msg.payload = `${msg.payload}`;
                     }
-                    node.serverConnection.publish(node.topic, msg.payload, msg.headers || {});
+                    node.serverConnection.publish(topic, msg.payload, msg.headers || {});
                 } else if (!topic.length > 0) {
                     node.warn('No valid publish topic');
 
                 } else {
-                    node.warn('Payload is undefined or null')
+                    node.warn('Payload or topic is undefined/null')
                 }
                 done();
             });
@@ -469,7 +469,15 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                node.serverConnection.ack(node.topic, msg.messageId, msg.transaction);
+                const topic = msg.topic || node.topic;
+                if (topic.length > 0) {
+                    node.serverConnection.ack(topic, msg.messageId, msg.transaction);
+                } else if (!topic.length > 0) {
+                    node.warn('No valid publish topic');
+
+                } else {
+                    node.warn('Payload or topic is undefined/null')
+                }
                 done();
             });
 
