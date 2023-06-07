@@ -420,7 +420,7 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                const topic = msg.topic || node.topic;
+                const topic = node.topic || msg.topic;
                 if (topic.length > 0 && msg.payload) {
                     try {
                         msg.payload = JSON.stringify(msg.payload);
@@ -469,7 +469,7 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                const topic = msg.topic || node.topic;
+                const topic = node.topic || msg.topic;
                 if (topic.length > 0) {
                     node.serverConnection.ack(topic, msg.messageId, msg.transaction);
                 } else if (!topic.length > 0) {
