@@ -420,15 +420,21 @@ module.exports = function(RED) {
             setStatusDisconnected(node);
 
             node.on("input", function(msg, send, done) {
-                if (node.topic && msg.payload) {
+                const topic = msg.topic || node.topic;
+                if (topic.length > 0 && msg.payload) {
                     try {
                         msg.payload = JSON.stringify(msg.payload);
                     } catch {
                         msg.payload = `${msg.payload}`;
                     }
                     node.serverConnection.publish(node.topic, msg.payload, msg.headers || {});
-                    done();
+                } else if (!topic.length > 0) {
+                    node.warn('No valid publish topic');
+
+                } else {
+                    node.warn('Payload is undefined or null')
                 }
+                done();
             });
 
             node.serverConnection.register(node);
