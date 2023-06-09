@@ -258,14 +258,13 @@ module.exports = function(RED) {
                 // Disconnection already in progress or not connected
                 callback();
             } else {
-                node.log("Unsubscribing from STOMP queue's...");
                 const subscribedQueues = Object.keys(node.subscriptionIds);
                 subscribedQueues.forEach(function(queue) {
                     node.unsubscribe(queue);
                 });
                 node.log('Disconnecting from STOMP server...');
                 waitDisconnect(node.client, 2000).then(() => {
-                    node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
+                    node.log(`Disconnected from STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`)
                 }).catch(() => {
                     node.log("Disconnect timeout closing node...");
                 }).finally(() => {
@@ -323,7 +322,7 @@ module.exports = function(RED) {
             delete node.subscriptionIds[queue];
             if (node.connected && !node.closing) {
                 node.client.unsubscribe(queue, headers);
-                node.log(`Unsubscribed from ${queue}`, headers);
+                node.log(`Unsubscribed from ${queue}, headers: ${headers}`);
             }
         }
 
