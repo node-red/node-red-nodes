@@ -188,10 +188,10 @@ module.exports = function(RED) {
                         node.closing = false;
                         node.connecting = false;
                         node.connected = true;
-                        callback();
 
-                        node.log("Connected to STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion});
+                        node.log(`Connected to STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
                         setStatusConnected(node, true);
+                        callback();
                     });
                     
                     node.client.on("reconnect", function(sessionId, numOfRetries) {
@@ -199,10 +199,10 @@ module.exports = function(RED) {
                         node.connecting = false;
                         node.connected = true;
                         node.sessionId = sessionId;
-                        callback();
 
-                        node.log("Reconnected to STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion, retries: numOfRetries});
+                        node.log(`Reconnected to STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}, retries: ${numOfRetries}`);
                         setStatusConnected(node, true);
+                        callback();
                     });
 
                     node.client.on("reconnecting", function() {
