@@ -286,7 +286,7 @@ module.exports = function(RED) {
          * @param { Function } callback 
          */
         node.subscribe = function(queue, acknowledgment, callback) {
-            node.log(`Subscribing to: ${queue}`);
+            node.log(`Subscribe to: ${queue}`);
 
             if (node.connected && !node.closing) {
                 if (!node.subscriptionIds[queue]) {
