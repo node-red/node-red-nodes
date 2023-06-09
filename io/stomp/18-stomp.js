@@ -184,10 +184,11 @@ module.exports = function(RED) {
 
                     node.client = new StompClient(node.options);
                     
-                    node.client.on("connect", function() {
+                    node.client.on("connect", function(sessionId) {
                         node.closing = false;
                         node.connecting = false;
                         node.connected = true;
+                        node.sessionId = sessionId;
 
                         node.log(`Connected to STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
                         setStatusConnected(node, true);
@@ -219,10 +220,7 @@ module.exports = function(RED) {
                         setStatusError(node, true);
                     });
 
-                    node.client.connect(function(sessionId) {
-                        node.sessionId = sessionId;
-                    });
-
+                    node.client.connect();
                 } catch (err) {
                     node.error(err);
                 }
@@ -322,7 +320,7 @@ module.exports = function(RED) {
             delete node.subscriptionIds[queue];
             if (node.connected && !node.closing) {
                 node.client.unsubscribe(queue, headers);
-                node.log(`Unsubscribed from ${queue}, headers: ${headers}`);
+                node.log(`Unsubscribed from ${queue}, headers: ${JSON.stringify(headers)}`);
             }
         }
 
