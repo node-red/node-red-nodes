@@ -26,7 +26,7 @@ module.exports = function(RED) {
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
-        this.serialReconnectTime = n.serialReconnectTime || 15000;
+        this.serialReconnectTime = n.serialReconnectTime || settings.serialReconnectTime || 15000;
     }
     RED.nodes.registerType("serial-port",SerialPortNode);
 
