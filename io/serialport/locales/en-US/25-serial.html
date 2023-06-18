@@ -32,6 +32,10 @@
         <dd>data to be sent via the serial port</dd>
         <dt class="optional">baudrate <span class="property-type">string</span></dt>
         <dd>baudrate of the serial port (optional)</dd>
+        <dt class="optional">disconnect <span class="property-type">any</span></dt>
+        <dd>disconnect the serial port eg. {disconnect: true} (optional)</dd>
+        <dt class="optional">connect <span class="property-type">any</span></dt>
+        <dd>attempt to reconnect of the serial port after disconnect eg. {connect: true} (optional)</dd>
     </dl>
     <p>Only the <code>msg.payload</code> is sent.</p>
     <p>Optionally the baudrate can be changed using <code>msg.baudrate</code>.</p>
