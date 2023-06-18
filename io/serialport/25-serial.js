@@ -48,7 +48,6 @@ module.exports = function(RED) {
                     }else if(msg.action == "connect"){
                         serialPool.connect(this.serialConfig.serialport);
                     }
-                    return;
                }
                if (msg.hasOwnProperty("baudrate")) {
                     var baud = parseInt(msg.baudrate);
@@ -149,7 +148,6 @@ module.exports = function(RED) {
                     }else if(msg.action == "connect"){
                         serialPool.connect(this.serialConfig.serialport);
                     }
-                    return;
                }
                 if (msg.hasOwnProperty("baudrate")) {
                     var baud = parseInt(msg.baudrate);
