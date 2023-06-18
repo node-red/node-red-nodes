@@ -66,6 +66,8 @@
         <li><code>msg.waitfor</code> must be a single character, escape code, or hex code.
             If set, the node will wait until it matches that character in the stream and then start the output.</li>
         <li>Optionally the baudrate can be changed using <code>msg.baudrate</code></li>
+        <li><code>msg.disconnect</code> disconnect the serial port eg. {disconnect: true} (optional)</li>
+        <li><code>msg.connect</code> attempt to reconnect of the serial port after disconnect eg. {connect: true} (optional)</li>
     </ul>
     <h3>Outputs</h3>
     <ul>
