@@ -5,7 +5,6 @@ module.exports = function(RED) {
     var events = require("events");
     const { SerialPort } = require('serialport');
     var bufMaxSize = 32768;  // Max serial buffer size, for inputs...
-    const serialReconnectTime = settings.serialReconnectTime || 15000;
 
     // TODO: 'serialPool' should be encapsulated in SerialPortNode
 
@@ -27,6 +26,7 @@ module.exports = function(RED) {
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
+        this.serialReconnectTime = n.serialReconnectTime || 15000;
     }
     RED.nodes.registerType("serial-port",SerialPortNode);
 
@@ -42,7 +42,15 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
 
             node.on("input",function(msg) {
-                if (msg.hasOwnProperty("baudrate")) {
+               if (msg.hasOwnProperty("disconnect") && this.serialConfig) {
+                    serialPool.disconnect(this.serialConfig.serialport);
+                    return;
+               }
+               if (msg.hasOwnProperty("connect") && this.serialConfig) {
+                    serialPool.connect(this.serialConfig.serialport);
+                    return;
+               }
+               if (msg.hasOwnProperty("baudrate")) {
                     var baud = parseInt(msg.baudrate);
                     if (isNaN(baud)) {
                         node.error(RED._("serial.errors.badbaudrate"),msg);
@@ -219,7 +227,8 @@ module.exports = function(RED) {
                     waitfor = serialConfig.waitfor,
                     binoutput = serialConfig.bin,
                     addchar = serialConfig.addchar,
-                    responsetimeout = serialConfig.responsetimeout;
+                    responsetimeout = serialConfig.responsetimeout,
+                    serialReconnectTime = serialConfig.responsetimeout;
                 var id = port;
                 // just return the connection object if already have one
                 // key is the port (file path)
@@ -260,6 +269,8 @@ module.exports = function(RED) {
                         queue: [],
                         on: function(a,b) { this._emitter.on(a,b); },
                         close: function(cb) { this.serial.close(cb); },
+                        connect: function() { setupSerial(); },
+                        disconnect: function(cb) { this.serial.close(cb); },
                         encodePayload: function (payload) {
                             if (!Buffer.isBuffer(payload)) {
                                 if (typeof payload === "object") {
@@ -482,6 +493,24 @@ module.exports = function(RED) {
                 }
                 else {
                     done();
+                }
+            },
+            connect: function(port) {
+                if (connections[port]) {
+                    try {
+                        connections[port].connect();
+                    }
+                    catch(err) { }
+                }
+            },
+            disconnect: function(port) {
+                if (connections[port]) {
+                    try {
+                        connections[port].disconnect(function() {
+                            RED.log.info(RED._("serial.errors.closed",{port:port}), {});
+                        });
+                    }
+                    catch(err) { }
                 }
             }
         }
