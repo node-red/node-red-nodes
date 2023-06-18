@@ -42,12 +42,12 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
 
             node.on("input",function(msg) {
-               if (msg.hasOwnProperty("disconnect") && this.serialConfig) {
-                    serialPool.disconnect(this.serialConfig.serialport);
-                    return;
-               }
-               if (msg.hasOwnProperty("connect") && this.serialConfig) {
-                    serialPool.connect(this.serialConfig.serialport);
+               if (msg.hasOwnProperty("action") && this.serialConfig) {
+                    if(msg.action == "disconnect"){
+                        serialPool.disconnect(this.serialConfig.serialport);
+                    }else if(msg.action == "connect"){
+                        serialPool.connect(this.serialConfig.serialport);
+                    }
                     return;
                }
                if (msg.hasOwnProperty("baudrate")) {
@@ -143,12 +143,12 @@ module.exports = function(RED) {
             node.port = serialPool.get(this.serialConfig);
             // Serial Out
             node.on("input",function(msg) {
-               if (msg.hasOwnProperty("disconnect") && this.serialConfig) {
-                    serialPool.disconnect(this.serialConfig.serialport);
-                    return;
-               }
-               if (msg.hasOwnProperty("connect") && this.serialConfig) {
-                    serialPool.connect(this.serialConfig.serialport);
+               if (msg.hasOwnProperty("action") && this.serialConfig) {
+                    if(msg.action == "disconnect"){
+                        serialPool.disconnect(this.serialConfig.serialport);
+                    }else if(msg.action == "connect"){
+                        serialPool.connect(this.serialConfig.serialport);
+                    }
                     return;
                }
                 if (msg.hasOwnProperty("baudrate")) {
