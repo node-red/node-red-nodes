@@ -17,6 +17,7 @@
             "output": "Output",
             "request": "Request",
             "responsetimeout": "Default response timeout",
+            "serialReconnectTime": "Default Reconnect time",
             "ms": "ms",
             "serial": "serial",
             "none": "none",
