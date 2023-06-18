@@ -213,7 +213,12 @@
         </div>
         <div class="form-row" style="padding-left:18px; margin-bottom:18px;">
             <span data-i18n="serial.label.responsetimeout"></span>
-            <input type="text" id="node-config-input-responsetimeout" style="width:60px; height:28px;">
+            <input type="text" id="node-config-input-responsetimeout" style="width:120px; height:28px;">
+            <span data-i18n="serial.label.ms"></span>
+        </div>
+        <div class="form-row" style="padding-left:18px; margin-bottom:18px;">
+            <span data-i18n="serial.label.serialReconnectTime"></span>
+            <input type="number" id="node-config-input-serialReconnectTime" style="width:120px; height:28px;">
             <span data-i18n="serial.label.ms"></span>
         </div>
     </div>
@@ -245,7 +250,8 @@
             bin: {value:"false"},
             out: {value:"char"},
             addchar: {value:""},
-            responsetimeout: {value: 10000}
+            responsetimeout: {value: 10000},
+            serialReconnectTime: {value: 15000}
         },
         label: function() {
             this.serialbaud = this.serialbaud || 57600;
