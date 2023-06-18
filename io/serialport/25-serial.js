@@ -236,7 +236,7 @@ module.exports = function(RED) {
                     binoutput = serialConfig.bin,
                     addchar = serialConfig.addchar,
                     responsetimeout = serialConfig.responsetimeout,
-                    serialReconnectTime = serialConfig.responsetimeout;
+                    serialReconnectTime = serialConfig.serialReconnectTime;
                 var id = port;
                 // just return the connection object if already have one
                 // key is the port (file path)
