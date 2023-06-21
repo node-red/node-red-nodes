@@ -184,14 +184,15 @@ module.exports = function(RED) {
 
                     node.client = new StompClient(node.options);
                     
-                    node.client.on("connect", function() {
+                    node.client.on("connect", function(sessionId) {
                         node.closing = false;
                         node.connecting = false;
                         node.connected = true;
-                        callback();
+                        node.sessionId = sessionId;
 
-                        node.log("Connected to STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion});
+                        node.log(`Connected to STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
                         setStatusConnected(node, true);
+                        callback();
                     });
                     
                     node.client.on("reconnect", function(sessionId, numOfRetries) {
@@ -199,10 +200,10 @@ module.exports = function(RED) {
                         node.connecting = false;
                         node.connected = true;
                         node.sessionId = sessionId;
-                        callback();
 
-                        node.log("Reconnected to STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion, retries: numOfRetries});
+                        node.log(`Reconnected to STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}, retries: ${numOfRetries}`);
                         setStatusConnected(node, true);
+                        callback();
                     });
 
                     node.client.on("reconnecting", function() {
@@ -219,10 +220,7 @@ module.exports = function(RED) {
                         setStatusError(node, true);
                     });
 
-                    node.client.connect(function(sessionId) {
-                        node.sessionId = sessionId;
-                    });
-
+                    node.client.connect();
                 } catch (err) {
                     node.error(err);
                 }
@@ -258,14 +256,13 @@ module.exports = function(RED) {
                 // Disconnection already in progress or not connected
                 callback();
             } else {
-                node.log("Unsubscribing from STOMP queue's...");
                 const subscribedQueues = Object.keys(node.subscriptionIds);
                 subscribedQueues.forEach(function(queue) {
                     node.unsubscribe(queue);
                 });
                 node.log('Disconnecting from STOMP server...');
                 waitDisconnect(node.client, 2000).then(() => {
-                    node.log("Disconnected from STOMP server", {sessionId: node.sessionId, url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion})
+                    node.log(`Disconnected from STOMP server, sessionId: ${node.sessionId}, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`)
                 }).catch(() => {
                     node.log("Disconnect timeout closing node...");
                 }).finally(() => {
@@ -287,7 +284,7 @@ module.exports = function(RED) {
          * @param { Function } callback 
          */
         node.subscribe = function(queue, acknowledgment, callback) {
-            node.log(`Subscribing to: ${queue}`);
+            node.log(`Subscribe to: ${queue}`);
 
             if (node.connected && !node.closing) {
                 if (!node.subscriptionIds[queue]) {
@@ -323,7 +320,7 @@ module.exports = function(RED) {
             delete node.subscriptionIds[queue];
             if (node.connected && !node.closing) {
                 node.client.unsubscribe(queue, headers);
-                node.log(`Unsubscribed from ${queue}`, headers);
+                node.log(`Unsubscribed from ${queue}, headers: ${JSON.stringify(headers)}`);
             }
         }
 
