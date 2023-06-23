@@ -22,7 +22,8 @@
             "serial": "serial",
             "none": "none",
             "start": "Optionally wait for a start character of",
-            "startor": ", then"
+            "startor": ", then",
+            "autoconnect": "Auto Connect"
         },
         "placeholder": {
             "serialport": "for example: /dev/ttyUSB0/"
