@@ -148,7 +148,7 @@ module.exports = function(RED) {
                         node.connectedCallbacks.shift().call();
                     }
                 });
-            } else {
+            } else if (node.connected) {
                 // Execute callback directly as the connection to the STOMP server has already been made
                 callback();
             }
