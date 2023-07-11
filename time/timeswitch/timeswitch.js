@@ -46,8 +46,19 @@ module.exports = function (RED) {
 
             // all sun events for the given lat/long
             const sunEvents = SunCalc.getTimes(nowNative, node.lat, node.lon);
-            let sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
-            let sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
+            const sunAlt = SunCalc.getPosition(nowNative, node.lat, node.lon).altitude;
+            var sunriseDateTime = spacetime(sunEvents[SUNRISE_KEY]).nearest("minute");
+            var sunsetDateTime = spacetime(sunEvents[SUNSET_KEY]).nearest("minute");
+
+            if (sunEvents[SUNRISE_KEY] == "Invalid Date") {
+                if (sunAlt >= 0) { sunriseDateTime = now.startOf("day"); }
+                else { sunriseDateTime = now.endOf("day"); }
+            }
+
+            if (sunEvents[SUNSET_KEY] == "Invalid Date") {
+                if (sunAlt >= 0) { sunsetDateTime = now.endOf("day"); }
+                else { sunsetDateTime = now.startOf("day"); }
+            }
 
             // add optional sun event offset, if specified
             sunriseDateTime = sunriseDateTime.add(Number(node.sunriseOffset), "minutes");
@@ -56,13 +67,15 @@ module.exports = function (RED) {
             // check if sun event has already occurred today
             if (now.isAfter(sunriseDateTime)) {
                 // get tomorrow's sunrise, since it'll be different
-                sunriseDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNRISE_KEY]).nearest("minute");
+                // sunriseDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNRISE_KEY]).nearest("minute");
+                sunriseDateTime = sunriseDateTime.add(1, "day");
                 // add optional sun event offset, if specified (again)
                 sunriseDateTime = sunriseDateTime.add(Number(node.sunriseOffset), "minutes");
             }
             if (now.isAfter(sunsetDateTime)) {
                 // get tomorrow's sunset, since it'll be different
-                sunsetDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNSET_KEY]).nearest("minute");
+                // sunsetDateTime = spacetime(SunCalc.getTimes(now.add(1, "day").toNativeDate(), node.lat, node.lon)[SUNSET_KEY]).nearest("minute");
+                sunsetDateTime = sunsetDateTime.add(1, "day");
                 // add optional sun event offset, if specified (again)
                 sunsetDateTime = sunsetDateTime.add(Number(node.sunsetOffset), "minutes");
             }
@@ -126,19 +139,36 @@ module.exports = function (RED) {
                 // var o = nextTime.goto(selectedTimeZone.name).offset()/60;
                 // if (o > 0) { o = "+" + o; }
                 // else {o = "-" + o; }
-                if (payload == 1) {
-                    node.status({
-                        fill: "yellow",
-                        shape: "dot",
-                        text: `on until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
-                    });
+                if (nextTime) {
+                    if (payload == 1) {
+                        node.status({
+                            fill: "yellow",
+                            shape: "dot",
+                            text: `on until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
+                        });
+                    } else {
+                        node.status({
+                            fill: "blue",
+                            shape: "dot",
+                            text: `off until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
+                        });
+                    }
                 } else {
-                    node.status({
-                        fill: "blue",
-                        shape: "dot",
-                        text: `off until ${nextTime.goto(selectedTimeZone.name).format("time-24")}`
-                    });
+                    if (payload == 1) {
+                        node.status({
+                            fill: "yellow",
+                            shape: "dot",
+                            text: `on`
+                        });
+                    } else {
+                        node.status({
+                            fill: "blue",
+                            shape: "dot",
+                            text: `off`
+                        });
+                    }
                 }
+
                 var msg = {};
                 if (node.mytopic) {
                     msg.topic = node.mytopic;

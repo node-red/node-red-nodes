@@ -66,7 +66,7 @@ hf_interval = 0.09 # Approx 10/s
 lf_interval = 1
 
 hf_enabled = False
-lf_enabled = False
+lf_enabled = True
 
 scroll = None
 

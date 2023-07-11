@@ -34,6 +34,9 @@
                 if (data === 7) { t = "Banana"; }
                 if (data === 26) { t = "IOT2050"; }
                 $('#type-tip').text(t);
+                if (data === 26) {
+                    $('#node-input-pin').append($("<option></option>").attr("value",20).text("USER button"));
+                }
                 $('#node-input-pin').val(pinnow);
             });
             $.getJSON('mraa-version/'+this.id,function(data) {
@@ -68,7 +71,6 @@
             <option value="17">D17</option>
             <option value="18">D18</option>
             <option value="19">D19</option>
-            <option value="20">USER button</option>
         </select>
     </div>
     <div class="form-row">

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-intel-gpio",
-    "version"       : "0.3.0",
+    "version"       : "0.4.0",
     "description"   : "A Node-RED node to talk to an Intel Galileo, Edison or Siemens IOT2050 board using mraa",
     "dependencies"  : {
     },
