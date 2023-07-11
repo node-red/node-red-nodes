@@ -84,6 +84,8 @@ module.exports = function(RED) {
         node.sessionId = null;
         node.subscribtionIndex = 1;
         node.subscriptionIds = {};
+        /** Array of callbacks to be called once the connection to the broker has been made */
+        node.connectedCallbacks = [];
         /** @type { StompClient } */
         node.client;
         node.setOptions = function(options, init) {
@@ -134,10 +136,20 @@ module.exports = function(RED) {
          */
         node.register = function(stompNode, callback = () => {}) {
             node.users[stompNode.id] = stompNode;
+            
+            if (!node.connected) {
+                node.connectedCallbacks.push(callback);
+            }
+
             // Auto connect when first STOMP processing node is added
             if (Object.keys(node.users).length === 1) {
-                node.connect(callback);
-            } else {
+                node.connect(() => {
+                    while (node.connectedCallbacks.length) {
+                        node.connectedCallbacks.shift().call();
+                    }
+                });
+            } else if (node.connected) {
+                // Execute callback directly as the connection to the STOMP server has already been made
                 callback();
             }
         }

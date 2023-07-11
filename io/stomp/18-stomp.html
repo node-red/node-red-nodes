@@ -16,7 +16,7 @@
             <option value="client-individual">Client individual (only v1.1)</option>
         </select>
     </div>
-    <div class="form-tips">
+    <div class="form-tips" style="margin-bottom: 12px;">
         Enabling the ACK (acknowledgment) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
         This means the items on the broker queue will not be dequeue'd unless an ACK message is sent using the <code>ack</code> node.
     </div>
@@ -73,7 +73,7 @@
         <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips">The <b>Destination</b> field is optional. If not set uses the <code>msg.topic</code>
+    <div class="form-tips" style="margin-bottom: 12px;">The <b>Destination</b> field is optional. If not set uses the <code>msg.topic</code>
     property of the message.</div>
 </script>
 
@@ -146,6 +146,9 @@
     <div class="form-row">
         <label for="node-config-input-reconnectdelay"><i class="fa fa-clock-o"></i> Reconnect Delay (S)</label>
         <input type="number" id="node-config-input-reconnectdelay" />
+    </div>
+    <div class="form-tips" style="margin-bottom: 12px;">
+        Reconnection timings are calculated using exponential backoff. The first reconnection happens immediately, the second reconnection happens at +delay ms, the third at + 2*delay ms, etc.
     </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
