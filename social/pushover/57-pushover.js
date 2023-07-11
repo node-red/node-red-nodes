@@ -64,7 +64,10 @@ module.exports = function(RED) {
                 node.warn("Expire time too high, using maximum setting of 10800s (3 hours) retry duration");
             }
             if (ttl !== null) {
-                if(!Number.isInteger(ttl) || ttl <= 0) {
+                if(typeof ttl === "string") {
+                    ttl = parseInt(ttl);
+                }
+                if(isNaN(ttl) || !Number.isInteger(ttl) || ttl <= 0) {
                     ttl = null;
                     node.warn("No valid number for TTL found, not set");
                 }
