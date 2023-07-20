@@ -38,7 +38,6 @@ module.exports = function(RED) {
                     if (node.running) {
                         node.child.kill(node.closer);
                     }
-                    node.debug(node.cmd+" stopped by msg");
                     node.status({fill:"grey",shape:"ring",text:RED._("daemon.status.stopped")});
                 }
                 else if (msg.hasOwnProperty("kill") && node.running) {
@@ -46,17 +45,14 @@ module.exports = function(RED) {
                     node.child.kill(msg.kill.toUpperCase());
                 }
                 else if (msg.hasOwnProperty("start")) {
-                    node.stopped = false;
                     if (!node.running) {
                         let args = "";
                         if (msg.hasOwnProperty("args") && msg.args.length > 0) {
                             args = parseArgs(msg.args.trim());
                         }
                         runit(args);
-                    } else {
-                        node.child.kill(node.closer);
-                        // should this also re-start the process incase redo is not set XXX
                     }
+                    node.stopped = false;
                 }
                 else {
                     if (!Buffer.isBuffer(msg.payload)) {
