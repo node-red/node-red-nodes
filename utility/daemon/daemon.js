@@ -34,7 +34,7 @@ module.exports = function(RED) {
         function inputlistener(msg) {
             if (msg != null) {
                 if (msg.hasOwnProperty("stop")) {
-                    this.stopped = true;
+                    node.stopped = true;
                     if (node.running) {
                         node.child.kill(node.closer);
                     }
@@ -46,7 +46,7 @@ module.exports = function(RED) {
                     node.child.kill(msg.kill.toUpperCase());
                 }
                 else if (msg.hasOwnProperty("start")) {
-                    this.stopped = false;
+                    node.stopped = false;
                     if (!node.running) {
                         let args = "";
                         if (msg.hasOwnProperty("args") && msg.args.length > 0) {
