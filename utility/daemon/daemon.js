@@ -36,7 +36,7 @@ module.exports = function(RED) {
                 if (msg.hasOwnProperty("stop")) {
                     this.stopped = true;
                     if (node.running) {
-                        node.child.kill("SIGINT");
+                        node.child.kill(node.closer);
                     }
                     node.debug(node.cmd+" stopped by msg");
                     node.status({fill:"grey",shape:"ring",text:RED._("daemon.status.stopped")});
@@ -54,7 +54,8 @@ module.exports = function(RED) {
                         }
                         runit(args);
                     } else {
-                        node.child.kill("SIGINT");
+                        node.child.kill(node.closer);
+                        // should this also re-start the process incase redo is not set XXX
                     }
                 }
                 else {
