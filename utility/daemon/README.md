@@ -36,6 +36,8 @@ Setting `msg.kill` to a signal name (e.g. SIGINT, SIGHUP) will stop the process 
 
 Sending `msg.start` will also re-start the process. Additional arguments can be specified in `msg.args`.
 
+Sending `msg.stop` will stop the process and prevent automatic re-start until reset with `msg.start`.
+
 **Note:** Some applications will automatically buffer lines of output. It is advisable to turn off this behaviour.
 For example, if running a Python app, the `-u` parameter will stop the output being buffered.
 
