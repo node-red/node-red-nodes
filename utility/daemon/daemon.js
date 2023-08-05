@@ -12,6 +12,7 @@ module.exports = function(RED) {
         this.op = n.op;
         this.redo = n.redo;
         this.running = false;
+        this.stopped = false;
         this.closer = n.closer || "SIGKILL";
         this.autorun = true;
         if (n.autorun === false) { this.autorun = false; }
@@ -32,16 +33,26 @@ module.exports = function(RED) {
 
         function inputlistener(msg) {
             if (msg != null) {
-                if (msg.hasOwnProperty("kill") && node.running) {
+                if (msg.hasOwnProperty("stop")) {
+                    node.stopped = true;
+                    if (node.running) {
+                        node.child.kill(node.closer);
+                    }
+                    node.status({fill:"grey",shape:"ring",text:RED._("daemon.status.stopped")});
+                }
+                else if (msg.hasOwnProperty("kill") && node.running) {
                     if (typeof msg.kill !== "string" || msg.kill.length === 0 || !msg.kill.toUpperCase().startsWith("SIG") ) { msg.kill = "SIGINT"; }
                     node.child.kill(msg.kill.toUpperCase());
                 }
-                else if (msg.hasOwnProperty("start") && !node.running) {
-                    let args = "";
-                    if (msg.hasOwnProperty("args") && msg.args.length > 0) {
-                        args = parseArgs(msg.args.trim());
+                else if (msg.hasOwnProperty("start")) {
+                    if (!node.running) {
+                        let args = "";
+                        if (msg.hasOwnProperty("args") && msg.args.length > 0) {
+                            args = parseArgs(msg.args.trim());
+                        }
+                        runit(args);
                     }
-                    runit(args);
+                    node.stopped = false;
                 }
                 else {
                     if (!Buffer.isBuffer(msg.payload)) {
@@ -111,7 +122,8 @@ module.exports = function(RED) {
                     var rc = code;
                     if (code === null) { rc = signal; }
                     node.send([null,null,{payload:rc}]);
-                    node.status({fill:"red",shape:"ring",text:RED._("daemon.status.stopped")});
+                    const color = node.stopped ? "grey" : "red";
+                    node.status({fill:color,shape:"ring",text:RED._("daemon.status.stopped")});
                 });
 
                 node.child.on('error', function (err) {
@@ -138,7 +150,7 @@ module.exports = function(RED) {
 
         if (node.redo === true) {
             var loop = setInterval( function() {
-                if (!node.running) {
+                if (!node.running && !node.stopped) {
                     node.warn(RED._("daemon.errors.restarting") + " : " + node.cmd);
                     runit();
                 }
