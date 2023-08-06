@@ -220,8 +220,8 @@
 			<label for="node-config-input-autoConnect"><span data-i18n="serial.label.autoconnect"></span></label>
 			<input type="checkbox" id="node-config-input-autoConnect" style="width:auto; margin-bottom: 4px;"/> 
             <span data-i18n="serial.label.serialReconnectTime"></span>
-            <input type="number" id="node-config-input-serialReconnectTime" style="width:90px; height:28px;">
-            <span data-i18n="serial.label.ms"></span>
+            <input type="number" id="node-config-input-serialReconnectTime" style="width:60px; height:28px;">
+            <span data-i18n="serial.label.sec"></span>
         </div>
     </div>
     <div class="form-tips" id="tip-waitfor" hidden><span data-i18n="serial.tip.waitfor"></span></div>
@@ -265,7 +265,12 @@
         },
         oneditprepare: function() {
             if(typeof this.autoConnect === "undefined"){ this.autoConnect = true; }
-
+            var defReconnectTime = RED.settings.serialReconnectTime || 15000;
+            $('#node-config-input-serialReconnectTime').attr('placeholder',Math.round(defReconnectTime/1000));
+            var reconnectms = $('#node-config-input-serialReconnectTime').val();
+            if(reconnectms){
+                $('#node-config-input-serialReconnectTime').val(Math.round(reconnectms/1000));
+            }
             var previous = null;
             var blist = [
                 {value:"230400",label:"230400",hasValue:false},
@@ -362,9 +367,13 @@
                     }).autocomplete("search","");
                 });
             });
-			
         },
         oneditsave: function() {
+            var reconnectms = $('#node-config-input-serialReconnectTime').val();
+            if(reconnectms){
+                $('#node-config-input-serialReconnectTime').val(reconnectms*1000);
+            }
+
             var mytype = $("#node-config-input-serialbaud").typedInput('type');
             if (mytype !== "other") {
                 $("#node-config-input-serialbaud").typedInput('value',mytype);
