@@ -219,11 +219,10 @@ module.exports = function(RED) {
                     });
 
                     node.client.on("reconnecting", function() {
-                        node.warn("Reconnecting to STOMP server");
                         node.connecting = true;
                         node.connected = false;
 
-                        node.log(`Reconnecting to STOMP server, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
+                        node.warn(`Reconnecting to STOMP server, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
                         setStatusConnecting(node, true);
                     });
 
