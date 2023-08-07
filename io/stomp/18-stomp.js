@@ -230,14 +230,14 @@ module.exports = function(RED) {
                     node.client.on("error", function(err) {
                         node.error(err);
                         if (err.reconnectionFailed) {
-                            setStatusError(node, true);
+                            setStatusError(node, true, "Reconnection failed: exceeded number of reconnection attempts");
                         }
                     });
 
                     node.client.connect();
                 } catch (err) {
                     node.error(err);
-                    setStatusError(node, true, "Reconnection failed: exceeded number of reconnection attempts");
+                    setStatusError(node, true);
                 }
             } else {
                 node.log("Not connecting to STOMP server, already connected");
