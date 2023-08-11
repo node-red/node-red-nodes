@@ -54,15 +54,15 @@ module.exports = function(RED) {
         }
     }
 
-    function setStatusError(node, allNodes) {
+    function setStatusError(node, allNodes, message = undefined) {
         if(allNodes) {
             for (var id in node.users) {
                 if (hasProperty(node.users, id)) {
-                    node.users[id].status({ fill: "red", shape: "dot", text: "error" });
+                    node.users[id].status({ fill: "red", shape: "dot", text: message ?? "error" });
                 }
             }
         } else {
-            node.status({ fill: "red", shape: "dot", text: "error" });
+            node.status({ fill: "red", shape: "dot", text: message ?? "error" });
         }
     }
 
@@ -219,22 +219,24 @@ module.exports = function(RED) {
                     });
 
                     node.client.on("reconnecting", function() {
-                        node.warn("reconnecting");
                         node.connecting = true;
                         node.connected = false;
 
-                        node.log("Reconnecting to STOMP server...", {url: `${node.options.address}:${node.options.port}`, protocolVersion: node.options.protocolVersion});
+                        node.warn(`Reconnecting to STOMP server, url: ${node.options.address}:${node.options.port}, protocolVersion: ${node.options.protocolVersion}`);
                         setStatusConnecting(node, true);
                     });
 
                     node.client.on("error", function(err) {
                         node.error(err);
-                        setStatusError(node, true);
+                        if (err.reconnectionFailed) {
+                            setStatusError(node, true, "Reconnection failed: exceeded number of reconnection attempts");
+                        }
                     });
 
                     node.client.connect();
                 } catch (err) {
                     node.error(err);
+                    setStatusError(node, true);
                 }
             } else {
                 node.log("Not connecting to STOMP server, already connected");
