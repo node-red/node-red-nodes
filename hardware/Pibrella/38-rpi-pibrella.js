@@ -12,7 +12,7 @@ module.exports = function(RED) {
         throw "Info : Ignoring Raspberry Pibrella specific node.";
     }
 
-    if (!fs.existsSync("/usr/share/doc/python-rpi.gpio")) {
+    if (!fs.existsSync("/usr/share/doc/python3-rpi.gpio")) {
         util.log("[rpi-pibrella] Info : Can't find RPi.GPIO python library.");
         throw "Warning : Can't find RPi.GPIO python library.";
     }
