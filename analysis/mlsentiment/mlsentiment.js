@@ -12,10 +12,6 @@ module.exports = function (RED) {
         this.on("input", function (msg) {
             var value = RED.util.getMessageProperty(msg, node.property);
             if (value !== undefined) {
-                if (msg.hasOwnProperty("overrides")) {
-                    msg.extras = msg.overrides;
-                    delete msg.overrides;
-                }
                 multilangSentiment(value, node.lang || msg.lang || 'en', { 'words': msg.words || null, 'tokens': msg.tokens || null }, function (err, result) {
                     msg.sentiment = result;
                     msg.sentiment.comparative = msg.sentiment.score / msg.sentiment.tokens.length;      // temporarily addresses an issue in v2.0.0: https://github.com/marcellobarile/multilang-sentiment/issues/10
