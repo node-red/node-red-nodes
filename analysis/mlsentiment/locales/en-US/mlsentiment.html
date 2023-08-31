@@ -4,14 +4,16 @@
     <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>sentiment <span class="property-type">object</span></dt>
-        <dd>contains the resulting AFINN-111 sentiment.</dd>
+        <dd>contains the resulting AFINN-165 sentiment.</dd>
         <dt>sentiment.score <span class="property-type">number</span></dt>
         <dd>the sentiment score.</dd>
     </dl>
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>words <span class="property-type">object</span></dt>
-        <dd>an object of words and scores to override or add words can be supplied - <code>{ word:score,... }</code>.</dd>
+        <dd>besides sending a raw string in msg.payload, an object of words and scores to override or add words can be supplied - <code>{ word:score,... }</code>.</dd>
+        <dt>tokens <span class="property-type">object</span></dt>
+        <dd>a `tokens` object allows custom tokenizers which may be required by some languages - <code>{ ['世界',...] }</code>.</dd>
     </dl>
     <dl class="message-properties">
         <dt>lang <span class="property-type">string</span></dt>
