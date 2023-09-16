@@ -1,9 +1,9 @@
 {
     "name": "node-red-node-sqlite",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "A sqlite node for Node-RED",
     "dependencies": {
-        "sqlite3": "^5.0.2"
+        "sqlite3": "^5.1.6"
     },
     "repository": {
         "type": "git",
