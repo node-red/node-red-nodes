@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-data-generator",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A Node-RED node to create a string of dummy data values from a template. Useful for test-cases.",
     "dependencies": {
         "dummy-json": "^3.0.5"
@@ -23,7 +23,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }
