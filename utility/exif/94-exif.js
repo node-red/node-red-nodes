@@ -69,14 +69,26 @@ module.exports = function(RED) {
                     fov: (2 * Math.atan(36 / (2 * msg.exif.exif.FocalLengthIn35mmFormat)) * 180 / Math.PI),
                     color: '#aaaa00'
                 }
-                msg.location.icon = "fa-camera fa-1x";
+                msg.location.icon = "fa-camera fa-lg";
+                msg.location.iconColor = "orange";
                 var na;
+                var pop = "";
                 if (val.hasOwnProperty("name")) { na = val.name; }
-                else if (msg.hasOwnProperty("filename")) { na = msg.filename.split('/').pop(); }
+                else if (msg.hasOwnProperty("filename")) {
+                    na = msg.filename.split('/').pop();
+                    pop = "Timestamp: "+msg.exif.image.ModifyDate+"<br/>";
+                }
                 else { na = msg.exif.image.Make+"_"+msg.exif.image.ModifyDate; }
                 msg.location.name = na;
                 msg.location.layer = "Images";
-                msg.location.popup = '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
+                if (msg.exif.image.ImageDescription) {
+                    pop = "Caption: "+msg.exif.image.ImageDescription+"<br/>"+pop;
+                }
+                pop += '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
+                if (msg.location.lat && msg.location.lon) {
+                    pop += "<br/>Lat, Lon: "+msg.location.lat+", "+msg.location.lon;
+                }
+                msg.location.popup = pop;
             }
         }
 
@@ -98,7 +110,7 @@ module.exports = function(RED) {
                                     node.log(error.toString());
                                 }
                                 else {
-                                    msg.location = {name:msg.payload.name, lat:msg.payload.lat, lon:msg.payload.lon, layer:"Images", icon:"fa-camera", draggable:true};
+                                    msg.location = {name:msg.payload.name, lat:msg.payload.lat, lon:msg.payload.lon, layer:"Images", icon:"fa-camera fa-lg", draggable:true};
                                     msg.location.popup = '<img width="280" src="data:image\/png;base64,'+msg.payload.content.toString('base64')+'"/><br/>';
                                 }
                             }
