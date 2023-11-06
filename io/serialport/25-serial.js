@@ -27,42 +27,102 @@ module.exports = function(RED) {
         this.out = n.out || "char";
         this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
-    }
-    RED.nodes.registerType("serial-port",SerialPortNode);
+    
+        this.newPort = (serialPort) => {
+            serialPool.close(this.serialport,() => {});
+            this.serialport = serialPort.port;
+            this.serialbaud = parseInt(serialPort.serialbaud) || this.serialbaud;
+            this.databits = parseInt(serialPort.databits) || this.databits;
+            this.parity = serialPort.parity || this.parity;
+            this.stopbits = parseInt(serialPort.stopbits) || this.stopbits;
+            this.dtr = serialPort.dtr || this.dtr;
+            this.rts = serialPort.rts || this.rts;
+            this.cts = serialPort.cts || this.cts;
+            this.dsr = serialPort.dsr || this.dsr;
+            this.bin = serialPort.bin || this.bin;
+            this.out = serialPort.out || this.out;
+            this.waitfor = serialPort.waitfor || this.waitfor;
+            this.responsetimeout = n.responsetimeout || 10000;
+            return serialPool.get(this);
+        }
 
+    };
+    RED.nodes.registerType("serial-port",SerialPortNode);
 
     // receives msgs and sends them to the serial port
     function SerialOutNode(n) {
         RED.nodes.createNode(this,n);
+        this.serialConfig = RED.nodes.getNode(n.serial);
+
+        if (!this.serialConfig) {
+            this.error(RED._("serial.errors.missing-conf"), {});
+            return;
+        }
+
         this.serial = n.serial;
-        this.serialConfig = RED.nodes.getNode(this.serial);
+        var node = this;
+        node.port = serialPool.get(this.serialConfig);
+        var serialConfig = this.serialConfig;
 
-        if (this.serialConfig) {
-            var node = this;
-            node.port = serialPool.get(this.serialConfig);
+        this.serialConfig.on('newport', function(newPort) {
+            node.port = serialPool.get(serialConfig);
+        });
 
-            node.on("input",function(msg) {
-                if (msg.hasOwnProperty("baudrate")) {
-                    var baud = parseInt(msg.baudrate);
-                    if (isNaN(baud)) {
-                        node.error(RED._("serial.errors.badbaudrate"),msg);
-                    } else {
-                        node.port.update({baudRate: baud},function(err,res) {
-                            if (err) {
-                                var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-                                node.error(errmsg,msg);
-                            }
-                        });
-                    }
+        node.on("input",function(msg) {
+            if (msg.hasOwnProperty("baudrate")) {
+                var baud = parseInt(msg.baudrate);
+                if (isNaN(baud)) {
+                    node.error(RED._("serial.errors.badbaudrate"),msg);
+                } else {
+                    node.port.update({baudRate: baud},function(err,res) {
+                        if (err) {
+                            var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+                            node.error(errmsg,msg);
+                        }
+                    });
                 }
-                if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
-                var payload = node.port.encodePayload(msg.payload);
-                node.port.write(payload,function(err,res) {
-                    if (err) {
-                        var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
-                        node.error(errmsg,msg);
-                    }
-                });
+            }
+            if (!msg.hasOwnProperty("payload")) { return; } // do nothing unless we have a payload
+            var payload = node.port.encodePayload(msg.payload);
+            node.port.write(payload,function(err,res) {
+                if (err) {
+                    var errmsg = err.toString().replace("Serialport","Serialport "+node.port.serial.path);
+                    node.error(errmsg,msg);
+                }
+            });
+        });
+        node.port.on('ready', function() {
+            node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+        });
+        node.port.on('closed', function() {
+            node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
+        });
+    }
+    RED.nodes.registerType("serial out",SerialOutNode);
+
+    // receives data from the serial port and emits msgs
+    function SerialInNode(n) {
+        RED.nodes.createNode(this,n);
+        this.serialConfig = RED.nodes.getNode(n.serial);
+
+        if (!this.serialConfig) {
+            this.error(RED._("serial.errors.missing-conf"), {});
+            return;
+        }
+
+        this.serial = n.serial;
+        var node = this;
+
+        this.serialConfig.on('newport', function(newPort) {
+            setCallback(node, node.serialConfig);
+        });
+
+        function setCallback(node) {
+            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
+            node.port = serialPool.get(node.serialConfig);
+
+            node.port.on('data', function(msgout) {
+                node.send(msgout);
             });
             node.port.on('ready', function() {
                 node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
@@ -70,56 +130,8 @@ module.exports = function(RED) {
             node.port.on('closed', function() {
                 node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
             });
-        }
-        else {
-            this.error(RED._("serial.errors.missing-conf"), {});
-        }
-
-        this.on("close", function(done) {
-            if (this.serialConfig) {
-                serialPool.close(this.serialConfig.serialport,done);
-            }
-            else {
-                done();
-            }
-        });
-    }
-    RED.nodes.registerType("serial out",SerialOutNode);
-
-
-    // receives data from the serial port and emits msgs
-    function SerialInNode(n) {
-        RED.nodes.createNode(this,n);
-        this.serial = n.serial;
-        this.serialConfig = RED.nodes.getNode(this.serial);
-
-        if (this.serialConfig) {
-            var node = this;
-            node.status({fill:"grey",shape:"dot",text:"node-red:common.status.not-connected"});
-            node.port = serialPool.get(this.serialConfig);
-
-            this.port.on('data', function(msgout) {
-                node.send(msgout);
-            });
-            this.port.on('ready', function() {
-                node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
-            });
-            this.port.on('closed', function() {
-                node.status({fill:"red",shape:"ring",text:"node-red:common.status.not-connected"});
-            });
-        }
-        else {
-            this.error(RED._("serial.errors.missing-conf"), {});
-        }
-
-        this.on("close", function(done) {
-            if (this.serialConfig) {
-                serialPool.close(this.serialConfig.serialport,done);
-            }
-            else {
-                done();
-            }
-        });
+        };
+        setCallback(node)
     }
     RED.nodes.registerType("serial in",SerialInNode);
 
@@ -199,6 +211,32 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("serial request", SerialRequestNode);
+
+
+    // Port Select Node
+    function PortSelectNode(n) {
+        RED.nodes.createNode(this,n);
+        this.serialConfig = RED.nodes.getNode(n.serial);
+
+        if (!this.serialConfig) {
+            this.error(RED._("serial.errors.missing-conf"), {});
+            return;
+        }
+
+        this.serial = n.serial;
+        var node = this;
+        node.port = serialPool.get(this.serialConfig);
+        node.on("input",function(msg) {
+            if (msg.payload.hasOwnProperty("port")) { 
+                node.serialConfig.newPort(msg.payload);
+                node.serialConfig.emit('newport',msg.payload);
+                node.send(msg);
+            } else {
+                node.send({payload: {port: node.serialConfig.serialport}});
+            }
+        });
+    }
+    RED.nodes.registerType("port select", PortSelectNode);
 
     var serialPool = (function() {
         var connections = {};

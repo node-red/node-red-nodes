@@ -55,3 +55,18 @@ This node behaves as a tightly coupled combination of serial in and serial out n
 Send the request message in `msg.payload` as you would do with a serial out node. The message will be forwarded to the serial port following a strict FIFO (First In, First Out) queue, waiting for a single response before transmitting the next request. Once a response is received (with the same logic of a serial in node), or after a timeout occurs, a message is produced on the output, with msg.payload containing the received response (or missing in case if timeout), msg.status containing relevant info, and all other fields preserved.
 
 For consistency with the serial in node, msg.port is also set to the name of the port selected.
+
+### Port Select
+
+Provides the capability to change the serial ports on the run time programatically.
+
+When you start the node-red, the flow(program) picks up the pre-programmed serial ports and open them. But when a device re-connects after disconnecting for any reason, it may be possible the port number change, and the end user of the flow can't change the port. With this `port selection node`, it's possible to let the user change the port while running the program by sending a message like this.
+```json
+{
+    "port": "/dev/tty.usbmodem1234561",
+    "serialbaud": 115200,
+    "databits": 8,
+    "parity": "none",
+    "stopbits": 1
+} 
+```
