@@ -70,3 +70,7 @@ When you start the node-red, the flow(program) picks up the pre-programmed seria
     "stopbits": 1
 } 
 ```
+
+
+https://github.com/yhur/node-red-nodes/assets/13171662/5d5f2e7b-0cc8-421c-ad05-6361a4ececdd
+
