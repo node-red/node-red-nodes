@@ -200,7 +200,6 @@ module.exports = function(RED) {
                     node.send(msgout);
                 });
 
-                // Common part
                 node.port.on('ready', function () {
                     node.status({ fill: "green", shape: "dot", text: "node-red:common.status.connected" });
                 });
