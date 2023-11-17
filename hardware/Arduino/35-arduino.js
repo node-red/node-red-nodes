@@ -2,7 +2,7 @@
 module.exports = function(RED) {
     "use strict";
 
-    var Board = require('firmata');
+    var Board = require('./lib/firmata');
     var SP = require('serialport');
 
     // The Board Definition - this opens (and closes) the connection
@@ -165,7 +165,7 @@ module.exports = function(RED) {
                                     node.board.digitalWrite(node.pin, node.board.LOW);
                                 }
                             }
-                            if (node.state === "PWM") {  
+                            if (node.state === "PWM") {
                                 msg.payload = parseInt((msg.payload * 1) + 0.5);
                                 if ((msg.payload >= 0) && (msg.payload <= 255)) {
                                     node.board.analogWrite(node.pin, msg.payload);

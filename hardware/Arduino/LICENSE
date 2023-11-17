@@ -1,4 +1,4 @@
-Copyright 2016 JS Foundation and other contributors, https://js.foundation/
+Copyright 2016-2023 JS Foundation and other contributors, https://js.foundation/
 Copyright 2013-2016 IBM Corp.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,3 +12,33 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+
+Firmata lib License - The MIT License
+
+Copyright (c) 2011-2015 Julian Gautier julian.gautier@alumni.neumont.edu
+Copyright (c) 2015-2020 The Firmata.js Authors (see AUTHORS.md)
+Authors
+Rick Waldron Julian Gautier Glen Arrowsmith Jeff Hoefs Olivier Louvignes
+Francis Gulotta Luis Montes Lars Toft Jacobsen Érico Jean-Philippe Côté
+Ernesto Laval Dustan Kasten Lars Gregori Andrey Bezugliy Donovan Buck
+Pravdomil jywarren Andrew Stewart Richard Rodd Dwayn Matthies Sarah GP
+achingbrain David Resseguie Nick Stewart the1337guy
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the 'Software'),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
