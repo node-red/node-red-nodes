@@ -56,21 +56,289 @@ Send the request message in `msg.payload` as you would do with a serial out node
 
 For consistency with the serial in node, msg.port is also set to the name of the port selected.
 
-### Port Select
+### Serial Control
+When you start the node-red, the flow(program) picks up the pre-programmed serial port, open it, and start the communication. But there are some cases the port needs to switch to a different port, stop, and start again. For example, in order to upload a new binary for Arduino, the serial port needs to be stopped relased from the nodered, and start it again after uploading. Or when the FTDI device re-connects after disconnected for any reason, it may be possible the port number change, and the end user of the flow can't change the port.
 
-Provides the capability to change the serial ports on the run time programatically.
 
-When you start the node-red, the flow(program) picks up the pre-programmed serial ports and open them. But when a device re-connects after disconnecting for any reason, it may be possible the port number change, and the end user of the flow can't change the port. With this `port selection node`, it's possible to let the user change the port while running the program by sending a message like this.
+This `Serial Control` node provides the serial port control capability to 
+1. stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.
+2. start the communication after stopped with this `Serial Control` node for above reason or the like.
+3. change the serial port and the configuration on the run time programatically.
+4. query the serial port configuration.
+
+In order to control the communication, just send these JSON messages to the control node.
+
+To stop
 ```json
 {
-    "port": "/dev/tty.usbmodem1234561",
-    "serialbaud": 115200,
-    "databits": 8,
-    "parity": "none",
-    "stopbits": 1
-} 
+    "stop":""
+}
 ```
 
+To start
+```json
+{
+    "stop":""
+}
+```
 
-https://github.com/yhur/node-red-nodes/assets/13171662/5d5f2e7b-0cc8-421c-ad05-6361a4ececdd
+To change the port configuration
+```json
+{
+    "config" : {
+        "newport": "/dev/tty.usbmodem1234561",
+        "serialbaud": 115200,
+        "databits": 8,
+        "parity": "none",
+        "stopbits": 1
+    } 
+}      
+```
+
+To query the port configuration
+```json
+{
+    "config":"query"
+}
+```
+
+**Here is the serial control node usage example flow**
+
+[
+    {
+        "id": "15bb070145462321",
+        "type": "inject",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "AC026GAO,57600",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"config\":{\"newport\":\"/dev/tty.usbserial-AC026GAO\",\"serialbaud\":57600,\"databits\":8,\"parity\":\"none\",\"stopbits\":1}}",
+        "payloadType": "json",
+        "x": 250,
+        "y": 600,
+        "wires": [
+            [
+                "cf47565c5a2fea27"
+            ]
+        ]
+    },
+    {
+        "id": "1efa4bdcfff37d75",
+        "type": "debug",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "debug 20",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "f173dab817b51d1c",
+        "type": "inject",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "usbmodem1234561",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"config\":{\"newport\":\"/dev/tty.usbmodem1234561\"}}",
+        "payloadType": "json",
+        "x": 250,
+        "y": 640,
+        "wires": [
+            [
+                "cf47565c5a2fea27"
+            ]
+        ]
+    },
+    {
+        "id": "cf47565c5a2fea27",
+        "type": "serial control",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "",
+        "serial": "b720bb12479b6ef1",
+        "x": 570,
+        "y": 680,
+        "wires": [
+            [
+                "1efa4bdcfff37d75"
+            ]
+        ]
+    },
+    {
+        "id": "e0aeaaebcd81fd25",
+        "type": "inject",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"stop\":\"\"}",
+        "payloadType": "json",
+        "x": 220,
+        "y": 680,
+        "wires": [
+            [
+                "cf47565c5a2fea27"
+            ]
+        ]
+    },
+    {
+        "id": "2118ff6fce99b134",
+        "type": "inject",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"start\":\"\"}",
+        "payloadType": "json",
+        "x": 220,
+        "y": 720,
+        "wires": [
+            [
+                "cf47565c5a2fea27"
+            ]
+        ]
+    },
+    {
+        "id": "fbea9cf5dbac9f0b",
+        "type": "inject",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"config\":\"query\"}",
+        "payloadType": "json",
+        "x": 250,
+        "y": 760,
+        "wires": [
+            [
+                "cf47565c5a2fea27"
+            ]
+        ]
+    },
+    {
+        "id": "673064b652dde3d2",
+        "type": "serial in",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "",
+        "serial": "b720bb12479b6ef1",
+        "x": 190,
+        "y": 540,
+        "wires": [
+            [
+                "13f27a28eda0df50"
+            ]
+        ]
+    },
+    {
+        "id": "13f27a28eda0df50",
+        "type": "debug",
+        "z": "53ca91fecd4b75bb",
+        "g": "c67578985101f329",
+        "name": "debug 21",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "b720bb12479b6ef1",
+        "type": "serial-port",
+        "name": "s1",
+        "serialport": "/dev/tty.usbmodem1234561",
+        "serialbaud": "115200",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]
 
