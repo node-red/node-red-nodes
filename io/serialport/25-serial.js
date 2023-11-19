@@ -28,9 +28,9 @@ module.exports = function(RED) {
         this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
     
-        this.newPort = (serialPort) => {
+        this.changePort = (serialPort) => {
             serialPool.close(this.serialport,() => {});
-            this.serialport = serialPort.port;
+            this.serialport = serialPort.newport;
             this.serialbaud = parseInt(serialPort.serialbaud) || this.serialbaud;
             this.databits = parseInt(serialPort.databits) || this.databits;
             this.parity = serialPort.parity || this.parity;
@@ -64,7 +64,7 @@ module.exports = function(RED) {
         node.port = serialPool.get(this.serialConfig);
         var serialConfig = this.serialConfig;
 
-        this.serialConfig.on('newport', function(newPort) {
+        this.serialConfig.on('start', function() {
             node.port = serialPool.get(serialConfig);
         });
 
@@ -113,7 +113,7 @@ module.exports = function(RED) {
         this.serial = n.serial;
         var node = this;
 
-        this.serialConfig.on('newport', function(newPort) {
+        this.serialConfig.on('start', function() {
             setCallback(node, node.serialConfig);
         });
 
@@ -179,7 +179,7 @@ module.exports = function(RED) {
             });
 
             let serialConfig = this.serialConfig;
-            serialConfig.on('newport', function(newPort) {
+            serialConfig.on('start', function() {
                 node.port = serialPool.get(serialConfig);
                 setCallback(node);
             });
@@ -239,12 +239,22 @@ module.exports = function(RED) {
         var node = this;
         node.port = serialPool.get(this.serialConfig);
         node.on("input",function(msg) {
-            if (msg.payload.hasOwnProperty("port")) { 
-                node.serialConfig.newPort(msg.payload);
-                node.serialConfig.emit('newport',msg.payload);
-                node.send(msg);
-            } else {
-                node.send({payload: {port: node.serialConfig.serialport}});
+            if (msg.payload.hasOwnProperty("config")) { 
+                if (msg.payload.config === "query") { 
+                    node.send({payload: node.serialConfig});
+                } else {
+                    node.serialConfig.changePort(msg.payload.config);
+                    node.serialConfig.emit('start',msg.payload.config);
+                    node.send({payload: msg.payload.config});
+                }
+            } else if (msg.payload.hasOwnProperty("start")) { 
+                node.serialConfig.emit('start',msg.payload);
+                node.send({payload: node.serialConfig});
+            } else if (msg.payload.hasOwnProperty("stop")) { 
+                serialPool.close(node.serialConfig.serialport,() => {
+                    RED.log.info("[serialconfig:"+node.serialConfig.id+"] stopped");
+                });
+                node.send({payload: node.serialConfig});
             }
         });
     }
