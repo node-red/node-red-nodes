@@ -225,7 +225,7 @@ module.exports = function(RED) {
     RED.nodes.registerType("serial request", SerialRequestNode);
 
 
-    // Port Select Node
+    // Serial Control Node
     function PortSelectNode(n) {
         RED.nodes.createNode(this,n);
         this.serialConfig = RED.nodes.getNode(n.serial);
@@ -252,13 +252,13 @@ module.exports = function(RED) {
                 node.send({payload: node.serialConfig});
             } else if (msg.payload.hasOwnProperty("stop")) { 
                 serialPool.close(node.serialConfig.serialport,() => {
-                    RED.log.info("[serialconfig:"+node.serialConfig.id+"] stopped");
+                    RED.log.info("[serialconfig:"+node.serialConfig.id+"] " + RED._("serial.stopped",{port:node.serialConfig.serialport}));
                 });
                 node.send({payload: node.serialConfig});
             }
         });
     }
-    RED.nodes.registerType("port select", PortSelectNode);
+    RED.nodes.registerType("serial control", PortSelectNode);
 
     var serialPool = (function() {
         var connections = {};
