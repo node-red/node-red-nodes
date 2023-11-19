@@ -57,7 +57,7 @@ Send the request message in `msg.payload` as you would do with a serial out node
 For consistency with the serial in node, msg.port is also set to the name of the port selected.
 
 ### Serial Control
-When you start the node-red, the flow(program) picks up the pre-programmed serial port, open it, and start the communication. But there are some cases the port needs to switch to a different port, stop, and start again. For example, in order to upload a new binary for Arduino, the serial port needs to be stopped relased from the nodered, and start it again after uploading. Or when the FTDI device re-connects after disconnected for any reason, it may be possible the port number change, and the end user of the flow can't change the port.
+When the node-red starts, the flow(program) picks up the pre-programmed serial port, open it, and start the communication. But there are some cases the port needs to switch to a different port, stop, and start again. For example, in order to upload a new binary for Arduino, the serial port needs to be stopped relased from the nodered, and start it again after uploading. Or when the FTDI device re-connects after disconnected for any reason, it may be possible the port number change, and the end user of the flow can't change the port.
 
 
 This `Serial Control` node provides the serial port control capability to 
