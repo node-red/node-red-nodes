@@ -42,7 +42,6 @@ module.exports = function(RED) {
             this.dsr = serialPort.dsr || this.dsr;
             this.bin = serialPort.bin || this.bin;
             this.out = serialPort.out || this.out;
-            this.enable = serialPort.enable || this.enable;
         }
 
     };
@@ -242,11 +241,13 @@ module.exports = function(RED) {
         var node = this;
         node.port = serialPool.get(this.serialConfig);
         node.on("input",function(msg) {
-            msg.payload.enable = msg.payload.hasOwnProperty("enable") ? msg.payload.enable : true;
             if (configProps.some((p) =>{return msg.payload.hasOwnProperty(p)})) { 
+                msg.payload.enable = msg.payload.hasOwnProperty('enable') ? msg.payload.enable : true;
                 node.serialConfig.changePort(msg.payload);
             }
             if (msg.payload.hasOwnProperty("enable")) { 
+            // if any of config parameters or enable property is passed, do this control
+                node.serialConfig.enable = msg.payload.enable;
                 if (msg.payload.enable === true) {
                     node.serialConfig.emit('start');
                 } else {
