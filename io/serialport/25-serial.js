@@ -25,12 +25,13 @@ module.exports = function(RED) {
         this.dsr = n.dsr || "none";
         this.bin = n.bin || "false";
         this.out = n.out || "char";
+        this.enable = n.enable || true;
         this.waitfor = n.waitfor || "";
         this.responsetimeout = n.responsetimeout || 10000;
     
         this.changePort = (serialPort) => {
             serialPool.close(this.serialport,() => {});
-            this.serialport = serialPort.newport;
+            this.serialport = serialPort.serialport || this.serialport;
             this.serialbaud = parseInt(serialPort.serialbaud) || this.serialbaud;
             this.databits = parseInt(serialPort.databits) || this.databits;
             this.parity = serialPort.parity || this.parity;
@@ -41,9 +42,7 @@ module.exports = function(RED) {
             this.dsr = serialPort.dsr || this.dsr;
             this.bin = serialPort.bin || this.bin;
             this.out = serialPort.out || this.out;
-            this.waitfor = serialPort.waitfor || this.waitfor;
-            this.responsetimeout = n.responsetimeout || 10000;
-            return serialPool.get(this);
+            this.enable = serialPort.enable || this.enable;
         }
 
     };
@@ -227,6 +226,10 @@ module.exports = function(RED) {
 
     // Serial Control Node
     function PortSelectNode(n) {
+        const configProps = [
+            "serialport", "serialbaud", "databits", "parity", "stopbits",
+            "dtr", "rts", "cts", "dsr", "bin", "out"
+        ]
         RED.nodes.createNode(this,n);
         this.serialConfig = RED.nodes.getNode(n.serial);
 
@@ -239,23 +242,20 @@ module.exports = function(RED) {
         var node = this;
         node.port = serialPool.get(this.serialConfig);
         node.on("input",function(msg) {
-            if (msg.payload.hasOwnProperty("config")) { 
-                if (msg.payload.config === "query") { 
-                    node.send({payload: node.serialConfig});
-                } else {
-                    node.serialConfig.changePort(msg.payload.config);
-                    node.serialConfig.emit('start',msg.payload.config);
-                    node.send({payload: msg.payload.config});
-                }
-            } else if (msg.payload.hasOwnProperty("start")) { 
-                node.serialConfig.emit('start',msg.payload);
-                node.send({payload: node.serialConfig});
-            } else if (msg.payload.hasOwnProperty("stop")) { 
-                serialPool.close(node.serialConfig.serialport,() => {
-                    RED.log.info("[serialconfig:"+node.serialConfig.id+"] " + RED._("serial.stopped",{port:node.serialConfig.serialport}));
-                });
-                node.send({payload: node.serialConfig});
+            msg.payload.enable = msg.payload.hasOwnProperty("enable") ? msg.payload.enable : true;
+            if (configProps.some((p) =>{return msg.payload.hasOwnProperty(p)})) { 
+                node.serialConfig.changePort(msg.payload);
             }
+            if (msg.payload.hasOwnProperty("enable")) { 
+                if (msg.payload.enable === true) {
+                    node.serialConfig.emit('start');
+                } else {
+                    serialPool.close(node.serialConfig.serialport,() => {
+                        RED.log.info("[serialconfig:"+node.serialConfig.id+"] " + RED._("serial.stopped",{port:node.serialConfig.serialport}));
+                    });
+                }
+            }
+            node.send({payload: node.serialConfig});
         });
     }
     RED.nodes.registerType("serial control", PortSelectNode);

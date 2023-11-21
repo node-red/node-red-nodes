@@ -95,42 +95,32 @@
 </script>
 
 <script type="text/html" data-help-name="serial control">
-    <p>Stops, starts the serial communication and controls the serial port configuration.</p>
+    <p>Stops, starts the serial communication and changes the serial port configuration.</p>
 
     <p>This node provides the serial port control capability to</p>
     <ul>
         <li>stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.</li>
         <li>start the communication after stopped with this `Serial Control` node for above reason or the like.</li>
         <li>change the serial port and the configuration on the run time programatically.</li>
-        <li>query the serial port configuration.</li>
+        <li>query the serial port configuration if empty or no valid configuration parameters are passed.</li>
     </ul>
 
     <h3>Inputs</h3>
         <p>In order to control the communication, just send these JSON messages to the control node.</p>
-        <ul>
-            <li>
-                <code>{ "stop":"" }</code> stops the communication
-            </li>
-            <li>
-            <code>{ "stop":"" }</code> starts the communication
-            </li>
-            <li>
-                <code> {
-                "config" : {
-                    "newport": "/dev/tty.usbmodem1234561",
-                    "serialbaud": 115200,
-                    "databits": 8,
-                    "parity": "none",
-                    "stopbits": 1
-                } 
-            }      
-                </code> changes the serial port and the configuration on the fly. the <code>newport</code> is the mandatory field, and other fields are optional. All of <code>serial-port</code> node specified parameters can be passed to change.
-            </li>
-            
-            <li>
-                <code>{ "config":"query" }</code> querys the serial port configuration and returns the result in the <code>msg.payload</code>
-            </li>
-        </ul>
+        <code> 
+            {
+                "serialport": "/dev/tty.usbmodem1234561",
+                "serialbaud": 115200,
+                "databits": 8,
+                "parity": "none",
+                "stopbits": 1
+                "enable": true
+            } 
+        </code> changes the serial port and the configuration on the fly.  
+        The following parameters are optional and will change the configuration only if they are present.
+        "serialport", "serialbaud", "databits", "parity", "stopbits", "dtr", "rts", "cts", "dsr", "bin", "out"
+        <code>{"enable":true}</code> or <code>{"enable":false}</code> will stop or start the communication. And 'enable' can be passed along with the other configuration parameters as well, which will then change the configuration and either start or just stopped and ready to start.
+
 
 
     <h3>Outputs</h3>
