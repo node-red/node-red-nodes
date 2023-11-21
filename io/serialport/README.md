@@ -95,7 +95,7 @@ changes the serial port and the configuration on the fly.
 </ul>
 <p>When the `enable` property is not present, it will default to `true`</p>
 <p>
-<b>{"enable":true}</b> or <b>{"enable":false}</b> will start or stop the communication.</p>
+`{"enable":true}` or <b>{"enable":false}</b> will start or stop the communication.</p>
 <p> If <b>enable</b> is passed along with other parameters, the configuration will be changed and the port will be either started or just be remaining ready to be started(ie. stopped) later depending on its value.  </p>
 
 **Here is the serial control node usage example flow**
