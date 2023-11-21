@@ -117,11 +117,26 @@
                 "enable": true
             } 
         </code> changes the serial port and the configuration on the fly.  
-        The following parameters are optional and will change the configuration only if they are present.
-        "serialport", "serialbaud", "databits", "parity", "stopbits", "dtr", "rts", "cts", "dsr", "bin", "out"
-        <code>{"enable":true}</code> or <code>{"enable":false}</code> will stop or start the communication. And 'enable' can be passed along with the other configuration parameters as well, which will then change the configuration and either start or just stopped and ready to start.
-
-
+        <p>The following optional parameters will change the configuration only if they are present.</p>
+        <p>Any combination of them can be passed to change/control the serial communication</p> 
+        <ul>
+            <li> serialport </li>
+            <li> serialbaud </li>
+            <li> databits </li>
+            <li> parity </li>
+            <li> stopbits </li>
+            <li> dtr </li>
+            <li> rts </li>
+            <li> cts </li>
+            <li> dsr </li>
+            <li> bin </li>
+            <li> out </li>
+            <li> enable </li>
+        </ul>
+        <p>When the <code>enable</code> property is not present, it will default to <code>true</code></p>
+        <p>
+            <code>{"enable":true}</code> or <code>{"enable":false}</code> will start or stop the communication.</p>
+            <p> If <code>enable</code> is passed along wiht other parameters, the configuration will be changed and either be started or just stopped and ready to start depending on the value.  </p>
 
     <h3>Outputs</h3>
     <p><code>msg.payload</code> is the response. It contains the serial port configuration</p>

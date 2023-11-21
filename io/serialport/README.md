@@ -61,46 +61,42 @@ When the node-red starts, the flow(program) picks up the pre-programmed serial p
 
 
 This `Serial Control` node provides the serial port control capability to 
-1. stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.
-2. start the communication after stopped with this `Serial Control` node for above reason or the like.
-3. change the serial port and the configuration on the run time programatically.
-4. query the serial port configuration.
+1. change the serial port and its configuration on the run time programatically.
+2. stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.
+3. start the communication after stopped with this `Serial Control` node for above reason or the like.
 
-In order to control the communication, just send these JSON messages to the control node.
-
-To stop
+<p>In order to control the communication, just send these JSON messages to the control node.</p>
 ```json
-{
-    "stop":""
-}
-```
-
-To start
-```json
-{
-    "stop":""
-}
-```
-
-To change the port configuration
-```json
-{
-    "config" : {
-        "newport": "/dev/tty.usbmodem1234561",
+    {
+        "serialport": "/dev/tty.usbmodem1234561",
         "serialbaud": 115200,
         "databits": 8,
         "parity": "none",
         "stopbits": 1
+        "enable": true
     } 
-}      
 ```
-
-To query the port configuration
-```json
-{
-    "config":"query"
-}
-```
+changes the serial port and the configuration on the fly.  
+<p>The following optional parameters will change the configuration only if they are present.</p>
+<p>Any combination of them can be passed to change/control the serial communication</p> 
+<ul>
+    <li> serialport </li>
+    <li> serialbaud </li>
+    <li> databits </li>
+    <li> parity </li>
+    <li> stopbits </li>
+    <li> dtr </li>
+    <li> rts </li>
+    <li> cts </li>
+    <li> dsr </li>
+    <li> bin </li>
+    <li> out </li>
+    <li> enable </li>
+</ul>
+<p>When the `enable` property is not present, it will default to `true`</p>
+<p>
+`{"enable":true}` or `{"enable":false}` will start or stop the communication.</p>
+<p> If `enable` is passed along wiht other parameters, the configuration will be changed and either be started or just stopped and ready to start depending on the value.  </p>
 
 **Here is the serial control node usage example flow**
 
