@@ -66,7 +66,7 @@ This `Serial Control` node provides the serial port control capability to
 3. start the communication after stopped with this `Serial Control` node for above reason or the like.
 
 <p>In order to control the communication, just send these JSON messages to the control node.</p>
-```json
+<pre>
     {
         "serialport": "/dev/tty.usbmodem1234561",
         "serialbaud": 115200,
@@ -74,8 +74,8 @@ This `Serial Control` node provides the serial port control capability to
         "parity": "none",
         "stopbits": 1
         "enable": true
-    } 
-```
+    }   
+</pre>
 changes the serial port and the configuration on the fly.  
 <p>The following optional parameters will change the configuration only if they are present.</p>
 <p>Any combination of them can be passed to change/control the serial communication</p> 
@@ -95,7 +95,7 @@ changes the serial port and the configuration on the fly.
 </ul>
 <p>When the `enable` property is not present, it will default to `true`</p>
 <p>
-`{"enable":true}` or `{"enable":false}` will start or stop the communication.</p>
+{"enable":true} or {"enable":false} will start or stop the communication.</p>
 <p> If `enable` is passed along wiht other parameters, the configuration will be changed and either be started or just be ready to be started(ie. stopped ) depending on its value.  </p>
 
 **Here is the serial control node usage example flow**
