@@ -107,16 +107,16 @@
 
     <h3>Inputs</h3>
         <p>In order to control the communication, just send these JSON messages to the control node.</p>
-        <code> 
-            {
-                "serialport": "/dev/tty.usbmodem1234561",
-                "serialbaud": 115200,
-                "databits": 8,
-                "parity": "none",
-                "stopbits": 1
-                "enable": true
-            } 
-        </code> changes the serial port and the configuration on the fly.  
+        <pre> 
+{
+    "serialport": "/dev/tty.usbmodem1234561",
+    "serialbaud": 115200,
+    "databits": 8,
+    "parity": "none",
+    "stopbits": 1
+    "enable": true
+} 
+        </pre> changes the serial port and the configuration on the fly.  
         <p>The following optional parameters will change the configuration only if they are present.</p>
         <p>Any combination of them can be passed to change/control the serial communication</p> 
         <ul>
