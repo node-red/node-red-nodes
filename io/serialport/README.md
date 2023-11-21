@@ -93,10 +93,11 @@ changes the serial port and the configuration on the fly.
     <li> out </li>
     <li> enable </li>
 </ul>
-<p>When the `enable` property is not present, it will default to `true`</p>
-<p>
-`{"enable":true}` or <b>{"enable":false}</b> will start or stop the communication.</p>
-<p> If <b>enable</b> is passed along with other parameters, the configuration will be changed and the port will be either started or just be remaining ready to be started(ie. stopped) later depending on its value.  </p>
+When the `enable` property is not present, it will default to `true`
+
+`{"enable":true}` or `{"enable":false}` will start or stop the communication.
+
+If `enable` is passed along with other parameters, the configuration will be changed and the port will be either started or just be remaining ready to be started(ie. stopped) later depending on its value.
 
 **Here is the serial control node usage example flow**
 <img width="775" alt="Screenshot 2023-11-21 at 3 56 39 PM" src="https://github.com/yhur/node-red-nodes/assets/13171662/a5d78d68-1a23-4419-b523-728e78a7efc5">
