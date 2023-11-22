@@ -256,7 +256,12 @@ module.exports = function(RED) {
                     });
                 }
             }
-            node.send({payload: node.serialConfig});
+            let currentConfig = {};
+            configProps.map((p) => {
+                currentConfig[p] = node.serialConfig[p];
+            });
+            currentConfig.enable = node.serialConfig.enable;
+            node.send({payload: currentConfig});
         });
     }
     RED.nodes.registerType("serial control", PortSelectNode);
