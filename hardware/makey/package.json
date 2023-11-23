@@ -3,7 +3,7 @@
     "version"       : "0.0.4",
     "description"   : "A Node-RED node to read from a MakeyMakey input device.",
     "dependencies"  : {
-        "hidstream": "2.0.*"
+        "hidstream": "2.1.0"
     },
     "repository" : {
         "type":"git",
