@@ -18,7 +18,7 @@ you to install the full set of tools in order to compile the underlying package.
 
 ## Usage
 
-Provides three nodes - one to receive messages, and one to send, and a request node which can send then wait for a response.
+Provides four nodes - one to receive messages, and one to send, a request node which can send then wait for a response, and a control node that allows dynamic control of the ports in use.
 
 ### Input
 
@@ -56,49 +56,47 @@ Send the request message in `msg.payload` as you would do with a serial out node
 
 For consistency with the serial in node, msg.port is also set to the name of the port selected.
 
-### Serial Control
-When the node-red starts, the flow(program) picks up the pre-programmed serial port, open it, and start the communication. But there are some cases the port needs to switch to a different port, stop, and start again. For example, in order to upload a new binary for Arduino, the serial port needs to be stopped relased from the nodered, and start it again after uploading. Or when the FTDI device re-connects after disconnected for any reason, it may be possible the port number change, and the end user of the flow can't change the port.
+### Control
 
+When the node-red starts, the flow(program) picks up the pre-programmed serial port, open it, and starts the communication. But there are some cases the port needs to switch to a different port, stop, and start again. For example, in order to upload a new binary for Arduino, the serial port needs to be stopped relased from the nodered, and start it again after uploading. Or when the FTDI device re-connects after disconnecting for any reason, it may be possible that the port number changes, and the end user of the flow can't change the port.
 
-This `Serial Control` node provides the serial port control capability to 
-1. change the serial port and its configuration on the run time programatically.
-2. stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.
-3. start the communication after stopped with this `Serial Control` node for above reason or the like.
+This node provides the ability to:
 
-<p>In order to control the communication, just send these JSON messages to the control node.</p>
-<pre>
+  1. change the serial port and its configuration on the run time programatically.
+  2. stop the communication and release the serial port.
+  3. reopen the port and restart the communications.
+
+In order to control the communication, send a **msg.payload** to the control node.
+
     {
-        "serialport": "/dev/tty.usbmodem1234561",
+        "serialport": "/dev/ttyUSB0",
         "serialbaud": 115200,
         "databits": 8,
         "parity": "none",
-        "stopbits": 1
-        "enable": true
-    }   
-</pre>
+        "stopbits": 1,
+        "enabled": true
+    }
+
 changes the serial port and the configuration on the fly.  
-<p>The following optional parameters will change the configuration only if they are present.</p>
-<p>Any combination of them can be passed to change/control the serial communication</p> 
-<ul>
-    <li> serialport </li>
-    <li> serialbaud </li>
-    <li> databits </li>
-    <li> parity </li>
-    <li> stopbits </li>
-    <li> dtr </li>
-    <li> rts </li>
-    <li> cts </li>
-    <li> dsr </li>
-    <li> bin </li>
-    <li> out </li>
-    <li> enable </li>
-</ul>
-When the `enable` property is not present, it will default to `true`
 
-`{"enable":true}` or `{"enable":false}` will start or stop the communication.
+The following optional parameters will change the configuration only if they are present.
+Any combination of them can be passed to change/control the serial communication
 
-If `enable` is passed along with other parameters, the configuration will be changed and the port will be either started or just be remaining ready to be started(ie. stopped) later depending on its value.
+ - serialport
+ - serialbaud
+ - databits
+ - parity
+ - stopbits
+ - dtr
+ - rts
+ - cts
+ - dsr
+ - enabled
 
-**Here is the serial control node usage example flow**
+If the `enabled` property is not present, it will default to `true`.
 
-[{"id":"dc5438a9ae7a274f","type":"serial in","z":"e010d91f3c429066","name":"","serial":"b720bb12479b6ef1","x":290,"y":500,"wires":[["be0292cc1a1f5eed"]]},{"id":"be0292cc1a1f5eed","type":"debug","z":"e010d91f3c429066","name":"debug 21","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":880,"y":500,"wires":[]},{"id":"7a51f56281c210d5","type":"inject","z":"e010d91f3c429066","name":"{\\"parity\\":\\"even\\"}","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"parity\\":\\"even\\"}","payloadType":"json","x":340,"y":760,"wires":[["ca56aab57eeaefb7"]]},{"id":"ca56aab57eeaefb7","type":"serial control","z":"e010d91f3c429066","name":"","serial":"b720bb12479b6ef1","x":710,"y":720,"wires":[["1288803f89da05fd"]]},{"id":"8b3826afb08ccb52","type":"inject","z":"e010d91f3c429066","name":"usbmodem1234561 / false","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"serialport\\":\\"/dev/tty.usbmodem1234561\\",\\"enable\\":false}","payloadType":"json","x":370,"y":640,"wires":[["ca56aab57eeaefb7"]]},{"id":"e67e73f72e8f1b5e","type":"inject","z":"e010d91f3c429066","name":"usbmodem1234561, 115200","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"serialport\\":\\"/dev/tty.usbmodem1234561\\",\\"serialbaud\\":115200,\\"databits\\":8,\\"parity\\":\\"none\\",\\"stopbits\\":1}","payloadType":"json","x":380,"y":560,"wires":[["ca56aab57eeaefb7"]]},{"id":"46dc99f3c72003eb","type":"inject","z":"e010d91f3c429066","name":"","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"enable\\":false}","payloadType":"json","x":340,"y":800,"wires":[["ca56aab57eeaefb7"]]},{"id":"d5221d388f00c998","type":"inject","z":"e010d91f3c429066","name":"","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"enable\\":true}","payloadType":"json","x":340,"y":840,"wires":[["ca56aab57eeaefb7"]]},{"id":"28c6b8f294b7642a","type":"inject","z":"e010d91f3c429066","name":"","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"","payloadType":"date","x":320,"y":880,"wires":[["ca56aab57eeaefb7"]]},{"id":"9c377da93413a7e9","type":"inject","z":"e010d91f3c429066","name":"usbmodem1234561 / true","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"serialport\\":\\"/dev/tty.usbmodem1234561\\",\\"enable\\":true}","payloadType":"json","x":370,"y":600,"wires":[["ca56aab57eeaefb7"]]},{"id":"0c6388d6a25a762b","type":"inject","z":"e010d91f3c429066","name":"AC026GAO,57600","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"serialport\\":\\"/dev/tty.usbserial-AC026GAO\\",\\"serialbaud\\":57600,\\"databits\\":8,\\"parity\\":\\"none\\",\\"stopbits\\":1}","payloadType":"json","x":350,"y":680,"wires":[["ca56aab57eeaefb7"]]},{"id":"a8b80305a8c27174","type":"inject","z":"e010d91f3c429066","name":"{\\"parity\\":\\"none\\"}","props":[{"p":"payload"},{"p":"topic","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payload":"{\\"parity\\":\\"none\\"}","payloadType":"json","x":340,"y":720,"wires":[["ca56aab57eeaefb7"]]},{"id":"1288803f89da05fd","type":"debug","z":"e010d91f3c429066","name":"debug 23","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":880,"y":720,"wires":[]},{"id":"b720bb12479b6ef1","type":"serial-port","name":"s1","serialport":"/dev/tty.usbmodem1234561","serialbaud":"115200","databits":"8","parity":"none","stopbits":"1","waitfor":"","dtr":"none","rts":"none","cts":"none","dsr":"none","newline":"\\n","bin":"false","out":"char","addchar":"","responsetimeout":"10000"}]
+`{"enabled":true}` or `{"enabled":false}` will start or stop the communication.
+
+If `enabled` is passed along with other parameters, the configuration will be changed and the port will be either started or remain stopped, ready to be started later depending on its value.
+
+Any input message will cause the node to output the current port configuration.

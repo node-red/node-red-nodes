@@ -97,28 +97,29 @@
 <script type="text/html" data-help-name="serial control">
     <p>Stops, starts the serial communication and changes the serial port configuration.</p>
 
-    <p>This node provides the serial port control capability to</p>
+    <p>This node provides the ability to:</p>
     <ul>
-        <li>stop the communication and releasing the serial port so, for example the Arduino can upload the new binary without shutting down the nodered.</li>
-        <li>start the communication after stopped with this `Serial Control` node for above reason or the like.</li>
-        <li>change the serial port and the configuration on the run time programatically.</li>
-        <li>query the serial port configuration if empty or no valid configuration parameters are passed.</li>
+        <li>stop the communication and release the serial port.</li>
+        <li>reopen the port and restart the communications.</li>
+        <li>change the serial port and the configuration dynamically.</li>
+        <li>query the serial port configuration.</li>
     </ul>
 
     <h3>Inputs</h3>
-        <p>In order to control the communication, just send these JSON messages to the control node.</p>
-        <pre> 
+        <p>In order to control the communication, just send <b>msg.payload</b> containing.</p>
+        <pre>
 {
-    "serialport": "/dev/tty.usbmodem1234561",
+    "serialport": "/dev/ttyUSB0",
     "serialbaud": 115200,
     "databits": 8,
     "parity": "none",
-    "stopbits": 1
-    "enable": true
-} 
-        </pre> changes the serial port and the configuration on the fly.  
+    "stopbits": 1,
+    "enabled": true
+}
+        </pre>
+
         <p>The following optional parameters will change the configuration only if they are present.</p>
-        <p>Any combination of them can be passed to change/control the serial communication</p> 
+        <p>Any combination of them can be passed to change/control the serial communication</p>
         <ul>
             <li> serialport </li>
             <li> serialbaud </li>
@@ -129,15 +130,14 @@
             <li> rts </li>
             <li> cts </li>
             <li> dsr </li>
-            <li> bin </li>
-            <li> out </li>
-            <li> enable </li>
+            <li> enabled </li>
         </ul>
-        <p>When the <code>enable</code> property is not present, it will default to <code>true</code></p>
+        <p>If the <code>enabled</code> property is not present, it will default to <code>true</code>.</p>
         <p>
-            <code>{"enable":true}</code> or <code>{"enable":false}</code> will start or stop the communication.</p>
-            <p> If <code>enable</code> is passed along with other parameters, the configuration will be changed and either be started or just be ready to be started(ie. stopped ) depending on its value.  </p>
+            <code>{"enabled":true}</code> or <code>{"enabled":false}</code> will start or stop the communication.</p>
+            <p>If <code>enabled</code> is passed along with other parameters, the configuration will be changed and the
+                port will be either started or remain stopped, ready to be started later depending on its value.</p>
 
     <h3>Outputs</h3>
-    <p><code>msg.payload</code> is the response. It contains the serial port configuration</p>
+    <p><code>msg.payload</code> containing the serial port configuration.</p>
 </script>
