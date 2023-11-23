@@ -101,6 +101,10 @@
 
 <script type="text/html" data-template-name="serial-port">
     <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-serialport"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
         <input type="text" id="node-config-input-serialport" style="width:66%;" data-i18n="[placeholder]serial.placeholder.serialport">
         <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
@@ -230,7 +234,7 @@
     RED.nodes.registerType('serial-port',{
         category: 'config',
         defaults: {
-            //name: {value:""},
+            name: {value:""},
             serialport: {value:"",required:true},
             serialbaud: {value:"57600",required:true,validate:RED.validators.number()},
             databits: {value:8,required:true},
@@ -252,7 +256,7 @@
             this.databits = this.databits || 8;
             this.parity = this.parity || this._("serial.label.none");
             this.stopbits = this.stopbits || 1;
-            return this.serialport+":"+this.serialbaud+"-"+this.databits+this.parity.charAt(0).toUpperCase()+this.stopbits;
+            return this.name||(this.serialport+":"+this.serialbaud+"-"+this.databits+this.parity.charAt(0).toUpperCase()+this.stopbits);
         },
         oneditprepare: function() {
             var previous = null;
@@ -359,5 +363,39 @@
             }
             this.serialbaud = $("#node-config-input-serialbaud").typedInput('value');
         }
+    });
+</script>
+
+<script type="text/html" data-template-name="serial control">
+    <div class="form-row node-input-serial">
+        <label for="node-input-serial"><i class="fa fa-random"></i> <span data-i18n="serial.label.serialport"></span></label>
+        <input type="text" id="node-input-serial">
+    </div>
+    <div class="form-row">
+        <label for="node-inputoutput-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('serial control',{
+        category: 'network',
+        defaults: {
+            name: {name:""},
+            serial: {type:"serial-port",required:true}
+        },
+        color:"BurlyWood",
+        inputs:1,
+        outputs:1,
+        icon: "serial.png",
+        align: "left",
+        label: function() {
+            var serialNode = RED.nodes.node(this.serial);
+            return this.name||(serialNode?serialNode.label().split(":")[0]:this._("serial.label.serial"));
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        outputLabels: function() { return RED.nodes.node(this.serial).bin === "bin" ? "buffer" : "string"; }
     });
 </script>

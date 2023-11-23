@@ -68,6 +68,7 @@
             "closed": "serial port __port__ closed",
             "list": "Failed to list ports. Please enter manually.",
             "badbaudrate": "Baudrate is invalid"
-        }
+        },
+        "stopped": "__port__ stopped"
     }
 }
