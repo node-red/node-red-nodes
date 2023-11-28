@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-smooth",
-    "version"       : "0.1.2",
+    "version"       : "0.1.3",
     "description"   : "A Node-RED node that provides several simple smoothing algorithms for incoming data values.",
     "dependencies"  : {
     },
@@ -18,7 +18,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     },
     "contributors" : [ "@clickworkorange" ]

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-daemon",
-    "version"       : "0.6.0",
+    "version"       : "0.6.1",
     "description"   : "A Node-RED node that runs and monitors a long running system command.",
     "dependencies"  : {
     },
@@ -18,7 +18,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-snmp",
-    "version"       : "2.0.0",
+    "version"       : "2.0.1",
     "description"   : "A Node-RED node that gets and sets SNMP oid values. Supports v1, v2c and v3",
     "dependencies"  : {
         "net-snmp"  : "^3.9.0"
@@ -19,7 +19,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     },
     "contributors": [

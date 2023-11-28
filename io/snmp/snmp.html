@@ -54,6 +54,10 @@
 </script>
 <script type="text/html" data-template-name="snmp">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
@@ -111,10 +115,6 @@
         <label for="node-input-oids"><i class="fa fa-tags"></i> OIDs</label>
         <textarea rows="4" cols="60" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0" style="width:70%;"></textarea>
     </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
     <div class="form-tips">Tip: Multiple OIDs can be separated by commas.</div>
 </script>
 
@@ -166,6 +166,10 @@
 </script>
 
 <script type="text/html" data-template-name="snmp set">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
     <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
@@ -226,10 +230,6 @@
         <label for="node-input-varbinds"><i class="fa fa-tags"></i> Varbinds</label>
         <textarea rows="10" cols="60" id="node-input-varbinds" placeholder="e.g.  [ { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.5.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, &quot;value&quot;: &quot;host1&quot;}, { &quot;oid&quot;: &quot;1.3.6.1.2.1.1.6.0&quot;, &quot;type&quot;: &quot;OctetString&quot;, value: &quot;somewhere&quot; } ]"
             style="width:70%;"></textarea>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Tip: Numeric inputs must be numbers not strings, e.g. 1 not "1".</div>
 </script>
@@ -299,6 +299,10 @@
 
 <script type="text/html" data-template-name="snmp table">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
@@ -357,10 +361,6 @@
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Tip: ONLY accepts a single OID.</div>
 </script>
@@ -414,6 +414,10 @@
 
 <script type="text/html" data-template-name="snmp subtree">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
@@ -472,10 +476,6 @@
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>
@@ -530,6 +530,10 @@
 
 <script type="text/html" data-template-name="snmp walker">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="ip address(:optional port)">
     </div>
@@ -588,10 +592,6 @@
     <div class="form-row">
         <label for="node-input-oids"><i class="fa fa-tags"></i> OID</label>
         <input type="text" id="node-input-oids" placeholder="e.g. 1.3.6.1.2.1.1.5.0">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">Tip: ONLY accepts a single OID (node).</div>
 </script>

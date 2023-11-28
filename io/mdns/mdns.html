@@ -1,16 +1,16 @@
 
 <script type="text/html" data-template-name="discovery">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-service"><i class="fa fa-gear"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="_http._tcp">
     </div>
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Topic">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips">The service <i>must</i> start with an underscore _ and end ._tcp or ._udp</div>
 </script>
@@ -53,6 +53,10 @@
 
 <script type="text/html" data-template-name="announce">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name of service">
+    </div>
+    <div class="form-row">
         <label for="node-input-service"><i class="fa fa-gear"></i> Service</label>
         <input type="text" id="node-input-service" placeholder="_http._tcp">
     </div>
@@ -63,10 +67,6 @@
     <div class="form-row">
         <label for="node-input-txt"><i class="fa fa-tasks"></i> TxtRecord</label>
         <input type="text" id="node-input-txt" placeholder='"name":"value","name2":"value2"'>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name of service">
     </div>
     <div class="form-tips">%h in the name will be replaced by the machine hostname.</div>
 </script>

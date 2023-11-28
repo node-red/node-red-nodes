@@ -2,6 +2,10 @@
 
 <script type="text/html" data-template-name="daemon">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-input-command"><i class="fa fa-file"></i><span data-i18n="daemon.label.command"></span></label>
         <input type="text" id="node-input-command" data-i18n="[placeholder]daemon.label.command">
     </div>
@@ -40,10 +44,6 @@
             <option value="SIGTERM" data-i18n="[label]daemon.option.onclose.sigterm"></option>
             <option value="SIGINT" data-i18n="[label]daemon.option.onclose.sigint"></option>
         </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips"><span data-i18n="[html]daemon.tip"></span></div>
 </script>

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-discovery",
-    "version"       : "0.0.23",
+    "version"       : "0.0.24",
     "description"   : "A Node-RED node that uses Bonjour / Avahi to discover nearby services.",
     "dependencies"  : {
         "mdns"   : "^2.5.1"
@@ -19,7 +19,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }

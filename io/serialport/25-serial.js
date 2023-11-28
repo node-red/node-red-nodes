@@ -1,5 +1,6 @@
 
 module.exports = function(RED) {
+    /*jshint -W082 */
     "use strict";
     var settings = RED.settings;
     var events = require("events");
@@ -44,7 +45,7 @@ module.exports = function(RED) {
             this.out = serialPort.out || this.out;
         }
 
-    };
+    }
     RED.nodes.registerType("serial-port",SerialPortNode);
 
     // receives msgs and sends them to the serial port
@@ -138,7 +139,7 @@ module.exports = function(RED) {
             node.port.on('stopped', function() {
                 node.status({fill:"grey",shape:"ring",text:"serial.status.stopped"});
             });
-        };
+        }
         setCallback(node)
     }
     RED.nodes.registerType("serial in",SerialInNode);
@@ -212,7 +213,7 @@ module.exports = function(RED) {
                 node.port.on('stopped', function() {
                     node.status({fill:"grey",shape:"ring",text:"serial.status.stopped"});
                 });
-            };
+            }
             setCallback(node);
         }
         else {

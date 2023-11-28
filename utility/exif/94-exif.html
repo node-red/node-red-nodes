@@ -1,6 +1,10 @@
 
 <script type="text/html" data-template-name="exif">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="node-red:common.label.name"></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-input-mode"><i class="fa fa-dot-circle-o"></i><span data-i18n="exif.label.mode"></span></label>
         <select style="width:70%" id="node-input-mode">
             <option value="normal">Standard node</option>
@@ -10,10 +14,6 @@
     <div class="form-row" id="node-exif-prop-select">
         <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
         <input type="text" id="node-input-property" style="width:70%;"/>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="node-red:common.label.name"></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 

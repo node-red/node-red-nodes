@@ -1,6 +1,10 @@
 
 <script type="text/html" data-template-name="stomp in">
     <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
         <input type="text" id="node-input-server">
     </div>
@@ -17,12 +21,8 @@
         </select>
     </div>
     <div class="form-tips" style="margin-bottom: 12px;">
-        Enabling the ACK (acknowledgment) will set the <code>ack</code> header to <code>client</code> while subscribing to topics. 
+        Enabling the ACK (acknowledgment) will set the <code>ack</code> header to <code>client</code> while subscribing to topics.
         This means the items on the broker queue will not be dequeue'd unless an ACK message is sent using the <code>ack</code> node.
-    </div>
-    <div class="form-row">
-        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
@@ -62,16 +62,16 @@
 
 <script type="text/html" data-template-name="stomp out">
     <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
         <label for="node-input-topic" style="width: 110px;"><i class="fa fa-envelope"></i> Destination</label>
         <input type="text" id="node-input-topic" placeholder="topic or queue">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips" style="margin-bottom: 12px;">The <b>Destination</b> field is optional. If not set uses the <code>msg.topic</code>
     property of the message.</div>
@@ -113,6 +113,10 @@
 </script>
 
 <script type="text/html" data-template-name="stomp-server">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
     <div class="form-row node-input-server">
         <label for="node-config-input-server"><i class="fa fa-bookmark"></i> Server</label>
         <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 45%;" >
@@ -150,10 +154,6 @@
     <div class="form-tips" style="margin-bottom: 12px;">
         Reconnection timings are calculated using exponential backoff. The first reconnection happens immediately, the second reconnection happens at +delay ms, the third at + 2*delay ms, etc.
     </div>
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
 </script>
 
 <script type="text/javascript">
@@ -180,16 +180,16 @@
 
 <script type="text/html" data-template-name="stomp ack">
     <div class="form-row">
+        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-server" style="width: 110px;"><i class="fa fa-bookmark"></i> Server</label>
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
         <label for="node-input-topic" style="width: 110px;"><i class="fa fa-envelope"></i> Destination</label>
         <input type="text" id="node-input-topic" placeholder="topic or queue">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name" style="width: 110px;"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 

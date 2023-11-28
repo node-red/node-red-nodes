@@ -1,5 +1,9 @@
 
 <script type="text/html" data-template-name="ping">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
     <div class="form-row" id="div-node-input-host">
         <label for="node-input-host"><i class="fa fa-dot-circle-o"></i> <span data-i18n="ping.label.target"></span></label>
         <input type="text" id="node-input-host" placeholder="192.168.0.1, www.google.com">
@@ -22,10 +26,6 @@
     <div class="form-row" id="div-node-input-timer">
         <label for="node-input-timer"><i class="fa fa-repeat"></i> <span data-i18n="ping.label.ping"></label>
         <input type="text" id="node-input-timer" placeholder="20">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-ping-tip"><span data-i18n="ping.label.tip"></span></div>
 </script>

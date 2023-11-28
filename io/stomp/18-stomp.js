@@ -1,4 +1,4 @@
-
+/* jshint ignore:start */
 module.exports = function(RED) {
     "use strict";
     var StompClient = require('stomp-client');
@@ -136,7 +136,7 @@ module.exports = function(RED) {
          */
         node.register = function(stompNode, callback = () => {}) {
             node.users[stompNode.id] = stompNode;
-            
+
             if (!node.connected) {
                 node.connectedCallbacks.push(callback);
             }
@@ -158,7 +158,7 @@ module.exports = function(RED) {
          * Remove registered STOMP processing nodes from the connection.
          * @param { StompInNode | StompOutNode | StompAckNode } stompNode The STOMP processing node to unregister
          * @param { Boolean } autoDisconnect Automatically disconnect from the STOM server when no processing nodes registered to the connection
-         * @param { Function } callback 
+         * @param { Function } callback
          */
         node.deregister = function(stompNode, autoDisconnect, callback = () => {}) {
             delete node.users[stompNode.id];
@@ -179,7 +179,7 @@ module.exports = function(RED) {
 
         /**
          * Connect to the STOMP server.
-         * @param {Function} callback 
+         * @param {Function} callback
          */
         node.connect = function(callback = () => {}) {
             if (node.canConnect()) {
@@ -195,7 +195,7 @@ module.exports = function(RED) {
                     }
 
                     node.client = new StompClient(node.options);
-                    
+
                     node.client.on("connect", function(sessionId) {
                         node.closing = false;
                         node.connecting = false;
@@ -206,7 +206,7 @@ module.exports = function(RED) {
                         setStatusConnected(node, true);
                         callback();
                     });
-                    
+
                     node.client.on("reconnect", function(sessionId, numOfRetries) {
                         node.closing = false;
                         node.connecting = false;
@@ -246,7 +246,7 @@ module.exports = function(RED) {
 
         /**
          * Disconnect from the STOMP server.
-         * @param {Function} callback 
+         * @param {Function} callback
          */
         node.disconnect = function(callback = () => {}) {
             const waitDisconnect = (client, timeout) => {
@@ -295,7 +295,7 @@ module.exports = function(RED) {
          * Subscribe to a given STOMP queue.
          * @param { String}  queue The queue to subscribe to
          * @param { "auto" | "client" | "client-individual" } clientAck Can be `auto`, `client` or `client-individual` (the latter only starting from STOMP v1.1)
-         * @param { Function } callback 
+         * @param { Function } callback
          */
         node.subscribe = function(queue, acknowledgment, callback) {
             node.log(`Subscribe to: ${queue}`);
@@ -308,7 +308,7 @@ module.exports = function(RED) {
                 const headers = {
                     id: node.subscriptionIds[queue],
                     // Only set client-individual if not v1.0
-                    ack: acknowledgment === "client-individual" && node.options.protocolVersion === "1.0" ? "client" : acknowledgment 
+                    ack: acknowledgment === "client-individual" && node.options.protocolVersion === "1.0" ? "client" : acknowledgment
                 }
 
                 node.client.subscribe(queue, headers, function(body, responseHeaders) {
@@ -545,3 +545,4 @@ module.exports = function(RED) {
         //Object.prototype.hasOwnProperty.call is the recommended/safer test
         return Object.prototype.hasOwnProperty.call(obj, propName);
     }
+/* jshint ignore:end */

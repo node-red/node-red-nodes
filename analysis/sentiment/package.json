@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-sentiment",
-    "version"       : "0.1.6",
+    "version"       : "0.1.7",
     "description"   : "A Node-RED node that uses the AFINN-165 wordlists for sentiment analysis of words.",
     "dependencies"  : {
         "sentiment" : "2.1.0"
@@ -19,7 +19,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }

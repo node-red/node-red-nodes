@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-ping",
-    "version"       : "0.3.3",
+    "version"       : "0.3.4",
     "description"   : "A Node-RED node to ping a remote server, for use as a keep-alive check.",
     "dependencies"  : {
     },
@@ -18,7 +18,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     },
     "contributors": [

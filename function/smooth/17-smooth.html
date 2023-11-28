@@ -1,6 +1,10 @@
 
 <script type="text/html" data-template-name="smooth">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
         <input type="text" id="node-input-property" style="width:70%;"/>
     </div>
@@ -36,11 +40,6 @@
         <label for="node-input-reduce"><i class="fa fa-compress"></i> Reduce</label>
         <input type="checkbox" id="node-input-reduce" style="display:inline-block; width:20px; vertical-align:baseline;">
         only emit one message per most recent N values
-    </div>
-    <br/>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-tips" id="node-tip">Tip: This node ONLY works with numbers.</div>
 </script>
