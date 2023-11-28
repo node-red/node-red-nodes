@@ -1,5 +1,9 @@
 <script type="text/html" data-template-name="e-mail">
     <div class="form-row">
+        <label for="node-input-dname"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-dname" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-envelope"></i> <span data-i18n="email.label.to"></span></label>
         <input type="text" id="node-input-name" placeholder="email@address.com">
     </div>
@@ -69,10 +73,6 @@
         <label for="node-input-useTLS"><i class="fa fa-lock"></i> <span data-i18n="email.label.useTLS"></label>
         <input type="checkbox" id="node-input-tls" style="display:inline-block; width:20px; vertical-align:baseline;">
         <span data-i18n="email.label.rejectUnauthorised"></span>
-    </div>
-    <div class="form-row">
-        <label for="node-input-dname"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-dname" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.cred"></span></div>
 </script>
@@ -156,6 +156,10 @@
 
 
 <script type="text/html" data-template-name="e-mail in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
     <div class="form-row">
         <label for="node-input-fetch"><i class="fa fa-hourglass-half"></i> <span data-i18n="email.label.getmail"></span></label>
         <select type="text" id="node-input-fetch" style="width:130px;">
@@ -251,11 +255,6 @@
             <option value="OLD" data-i18n="email.label.delete"></option>
             -->
         </select>
-    </div>
-    <br/>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <script>
         var checkPorts = function() {
@@ -409,6 +408,10 @@
 
 <script type="text/html" data-template-name="e-mail mta">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
         <input type="text" id="node-input-port" style="width:100px">
         <label style="width:40px"> </label>
@@ -450,10 +453,6 @@
     <div class="form-row">
         <label for="node-input-expert"><i class="fa fa-cog"></i> <span data-i18n="email.label.expert"></span></label>
         <input type="text" id="node-input-expert">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.mta"></span></div>
 </script>
