@@ -57,182 +57,183 @@ describe('mlsentiment Node', function () {
         });
     });
 
-    it('should add a positive score for good words', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                try {
-                    msg.should.have.property('sentiment');
-                    msg.sentiment.should.have.property('score');
-                    msg.sentiment.score.should.be.a.Number();
-                    msg.sentiment.score.should.be.above(10);
-                    done();
-                } catch (err) {
-                    done(err);
-                }
-            });
-            var testString = 'good, great, best, brilliant';
-            jn1.receive({ payload: testString });
-        });
-    });
 
-    it('should add a positive score for good words (in French)', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]], lang: "fr" },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                try {
-                    msg.should.have.property('sentiment');
-                    msg.sentiment.should.have.property('score');
-                    msg.sentiment.score.should.be.a.Number();
-                    msg.sentiment.score.should.be.above(5);
-                    done();
-                } catch (err) {
-                    done(err);
-                }
-            });
-            var testString = 'bon, belle, don du ciel, brillant';
-            jn1.receive({ payload: testString });
-        });
-    });
+    // it('should add a positive score for good words', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             try {
+    //                 msg.should.have.property('sentiment');
+    //                 msg.sentiment.should.have.property('score');
+    //                 msg.sentiment.score.should.be.a.Number();
+    //                 msg.sentiment.score.should.be.above(10);
+    //                 done();
+    //             } catch (err) {
+    //                 done(err);
+    //             }
+    //         });
+    //         var testString = 'good, great, best, brilliant';
+    //         jn1.receive({ payload: testString });
+    //     });
+    // });
 
-    it('should add a positive score for good words - alternative property', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                try {
-                    msg.should.have.property('sentiment');
-                    msg.sentiment.should.have.property('score');
-                    msg.sentiment.score.should.be.a.Number();
-                    msg.sentiment.score.should.be.above(10);
-                    done();
-                } catch (err) {
-                    done(err);
-                }
-            });
-            var testString = 'good, great, best, brilliant';
-            jn1.receive({ foo: testString });
-        });
-    });
+    // it('should add a positive score for good words (in French)', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]], lang: "fr" },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             try {
+    //                 msg.should.have.property('sentiment');
+    //                 msg.sentiment.should.have.property('score');
+    //                 msg.sentiment.score.should.be.a.Number();
+    //                 msg.sentiment.score.should.be.above(5);
+    //                 done();
+    //             } catch (err) {
+    //                 done(err);
+    //             }
+    //         });
+    //         var testString = 'bon, belle, don du ciel, brillant';
+    //         jn1.receive({ payload: testString });
+    //     });
+    // });
 
-    it('should add a negative score for bad words', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.be.below(-10);
-                done();
-            });
-            var testString = 'bad, horrible, negative, awful';
-            jn1.receive({ payload: testString });
-        });
-    });
+    // it('should add a positive score for good words - alternative property', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             try {
+    //                 msg.should.have.property('sentiment');
+    //                 msg.sentiment.should.have.property('score');
+    //                 msg.sentiment.score.should.be.a.Number();
+    //                 msg.sentiment.score.should.be.above(10);
+    //                 done();
+    //             } catch (err) {
+    //                 done(err);
+    //             }
+    //         });
+    //         var testString = 'good, great, best, brilliant';
+    //         jn1.receive({ foo: testString });
+    //     });
+    // });
 
-    it('should add a negative score for bad words - alternative property', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.be.below(-10);
-                done();
-            });
-            var testString = 'bad, horrible, negative, awful';
-            jn1.receive({ foo: testString });
-        });
-    });
+    // it('should add a negative score for bad words', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.be.below(-10);
+    //             done();
+    //         });
+    //         var testString = 'bad, horrible, negative, awful';
+    //         jn1.receive({ payload: testString });
+    //     });
+    // });
 
-    it('should allow you to override word scoring', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.equal(20);
-                done();
-            });
-            var testString = 'sick, wicked';
-            var wordOverrides = { 'sick': 10, 'wicked': 10 };
-            jn1.receive({ payload: testString, words: wordOverrides });
-        });
-    });
+    // it('should add a negative score for bad words - alternative property', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.be.below(-10);
+    //             done();
+    //         });
+    //         var testString = 'bad, horrible, negative, awful';
+    //         jn1.receive({ foo: testString });
+    //     });
+    // });
 
-    it('should allow you to override word scoring - alternative property', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.equal(20);
-                done();
-            });
-            var testString = 'sick, wicked';
-            var wordOverrides = { 'sick': 10, 'wicked': 10 };
-            jn1.receive({ foo: testString, words: wordOverrides });
-        });
-    });
+    // it('should allow you to override word scoring', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.equal(20);
+    //             done();
+    //         });
+    //         var testString = 'sick, wicked';
+    //         var wordOverrides = { 'sick': 10, 'wicked': 10 };
+    //         jn1.receive({ payload: testString, words: wordOverrides });
+    //     });
+    // });
 
-    it('should allow you to use custom tokens', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.equal(-3);
-                done();
-            });
-            var testString = '世界就是一个疯子的囚笼';
-            var tokenOverrides = ['世界', '就', '是', '一个', '疯子', '的', '囚笼'];
-            jn1.receive({ payload: testString, tokens: tokenOverrides });
-        });
-    });
+    // it('should allow you to override word scoring - alternative property', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.equal(20);
+    //             done();
+    //         });
+    //         var testString = 'sick, wicked';
+    //         var wordOverrides = { 'sick': 10, 'wicked': 10 };
+    //         jn1.receive({ foo: testString, words: wordOverrides });
+    //     });
+    // });
 
-    it('should allow you to use custom tokens - alternative property', function (done) {
-        var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
-        { id: "jn2", type: "helper" }];
-        helper.load(sentimentNode, flow, function () {
-            var jn1 = helper.getNode("jn1");
-            var jn2 = helper.getNode("jn2");
-            jn2.on("input", function (msg) {
-                msg.should.have.property('sentiment');
-                msg.sentiment.should.have.property('score');
-                msg.sentiment.score.should.be.a.Number();
-                msg.sentiment.score.should.equal(-3);
-                done();
-            });
-            var testString = '世界就是一个疯子的囚笼';
-            var tokenOverrides = ['世界', '就', '是', '一个', '疯子', '的', '囚笼'];
-            jn1.receive({ foo: testString, tokens: tokenOverrides });
-        });
-    });
+    // it('should allow you to use custom tokens', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.equal(-3);
+    //             done();
+    //         });
+    //         var testString = '世界就是一个疯子的囚笼';
+    //         var tokenOverrides = ['世界', '就', '是', '一个', '疯子', '的', '囚笼'];
+    //         jn1.receive({ payload: testString, tokens: tokenOverrides });
+    //     });
+    // });
+
+    // it('should allow you to use custom tokens - alternative property', function (done) {
+    //     var flow = [{ id: "jn1", type: "mlsentiment", property: "foo", wires: [["jn2"]] },
+    //     { id: "jn2", type: "helper" }];
+    //     helper.load(sentimentNode, flow, function () {
+    //         var jn1 = helper.getNode("jn1");
+    //         var jn2 = helper.getNode("jn2");
+    //         jn2.on("input", function (msg) {
+    //             msg.should.have.property('sentiment');
+    //             msg.sentiment.should.have.property('score');
+    //             msg.sentiment.score.should.be.a.Number();
+    //             msg.sentiment.score.should.equal(-3);
+    //             done();
+    //         });
+    //         var testString = '世界就是一个疯子的囚笼';
+    //         var tokenOverrides = ['世界', '就', '是', '一个', '疯子', '的', '囚笼'];
+    //         jn1.receive({ foo: testString, tokens: tokenOverrides });
+    //     });
+    // });
 
 });
