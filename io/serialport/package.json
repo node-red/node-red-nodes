@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-serialport",
-    "version"       : "2.0.1",
+    "version"       : "2.0.2",
     "description"   : "Node-RED nodes to talk to serial ports",
     "dependencies"  : {
         "serialport"   : "^12.0.0"

@@ -104,3 +104,50 @@
     <p>Optional kann das Zeilenvorschub-Zeichen (\n), was zum Aufteilen der Eingangsdaten genutzt wird,
        auch jeder zu sendenden Nachricht angefügt werden.</p>
 </script>
+
+<script type="text/html" data-help-name="serial control">
+    <p>Stoppt, startet die serielle Kommunikation und ändert die Konfiguration der seriellen Schnittstelle.</p>
+
+    <p>Dieser Node bietet die Möglichkeiten:</p>
+    <ul>
+        <li>stoppen der Kommunikation und die serielle Schnittstelle freigeben,</li>
+        <li>den Port erneut öffnen und die Kommunikation neu starten,</li>
+        <li>dynamische Änderung des seriellen Ports und deren Konfiguration,</li>
+        <li>abfragen der Konfiguration der seriellen Schnittstelle.</li>
+    </ul>
+
+    <h3>Eingangsdaten</h3>
+        <p>Um die Kommunikation zu steuern, senden Sie einfach <b>msg.payload</b> mit:</p>
+        <pre>
+{
+    "serialport": "/dev/ttyUSB0",
+    "serialbaud": 115200,
+    "databits": 8,
+    "parity": "none",
+    "stopbits": 1,
+    "enabled": true
+}
+        </pre>
+
+        <p>Die folgenden optionalen Parameter ändern die Konfiguration nur, wenn sie vorhanden sind</p>
+        <p>Jede beliebige Kombination davon kann zur Änderung/Steuerung der seriellen Kommunikation übergeben werden</p>
+        <ul>
+            <li> serialport </li>
+            <li> serialbaud </li>
+            <li> databits </li>
+            <li> parity </li>
+            <li> stopbits </li>
+            <li> dtr </li>
+            <li> rts </li>
+            <li> cts </li>
+            <li> dsr </li>
+            <li> enabled </li>
+        </ul>
+        <p>Wenn die <code>enabled</code> Eigenschaft nicht vorhanden ist, wird sie standardmäßig auf <code>true</code> gesetzt.</p>
+        <p>
+            <code>{"enabled":true}</code> oder <code>{"enabled":false}</code> startet oder stopt die Kommunikation.</p>
+            <p>Wenn <code>enabled</code> zusammen mit anderen Parametern übergeben wird, wird die Konfiguration geändert und der Port wird entweder gestartet oder bleibt gestoppt, sodass er abhängig von seinem Wert später gestartet werden kann.</p>
+
+    <h3>Ausgangsdaten</h3>
+    <p>Jede Eingabenachricht führt dazu, dass der Knoten die aktuelle Portkonfiguration in <code>msg.payload</code> ausgibt.</p>
+</script>
