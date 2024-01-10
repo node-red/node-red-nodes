@@ -25,4 +25,4 @@ If the Exif data also contains location information this is extracted as `msg.lo
 
 `msg.payload` retains the original, unmodified image buffer.
 
-You can set it into "worldmap" node - in this mode the payload contains the "location" data, not the original image, but can be sent directly to a node-red-contrib-worldmap node for visualisation.
+You can set it into "worldmap" mode - in this mode the payload contains the "location" data, not the original image, but can be sent directly to a node-red-contrib-worldmap node for visualisation.
