@@ -12,7 +12,7 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
 ## Breaking Change - v1
 
-This node now uses the more supported exifreader library so that it handles more features and recent exif spec uodates, for example data associated with drones. The output message has consequently changed into a much flatter set of properties and thus breaks all existing (0.x) instances.
+This node now uses the more supported exifreader library so that it handles more features and recent exif spec updates, for example data associated with drones. The output message has consequently changed into a much flatter set of properties and thus breaks all existing (0.x) instances.
 
 Usage
 -----
