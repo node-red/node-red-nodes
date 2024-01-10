@@ -14,7 +14,7 @@ module.exports = function(RED) {
         if (this.mode === "worldmap") { this.property = "payload.content"; }
         else { this.property = n.property || "payload"; }
         var node = this;
-        var ExifImage = require('exif').ExifImage;
+        var ExifReader = require('exifreader');
 
         /***
          * Extracts GPS location information from Exif data. If enough information is
@@ -24,39 +24,20 @@ module.exports = function(RED) {
          * Assume that the GPS data saved into Exif provides a valid value
          */
         function addMsgLocationDataFromExifGPSData(msg,val) {
-            var gpsData = msg.exif.gps; // declaring variable purely to make checks more readable
-            if (gpsData.GPSAltitude) {
+            if (msg.exif.GPSAltitude) {
                 /* istanbul ignore else */
                 if (!msg.location) { msg.location = {}; }
-                msg.location.alt = gpsData.GPSAltitude;
+                msg.location.alt = parseFloat(msg.exif.GPSAltitude);
             }
-            if (gpsData.GPSLatitudeRef && gpsData.GPSLatitude && gpsData.GPSLongitudeRef && gpsData.GPSLongitude) { // location can be determined, OK
-                // The data provided in Exif is in degrees, minutes, seconds, this is to be converted into a single floating point degree
-                if (gpsData.GPSLatitude.length === 3) { // OK to convert latitude
-                    if (gpsData.GPSLongitude.length === 3) { // OK to convert longitude
-                        var latitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLatitude[0], gpsData.GPSLatitude[1], gpsData.GPSLatitude[2]);
-                        latitude = Math.round(latitude * 100000)/100000;    // 5dp is approx 1m resolution...
-                        // (N)orth means positive latitude, (S)outh means negative latitude
-                        if (gpsData.GPSLatitudeRef.toString() === 'S' || gpsData.GPSLatitudeRef.toString() === 's') {
-                            latitude = latitude * -1;
-                        }
-                        var longitude = convertDegreesMinutesSecondsToDecimals(gpsData.GPSLongitude[0], gpsData.GPSLongitude[1], gpsData.GPSLongitude[2]);
-                        longitude = Math.round(longitude * 100000)/100000;  // 5dp is approx 1m resolution...
-                        // (E)ast means positive longitude, (W)est means negative longitude
-                        if (gpsData.GPSLongitudeRef.toString() === 'W' || gpsData.GPSLongitudeRef.toString() === 'w') {
-                            longitude = longitude * -1;
-                        }
-                        // Create location property if not exists
-                        if (!msg.location) { msg.location = {}; }
-                        msg.location.lat = latitude;
-                        msg.location.lon = longitude;
-                    }
-                    else {
-                        node.log("Invalid longitude data, no location information has been added to the message.");
-                    }
+            if (msg.exif.GPSLatitudeRef && msg.exif.GPSLatitude && msg.exif.GPSLongitudeRef && msg.exif.GPSLongitude) { // location can be determined, OK
+                if (!msg.location) { msg.location = {}; }
+                msg.location.lat = msg.exif.GPSLatitude;
+                msg.location.lon = msg.exif.GPSLongitude;
+                if (msg.exif.GPSLatitudeRef == "South latitude") {
+                    msg.location.lat *= -1;
                 }
-                else {
-                    node.log("Invalid latitude data, no location information has been added to the message.");
+                if (msg.exif.GPSLongitudeRef == "West longitude") {
+                    msg.location.lon *= -1;
                 }
             }
             else {
@@ -65,24 +46,27 @@ module.exports = function(RED) {
             if (msg.location) {
                 msg.location.arc = {
                     ranges: [100,300,500],
-                    pan: gpsData.GPSImgDirection,
-                    fov: (2 * Math.atan(36 / (2 * msg.exif.exif.FocalLengthIn35mmFormat)) * 180 / Math.PI),
+                    pan: msg.exif.GPSImgDirection ?? msg.exif.GimbalYawDegree,
+                    fov: (2 * Math.atan(36 / (2 * msg.exif.FocalLengthIn35mmFilm)) * 180 / Math.PI),
                     color: '#aaaa00'
                 }
                 msg.location.icon = "fa-camera fa-lg";
+                if (msg.exif.Make === "DJI") { msg.location.icon = "quad"; }
+                if (msg.exif.Make === "Potensic") { msg.location.icon = "quad"; }
+                if (msg.exif.Make === "Parrot") { msg.location.icon = "quad"; }
                 msg.location.iconColor = "orange";
                 var na;
                 var pop = "";
                 if (val.hasOwnProperty("name")) { na = val.name; }
                 else if (msg.hasOwnProperty("filename")) {
                     na = msg.filename.split('/').pop();
-                    pop = "Timestamp: "+msg.exif.image.ModifyDate+"<br/>";
+                    pop = "Timestamp: "+msg.exif.DateTimeOriginal+"<br/>";
                 }
-                else { na = msg.exif.image.Make+"_"+msg.exif.image.ModifyDate; }
+                else { na = msg.exif.Make+"_"+msg.exif.DateTimeOriginal; }
                 msg.location.name = na;
                 msg.location.layer = "Images";
-                if (msg.exif.image.ImageDescription) {
-                    pop = "Caption: "+msg.exif.image.ImageDescription+"<br/>"+pop;
+                if (msg.exif.ImageDescription) {
+                    pop = "Caption: "+msg.exif.ImageDescription+"<br/>"+pop;
                 }
                 pop += '<img width="280" src="data:image/jpeg;base64,'+val.toString("base64")+'"/>'
                 if (msg.location.lat && msg.location.lon) {
@@ -104,34 +88,21 @@ module.exports = function(RED) {
                         }
                     }
                     if (Buffer.isBuffer(value)) { // or a proper jpg buffer
-                        new ExifImage({ image:value }, function (error, exifData) {
-                            if (error) {
-                                if (node.mode !== "worldmap") {
-                                    node.log(error.toString());
-                                }
-                                else {
-                                    msg.location = {name:msg.payload.name, lat:msg.payload.lat, lon:msg.payload.lon, layer:"Images", icon:"fa-camera fa-lg", draggable:true};
-                                    msg.location.popup = '<img width="280" src="data:image\/png;base64,'+msg.payload.content.toString('base64')+'"/><br/>';
-                                }
+                        msg.exif = ExifReader.load(msg.payload);
+                        for (const p in msg.exif) {
+                            msg.exif[p] = msg.exif[p].description
+                            if (!isNaN(Number(msg.exif[p])))  {
+                                msg.exif[p] = Number(msg.exif[p])
                             }
-                            else {
-                                if (exifData) {
-                                    msg.exif = exifData;
-                                    if ((exifData.hasOwnProperty("gps")) && (Object.keys(exifData.gps).length !== 0)) {
-                                        addMsgLocationDataFromExifGPSData(msg,value);
-                                    }
-                                    //else { node.log("The incoming image did not contain Exif GPS data."); }
-                                }
-                                else {
-                                    node.warn("The incoming image did not contain any Exif data, nothing to do.");
-                                }
-                            }
-                            if (node.mode === "worldmap") {
-                                msg.payload = msg.location;
-                                delete msg.location;
-                            }
-                            node.send(msg);
-                        });
+                        }
+                        if (msg.exif && msg.exif.hasOwnProperty("GPSLatitude") && msg.exif.hasOwnProperty("GPSLongitude")) {
+                            addMsgLocationDataFromExifGPSData(msg,value);
+                        }
+                        if (node.mode === "worldmap") {
+                            msg.payload = msg.location || {};
+                            delete msg.location;
+                        }
+                        node.send(msg);
                     }
                     else {
                         node.error("Invalid payload received, the Exif node cannot proceed, no messages sent.",msg);
