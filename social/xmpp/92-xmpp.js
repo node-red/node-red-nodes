@@ -188,7 +188,7 @@ module.exports = function(RED) {
                 if (RED.settings.verbose || LOGITALL) {that.log("got an iq query"); }
                 if (stanza.attrs.type === 'error') {
                     if (RED.settings.verbose || LOGITALL) {that.log("oh noes, it's an error"); }
-                    if (that && that.hasOwnProperty("lastUsed") && that.lastUsed.hasOwnProperty("id") && stanza.attrs.id === that.lastUsed.id) {
+                    if (that?.lastUsed?.id && stanza.attrs.id === that.lastUsed.id) {
                         that.lastUsed.status({fill:"red", shape:"ring", text:stanza.getChild('error')});
                         that.lastUsed.warn(stanza.getChild('error'));
                     }
@@ -529,7 +529,7 @@ module.exports = function(RED) {
                         statusText = status.getText() || "online";
                     }
 
-                    if (statusText !== "" && (stanza.attrs.from !== stanza.attrs.to)) {
+                    if (statusText !== "" && stanza.attrs.from && (stanza.attrs.from !== stanza.attrs.to)) {
                         var from = stanza.attrs.from;
                         var msg = {
                             topic:from,
