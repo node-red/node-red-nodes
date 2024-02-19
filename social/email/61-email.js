@@ -333,7 +333,7 @@ module.exports = function(RED) {
                     try {
                         // We have now received a new email message.  Create an instance of a mail parser
                         // and pass in the email message.  The parser will signal when it has parsed the message.
-                        simpleParser(nextMessage, {}, function(err, parsed) {
+                        simpleParser(nextMessage, {checksumAlgo: 'sha256'}, function(err, parsed) {
                             //node.log(util.format("simpleParser: on(end): %j", mailObject));
                             if (err) {
                                 node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
@@ -493,7 +493,7 @@ module.exports = function(RED) {
                                             //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                                                 imapMessage.on('body', function(stream, info) {
                                                 //console.log("> message - body - stream=?, info=%j", info);
-                                                    simpleParser(stream, {}, function(err, parsed) {
+                                                    simpleParser(stream, {checksumAlgo: 'sha256'}, function(err, parsed) {
                                                         if (err) {
                                                             node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
                                                             node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
@@ -643,7 +643,7 @@ module.exports = function(RED) {
         }
 
         node.options.onData = function (stream, session, callback) {
-            simpleParser(stream, { skipTextToHtml:true, skipTextLinks:true }, (err, parsed) => {
+            simpleParser(stream, { skipTextToHtml:true, skipTextLinks:true, checksumAlgo:'sha256' }, (err, parsed) => {
                 if (err) { node.error(RED._("email.errors.parsefail"),err); }
                 else {
                     node.status({fill:"green", shape:"dot", text:""});
