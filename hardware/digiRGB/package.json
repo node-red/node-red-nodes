@@ -3,7 +3,7 @@
     "version"       : "0.0.7",
     "description"   : "A Node-RED node to control a Digispark RGB LED",
     "dependencies"  : {
-        "node-hid"   : "0.4.*"
+        "node-hid"   : "0.7.9"
     },
     "homepage": "http://www.hardill.me.uk/wordpress/2013/02/06/budget-blink1/",
     "repository" : {
