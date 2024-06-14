@@ -444,7 +444,7 @@ module.exports = function(RED) {
                     subj = subj.getText();
                     if (subj.trim() !== "") { node.subject[stanza.attrs.from.split('/')[0]] = subj; }
                 }
-                if (stanza.attrs.type == 'chat') {
+                if (!stanza.attrs.hasOwnProperty("type") || stanza.attrs.type == 'chat') {
                     var body = stanza.getChild('body');
                     if (body) {
                         var msg = { payload:body.getText(), subject:node.subject[stanza.attrs.from.split('/')[0]] };
