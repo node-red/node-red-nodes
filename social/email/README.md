@@ -12,7 +12,8 @@ getting an application password if you have two-factor authentication enabled.
 For Exchange and Outlook 365 you must use OAuth2.0.
 
 **Notes **:
-    Version 2.x of this node requires **Node.js v14** or newer.
+    Version 3.x of this node requires **Node.js v18** or newer.
+    Version 2.x of this node requires **Node.js v16** or newer.
     Version 1.91 of this node required **Node.js v14** or newer.
     Previous versions of this node required **Node.js v8** or newer.
 
