@@ -8,7 +8,7 @@
         "directory": "tree/master/hardware/sensehatsim"
     },
     "dependencies": {
-        "ws": "~6.2.1"
+        "ws": "~8.17.1"
     },
     "license": "Apache-2.0",
     "keywords": [
