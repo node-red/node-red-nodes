@@ -10,7 +10,7 @@ module.exports = function(RED) {
 
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
-        if (cpuinfo.indexOf(": BCM") === -1 && cpuinfo.indexOf(": Raspberry Pi")) {
+        if (cpuinfo.indexOf(": BCM") === -1 && cpuinfo.indexOf(": Raspberry Pi") === -1) {
             RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
             allOK = false;
         }
