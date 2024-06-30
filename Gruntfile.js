@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         },
         jshint: {
             options: {
-                jshintrc:true     // Use external jshinrc file configured as below
+                jshintrc:true     // Use external jshintrc file configured as below
                 // http://www.jshint.com/docs/options/
                 //"asi": true,      // allow missing semicolons
                 //"curly": true,    // require braces

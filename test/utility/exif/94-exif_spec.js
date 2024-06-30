@@ -53,8 +53,8 @@ describe('exif node', function() {
 
             helperNode1.on("input", function(msg) {
                 // exif.ExifImage.restore();
-                msg.location.lat.should.equal(51.04365); // this data is stored in the jpg file
-                msg.location.lon.should.equal(-1.31525);
+                msg.location.lat.should.equal(51.04364722222222); // this data is stored in the jpg file
+                msg.location.lon.should.equal(-1.3152472222222222);
                 done();
             });
 
@@ -117,9 +117,9 @@ describe('exif node', function() {
                 var logEvents = helper.log().args.filter(function(evt) {
                     return evt[0].type == "exif";
                 });
-                logEvents.should.have.length(1);
-                logEvents[0][0].should.have.a.property('msg');
-                logEvents[0][0].msg.toString().should.startWith("Error: The given image is not a JPEG");
+                logEvents.should.have.length(2);
+                logEvents[1][0].should.have.a.property('msg');
+                logEvents[1][0].msg.toString().should.startWith("Error: Invalid image format");
                 done();
             },150);
 

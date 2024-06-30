@@ -90,9 +90,11 @@ module.exports = function(RED) {
                     if (Buffer.isBuffer(value)) { // or a proper jpg buffer
                         msg.exif = ExifReader.load(msg.payload);
                         for (const p in msg.exif) {
-                            msg.exif[p] = msg.exif[p].description
-                            if (!isNaN(Number(msg.exif[p])))  {
-                                msg.exif[p] = Number(msg.exif[p])
+                            if (msg.exif.hasOwnProperty(p)) {
+                                msg.exif[p] = msg.exif[p].description
+                                if (!isNaN(Number(msg.exif[p])))  {
+                                    msg.exif[p] = Number(msg.exif[p])
+                                }
                             }
                         }
                         if (msg.exif && msg.exif.hasOwnProperty("GPSLatitude") && msg.exif.hasOwnProperty("GPSLongitude")) {
