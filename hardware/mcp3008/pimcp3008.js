@@ -7,7 +7,7 @@ module.exports = function(RED) {
     // unlikely if not on a Pi
     try {
         var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
-        if (cpuinfo.indexOf(": BCM") === -1) {
+        if (cpuinfo.indexOf(": BCM") === -1 && cpuinfo.indexOf(": Raspberry Pi") === -1) {
             RED.log.warn("Info : mcp3xxx : Not running on a Pi - Ignoring node");
         }
         else {
