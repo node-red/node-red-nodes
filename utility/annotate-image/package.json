@@ -3,7 +3,7 @@
     "version": "0.1.3",
     "description": "A Node-RED node that can annotate an image",
     "dependencies": {
-        "pureimage": "^0.2.7"
+        "pureimage": "^0.3.8"
     },
     "repository": {
         "type": "git",
