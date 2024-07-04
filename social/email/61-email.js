@@ -14,7 +14,6 @@ const { domainToUnicode } = require("url");
 
 module.exports = function(RED) {
     "use strict";
-    var util = require("util");
     var Imap = require('imap');
     var Pop3Command = require("node-pop3");
     var nodemailer = require("nodemailer");
@@ -34,7 +33,7 @@ module.exports = function(RED) {
         this.outserver = n.server;
         this.outport = n.port;
         this.secure = n.secure;
-        this.tls = true;
+        this.tls = n.tls;
         this.authtype = n.authtype || "BASIC";
         if (this.authtype !== "BASIC") {
             this.inputs = 1;
@@ -62,7 +61,6 @@ module.exports = function(RED) {
                 this.error(RED._("email.errors.notoken"));
             }
         }
-        if (n.tls === false) { this.tls = false; }
         var node = this;
 
         var smtpOptions = {
@@ -87,9 +85,9 @@ module.exports = function(RED) {
         }
 
         this.on("input", function(msg, send, done) {
-
             if (node.authtype === "XOAUTH2") {
                 if (node.token) {
+                    var saslxoauth2 = "";
                     var value = RED.util.getMessageProperty(msg,node.token);
                     if (value !== undefined) {
                         if (node.saslformat) {
@@ -119,7 +117,7 @@ module.exports = function(RED) {
                         node.warn(RED._("node-red:common.errors.nooverride"));
                     }
                     var sendopts = { from: ((msg.from) ? msg.from : node.userid) };   // sender address
-                    sendopts.to = node.name || msg.to; // comma separated list of addressees
+                    sendopts.to = node.name || msg.to; // comma separated list of addresses
                     if (node.name === "") {
                         sendopts.cc = msg.cc;
                         sendopts.bcc = msg.bcc;
@@ -167,9 +165,9 @@ module.exports = function(RED) {
                         if (msg.attachments) {
                             if (!Array.isArray(msg.attachments)) { sendopts.attachments = [ msg.attachments ]; }
                             else { sendopts.attachments = msg.attachments; }
-                            for (var a=0; a < sendopts.attachments.length; a++) {
-                                if (sendopts.attachments[a].hasOwnProperty("content")) {
-                                    if (typeof sendopts.attachments[a].content !== "string" && !Buffer.isBuffer(sendopts.attachments[a].content)) {
+                            for (const attachment of sendopts.attachments) {
+                                if (attachment.hasOwnProperty('content')) {
+                                    if (typeof attachment.content !== 'string' && !Buffer.isBuffer(attachment.content)) {
                                         node.error(RED._("email.errors.invalidattachment"),msg);
                                         node.status({fill:"red",shape:"ring",text:"email.status.sendfail"});
                                         return;
@@ -194,7 +192,7 @@ module.exports = function(RED) {
             else { node.warn(RED._("email.errors.nopayload")); }
         });
     }
-    RED.nodes.registerType("e-mail",EmailNode,{
+    RED.nodes.registerType("e-mail", EmailNode, {
         credentials: {
             userid: {type:"text"},
             password: {type: "password"},
