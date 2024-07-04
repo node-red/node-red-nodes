@@ -35,7 +35,7 @@ or enable <a target="_new" href="https://support.google.com/accounts/answer/6010
 Office 365 users
 ----------------
 
-If you are accessing Exchnage you will need to register an application through their platform and use OAuth2.0.
+If you are accessing Exchange you will need to register an application through their platform and use OAuth2.0.
 <a target="_new" href="https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth#get-an-access-token">Details on how to do this can be found here.</a>
 
 Usage
@@ -71,7 +71,7 @@ address (userxx@some_domain.com), you may see *(No Sender)* in the email.
 
 The payload can be html format. You can also specify `msg.plaintext` if the main payload is html.
 
-If the payload is a binary buffer then it will be converted to an attachment.
+If the payload is a binary buffer, then it will be converted to an attachment.
 
 The filename should be set using `msg.filename`. Optionally
 `msg.description` can be added for the body text.
@@ -86,3 +86,51 @@ If you have own signed certificates, Nodemailer can complain about that and refu
 Use secure connection - If enabled the connection will use TLS when connecting to server. If disabled then TLS is used if server supports the STARTTLS extension. In most cases set this to enabled if you are connecting to port 465. For port 587 or 25 keep it disabled.
 
 This node uses the *nodemailer* npm module.
+
+Testing
+-----
+
+You can pass the credentials object to the `node-red-node-test-helper` by doing the following:
+
+```js
+const emailNode = require("../nodes/node-red-nodes_email/email.js");
+
+const testFlows = [{
+    id: "n1", type: "e-mail", name: "Email",
+    from: "email1test@example.com", subject: "TestSubject", server: "testServer",
+    port: "1111", secure: "X", tls: true, authtype: "BASIC",
+}];
+
+const testCredentials = {
+    n1: {
+        userid: "ExampleUser",
+        password: "ExamplePassword",
+        global: false
+    }
+};
+
+it('should be loaded', function (done) {
+    helper.load(emailNode, testFlows, testCredentials, function () {
+        const n1 = helper.getNode("n1");
+        try {
+            n1.should.have.property('name', 'Email');
+            n1.should.have.property('from', 'email1test@example.com');
+            n1.should.have.property('subject', 'TestSubject');
+            n1.should.have.property('outserver', 'testServer'); // Gathered via server
+            n1.should.have.property('outport', '1111'); // Gathered via port
+            n1.should.have.property('secure', 'X');
+            n1.should.have.property('tls', true);
+            n1.should.have.property('authtype', 'BASIC');
+            n1.should.have.property('credentials');
+            n1.should.have.property('credentials', {
+                userid: "ExampleUser",
+                password: "ExamplePassword",
+                global: false
+            });
+            done();
+        } catch (err) {
+            done(err);
+        }
+    });
+});
+```
