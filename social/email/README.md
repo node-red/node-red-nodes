@@ -93,7 +93,7 @@ Testing
 You can pass the credentials object to the `node-red-node-test-helper` by doing the following:
 
 ```js
-const emailNode = require("../nodes/node-red-nodes_email/email.js");
+const emailNode = require("./61-email");
 
 const testFlows = [{
     id: "n1", type: "e-mail", name: "Email",
