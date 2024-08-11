@@ -1,32 +1,40 @@
 
 module.exports = function(RED) {
     "use strict";
-    var util = require("util");
     var spawn = require('child_process').spawn;
-    var fs = require('fs');
+    var execSync = require('child_process').execSync;
+    //var fs = require('fs');
 
+    var testCommand = __dirname + '/testgpio';
     var gpioCommand = __dirname + '/nrsrf';
     var allOK = true;
 
     try {
-        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
-        if (cpuinfo.indexOf(": BCM") === -1 && cpuinfo.indexOf(": Raspberry Pi") === -1) {
-            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
-            allOK = false;
-        }
-        else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio") && !fs.existsSync("/usr/share/doc/python3-rpi.gpio")) {
-            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
-            allOK = false;
-        }
-        else if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
-            RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
-            allOK = false;
-        }
-    }
-    catch(err) {
-        RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+        execSync(testCommand);
+    } catch(err) {
         allOK = false;
+        RED.log.warn("rpi-srf : "+RED._("rpi-gpio.errors.ignorenode"));
     }
+
+    // try {
+    //     var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+    //     if (cpuinfo.indexOf(": Raspberry Pi") === -1) {
+    //         RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+    //         allOK = false;
+    //     }
+    //     else if (!fs.existsSync("/usr/share/doc/python-rpi.gpio") && !fs.existsSync("/usr/share/doc/python3-rpi.gpio")) {
+    //         RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.libnotfound"));
+    //         allOK = false;
+    //     }
+    //     else if (!(1 & parseInt ((fs.statSync(gpioCommand).mode & parseInt ("777", 8)).toString (8)[0]))) {
+    //         RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.needtobeexecutable",{command:gpioCommand}));
+    //         allOK = false;
+    //     }
+    // }
+    // catch(err) {
+    //     RED.log.warn("rpi-srf : "+RED._("node-red:rpi-gpio.errors.ignorenode"));
+    //     allOK = false;
+    // }
 
     function PiSrfNode(n) {
         RED.nodes.createNode(this, n);
@@ -83,6 +91,7 @@ module.exports = function(RED) {
             node.on("close", function(done) {
                 if (node.child != null) {
                     node.child.kill('SIGKILL');
+                    setTimeout(function() { if (done) { done(); } }, 50);
                 }
                 wfi(done);
             });
