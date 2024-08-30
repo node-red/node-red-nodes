@@ -127,13 +127,13 @@
                     $(".node-input-password").show();
                     $(".node-input-saslformat").hide();
                     $(".node-input-token").hide();
-                    $(".node-input-useTLS").show();
+                    // $(".node-input-useTLS").show();
                 } else if (protocol === "NONE") {
                     $(".node-input-userid").hide();
                     $(".node-input-password").hide();
                     $(".node-input-saslformat").hide();
                     $(".node-input-token").hide();
-                    $(".node-input-useTLS").hide();
+                    // $(".node-input-useTLS").hide();
                 } else {
                     $(".node-input-userid").show();
                     $(".node-input-password").hide();
@@ -141,7 +141,7 @@
                     $(".node-input-token").show();
                     $("#node-input-fetch").val("trigger");
                     $("#node-input-fetch").change();
-                    $(".node-input-useTLS").show();
+                    // $(".node-input-useTLS").show();
                 }
             });
             if (this.credentials.global) {
