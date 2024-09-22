@@ -11,6 +11,7 @@ module.exports = function(RED) {
         this.end = n.end;
         this.soff = (n.soff || 0) * 60000;  // minutes
         this.eoff = (n.eoff || 0) * 60000;  // minutes
+        this.sendAtStartup = n.sendAtStartup;
 
         var node = this;
         var oldval = null;
@@ -48,7 +49,7 @@ module.exports = function(RED) {
             sun.azimuth = sun.azimuth * 180 / Math.PI;
             var msg = {payload:0, topic:"sun", sun:sun, moon:moon, start:s1, end:s2, now:now};
             if ((e1 > 0) & (e2 < 0)) { msg.payload = 1; }
-            if (oldval == null) { oldval = msg.payload; }
+            if (oldval == null && !node.sendAtStartup) { oldval = msg.payload; }
             if (msg.payload == 1) { node.status({fill:"yellow",shape:"dot",text:"sunrise.dayState"}); }
             else { node.status({fill:"blue",shape:"dot",text:"sunrise.nightState"}); }
             if (msg.payload != oldval) {
