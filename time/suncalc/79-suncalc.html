@@ -39,6 +39,11 @@
         <span style="margin-right:4px" data-i18n="sunrise.start"></span> <input type="text" id="node-input-soff" placeholder="minutes" style='width:60px;' > <span data-i18n="sunrise.mins"></span>
         <span style="margin-left:14px; margin-right:4px" data-i18n="sunrise.end"></span> <input type="text" id="node-input-eoff" placeholder="minutes" style='width:60px;'><span data-i18n="sunrise.mins"></span>
     </div>
+    <div class="form-row">
+        <label for="node-input-sendAtStartup"><i class="fa fa-refresh"></i><span data-i18n="sunrise.label.startup"></span></label>
+        <input type="checkbox" id="node-input-sendAtStartup" style='width:auto ;border:none; vertical-align:baseline;'>
+        <span for="node-input-sendAtStartup" data-i18n="sunrise.sendAtStartup"></span>
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -53,6 +58,7 @@
             end: {value:"sunset", required:true},
             soff: {value:0, validate:RED.validators.number()},
             eoff: {value:0, validate:RED.validators.number()},
+            sendAtStartup: {value:false}
         },
         inputs:0,
         outputs:2,

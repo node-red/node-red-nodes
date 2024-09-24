@@ -1,32 +1,34 @@
 { 
-    "sunrise": { 
-        "label": { 
-            "latitude": " Latitude", 
-            "longitude": " Longitude", 
+    "sunrise": {
+        "label": {
+            "latitude": " Latitude",
+            "longitude": " Longitude",
             "start": " Start",
-			"end": " End",
-			"offset": " Offset",
-			"name": " Name"	
+            "end": " End",
+            "offset": " Offset",
+            "name": " Name",
+            "startup": " Startup"
         },
-		"nightEnd": "Morning astronomical twilight starts",
-		"nauticalDawn": "Morning nautical twilight starts",
-		"dawn": "Dawn, morning civil twilight starts",
-		"sunrise": "Sunrise",
-		"sunriseEnd": "Sunrise end",
-		"goldenHourEnd": "End of morning golden hour",	
-		"goldenHour": "Start of evening golden hour",
-		"sunsetStart": "Sunset start",
-		"sunset": "Sunset, civil twilight starts",
-		"dusk": "Dusk, Evening nautical twilight starts",
-		"nauticalDusk": "Evening astronomical twilight starts",
-		"night": "Dark enough for astronomy",
-		"start": " start",
-		"mins": " mins",
-		"end": " end",
-	    "dayState": "day",
-	    "nightState": "night",
-	    "onePerMin": "once per minute",
-	    "onse": "only on change",
-		"sunName": "Sun rise/set"
-    } 
+        "nightEnd": "Morning astronomical twilight starts",
+        "nauticalDawn": "Morning nautical twilight starts",
+        "dawn": "Dawn, morning civil twilight starts",
+        "sunrise": "Sunrise",
+        "sunriseEnd": "Sunrise end",
+        "goldenHourEnd": "End of morning golden hour",
+        "goldenHour": "Start of evening golden hour",
+        "sunsetStart": "Sunset start",
+        "sunset": "Sunset, civil twilight starts",
+        "dusk": "Dusk, Evening nautical twilight starts",
+        "nauticalDusk": "Evening astronomical twilight starts",
+        "night": "Dark enough for astronomy",
+        "start": " start",
+        "mins": " mins",
+        "end": " end",
+        "dayState": "day",
+        "nightState": "night",
+        "onePerMin": "once per minute",
+        "onse": "only on change",
+        "sunName": "Sun rise/set",
+        "sendAtStartup": "Send the current value at startup"
+    }
 }
