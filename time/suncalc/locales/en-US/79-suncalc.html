@@ -5,7 +5,7 @@
     <p>The start and end times can be offset by a number of minutes before (minus) or after (plus) the chosen event time.</p>
     <p>The first output emits a <code>msg.payload</code> of <i>1</i> or <i>0</i> every minute depending if in between selected times or not.
     The second output emits only on the transition between night to day (<i>-> 1</i>) or day to night (<i>-> 0</i>).
-    When the initial value at startup is required to be sent, that value will be emitted at the second output.</p>
+    The second output can optionally send the initial value at startup if required.</p>
     <p>It also outputs <code>msg.start</code>, <code>msg.end</code> and <code>msg.now</code> which are todays start and end times, with offsets applied, in ISO format, and the current ISO time.</p>
     <p><code>msg.sun</code> is an object containing the azimuth and altitude, in degrees, of the current sun position.</p>
     <p><code>msg.moon</code> is an object containing <thead></thead> position, phase, illumination and icon of the moon.</p>

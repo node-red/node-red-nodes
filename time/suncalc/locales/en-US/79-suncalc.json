@@ -1,4 +1,4 @@
-{ 
+{
     "sunrise": {
         "label": {
             "latitude": " Latitude",
@@ -29,6 +29,6 @@
         "onePerMin": "once per minute",
         "onse": "only on change",
         "sunName": "Sun rise/set",
-        "sendAtStartup": "Send the current value at startup"
+        "sendAtStartup": "Send current value at startup"
     }
 }
