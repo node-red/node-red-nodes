@@ -127,7 +127,7 @@ def process_command(data):
     else:
       SH.low_light = False
   else:
-    if threading.activeCount() == 2:
+    if threading.active_count() == 2:
       scroll.interrupt()
       while scroll.isAlive():
           time.sleep(0.01)
