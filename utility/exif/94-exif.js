@@ -81,14 +81,18 @@ module.exports = function(RED) {
             else if (node.mode === "worldmap" && (msg.payload.action !== "file" || msg.payload.type.indexOf("image") === -1)) { return; } // in case worldmap-in not filtered.
             try {
                 var value = RED.util.getMessageProperty(msg,node.property);
+
                 if (value !== undefined) {
                     if (typeof value === "string") { // it must be a base64 encoded inline image type
                         if (value.indexOf('data:image') !== -1) {
                             value = new Buffer.from(value.replace(/^data:image\/[a-z]+;base64,/, ""), 'base64');
                         }
+                        else {
+                            value = new Buffer.from(value, 'base64');
+                        }
                     }
                     if (Buffer.isBuffer(value)) { // or a proper jpg buffer
-                        msg.exif = ExifReader.load(msg.payload);
+                        msg.exif = ExifReader.load(value);
                         for (const p in msg.exif) {
                             if (msg.exif.hasOwnProperty(p)) {
                                 msg.exif[p] = msg.exif[p].description
