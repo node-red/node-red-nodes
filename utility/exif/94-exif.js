@@ -12,6 +12,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.mode = n.mode || "normal";
         if (this.mode === "worldmap") { this.property = "payload.content"; }
+        else if (this.mode === "tak") { this.property = "payload.event.detail.image['#text']"; }
         else { this.property = n.property || "payload"; }
         var node = this;
         var ExifReader = require('exifreader');
@@ -81,7 +82,6 @@ module.exports = function(RED) {
             else if (node.mode === "worldmap" && (msg.payload.action !== "file" || msg.payload.type.indexOf("image") === -1)) { return; } // in case worldmap-in not filtered.
             try {
                 var value = RED.util.getMessageProperty(msg,node.property);
-
                 if (value !== undefined) {
                     if (typeof value === "string") { // it must be a base64 encoded inline image type
                         if (value.indexOf('data:image') !== -1) {
@@ -91,7 +91,7 @@ module.exports = function(RED) {
                             value = new Buffer.from(value, 'base64');
                         }
                     }
-                    if (Buffer.isBuffer(value)) { // or a proper jpg buffer
+                    if (Buffer.isBuffer(value)) { // or a proper image buffer
                         msg.exif = ExifReader.load(value);
                         for (const p in msg.exif) {
                             if (msg.exif.hasOwnProperty(p)) {
@@ -108,6 +108,10 @@ module.exports = function(RED) {
                             msg.payload = msg.location || {};
                             delete msg.location;
                         }
+                        if (node.mode === "tak") {
+                            msg.payload.exif = msg.exif || {};
+                            delete msg.exif;
+                        }
                         node.send(msg);
                     }
                     else {
@@ -121,9 +125,15 @@ module.exports = function(RED) {
                 }
             }
             catch (error) {
-                node.error("An error occurred while extracting Exif information. Please check the log for details.",msg);
-                node.log('Error: '+error.message);
-                return;
+                if (node.mode === "tak") {
+                    node.send(msg);
+                    return;
+                }
+                else {
+                    node.error("An error occurred while extracting Exif information. Please check the log for details.",msg);
+                    node.log('Error: '+error.message);
+                    return;
+                }
             }
         });
     }
