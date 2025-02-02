@@ -3,7 +3,7 @@
     "version"       : "0.0.19",
     "description"   : "A Node-RED node to send alerts via Pushbullet",
     "dependencies"  : {
-        "pushbullet": "^2.4.0",
+        "pushbullet": "^3.0.0",
         "when": "^3.7.8"
     },
     "repository" : {
