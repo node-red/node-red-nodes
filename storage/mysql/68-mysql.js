@@ -145,6 +145,7 @@ module.exports = function(RED) {
                                     status = { fill: "red", shape: "ring", text: RED._("mysql.status.error") + ": " + err.code };
                                     node.status(status);
                                     node.error(err, msg);
+                                    send([null, { query: msg.topic, payload: 'ERROR', error: err }]);
                                 }
                                 else {
                                     msg.payload = rows;
