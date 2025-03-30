@@ -1,12 +1,16 @@
 {
     "arduino": {
+        "version": "version: 1.3.3-20250330",
         "label": {
-            "pin": "Pin",
-            "type": "Type",
-            "port": "Port"
+            "pin": "Pin:",
+            "type": "Type:",
+            "port": "Port:",
+            "name": "Name:",
+            "samplingInt": "Sampling interval:"
         },
         "placeholder": {
-            "port": "e.g. /dev/ttyUSB0  COM1"
+            "port": "(like: COM1 or /dev/ttyUSB0)",
+            "samplingInt": "(10 - 65535)"
         },
         "status": {
             "connectfirst": "connecting to first board found",
@@ -26,16 +30,23 @@
                 "digital": "Digital (0/1)",
                 "analogue": "Analogue (0-255)",
                 "servo": "Servo (0-180)",
-                "string": "String"
+                "string": "String",
+                "reset": "Reset Board on .payload=true",
+                "interval": "Set new sampling interval"
             }
         },
         "tip": {
-            "io": "<b>Note:</b> You cannot use the same pin for both output and input.",
-            "conf": "<b>Tip:</b> Use search to try to auto-detect serial port."
+            "io": "<b>Note:</b> You cannot use the same pin for both output and input!",
+            "port": "<p>On Unix/linux systems, it is recommended to choose the serial port at: <b>by-id</b> path, so it works always, no matter which USB port it gets re-plugged.</p><p><i>(It will look like this:</i> <code>/dev/serial/by-id/usb-Arduino_RPi_Pico_0764FE3-if00</code>)</p>",
+            "search": "<b>Tip:</b> Use search button to try to auto-detect serial port.",
+            "pin": "<b>Analogue pins:</b> usually between: <b>0..7</b><br>RPi-Pico has a built-in temperature reader at: <b>A03</b>",
+            "log2consol": "<b>To view Logs:</b> If you started node-red in a console, you will be able to see them there. Otherwise  type in a consol/terminal:<code> node-red-log </code>",
+            "otherboards": "To use this module with [Raspberry Pi - Pico] / [ESP32], you need to flash to the chip a [Configurable-Firmata] firmware: https://github.com/firmata/ConfigurableFirmata",
+            "more-at-help": "See more info at the Help tab."
         },
         "errors": {
             "portnotconf": "port not configured",
-            "portnotfound": "port not found : __device__",
+            "portnotfound": "port not found / not accessible: __device__",
             "devnotfound": "device __dev__ not found. Trying to find board."
         }
     }
