@@ -30,7 +30,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('arduino-board',{
+    RED.nodes.registerType('arduino-board',  {
         category: 'config',
         defaults: {
             device     : {value: ""   , required: true },
@@ -44,17 +44,52 @@
         },
         oneditprepare: function() {             
             try {
-                $("#node-config-input-device").autocomplete( "destroy" );
+                $("#node-config-input-device").autocomplete( "destroy" ); // Remove auto-complete functionality from an <input>.
             } catch(err) { };
-            
+
+            $("#node-config-lookup-serial").click(async function() { // Board's serial port search function
+                console.log("Serial Auto-search started.");
+                $("#node-config-lookup-serial-icon").removeClass('fa-search').addClass('spinner');
+                $("#node-config-lookup-serial").addClass('disabled');
+
+                try {
+                    $.getJSON('arduinoports', async function(data, data2) {
+                        console.log('Serial Auto-search found data: %o', data);
+                        console.log('Data2: %o', data2);
+                        
+                        // UI Updates
+                        $("#node-config-lookup-serial-icon").removeClass('spinner').addClass('fa-search');
+                        $("#node-config-lookup-serial").removeClass('disabled');
+                        // Ensure ports is an array (fallback to empty array)
+                        ports = data || [];
+
+                        $("#node-config-input-device").autocomplete({
+                            source: ports,
+                            minLength: 0,
+                            close: function(event, ui) {
+                                console.log("Serial Auto-search closing.");
+                                $("#node-config-input-device").autocomplete("destroy");
+                            }
+                        }).autocomplete("search", "");
+                    });
+                } catch (error) {
+                    console.error('Error fetching serial ports:', error);
+                    
+                    // Reset UI on error
+                    $("#node-config-lookup-serial-icon").removeClass('spinner').addClass('fa-search');
+                    $("#node-config-lookup-serial").removeClass('disabled');
+                }
+            });
+
+/*
             $("#node-config-lookup-serial").click(function() { // Board's serial port search function
-                this.warn("Serial Auto-search started.");
+                console.log("Serial Auto-search started.");
                 $("#node-config-lookup-serial-icon").removeClass('fa-search');
                 $("#node-config-lookup-serial-icon").addClass('spinner');
                 $("#node-config-lookup-serial")     .addClass('disabled');
 
                 $.getJSON('arduinoports', function(data) {
-                    this.warn('Serial Auto-search found data: %o', data);
+                    console.log('Serial Auto-search found data: %o', data);
                     $("#node-config-lookup-serial-icon").removeClass('spinner');
                     $("#node-config-lookup-serial")     .removeClass('disabled');
                     $("#node-config-lookup-serial-icon").addClass('fa-search');
@@ -63,12 +98,13 @@
                         source: ports,
                         minLength: 0,
                         close: function( event, ui ) {
-                            this.warn("Serial Auto-search closing.");
+                            console.log("Serial Auto-search closing.");
                             $("#node-config-input-device").autocomplete( "destroy" );
                         }
                     }).autocomplete("search", "");
                 });
             });
+*/
         }
     });
 </script>
@@ -224,7 +260,7 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"",validate: function(v) {
+            pin: {value:"", validate: function(v) {
                     var ct = $("#node-input-state").val() || this.state;
                     return ct === 'STRING' || (v !== '');
                 }},

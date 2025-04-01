@@ -99,7 +99,7 @@ Memo for debugging:
 
 module.exports = function(RED) {
     "use strict";
-    const SP = require('serialport');
+    const { SerialPort } = require('serialport'); // changed format SP -> to {SP} at v9 => v10. See: https://serialport.io/docs/guide-upgrade
     const firmataBoard = require('./lib/firmata');
     
 
@@ -221,10 +221,10 @@ module.exports = function(RED) {
 
     function pinAlreadyUsed (_parentNode, _newNode) { // Check, if there is already a Node registered with same pin -> report pin-conflict
         if (_parentNode.myChirdren.length === 0) return false;
-        if (([c_RESET, c_STRING, c_SYSEX, c_INTER]).includes(_newNode.type)) return false;
+        if (([c_RESET, c_STRING, c_SYSEX, c_INTER]).includes(_newNode.pinType)) return false;
 
         let _pin = _newNode.pin;
-        if (_newNode.type === c_ANALOG) {
+        if (_newNode.pinType === c_ANALOG) {
             if (_newNode.pin >= _parentNode.board.analogPins.length) return false; // wrong pin number
             _pin = _parentNode.board.analogPins[_newNode.pin]; // get from the reference Like: [26,27,28,29] _pin=3 -> _pin=29 
         }
@@ -239,7 +239,7 @@ module.exports = function(RED) {
                 return true;
             }
 
-            if ( _ch.type === c_ANALOG) {
+            if ( _ch.pinType === c_ANALOG) {
                 if (_pin === _parentNode.board.analogPins[_ch.pin]) return reportErrorAndExit(); // found similar! Exit
             } else {
                 if (_pin === _ch.pin) return reportErrorAndExit(); // found similar! Exit
@@ -420,7 +420,7 @@ module.exports = function(RED) {
                 updateBrdState(BdStates.disconnected);
                 resetBoard(brdNode); // this will try to send a "last minute" signal to the board to: reset.
                 if ( ! brdNode.closing) brdNode.error(RED._("arduino.status.portclosed"));
-                done();
+                if (done !== undefined) done();
             });
 
             brdNode.board.on('disconnect', function() {
@@ -429,7 +429,7 @@ module.exports = function(RED) {
                 if ( ! brdNode.closing) startBoardLoopTimer(); // do not start, if proper closing is happening
             });
         };
-debugger
+//debugger
 
 
         // START board initialization the first time
@@ -445,11 +445,14 @@ debugger
             brdNode.closing = true;
             if (!removed) updateBrdState(BdStates.disconnected); // this will notify clients too
             clearTimeout(brdNode.loop); brdNode.loop = null;
-            if ((brdNode.board == null) || (brdNode.board.transport == null) ) {done(); return; } 
+            if ((brdNode.board == null) || (brdNode.board.transport == null) ) {
+                if (done !== undefined) done();
+                return;
+            } 
 
             if (brdNode.board.transport.closing) {
                 if (moreLogs) { brdNode.log(c_fbr + "Nothing to do, because this port is already closing: " + brdNode.port); }    
-                done(); 
+                if (done !== undefined) done(); 
                 return;// EXIT
             };
 
@@ -461,13 +464,13 @@ debugger
                     brdNode.board.transport.close(function(err) {
                         if (moreLogs) { brdNode.log(RED._("arduino.status.portclosed") + err?"Err: ":"" , err); }
                     });
-                    done();
+                    if (done !== undefined) done();
                 }
                 catch(e) { 
                     if (moreLogs) { brdNode.error("Could not close port: " + brdNode.port + (e?"Err: ":"") , e); }
                  }
             }
-            else {done(); return;}
+            else { if (done !== undefined) done(); return;}
         });
     }
     // *** REGISTERING the (parent) board node  *** //
@@ -478,14 +481,14 @@ debugger
 /**
  * The Input (child) Node
  *
- * type: can be ANALOG, DIGITAL ... (Warning! in html it is called "state")
+ * pinType: can be ANALOG, DIGITAL ... (Warning! in html it is called "state")
  */
     function DuinoNodeIn(_setupIn) {
         RED.nodes.createNode(this, _setupIn); // n = setupNode
         let nodeIn          = this;
         nodeIn.n_status     = ndStats.start;
         nodeIn.pin          = _setupIn.pin;
-        nodeIn.type         = _setupIn.state; // "state" is a wrong naming at the html definition. It is the current type of the Pin. (Like: "ANALOG" or "PWM"...)
+        nodeIn.pinType      = _setupIn.state; // "state" is a wrong naming at the html definition. It is the current "Type" of the Pin. (Like: "ANALOG" or "PWM"...)
         nodeIn.parentNode   = RED.nodes.getNode(_setupIn.arduino); // n.arduino = The ArduinoNode's ID. It is defined at `package.json`: "node-red": {... "nodes": { "arduino": "35-arduino.js" }
         let loopIn = null; // timer
 
@@ -505,7 +508,7 @@ debugger
 
             // *** first initialization *** // 
             let startupIn = function() {
-                if (moreLogs) console.info(c_fbr + "Node-In created." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.type);
+                if (moreLogs) console.info(c_fbr + "Node-In created." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType);
                 if (loopIn !== null) {clearTimeout(loopIn); loopIn = null};
                 //nodeIn.frmBoard.setMaxListeners(0); Deleted 2025-03-17. DO NOT USE THIS ! See:  https://stackoverflow.com/a/44143119
 //              nodeIn.frmBoard.setMaxListeners(11); // no need either
@@ -514,9 +517,9 @@ debugger
 
                 let doit = function() {
                     if (pinAlreadyUsed(nodeIn.parentNode, nodeIn) === true) return; // EXIT;         // pin-conflict check 
-                    if (moreLogs) console.info(c_fbr + "Node-In init started." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.type);
+                    if (moreLogs) console.info(c_fbr + "Node-In init started." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType);
 					let goodPin = (nodeIn.pin != null) && !isNaN(nodeIn.pin) && (nodeIn.pin >=0) && (nodeIn.pin < nodeIn.frmBoard.pins.length);
-					if (goodPin === true && nodeIn.type === c_ANALOG) {
+					if (goodPin === true && nodeIn.pinType === c_ANALOG) {
 						goodPin = ( nodeIn.pin in nodeIn.frmBoard.analogPins ); // found analogue pin
                         if (!goodPin){ nodeIn.error( c_invalidPin + nodeIn.pin 
                             + (nodeIn.frmBoard.analogPins ? ". Only these analogue pin numbers are allowed: [0.." 
@@ -530,9 +533,9 @@ debugger
 					}
                     if (goodPin === true) {
                         try {
-                            if (nodeIn.type === c_ANALOG) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x02); } else
-                            if (nodeIn.type === c_INPUT ) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x00); } else
-                            if (nodeIn.type === c_PULLUP) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x0B); }
+                            if (nodeIn.pinType === c_ANALOG) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x02); } else
+                            if (nodeIn.pinType === c_INPUT ) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x00); } else
+                            if (nodeIn.pinType === c_PULLUP) { nodeIn.frmBoard.pinMode(nodeIn.pin, 0x0B); }
                             updateNodeStatus(nodeIn, ndStats.OK);
                         } catch (setPinError) {
                             updateNodeStatus(nodeIn, ndStats.wrongPin);
@@ -541,7 +544,7 @@ debugger
                         }
                         
                         // subscribing to pin-event listeners. These will call at firmata-io.js:  board.addListener(`analog-read-${pin}`, callback);
-                        if (nodeIn.type === c_ANALOG) {
+                        if (nodeIn.pinType === c_ANALOG) {
                             nodeIn.frmBoard.analogRead(nodeIn.pin, function(v) {
                                 if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
                                 if (v !== nodeIn.oldval) {
@@ -550,7 +553,7 @@ debugger
                                 }
                             });
                         } else
-                        if (nodeIn.type === c_INPUT) {
+                        if (nodeIn.pinType === c_INPUT) {
                             nodeIn.frmBoard.digitalRead(nodeIn.pin, function(v) {
                                 if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
                                 if (v !== nodeIn.oldval) {
@@ -560,7 +563,7 @@ debugger
                             });
 //                          nodeIn.frmBoard.queryPinState(nodeIn.pin, callback); // TODO ?
                         } else
-                        if (nodeIn.type === c_PULLUP) {
+                        if (nodeIn.pinType === c_PULLUP) {
                             nodeIn.frmBoard.digitalRead(nodeIn.pin, function(v) {
                                 if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
                                 if (v !== nodeIn.oldval) {
@@ -570,7 +573,7 @@ debugger
                             });
 //                          nodeIn.frmBoard.queryPinState(nodeIn.pin); // TODO ?
                         } else
-                        if (nodeIn.type == c_STRING) {
+                        if (nodeIn.pinType == c_STRING) {
                             nodeIn.frmBoard.on('string', function(v) {
                                 if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
                             //  if (v !== nodeIn.oldval) { //OMG! deleted 2025-03-17
@@ -597,7 +600,7 @@ debugger
                 }
 /*
                 if (loopIn === null) {
-                    if (moreLogs) console.info(c_fbr + "Timeout set for loop. Name="+ nodeIn.name + "  Pin=" + nodeIn.pin + "  State=" + nodeIn.type);
+                    if (moreLogs) console.info(c_fbr + "Timeout set for loop. Name="+ nodeIn.name + "  Pin=" + nodeIn.pin + "  State=" + nodeIn.pinType);
                     loopIn = setTimeout(function() { if (nodeIn.running === false) { startupIn(); } }, 4500);
                     loopIn.name = "startupIN-timeout";
                 }
@@ -614,7 +617,7 @@ debugger
             clearTimeout(loopIn);            
             if (removed) {removeFromChildren(nodeIn);}
             else         {updateNodeStatus(nodeIn, ndStats.equalsBoard);}
-            done();
+            if (done !== undefined) done();
         });
     }
     RED.nodes.registerType("arduino in", DuinoNodeIn);
@@ -623,16 +626,31 @@ debugger
 /**
  * The Output (child) Node
  *
- * type: can be ANALOG, DIGITAL ... (Warning! in html "type" is called "state")
+ * pinType: can be ANALOG, DIGITAL ... (Warning! in html "pinType" is called "state")
  */ 
     function DuinoNodeOut(_setupOut) {
         RED.nodes.createNode(this, _setupOut);
         let nodeOut         = this;
         nodeOut.n_status    = ndStats.start;
         nodeOut.pin         = _setupOut.pin;
-        nodeOut.type        = _setupOut.state;  // "state" is a wrong naming at the html definition. It is the current type of the Pin. (Like: "ANALOG" or "PWM"...)
+        nodeOut.pinType     = _setupOut.state;  // "state" is a wrong naming at the html definition. It is the current type of the Pin. (Like: "ANALOG" or "PWM"...)
         nodeOut.parentNode  = RED.nodes.getNode(_setupOut.arduino); // _setupOut.arduino = The board config. It is defined at `package.json`: "node-red": {... "nodes": { "arduino": "35-arduino.js" }
         let loopOut = null; // timer
+
+        // create an event-listener outside the scope of normal inputs, for "override-reset"
+        if (nodeOut.pinType === c_RESET) {
+            nodeOut.on("input", function(msg, send, done) {
+                if ( Boolean(msg.payload) === true) {
+                    try {
+                        resetBoard(nodeOut.parentNode);
+                        if (moreLogs) nodeOut.warn(c_fbr + "... sending reset from NR");                        
+                    } catch (_error) {
+                        nodeOut.error(c_fbr + "Could not send RESET to the board.", _error);
+                    };
+                    if (done !== undefined) done();
+                }
+            });
+        }
 
 // Test to see, what's inside:
 //console.log("ou- _setupOut.arduino: %o", _setupOut.arduino);
@@ -656,26 +674,26 @@ debugger
             });
 
             let startupOut = function() {
-                if (moreLogs) console.info(c_fbr + "Node-Out created." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.type);
+                if (moreLogs) console.info(c_fbr + "Node-Out created." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType);
                 if (loopOut !== null) {clearTimeout(loopOut); loopOut = null};
                 
                 updateNodeStatus(nodeOut, ndStats.equalsBoard);
                 
                 let doit = function() {
                     if (pinAlreadyUsed(nodeOut.parentNode, nodeOut) === true) return; // EXIT;         // pin-conflict check 
-                    if (moreLogs) console.info(c_fbr + "Node-Out init started." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.type);
+                    if (moreLogs) console.info(c_fbr + "Node-Out init started." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType);
                 
                     if ((nodeOut.pin != null) && !isNaN(nodeOut.pin) && nodeOut.pin >=0 && nodeOut.pin < nodeOut.frmBoard.pins.length) {
-                        if (nodeOut.type === c_OUTPUT) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x01); }
-                        if (nodeOut.type === c_PWM   ) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x03); }
-                        if (nodeOut.type === c_SERVO ) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x04); }
+                        if (nodeOut.pinType === c_OUTPUT) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x01); }
+                        if (nodeOut.pinType === c_PWM   ) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x03); }
+                        if (nodeOut.pinType === c_SERVO ) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x04); }
                 
                         updateNodeStatus(nodeOut, ndStats.OK);
                         
                         nodeOut.on("input", function(msg, send, done) {
                             if ((msg == null) || (msg.payload == null)) {   // NULL input -> send warning & exit
                                 nodeOut.warn("msg.payload must not be null!");
-                                done();
+                                if (done !== undefined) done();
                                 return;
                             }
 
@@ -685,7 +703,7 @@ debugger
                                     updateNodeStatus(nodeOut, ndStats.equalsBoard);
                                     resetBoard(nodeOut.parentNode);
                                 } else
-                                if (nodeOut.type === c_OUTPUT) {
+                                if (nodeOut.pinType === c_OUTPUT) {
                                     const str = msg.payload.toString();
                                     if ((msg.payload === true ) || (str === "1") || (str.toLowerCase() === "on")) {
                                         nodeOut.frmBoard.digitalWrite(nodeOut.pin, nodeOut.frmBoard.HIGH);
@@ -694,31 +712,31 @@ debugger
                                         nodeOut.frmBoard.digitalWrite(nodeOut.pin, nodeOut.frmBoard.LOW);
                                     };
                                 } else
-                                if (nodeOut.type === c_PWM) {
+                                if (nodeOut.pinType === c_PWM) {
                                     msg.payload = parseInt((msg.payload * 1) + 0.5); // round to int
                                     if ((msg.payload >= 0) && (msg.payload <= 255)) {
                                         nodeOut.frmBoard.analogWrite(nodeOut.pin, msg.payload);
                                     } else nodeOut.warn("PWM value must be: 0..255");
                                 } else
-                                if (nodeOut.type === c_SERVO) {
+                                if (nodeOut.pinType === c_SERVO) {
                                     msg.payload = parseInt((msg.payload * 1) + 0.5);
                                     if ((msg.payload >= 0) && (msg.payload <= 180)) {
                                         nodeOut.frmBoard.servoWrite(nodeOut.pin, msg.payload);
                                     }  else nodeOut.warn("PWM value must be: 0..180");
                                 } else
-                                if (nodeOut.type === c_SYSEX) {
+                                if (nodeOut.pinType === c_SYSEX) {
                                     nodeOut.frmBoard.sysexCommand(msg.payload);
                                 } else
-                                if (nodeOut.type === c_STRING) {
+                                if (nodeOut.pinType === c_STRING) {
                                     nodeOut.frmBoard.sendString(msg.payload.toString());
                                 } else
-                                if (nodeOut.type === c_RESET) {
+/*                              if (nodeOut.pinType === c_RESET) {
                                     if ( Boolean(msg.payload) === true) {
                                         updateNodeStatus(nodeOut, ndStats.equalsBoard);
                                         resetBoard(nodeOut.parentNode);
                                     }
-                                } else
-                                if (nodeOut.type === c_INTER) {
+                                } else */
+                                if (nodeOut.pinType === c_INTER) {
                                     const i = 0 + msg.payload;
                                     if (i < 10 || i > 65535) {
                                         nodeOut.warn("Invalid new interval input value (10-65535): ["+ msg.payload +"]");
@@ -729,7 +747,7 @@ debugger
                                     nodeOut.status({fill:c_yellow, shape:c_ring, text:"Interval= " + i});
                                 }
                             }
-                            done();
+                            if (done !== undefined) done();
                         });
                     }
                     else {
@@ -764,25 +782,79 @@ debugger
             clearTimeout(loopOut);
             if (removed === true) {removeFromChildren(nodeOut);}
             else                  {updateNodeStatus(nodeOut, ndStats.equalsBoard);};
-            done();
+            if (done !== undefined) done();
         });
     }
     RED.nodes.registerType("arduino out", DuinoNodeOut);
 
 
 /**
- * Listing serial ports (used at Board-configuration)
+ * Listing serial ports (used at Board-configuration, by clicking the SEARCH button on the right side of port editbox)
  *
  */ 
     RED.httpAdmin.get("/arduinoports", RED.auth.needsPermission("arduino.read"), function(req, res) {
-        SP.list().then(
+/*
+
+        (async () => {
+          try {
+            const serialList = await SerialPort.list();
             ports => {
                 const a = ports.map(p => p.comName);
                 res.json(a);
+                this.log(c_fbr + "Serial ports list:", a);
             },
             err => {
-                this.log('Error listing serial ports', err)
+                this.error('Error listing serial ports', err);
             }
-        )
+          } catch (e) {
+            console.log(e);
+          }
+        })();
+*/
+// Firmata Example (not working ! because SerialPort changed to async) : https://github.com/yokobond/firmata-io#with-a-transport-instance
+
+    let _arr = ["-- no ports found --"]; 
+    async function listSerialPorts() {
+        try {
+            const ports = await SerialPort.list();
+            console.log('Available Ports:', ports);
+            if ((ports != null) && (Array.isArray(ports)) && ports.length !== 0) 
+                _arr = ports.map(p => p.path);
+            res.json(_arr);
+        } catch (err) {
+            console.error('Error listing ports:', err);
+            _arr.push( err.toString );
+            res.json(_arr);
+        }
+    }
+
+    listSerialPorts();
+
+/*
+Expected result of each port in the array:
+    interface PortInfo {
+        path: string;
+        manufacturer: string | undefined;
+        serialNumber: string | undefined;
+        pnpId: string | undefined;
+        locationId: string | undefined;
+        productId: string | undefined;
+        vendorId: string | undefined;
+    }
+
+For example on windows:
+[
+  {
+    path: 'COM3',
+    manufacturer: 'Microsoft',
+    serialNumber: '6&35CA52AB&0&0000',
+    pnpId: 'USB\\VID_2E8A&PID_00C0&MI_00\\6&35CA52AB&0&0000',
+    locationId: '0000.0014.0000.001.000.000.000.000.000',
+    friendlyName: 'Soros USB-eszköz (COM3)',
+    vendorId: '2E8A',
+    productId: '00C0'
+  }
+]
+*/
     });
 }
