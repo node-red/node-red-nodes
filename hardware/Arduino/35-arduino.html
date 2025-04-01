@@ -80,31 +80,6 @@
                     $("#node-config-lookup-serial").removeClass('disabled');
                 }
             });
-
-/*
-            $("#node-config-lookup-serial").click(function() { // Board's serial port search function
-                console.log("Serial Auto-search started.");
-                $("#node-config-lookup-serial-icon").removeClass('fa-search');
-                $("#node-config-lookup-serial-icon").addClass('spinner');
-                $("#node-config-lookup-serial")     .addClass('disabled');
-
-                $.getJSON('arduinoports', function(data) {
-                    console.log('Serial Auto-search found data: %o', data);
-                    $("#node-config-lookup-serial-icon").removeClass('spinner');
-                    $("#node-config-lookup-serial")     .removeClass('disabled');
-                    $("#node-config-lookup-serial-icon").addClass('fa-search');
-                    let ports = data || [];
-                    $("#node-config-input-device").autocomplete({
-                        source: ports,
-                        minLength: 0,
-                        close: function( event, ui ) {
-                            console.log("Serial Auto-search closing.");
-                            $("#node-config-input-device").autocomplete( "destroy" );
-                        }
-                    }).autocomplete("search", "");
-                });
-            });
-*/
         }
     });
 </script>
