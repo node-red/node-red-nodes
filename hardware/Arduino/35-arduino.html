@@ -4,21 +4,20 @@
 
 <script type="text/html" data-template-name="arduino-board">
     <div class="form-row">
-        <div class="form-tips"><span data-i18n="[html]arduino.tip.search"></span></div>
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="arduino.label.name"></span></label>
+        <input type="text" id="node-config-input-name" style="width:60%;"/>
+    </div>
+    <div class="form-row">
         <label for="node-config-input-device"><i class="fa fa-random"></i> <span data-i18n="arduino.label.port"></span></label>
         <input type="text" id="node-config-input-device" style="width:60%;" data-i18n="[placeholder]arduino.placeholder.port"/>
         <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
         <div class="form-tips"><span data-i18n="[html]arduino.tip.port"></span></div>
     </div>
     <div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="arduino.label.name"></span></label>
-        <input type="text" id="node-config-input-name" style="width:60%;"/>
-    </div>
-    <div class="form-row">
         <div class="form-tips"><span data-i18n="[html]arduino.tip.otherboards"></span></div>
     </div>
     <div class="form-row">
-        <label for="node-config-input-samplingInt"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.samplingInt"></span></label>
+        <label for="node-config-input-samplingInt" style="width:150px;"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.samplingInt"></span></label>
         <input type="number" id="node-config-input-samplingInt" style="width:20%;" data-i18n="[placeholder]arduino.placeholder.samplingInt" min=10 max=65500 />
     </div>
     <div class="form-row">
@@ -30,55 +29,44 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('arduino-board',  {
+    RED.nodes.registerType('arduino-board',{
         category: 'config',
         defaults: {
             device     : {value: ""   , required: true },
             name       : {value: ""   , required: false},
             samplingInt: {value: 250  , required: false}, // will read analog inputs 4x / sec by default. Can be 19-65500
-            log2consol : {value: false, required: false}  
+            log2consol : {value: false, required: false}
         },
         label: function() {
             if (this.name !== "") return this.name
             else return this.device || "firmata-board-" + this.id; // (bad naming :-( ) device should be: "port"
         },
-        oneditprepare: function() {             
+        oneditprepare: function() {
             try {
-                $("#node-config-input-device").autocomplete( "destroy" ); // Remove auto-complete functionality from an <input>.
+                $("#node-config-input-device").autocomplete( "destroy" );
             } catch(err) { };
 
-            $("#node-config-lookup-serial").click(async function() { // Board's serial port search function
-                console.log("Serial Auto-search started.");
-                $("#node-config-lookup-serial-icon").removeClass('fa-search').addClass('spinner');
-                $("#node-config-lookup-serial").addClass('disabled');
+            $("#node-config-lookup-serial").click(function() { // Board's serial port search function
+                this.warn("Serial Auto-search started.");
+                $("#node-config-lookup-serial-icon").removeClass('fa-search');
+                $("#node-config-lookup-serial-icon").addClass('spinner');
+                $("#node-config-lookup-serial")     .addClass('disabled');
 
-                try {
-                    $.getJSON('arduinoports', async function(data, data2) {
-                        console.log('Serial Auto-search found data: %o', data);
-                        console.log('Data2: %o', data2);
-                        
-                        // UI Updates
-                        $("#node-config-lookup-serial-icon").removeClass('spinner').addClass('fa-search');
-                        $("#node-config-lookup-serial").removeClass('disabled');
-                        // Ensure ports is an array (fallback to empty array)
-                        ports = data || [];
-
-                        $("#node-config-input-device").autocomplete({
-                            source: ports,
-                            minLength: 0,
-                            close: function(event, ui) {
-                                console.log("Serial Auto-search closing.");
-                                $("#node-config-input-device").autocomplete("destroy");
-                            }
-                        }).autocomplete("search", "");
-                    });
-                } catch (error) {
-                    console.error('Error fetching serial ports:', error);
-                    
-                    // Reset UI on error
-                    $("#node-config-lookup-serial-icon").removeClass('spinner').addClass('fa-search');
-                    $("#node-config-lookup-serial").removeClass('disabled');
-                }
+                $.getJSON('arduinoports', function(data) {
+                    this.warn('Serial Auto-search found data: %o', data);
+                    $("#node-config-lookup-serial-icon").removeClass('spinner');
+                    $("#node-config-lookup-serial")     .removeClass('disabled');
+                    $("#node-config-lookup-serial-icon").addClass('fa-search');
+                    let ports = data || [];
+                    $("#node-config-input-device").autocomplete({
+                        source: ports,
+                        minLength: 0,
+                        close: function( event, ui ) {
+                            this.warn("Serial Auto-search closing.");
+                            $("#node-config-input-device").autocomplete( "destroy" );
+                        }
+                    }).autocomplete("search", "");
+                });
             });
         }
     });
@@ -89,6 +77,10 @@
   In - node
 -->
 <script type="text/html" data-template-name="arduino in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
         <input type="text" id="node-input-arduino">
@@ -102,20 +94,12 @@
             <option value="STRING" data-i18n="arduino.state.in.string"></option>
         </select>
     </div>
-    <div class="form-tips"><span data-i18n="[html]arduino.tip.io"></span></div>
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
         <input type="number" min="0" max="99" id="node-input-pin" style="width:20%;" placeholder="2">
-        <div class="form-tips"><span data-i18n="[html]arduino.tip.pin"></span></div>
     </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
-    </div>
-    <div class="form-tips"><span data-i18n="[html]arduino.tip.more-at-help"></span></div>
-    <div class="form-row">
-        <label><span data-i18n="[html]arduino.version"></span></label>
-    </div>
+    <div class="form-tips"><span data-i18n="[html]arduino.tip.pin"></span></div>
+    <div class="form-tips"><span data-i18n="[html]arduino.tip.io"></span></div>
 </script>
 
 <script type="text/javascript">
@@ -159,7 +143,7 @@
 	<p> </p>
 	<p>[b]Type:[/b] Can be: [Digital in] / [Digital Pullup in] / [Analogue in] / [String]</p>
 	<p>[b]Pin:[/b] a number between 0 and the highest GPIO</p>
-	<p>[b]Warning:[/b] Analogue pins are counted from 0 ! (Not the actual GPIO port.) For example RPi-Pico: [0,1,2,3] where 3 is the built-in Temp reader.</p>
+	<p>[b]Warning:[/b] Analogue pins are counted from 0. (Not the actual GPIO port.) For example RPi-Pico: [0,1,2,3] where 3 is the built-in Temp reader.</p>
     <p> </p>
 
 	<h3>The "in" node:</h3>
@@ -169,7 +153,7 @@
 	<p>The sampling interval (frequency), at which data is being collected and sent to host, is set on board's firmata side. If not, default value is: <b>19ms</b> </p>
 	<p>The connection between the board(s) and the host can be Wifi, BlueTooth, USB.\n <i>(But the base protocol through those is: Serial port transfer. Default baudRate: 57600 .) Usually: USB port.</i></p>
 	<p> </p>
-	
+
 	<h3>Change Log + More info:</h3>
 	<p> see: https://github.com/node-red/node-red-nodes/blob/master/hardware/Arduino/README.md </p>
 </script>
@@ -177,6 +161,10 @@
 
 
 <script type="text/html" data-template-name="arduino out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
     <div class="form-row">
         <label for="node-input-arduino"><i class="fa fa-tasks"></i> Arduino</label>
         <input type="text" id="node-input-arduino">
@@ -195,16 +183,9 @@
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-circle"></i> <span data-i18n="arduino.label.pin"></span></label>
         <input type="number" min="0" max="99" id="node-input-pin" style="width:20%;" placeholder="13">
-        <div class="form-tips"><span data-i18n="[html]arduino.tip.pin"></span></div>
     </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
-    </div>
+    <div class="form-tips"><span data-i18n="[html]arduino.tip.pin"></span></div>
     <div class="form-tips"><span data-i18n="[html]arduino.tip.io"></span></div>
-    <div class="form-row">
-        <label><span data-i18n="[html]arduino.version"></span></label>
-    </div>
 </script>
 
 <script type="text/x-red" data-help-name="arduino out">
@@ -222,10 +203,10 @@
       <li>- <b>reset</b> - to reset the board, if `msg.payoload = true or 1`</li>
       <li>- <b>Sampling interval</b> - to set a new time (10ms - 65535ms) how fast analogue input data will be transfered</li>
     </ul>
-    <p>Digital, PWM, Servo will expects a value in `msg.payload`. </p> 
+    <p>Digital, PWM, Servo will expects a value in `msg.payload`. </p>
     <p>The pin number must be set in the properties (config) panel before Deploy.</p>
     <p> </p>
-    <p>You can also send `msg.payoload = "reset"` to any Output Node without pre-configuring it, to reset the board.</p>   
+    <p>You can also send `msg.payoload = "reset"` to any Output Node without pre-configuring it, to reset the board.</p>
 </script>
 
 
@@ -235,7 +216,7 @@
         color:"#3fadb5",
         defaults: {
             name: {value:""},
-            pin: {value:"", validate: function(v) {
+            pin: {value:"",validate: function(v) {
                     var ct = $("#node-input-state").val() || this.state;
                     return ct === 'STRING' || (v !== '');
                 }},

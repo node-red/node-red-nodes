@@ -12,14 +12,11 @@ _Typically plugged in to the host via USB to extend: I/O + analogue + I2C + OneW
 See the [main documentation](http://nodered.org/docs/hardware/arduino.html) for
 details and examples of how to use this node.
 
-See list of changes and latest features (with pictures) at: [NR's forum](https://discourse.nodered.org/t/announce-node-red-node-arduino-firmata-remastered-v1-3-3/96317). 
-
 
 Install
 -------
 
-Either use the Menu - Manage Palette option,
-or run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Menu - Manage Palette option or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i --unsafe-perm node-red-node-arduino
 

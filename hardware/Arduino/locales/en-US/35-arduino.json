@@ -1,6 +1,5 @@
 {
     "arduino": {
-        "version": "version: 1.3.4-20250331",
         "label": {
             "pin": "Pin:",
             "type": "Type:",
@@ -36,12 +35,12 @@
             }
         },
         "tip": {
-            "io": "<b>Note:</b> You cannot use the same pin for both output and input!",
-            "port": "<p>On Unix/linux systems, it is recommended to choose the serial port at: <b>by-id</b> path, so it works always, no matter which USB port it gets re-plugged.</p><p><i>(It will look like this:</i> <code>/dev/serial/by-id/usb-Arduino_RPi_Pico_0764FE3-if00</code>)</p>",
+            "io": "<b>Note:</b> You cannot use the same pin for both output and input",
+            "port": "<p>On Unix/linux systems, it is recommended to choose the serial port at: <b>by-id</b> path, so it is fixed, no matter if the USB gets re-plugged.</p><p><i>(It will look like this:</i> <code>/dev/serial/by-id/usb-Arduino_RPi_Pico_0764FE3-if00</code>)</p>",
             "search": "<b>Tip:</b> Use search button to try to auto-detect serial port.",
             "pin": "<b>Analogue pins:</b> usually between: <b>0..7</b><br>RPi-Pico has a built-in temperature reader at: <b>A03</b>",
-            "log2consol": "<b>To view Logs:</b> If you started node-red in a console, you will be able to see them there. Otherwise  type in a consol/terminal:<code> node-red-log </code>",
-            "otherboards": "To use this module with [Raspberry Pi - Pico] / [ESP32], you need to flash to the chip a [Configurable-Firmata] firmware: https://github.com/firmata/ConfigurableFirmata",
+            "log2consol": "<b>To view Logs:</b> If you started node-red in a console, you will be able to see them there. Otherwise  type in a console/terminal:<code> node-red-log </code>",
+            "otherboards": "To use this module with Raspberry Pi Pico or ESP32, you need to flash the chip with a Configurable-Firmata firmware e.g. https://github.com/firmata/ConfigurableFirmata",
             "more-at-help": "See more info at the Help tab."
         },
         "errors": {
