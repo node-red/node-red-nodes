@@ -102,7 +102,6 @@ module.exports = function(RED) {
     const SP = require('serialport');
     const firmataBoard = require('./lib/firmata');
 
-
     let moreLogs = RED.settings.verbose || false; // enable this for "debugging"
 
     // "global" constants:  (these are used at Emitters too)
@@ -782,9 +781,9 @@ debugger
  *
  */
     RED.httpAdmin.get("/arduinoports", RED.auth.needsPermission("arduino.read"), function(req, res) {
-        SP.list().then(
-            ports => {
-                const a = ports.map(p => p.comName);
+        SP.SerialPort.list().then(
+            (data) => {
+                const a = data.map(p => p.path);
                 res.json(a);
             },
             err => {
