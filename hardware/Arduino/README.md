@@ -16,7 +16,8 @@ details and examples of how to use this node.
 Install
 -------
 
-Either use the Menu - Manage Palette option or run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Menu - Manage Palette option,
+or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i --unsafe-perm node-red-node-arduino
 

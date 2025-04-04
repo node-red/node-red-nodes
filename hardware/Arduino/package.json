@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-arduino",
-    "version": "2.0.0",
+    "version": "1.4.0",
     "description": "A Node-RED Node, to talk to a chip as I/O extender, which is running Firmata firmware",
     "dependencies": {
         "serialport": "^12.0.0"
