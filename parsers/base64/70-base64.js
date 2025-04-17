@@ -20,7 +20,7 @@ module.exports = function(RED) {
                     if ( typeof value === "string") {
                         var load = value.replace(/\s+/g,'');
                         if (regexp.test(load) && (load.length % 4 === 0) ) {
-                            value = Buffer.from(load,'base64').toString('binary');
+                            value = Buffer.from(load,'base64').toString();
                             RED.util.setMessageProperty(msg,node.property,value);
                             node.send(msg);
                         }
