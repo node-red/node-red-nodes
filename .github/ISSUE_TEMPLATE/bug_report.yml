@@ -1,0 +1,67 @@
+name: 🐞 Report a bug
+description: File a bug/issue on one of the nodes in this repository
+labels: [needs-triage]
+body:
+- type: markdown
+  attributes:
+    value: |
+      This issue tracker is for problems with the extra nodes maintained by the Node-RED project.
+
+      If your issue is:
+        - a general 'how-to' type question,
+        - a feature request or suggestion for a change,
+        - or problems with 3rd party (`node-red-contrib-`) nodes
+
+      please use the [Node-RED Forum](https://discourse.nodered.org) or [slack team](https://nodered.org/slack), or ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/node-red) and tag it `node-red`.
+
+      That way the whole Node-RED user community can help, rather than rely on the core development team.
+
+      ## So you have a real issue to raise...
+
+      To help us understand the issue, please fill-in as much of the following information as you can:
+- type: textarea
+  attributes:
+    label: Which node are you reporting and issue on?
+    description: Give the full node name
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: What are the steps to reproduce?
+    description: A clear & concise description of what you did.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: What happens?
+    description: A clear & concise description of what you see
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: What did you expect to happen?
+    description: Explain what you wanted to happen
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Example flow
+    description: If you have a minimal example flow that demonstrates the issue, share it here.
+    value: |
+      ```
+      paste your flow here
+      ```
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Environment
+    description: Please tell us about your environment. Include any relevant information on how you are running Node-RED.
+    value: |
+        - Node-RED version:
+        - Node.js version:
+        - npm version:
+        - Platform/OS:
+        - Browser:
+  validations:
+    required: false
