@@ -1,0 +1,20 @@
+{
+  "sqlite": {
+    "label": {
+      "database": "Base de Datos",
+      "sqlQuery": "Consulta SQL",
+      "viaMsgTopic": "En msg.topic",
+      "fixedStatement": "Consulta Fija",
+      "preparedStatement": "Consulta Preparada",
+      "batchWithoutResponse": "Lote sin respuesta",
+      "sqlStatement": "Comando SQL",
+      "mode": "Modo",
+      "readWriteCreate": "Leer-Escribir-Crear",
+      "readWrite": "Leer-Escribir",
+      "readOnly": "Solo Leer"
+    },
+    "tips": {
+      "memoryDb": "<b>Nota</b>: Establecer el nombre de la base de datos a <code>:memory:</code> creará una base de datos no persistente en la memoria."
+    }
+  }
+}
