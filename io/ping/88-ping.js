@@ -69,7 +69,7 @@ module.exports = function(RED) {
             try {
                 if (ex && ex.pid) { ex.kill("SIGINT"); }
             }
-            catch(e) {console.warn(e); }
+            catch(e) { console.warn(e); }
         }, hostOptions.timeout+1000); //add 1s for grace
 
         var res = false;

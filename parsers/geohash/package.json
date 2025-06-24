@@ -1,10 +1,13 @@
 {
     "name"          : "node-red-node-geohash",
-    "version"       : "0.1.10",
+    "version"       : "1.0.0",
     "description"   : "A Node-RED node to encode and decode lat,lon pairs to a geohash.",
     "dependencies"  : {
         "ngeohash"   : "^0.6.3"
     },
+    "bundledDependencies": [
+        "ngeohash"
+    ],
     "repository" : {
         "type":"git",
         "url":"https://github.com/node-red/node-red-nodes.git",
@@ -19,7 +22,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }
