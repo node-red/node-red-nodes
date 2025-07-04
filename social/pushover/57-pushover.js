@@ -118,10 +118,13 @@ module.exports = function(RED) {
                     // Unset these temporary values
                     attachmentBuffer = attachmentString = undefined;
                     // attach the buffer
-                    pushmsg.file = { data: attachment };
+                    pushmsg.file = { data:attachment };
+                }
+                else if (typeof(msg.attachment) === 'object' && msg.attachment.hasOwnProperty('name') && msg.attachment.hasOwnProperty('data')) {
+                    pushmsg.file = msg.attachment;
                 }
                 else if (attachment) {
-                    node.error("[57-pushover.js] Error: attachment property must be a path to a local file or a Buffer containing an image");
+                    node.error("[57-pushover.js] Error: attachment property must be a path to a local file or a Buffer containing an image, or an object containing both name and data properties");
                     return;
                 }
                 pushMessage(pushmsg,msg);
