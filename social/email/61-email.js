@@ -629,7 +629,7 @@ module.exports = function(RED) {
         this.starttls = n.starttls;
         this.certFile = n.certFile;
         this.keyFile = n.keyFile;
-        this.users = n.users;
+        this.mtausers = n.users;
         this.auth = n.auth;
         try {
             this.options = JSON.parse(n.expert);
@@ -687,10 +687,10 @@ module.exports = function(RED) {
         }
 
         node.options.onAuth = function (auth, session, callback) {
-            let id = node.users.findIndex(function (item) {
+            let id = node.mtausers.findIndex(function (item) {
                 return item.name === auth.username;
             });
-            if (id >= 0 && node.users[id].password === auth.password) {
+            if (id >= 0 && node.mtausers[id].password === auth.password) {
                 callback(null, { user: id + 1 });
             } else {
                 callback(new Error("Invalid username or password"));
