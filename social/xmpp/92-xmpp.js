@@ -399,7 +399,7 @@ module.exports = function(RED) {
             node.quiet = false;
             node.status({fill:"green",shape:"dot",text:"connected"});
             if (node.join) {
-                node.jointick = setInterval(function() { joinrooms(); }, 60000);
+                node.jointick = setInterval(function() { joinrooms(); }, 90000);
                 joinrooms();
             }
         });
