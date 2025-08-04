@@ -16,7 +16,12 @@ module.exports = function(RED) {
                         value = cbor.decode(value);
                         RED.util.setMessageProperty(msg,node.property,value);
                         node.send(msg);
-                        node.status({text:l +" b->o "+ JSON.stringify(value).length});
+                        if (typeof value === 'bigint') {
+                            node.status({text:l +" b->o "+ value.toString().length});
+                        }
+                        else {
+                            node.status({text:l +" b->o "+ JSON.stringify(value).length});
+                        }
                     }
                     catch (e) {
                         node.error("Bad decode",msg);
@@ -24,7 +29,13 @@ module.exports = function(RED) {
                     }
                 }
                 else {
-                    var le = JSON.stringify(value).length;
+                    var le;
+                    if (typeof value === 'bigint') {
+                        le = value.toString().length;
+                    }
+                    else {
+                        le = JSON.stringify(value).length;
+                    }
                     value = cbor.encode(value);
                     RED.util.setMessageProperty(msg,node.property,value);
                     node.send(msg);
