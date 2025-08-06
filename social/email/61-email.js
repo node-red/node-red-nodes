@@ -183,7 +183,14 @@ module.exports = function(RED) {
                         } else {
                             node.log(RED._("email.status.messagesent",{response:info.response}));
                             node.status({text:"",response:info.response,msg:{to:msg.to,topic:msg.topic,id:msg._msgid}});
-                            if (done) { done(); }
+                            if (done) {
+                                msg.payload = sendopts.text;
+                                msg.from = sendopts.from;
+                                msg.to = sendopts.to;
+                                msg.topic = sendopts.subject;
+                                msg.response = info.response;
+                                done();
+                            }
                         }
                     });
                 }
