@@ -38,13 +38,13 @@
             log2consol : {value: false, required: false}
         },
         label: function() {
-            if (this.name !== "") return this.name
-            else return this.device || "firmata-board-" + this.id; // (bad naming :-( ) device should be: "port"
+            if (this.name !== "") { return this.name }
+            else { return this.device || "firmata-board-" + this.id; } // (bad naming :-( ) device should be: "port"
         },
         oneditprepare: function() {
             try {
                 $("#node-config-input-device").autocomplete( "destroy" ); // Remove auto-complete functionality from an <input>.
-            } catch(err) { };
+            } catch(err) { }
 
             $("#node-config-lookup-serial").click(async function() { // Board's serial port search function
                 console.log("Serial Auto-search started.");

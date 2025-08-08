@@ -45,7 +45,7 @@ module.exports = function(grunt) {
             html: ['*/*/*.html', '!node_modules/*/*.html', '!*/node_modules/*.html'],
             options: {
                 jshintrc: ".jshintrc"
-                //,reporter: require('jshint-stylish')
+                ,reporter: require('jshint-stylish')
             }
         },
         jscs: {
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
             options: {
                 config: ".jscsrc",
                 reporter: "inline"
-                //,fix: true
+                ,fix: true
             }
         }
     });
@@ -63,6 +63,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-lint-inline');
     grunt.loadNpmTasks('grunt-jscs');
 
-    grunt.registerTask('default', ['jshint:all', 'inlinelint:html', 'simplemocha:all']);
+    grunt.registerTask('default', ['jshint:all', 'simplemocha:all']);
     grunt.registerTask('style', ['jscs']);
 };

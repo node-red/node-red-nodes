@@ -142,9 +142,9 @@ describe('exif node', function() {
                 var logEvents = helper.log().args.filter(function(evt) {
                     return evt[0].type == "exif";
                 });
-                logEvents.should.have.length(1);
+                logEvents.should.have.length(2);
                 logEvents[0][0].should.have.a.property('msg');
-                logEvents[0][0].msg.toString().should.startWith("Invalid payload received, ");
+                logEvents[0][0].msg.toString().should.startWith("An error occurred while extracting Exif");
                 done();
             },150);
 

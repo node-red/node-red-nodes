@@ -162,17 +162,17 @@ module.exports = function(RED) {
 
 
 	function resetBoard(_brdNode){
-        if ((_brdNode == null) || (_brdNode.board == null)) return;
+        if ((_brdNode == null) || (_brdNode.board == null)) { return; }
     //  console.log('pins: %o', nodeIn.board.analogPins);
-        if (moreLogs) console.info(c_fbr + " Board RESET. Port= " + _brdNode.port ); // =parent.device
+        if (moreLogs) { console.info(c_fbr + " Board RESET. Port= " + _brdNode.port ); } // =parent.device
         try {
             _brdNode.board.reset();
-            if (moreLogs) console.info(c_fbr + "  .. Reset sent. Port= " + _brdNode.port );
+            if (moreLogs) { console.info(c_fbr + "  .. Reset sent. Port= " + _brdNode.port ); }
         }
         catch(err) {
             _brdNode.error(c_fbr + "sending: reset failed. Error: " + err);
         }
-    };
+    }
 
 
     // state types of Input/Output nodes:
@@ -186,11 +186,9 @@ module.exports = function(RED) {
     });
 
     function updateNodeStatus(_n, new_stat) {
-        if (_n.parentNode == null) new_stat = ndStats.noBoard;
+        if (_n.parentNode == null) { new_stat = ndStats.noBoard; }
 
-        if (((_n.parentNode != null) && (_n.parentNode.b_stat !== BdStates.OK))
-            || (new_stat === ndStats.equalsBoard) ) // if the main board has some error, it has priority, Except: [noBoard, missingPin pinConflict]
-        {
+        if (((_n.parentNode != null) && (_n.parentNode.b_stat !== BdStates.OK)) || (new_stat === ndStats.equalsBoard) )  { // if the main board has some error, it has priority, Except: [noBoard, missingPin pinConflict]
             _n.n_status = ndStats.equalsBoard;
             switch (_n.parentNode.b_stat) {
                 case BdStates.permanentError: _n.status({fill:c_red    , shape:c_ring, text:"Permanent Error: Board"}); break;     // -9
@@ -204,7 +202,7 @@ module.exports = function(RED) {
             }
         }
         else {
-            if (_n.n_status === new_stat) return;
+            if (_n.n_status === new_stat) { return; }
             _n.n_status = new_stat;
             switch (new_stat) {
                 case ndStats.noBoard       : _n.status({fill:c_red   , shape:c_ring, text:"Error: No board"}); break;      // -3
@@ -218,30 +216,32 @@ module.exports = function(RED) {
         }
     }
 
+    function reportErrorAndExit() {
+        updateNodeStatus(_newNode, ndStats.pinConflict);
+        _newNode.error("This pin number is already in use by this Node:" + _newNode.id);
+        return true;
+    }
+
     function pinAlreadyUsed (_parentNode, _newNode) { // Check, if there is already a Node registered with same pin -> report pin-conflict
-        if (_parentNode.myChirdren.length === 0) return false;
-        if (([c_RESET, c_STRING, c_SYSEX, c_INTER]).includes(_newNode.pinType)) return false;
+        if (_parentNode.myChirdren.length === 0) { return false; }
+        if (([c_RESET, c_STRING, c_SYSEX, c_INTER]).includes(_newNode.pinType)) { return false; }
 
         let _pin = _newNode.pin;
         if (_newNode.pinType === c_ANALOG) {
-            if (_newNode.pin >= _parentNode.board.analogPins.length) return false; // wrong pin number
+            if (_newNode.pin >= _parentNode.board.analogPins.length) { return false; } // wrong pin number
             _pin = _parentNode.board.analogPins[_newNode.pin]; // get from the reference Like: [26,27,28,29] _pin=3 -> _pin=29
         }
         for (let i = 0; i < _parentNode.myChirdren.length; i++) {
             const _ch = _parentNode.myChirdren[i];
-            if (_ch == null     ) continue;
-            if (_ch === _newNode) continue; // itself
+            if (_ch == null     ) { continue; }
+            if (_ch === _newNode) { continue; } // itself
 
-            function reportErrorAndExit() {
-                updateNodeStatus(_newNode, ndStats.pinConflict);
-                _newNode.error("This pin number is already in use by this Node:" + _newNode.id);
-                return true;
-            }
+
 
             if ( _ch.pinType === c_ANALOG) {
-                if (_pin === _parentNode.board.analogPins[_ch.pin]) return reportErrorAndExit(); // found similar! Exit
+                if (_pin === _parentNode.board.analogPins[_ch.pin]) { return reportErrorAndExit(); }// found similar! Exit
             } else {
-                if (_pin === _ch.pin) return reportErrorAndExit(); // found similar! Exit
+                if (_pin === _ch.pin) { return reportErrorAndExit(); } // found similar! Exit
             }
         }
         return false; // not found any pin-conflict
@@ -250,9 +250,9 @@ module.exports = function(RED) {
     function removeFromChildren(_ch) {
         if (_ch != null) {
             let _x =_ch.parentNode.myChirdren.indexOf(_ch);
-            if (_x >= 0) _ch.parentNode.myChirdren.splice(_x, 1);
-        };
-    };
+            if (_x >= 0) { _ch.parentNode.myChirdren.splice(_x, 1); }
+        }
+    }
 
 
 
@@ -266,7 +266,7 @@ module.exports = function(RED) {
         brdNode.b_stat     = BdStates.start;    // the status of the board
         brdNode.name       = _setup.name || "";
         brdNode.samplingInt= _setup.samplingInt || 250;
-        if ((_setup.log2consol || moreLogs) === true) moreLogs = true;
+        if ((_setup.log2consol || moreLogs) === true) { moreLogs = true; }
         brdNode.port       = _setup.device || "";    // port path. Like: "COM3" or "/dev/serial/by-id/usb-Arduino_RaspberryPi_Pico_076461E62D414FE3-if00"
                                                 // see also: "n.settings.serialport.path" . Sadly the original HTML is named it "device" :-(
         brdNode.FirmwareName = "";
@@ -283,36 +283,36 @@ module.exports = function(RED) {
                 baudRate: 57600,    // TODO:    test, if it would be possible to increase speed during run via fimata.Update()
                 path : brdNode.port
             }
-        };
+        }
 
 
         function updateBrdState(_newState) {
-            if (brdNode.b_stat === _newState) return; // nothing changed -> exit
+            if (brdNode.b_stat === _newState) { return; } // nothing changed -> exit
             brdNode.b_stat = _newState;
             // Send event to all nodeIn + nodeOut to update visual state
             for (let x = 0; x < brdNode.myChirdren.length; x++) {
                 const _ch = brdNode.myChirdren[x];
-                if (_ch != null)  _ch.emit(c_brdStateChanged, true);
+                if (_ch != null)  { _ch.emit(c_brdStateChanged, true); }
             }
         }
 
 
         function startBoardLoopTimer() {
-            if (brdNode.loop != null) return; // timer already set!
-            if (brdNode.loopWaitMs < 10000) brdNode.loopWaitMs += (brdNode.loopWaitMs < 1500) ? 100 : 1000;
+            if (brdNode.loop != null) { return; }// timer already set!
+            if (brdNode.loopWaitMs < 10000) { brdNode.loopWaitMs += (brdNode.loopWaitMs < 1500) ? 100 : 1000; }
             brdNode.loop = setTimeout(function() { update_reconnect_MyBoard(); }, brdNode.loopWaitMs);
         }
 
 
         function update_reconnect_MyBoard() {
             clearTimeout(brdNode.loop); brdNode.loop = null;
-            if (brdNode.board == null) return; // ... for any case
-            if (brdNode.board.transport == null) return; // ... for any case
+            if (brdNode.board == null) { return; } // ... for any case
+            if (brdNode.board.transport == null) { return; } // ... for any case
 
             const _t = brdNode.board.transport; // shorter form
             // if everything is fine. Startup already happened once, (and no disconnection since than,) so no need to run more times.
             if ((brdNode.b_stat === BdStates.OK) && (brdNode.board != null) && (brdNode.board.isReady) && (_t.isOpen)) {
-                if (moreLogs) console.info(c_fbr + " is already running fine. No need to start again. Port:" + brdNode.port );
+                if (moreLogs) { console.info(c_fbr + " is already running fine. No need to start again. Port:" + brdNode.port ); }
 // TODO: send a test: queryPinState(pin, callback)
                 brdNode.b_stat = BdStates.OK;
                 brdNode.loopWaitMs = 0; // reset
@@ -320,15 +320,18 @@ module.exports = function(RED) {
             }
 
             let _newState = BdStates.connecting; // first time start
-            if (brdNode.b_stat < 0)
+            if (brdNode.b_stat < 0) {
                 _newState = BdStates.tryReconnect;
-            else
-            if (!_t.opening && _t.isOpen && !brdNode.board.isReady)
-                _newState = BdStates.gettingVersion; // first time start
-
+            }
+            else {
+                if (!_t.opening && _t.isOpen && !brdNode.board.isReady) {
+                    _newState = BdStates.gettingVersion; // first time start
+                }
+            }
             updateBrdState( _newState );
-            if (!_t.opening && !_t.isOpen) // if not opening and not opened
+            if (!_t.opening && !_t.isOpen) { // if not opening and not opened
                 _t.open();
+            }
 
             startBoardLoopTimer(); // increase time and check again
         }
@@ -342,25 +345,25 @@ module.exports = function(RED) {
 
             if (brdNode.board === null) {// if board does not exists yet ...
                 brdNode.b_stat = BdStates.connecting; // first time start
-                if (moreLogs) brdNode.log(c_fbr + "creating new instance. Port:" + brdNode.port + "  | Sampling-interval=" + brdNode.samplingInt);
+                if (moreLogs) { brdNode.log(c_fbr + "creating new instance. Port:" + brdNode.port + "  | Sampling-interval=" + brdNode.samplingInt); }
 
                 // creating new board, starting async promice to report state changes:
                 brdNode.board = new firmataBoard(brdNode.port, startOptions, function(e) {  // (port, options, callback)
-                    if (e == null) { update_reconnect_MyBoard(); return; };
+                    if (e == null) { update_reconnect_MyBoard(); return; }
 
                     const _s = e.toString();
-                    if (moreLogs) brdNode.log(c_fbr + brdNode.name + " Port:" + brdNode.port + " state changed to:" + _s
-                        + "  |  opening:" + brdNode.board.transport.opening + "  | is open:" + brdNode.board.transport.isOpen);
+                    if (moreLogs) {
+                        brdNode.log(c_fbr + brdNode.name + " Port:" + brdNode.port + " state changed to:" + _s + "  |  opening:" + brdNode.board.transport.opening + "  | is open:" + brdNode.board.transport.isOpen);
+                    }
 
                     // *** if some kind of error happened *** //
-                    if ( (e.name === "Error") || (_s.indexOf("cannot open") !== -1) || (_s.indexOf("Error") !== -1)
-                    ) {
+                    if ( (e.name === "Error") || (_s.indexOf("cannot open") !== -1) || (_s.indexOf("Error") !== -1)) {
                         updateBrdState(BdStates.permanentError);
                         brdNode.error(RED._("arduino.errors.portnotfound", {device:brdNode.port}));
                         brdNode.loopWaitMs = 20000;
                         startBoardLoopTimer();
                         return;
-                    };
+                    }
 
                     update_reconnect_MyBoard(); // this will update state, restart check-timer if needed.
                     //if (brdNode.board.versionReceived === true) updateBrdState(BdStates.OK)
@@ -373,7 +376,7 @@ module.exports = function(RED) {
             brdNode.on('destroy', function() {
                 brdNode.closing = true;
                 brdNode.myChirdren = [];
-                if (brdNode.board == null) return; // exit
+                if (brdNode.board == null) { return; } // exit
                 brdNode.board.removeAllListeners('connect');
                 brdNode.board.removeAllListeners('ready');
                 brdNode.board.removeAllListeners('close');
@@ -383,20 +386,21 @@ module.exports = function(RED) {
             // Firmata-board emitters:
             brdNode.board.on('error', function(err) {
                 updateBrdState(BdStates.unknownError);
-                if (moreLogs) brdNode.error(c_fbr + ' Error: ' + JSON.stringify(err) ); //+
+                if (moreLogs) { brdNode.error(c_fbr + ' Error: ' + JSON.stringify(err) ); } //+
             });
 
             // "connect" is called, once serial communication is established. After that queryFirmware is called. See: "ready"
             brdNode.board.on('connect', function() {
                 brdNode.closing = false;
-                if (moreLogs) brdNode.log(c_fbr + "connecting to:" + brdNode.port );
-                if (brdNode.FirmwareName) // version already aquired once
+                if (moreLogs) { brdNode.log(c_fbr + "connecting to:" + brdNode.port ); }
+                if (brdNode.FirmwareName) { // version already aquired once
                     updateBrdState(BdStates.OK);
+                }
                 else {
-                    if (brdNode.board.versionReceived) brdNode.warn("versionReceived but FirmwareName=[]");
+                    if (brdNode.board.versionReceived) { brdNode.warn("versionReceived but FirmwareName=[]"); }
                     updateBrdState(BdStates.gettingVersion);
                     startBoardLoopTimer();
-                };
+                }
             });
 
             // "ready" event is called, after the Firmware name+version + capabilities got querried within 5000ms successfully
@@ -410,7 +414,7 @@ module.exports = function(RED) {
                 // notifying all children
                 for (let x = 0; x < brdNode.myChirdren.length; x++) {
                     const _ch = brdNode.myChirdren[x];
-                    if (_ch != null)  _ch.emit(c_brdReady, true);
+                    if (_ch != null) { _ch.emit(c_brdReady, true); }
                 }
             });
 
@@ -418,42 +422,45 @@ module.exports = function(RED) {
 // todo :  removed
                 updateBrdState(BdStates.disconnected);
                 resetBoard(brdNode); // this will try to send a "last minute" signal to the board to: reset.
-                if ( ! brdNode.closing) brdNode.error(RED._("arduino.status.portclosed"));
-                if (done !== undefined) done();
+                if ( ! brdNode.closing) { brdNode.error(RED._("arduino.status.portclosed")); }
+                if (done !== undefined) { done(); }
             });
 
             brdNode.board.on('disconnect', function() {
                 updateBrdState(BdStates.disconnected);
-                if (moreLogs) brdNode.log(c_fbr + "Disconnected. Port:" + brdNode.port + "  Firmware Name: ["+ brdNode.FirmwareName +"]");
-                if ( ! brdNode.closing) startBoardLoopTimer(); // do not start, if proper closing is happening
+                if (moreLogs) { brdNode.log(c_fbr + "Disconnected. Port:" + brdNode.port + "  Firmware Name: ["+ brdNode.FirmwareName +"]"); }
+                if ( ! brdNode.closing) { startBoardLoopTimer(); } // do not start, if proper closing is happening
             });
-        };
+        }
 //debugger
 
 
         // START board initialization the first time
         startupBrd();
 
-        if (brdNode.loop == null)
+        if (brdNode.loop == null) {
             startBoardLoopTimer();
-        else
-            if (moreLogs) brdNode.log(c_fbr + "already present. Loop start skipped. ");
+        }
+        else {
+            if (moreLogs) { brdNode.log(c_fbr + "already present. Loop start skipped. "); }
+        }
 
 //            brdNode.removeAllListeners('close');
         brdNode.on('close', function(removed, done) {  // the Node itself is getting destoyed     memo: function(done) did not work, TypeError
             brdNode.closing = true;
-            if (!removed) updateBrdState(BdStates.disconnected); // this will notify clients too
-            clearTimeout(brdNode.loop); brdNode.loop = null;
+            if (!removed) { updateBrdState(BdStates.disconnected); } // this will notify clients too
+            clearTimeout(brdNode.loop);
+            brdNode.loop = null;
             if ((brdNode.board == null) || (brdNode.board.transport == null) ) {
-                if (done !== undefined) done();
+                if (done !== undefined) { done(); }
                 return;
             }
 
             if (brdNode.board.transport.closing) {
                 if (moreLogs) { brdNode.log(c_fbr + "Nothing to do, because this port is already closing: " + brdNode.port); }
-                if (done !== undefined) done();
+                if (done !== undefined) { done(); }
                 return;// EXIT
-            };
+            }
 
             if (moreLogs) { brdNode.log(c_fbr + "Trying to close port:" + brdNode.port); }
 
@@ -463,13 +470,16 @@ module.exports = function(RED) {
                     brdNode.board.transport.close(function(err) {
                         if (moreLogs) { brdNode.log(RED._("arduino.status.portclosed") + err?"Err: ":"" , err); }
                     });
-                    if (done !== undefined) done();
+                    if (done !== undefined) { done(); }
                 }
                 catch(e) {
                     if (moreLogs) { brdNode.error("Could not close port: " + brdNode.port + (e?"Err: ":"") , e); }
                  }
             }
-            else { if (done !== undefined) done(); return;}
+            else {
+                if (done !== undefined) { done(); }
+                return;
+            }
         });
     }
     // *** REGISTERING the (parent) board node  *** //
@@ -497,7 +507,7 @@ module.exports = function(RED) {
             if (nodeIn.frmBoard == null) {
                 updateNodeStatus(nodeIn, ndStats.noBoard);
                 return; // EXIT
-            };
+            }
 
             nodeIn.parentNode.myChirdren.push(nodeIn);  // subscribe to main nodes array to recieve state changes
             // handle if parent Node's (= firmata-Board's) status is changed
@@ -507,23 +517,21 @@ module.exports = function(RED) {
 
             // *** first initialization *** //
             let startupIn = function() {
-                if (moreLogs) console.info(c_fbr + "Node-In created." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType);
-                if (loopIn !== null) {clearTimeout(loopIn); loopIn = null};
+                if (moreLogs) { console.info(c_fbr + "Node-In created." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType); }
+                if (loopIn !== null) {clearTimeout(loopIn); loopIn = null}
                 //nodeIn.frmBoard.setMaxListeners(0); Deleted 2025-03-17. DO NOT USE THIS ! See:  https://stackoverflow.com/a/44143119
 //              nodeIn.frmBoard.setMaxListeners(11); // no need either
                 nodeIn.oldval = "";
                 updateNodeStatus(nodeIn, ndStats.equalsBoard);
 
                 let doit = function() {
-                    if (pinAlreadyUsed(nodeIn.parentNode, nodeIn) === true) return; // EXIT;         // pin-conflict check
-                    if (moreLogs) console.info(c_fbr + "Node-In init started." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType);
+                    if (pinAlreadyUsed(nodeIn.parentNode, nodeIn) === true) { return; } // EXIT;         // pin-conflict check
+                    if (moreLogs) { console.info(c_fbr + "Node-In init started." + (nodeIn.name ? "  Name=["+ nodeIn.name +"]" : "") + "  Pin=" + nodeIn.pin + "  Type=" + nodeIn.pinType); }
 					let goodPin = (nodeIn.pin != null) && !isNaN(nodeIn.pin) && (nodeIn.pin >=0) && (nodeIn.pin < nodeIn.frmBoard.pins.length);
 					if (goodPin === true && nodeIn.pinType === c_ANALOG) {
 						goodPin = ( nodeIn.pin in nodeIn.frmBoard.analogPins ); // found analogue pin
-                        if (!goodPin){ nodeIn.error( c_invalidPin + nodeIn.pin
-                            + (nodeIn.frmBoard.analogPins ? ". Only these analogue pin numbers are allowed: [0.."
-                            + (nodeIn.frmBoard.analogPins.length-1) + "]/n Reference GPIOs:" + nodeIn.frmBoard.analogPins
-                            : "NO analogue pins are allowed with this firmware / board!"));
+                        if (!goodPin) {
+                            nodeIn.error( c_invalidPin + nodeIn.pin + (nodeIn.frmBoard.analogPins ? ". Only these analogue pin numbers are allowed: [0.." + (nodeIn.frmBoard.analogPins.length-1) + "]/n Reference GPIOs:" + nodeIn.frmBoard.analogPins : "NO analogue pins are allowed with this firmware / board!"));
 //console.log('pins: %o', nodeIn.board.analogPins);     // TESTS
 //const jsonString = JSON.stringify(node.board.pins);
 //console.log( jsonString );
@@ -545,7 +553,7 @@ module.exports = function(RED) {
                         // subscribing to pin-event listeners. These will call at firmata-io.js:  board.addListener(`analog-read-${pin}`, callback);
                         if (nodeIn.pinType === c_ANALOG) {
                             nodeIn.frmBoard.analogRead(nodeIn.pin, function(v) {
-                                if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
+                                if (nodeIn.n_status !== ndStats.OK) { updateNodeStatus(nodeIn, ndStats.OK); }
                                 if (v !== nodeIn.oldval) {
                                     nodeIn.oldval = v;
                                     nodeIn.send({payload:v, topic:"A"+nodeIn.pin});
@@ -554,7 +562,7 @@ module.exports = function(RED) {
                         } else
                         if (nodeIn.pinType === c_INPUT) {
                             nodeIn.frmBoard.digitalRead(nodeIn.pin, function(v) {
-                                if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
+                                if (nodeIn.n_status !== ndStats.OK) { updateNodeStatus(nodeIn, ndStats.OK); }
                                 if (v !== nodeIn.oldval) {
                                     nodeIn.oldval = v;
                                     nodeIn.send({payload:v, topic:nodeIn.pin});
@@ -564,7 +572,7 @@ module.exports = function(RED) {
                         } else
                         if (nodeIn.pinType === c_PULLUP) {
                             nodeIn.frmBoard.digitalRead(nodeIn.pin, function(v) {
-                                if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
+                                if (nodeIn.n_status !== ndStats.OK) { updateNodeStatus(nodeIn, ndStats.OK); }
                                 if (v !== nodeIn.oldval) {
                                     nodeIn.oldval = v;
                                     nodeIn.send({payload:v, topic:nodeIn.pin});
@@ -574,13 +582,13 @@ module.exports = function(RED) {
                         } else
                         if (nodeIn.pinType == c_STRING) {
                             nodeIn.frmBoard.on('string', function(v) {
-                                if (nodeIn.n_status !== ndStats.OK) updateNodeStatus(nodeIn, ndStats.OK);
+                                if (nodeIn.n_status !== ndStats.OK) { updateNodeStatus(nodeIn, ndStats.OK); }
                             //  if (v !== nodeIn.oldval) { //OMG! deleted 2025-03-17
                             //      nodeIn.oldval = v;
                                     nodeIn.send({payload:v, topic:"string"});
                             //  }
                             });
-                        };
+                        }
                     }
                     else {
                         updateNodeStatus(nodeIn, ndStats.wrongPin);
@@ -616,7 +624,7 @@ module.exports = function(RED) {
             clearTimeout(loopIn);
             if (removed) {removeFromChildren(nodeIn);}
             else         {updateNodeStatus(nodeIn, ndStats.equalsBoard);}
-            if (done !== undefined) done();
+            if (done !== undefined) { done(); }
         });
     }
     RED.nodes.registerType("arduino in", DuinoNodeIn);
@@ -642,11 +650,11 @@ module.exports = function(RED) {
                 if ( Boolean(msg.payload) === true) {
                     try {
                         resetBoard(nodeOut.parentNode);
-                        if (moreLogs) nodeOut.warn(c_fbr + "... sending reset from NR");
+                        if (moreLogs) { nodeOut.warn(c_fbr + "... sending reset from NR"); }
                     } catch (_error) {
                         nodeOut.error(c_fbr + "Could not send RESET to the board.", _error);
-                    };
-                    if (done !== undefined) done();
+                    }
+                    if (done !== undefined) { done(); }
                 }
             });
         }
@@ -664,7 +672,7 @@ module.exports = function(RED) {
             if (nodeOut.frmBoard == null) {
                 updateNodeStatus(nodeOut, ndStats.noBoard);
                 return; // EXIT
-            };
+            }
 
             nodeOut.parentNode.myChirdren.push(nodeOut);     // subscribe to main nodes array to recieve state changes
             // if parent Node's (= firmata-Board's) status is changed
@@ -673,14 +681,17 @@ module.exports = function(RED) {
             });
 
             let startupOut = function() {
-                if (moreLogs) console.info(c_fbr + "Node-Out created." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType);
-                if (loopOut !== null) {clearTimeout(loopOut); loopOut = null};
+                if (moreLogs) { console.info(c_fbr + "Node-Out created." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType); }
+                if (loopOut !== null) {
+                    clearTimeout(loopOut);
+                    loopOut = null;
+                }
 
                 updateNodeStatus(nodeOut, ndStats.equalsBoard);
 
                 let doit = function() {
-                    if (pinAlreadyUsed(nodeOut.parentNode, nodeOut) === true) return; // EXIT;         // pin-conflict check
-                    if (moreLogs) console.info(c_fbr + "Node-Out init started." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType);
+                    if (pinAlreadyUsed(nodeOut.parentNode, nodeOut) === true) { return; } // EXIT;         // pin-conflict check
+                    if (moreLogs) { console.info(c_fbr + "Node-Out init started." + (nodeOut.name ? "  Name=["+ nodeOut.name + "]" : "") + "  Pin=" + nodeOut.pin + "  Type=" + nodeOut.pinType); }
 
                     if ((nodeOut.pin != null) && !isNaN(nodeOut.pin) && nodeOut.pin >=0 && nodeOut.pin < nodeOut.frmBoard.pins.length) {
                         if (nodeOut.pinType === c_OUTPUT) { nodeOut.frmBoard.pinMode(nodeOut.pin, 0x01); }
@@ -692,7 +703,7 @@ module.exports = function(RED) {
                         nodeOut.on("input", function(msg, send, done) {
                             if ((msg == null) || (msg.payload == null)) {   // NULL input -> send warning & exit
                                 nodeOut.warn("msg.payload must not be null!");
-                                if (done !== undefined) done();
+                                if (done !== undefined) { done(); }
                                 return;
                             }
 
@@ -709,19 +720,23 @@ module.exports = function(RED) {
                                     } else
                                     if ((msg.payload === false) || (str === "0") || (str.toLowerCase() === "off")) {
                                         nodeOut.frmBoard.digitalWrite(nodeOut.pin, nodeOut.frmBoard.LOW);
-                                    };
+                                    }
                                 } else
                                 if (nodeOut.pinType === c_PWM) {
                                     msg.payload = parseInt((msg.payload * 1) + 0.5); // round to int
                                     if ((msg.payload >= 0) && (msg.payload <= 255)) {
                                         nodeOut.frmBoard.analogWrite(nodeOut.pin, msg.payload);
-                                    } else nodeOut.warn("PWM value must be: 0..255");
+                                    } else {
+                                        nodeOut.warn("PWM value must be: 0..255");
+                                    }
                                 } else
                                 if (nodeOut.pinType === c_SERVO) {
                                     msg.payload = parseInt((msg.payload * 1) + 0.5);
                                     if ((msg.payload >= 0) && (msg.payload <= 180)) {
                                         nodeOut.frmBoard.servoWrite(nodeOut.pin, msg.payload);
-                                    }  else nodeOut.warn("PWM value must be: 0..180");
+                                    } else {
+                                        nodeOut.warn("PWM value must be: 0..180");
+                                    }
                                 } else
                                 if (nodeOut.pinType === c_SYSEX) {
                                     nodeOut.frmBoard.sysexCommand(msg.payload);
@@ -740,13 +755,13 @@ module.exports = function(RED) {
                                     if (i < 10 || i > 65535) {
                                         nodeOut.warn("Invalid new interval input value (10-65535): ["+ msg.payload +"]");
                                         return;
-                                    };
+                                    }
                                     nodeOut.samplingInterval = i;
                                     nodeOut.frmBoard.setSamplingInterval(i);
                                     nodeOut.status({fill:c_yellow, shape:c_ring, text:"Interval= " + i});
                                 }
                             }
-                            if (done !== undefined) done();
+                            if (done !== undefined) { done(); }
                         });
                     }
                     else {
@@ -780,8 +795,8 @@ module.exports = function(RED) {
         nodeOut.on('close', function(removed, done) { // if remove === true -> it means this Node is getting deleted
             clearTimeout(loopOut);
             if (removed === true) {removeFromChildren(nodeOut);}
-            else                  {updateNodeStatus(nodeOut, ndStats.equalsBoard);};
-            if (done !== undefined) done();
+            else                  {updateNodeStatus(nodeOut, ndStats.equalsBoard);}
+            if (done !== undefined) { done(); }
         });
     }
     RED.nodes.registerType("arduino out", DuinoNodeOut);
@@ -796,11 +811,12 @@ module.exports = function(RED) {
     async function listSerialPorts() {
         try {
             const ports = await SerialPort.list();
-            if ((ports != null) && (Array.isArray(ports)) && ports.length !== 0)
+            if ((ports != null) && (Array.isArray(ports)) && ports.length !== 0) {
                 _arr = ports.map(p => p.path);
+            }
             res.json(_arr);
         } catch (err) {
-            this.log('Error listing ports: '+ err);
+            console.log('Error listing ports: '+ err);
             _arr.push( err.toString );
             res.json(_arr);
         }
