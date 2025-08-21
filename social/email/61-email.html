@@ -476,7 +476,7 @@
             starttls: { value: false },
             certFile: { value: "" },
             keyFile: { value: "" },
-            users: { value: [] },
+            mtausers: { value: [] },
             auth: { value: false },
             expert: { value: '{"logger":false}' }
         },
@@ -506,9 +506,9 @@
             }
             // User Management
             let cacheItemCount = 0;
-            if (node.users && node.users.length > 0) {
+            if (node.mtausers && node.mtausers.length > 0) {
                 cacheItemCount = node.users.length;
-                node.users.forEach(function (element, index, array) {
+                node.mtausers.forEach(function (element, index, array) {
                     generateUserEntry(element, index);
                 });
             }
@@ -597,9 +597,9 @@
         oneditsave: function () {
             let node = this;
             let cacheUsers = $("#node-input-email-users-container").children();
-            node.users = [];
+            node.mtausers = [];
             cacheUsers.each(function () {
-                node.users.push({
+                node.mtausers.push({
                     name: $(this)
                         .find(".userName")
                         .val(),

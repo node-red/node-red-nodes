@@ -629,7 +629,7 @@ module.exports = function(RED) {
         this.starttls = n.starttls;
         this.certFile = n.certFile;
         this.keyFile = n.keyFile;
-        this.mtausers = n.users;
+        this.mtausers = n.mtausers;
         this.auth = n.auth;
         try {
             this.options = JSON.parse(n.expert);
