@@ -1,0 +1,29 @@
+<script type="text/html" data-help-name="sqlite">
+    <p>Permite el acceso a una base de datos SQLite.</p>
+    <p>La consulta SQL establece cómo se pasa la consulta al nodo.</p>
+    <p>La consulta SQL en <i>msg.topic</i> y la <i>Declaración fija</i> utilizan la operación <b>db.all</b> en la base de datos configurada. Esto permite INSERTAR, ACTUALIZAR y BORRAR.
+    Por su propia naturaleza, puede hacerse inyección SQL... así que <i>ten cuidado...</i></p>
+    <p>El tipo SQL <i>Declaración preparada</i> también usa <b>db.all</b> pero limpia los parámetros pasados, eliminando la posibilidad de inyección SQL.</p>
+    <p>El tipo de SQL <i>Lote sin respuesta</i> utiliza <b>db.exec</b> que ejecuta todas las declaraciones SQL en la cadena proporcionada. No se devuelven filas de resultados.</p>
+    <p>Cuando se utiliza <i>msg.topic</i> o <i>Lote sin respuesta</i>, <code>msg.topic</code> debe contener la <i>consulta</i> para el base de datos.</p>
+    <p>Cuando se utiliza <i>msg.topic</i>, los parámetros se pueden pasar en la consulta utilizando una matriz <code>msg.payload</code>. Por ejemplo:<br />
+    <code>msg.topic = `INSERT INTO user_table (name, surname) VALUES ($name, $surname)`<br />
+    msg.payload = ["John", "Smith"]<br />
+    return msg;</code><br />
+    <p>Cuando se utiliza una declaración normal o preparada, la <i>consulta</i> debe ingresarse en la configuración del nodo.</p>
+    <p>Pasa los parámetros como un objeto en <code>msg.params</code> para la declaración preparada. Por ejemplo:<br />
+        <code>msg.params = {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$id:1,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;$name:"John Doe"<br />
+    }</code><br />
+    Los propiedades de los objetos de parámetros deben coincidir con los parámetros configurados en la declaración preparada. Si recibes el error <code>SQLITE_RANGE: enlace o índice de columna fuera de rango</code> asegúrate de incluir $ en la clave del objeto del parámetro.<br />
+    La consulta SQL para el ejemplo anterior podría ser: <code>insert into user_table (user_id, user) VALUES ($id, $name);</code></p>
+    <p>Utilizando cualquier consulta SQL, el resultado se devuelve en <code>msg.payload</code></p>
+    <p>Normalmente, la carga devuelta será una matriz de filas de resultados (o un error).</p>
+    <p>Puedes cargar extensiones SQLite ingresando una propiedad <code>msg.extension</code> que contenga la ruta completa y el nombre del archivo.</p>
+    <p>El tiempo de espera de reconexión en milisegundos se puede cambiar añadiendo una línea <pre>mysqlReconnectTime: 30000,</pre> en <b>settings.js</b></p>
+</script>
+
+<script type="text/html" data-help-name="sqlitedb">
+    <p>The default directory for the database file is the user's home directory through which the Node-RED process was started. You can specify absolute path to change it.</p>
+</script>
