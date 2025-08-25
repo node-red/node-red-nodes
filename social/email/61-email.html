@@ -443,9 +443,10 @@
     </div>
     <div class="form-row">
         <label for="node-input-auth"><i class="fa fa-user"></i> <span data-i18n="email.label.users"></span></label>
-        <input type="checkbox" id="node-input-auth" style="display:inline-block; width:20px; vertical-align:baseline;">
-        <span data-i18n="email.label.auth"></span>
+        <input type="hidden" id="node-input-authType">
+        <input type="input" id="node-input-auth" style="width: calc(100% - 110px)">
     </div>
+    <div class="form-tips" id="node-custom-auth-tip"><span data-i18n="[html]email.tip.mta-custom-auth"></span></div>
     <div class="form-row node-input-email-users-container-row" style="margin-bottom: 0px;">
         <div id="node-input-email-users-container-div" style="box-sizing: border-box; border-radius: 5px;
                 min-height: 200px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll; resize: vertical;">
@@ -478,6 +479,7 @@
             keyFile: { value: "" },
             mtausers: { value: [] },
             auth: { value: false },
+            authType: { value: false },
             expert: { value: '{"logger":false}' }
         },
         inputs: 0,
@@ -491,7 +493,8 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function () {
-            let node = this;
+            const node = this;
+
             // Certificate settings
             $("#node-input-secure").change(secVisibility);
             $("#node-input-starttls").change(secVisibility);
@@ -505,9 +508,24 @@
                 }
             }
             // User Management
+            const noneType = { value: 'none', label: node._('email.label.noAuth'), hasValue: false }
+            const builtInType = { value: 'built-in', label: node._('email.label.auth'), hasValue: false }
+            const AUTH_TYPES = ['none', 'built-in', "flow", "global", "jsonata"]
+            if (!AUTH_TYPES.includes(node.authType)) {
+                // in-place upgrade
+                node.authType = (node.auth === "true" || node.auth === true) ? "built-in" : "none";
+                $('#node-input-authType').val(node.authType);
+            }
+            const $authTypedInput = $('#node-input-auth').typedInput({
+                default: 'none',
+                typeField: $('#node-input-authType'),
+                types: [noneType, builtInType, 'flow', 'global', 'jsonata']
+            })
+            $authTypedInput.change(builtInUsersVisibility);
+
             let cacheItemCount = 0;
             if (node.mtausers && node.mtausers.length > 0) {
-                cacheItemCount = node.users.length;
+                cacheItemCount = node.mtausers.length;
                 node.mtausers.forEach(function (element, index, array) {
                     generateUserEntry(element, index);
                 });
@@ -561,7 +579,24 @@
 
                 $("#node-input-email-users-container").append(container);
             }
-
+            function builtInUsersVisibility() {
+                const authType = $authTypedInput.typedInput('type');
+                if (authType === 'built-in') {
+                    // show user list
+                    $("#node-input-email-users-add").show();
+                    $("#node-input-email-users-container-div").show();
+                    $("#node-custom-auth-tip").hide();
+                } else {
+                    $("#node-input-email-users-add").hide();
+                    $("#node-input-email-users-container-div").hide();
+                    if (authType === 'none') {
+                        $("#node-custom-auth-tip").hide();
+                    } else {
+                        // show user tip for flow/global/jsonata
+                        $("#node-custom-auth-tip").show();
+                    }
+                }
+            }
             $("#node-input-email-users-container").sortable({
                 axis: "y",
                 handle: ".node-input-email-users-handle",
@@ -579,20 +614,14 @@
                     $("#node-input-email-users-container-div").get(0).scrollHeight
                 );
             });
-            $("#node-input-auth").change(function () {
-                if ($("#node-input-auth").is(":checked")) {
-                    $("#node-input-email-users-add").show();
-                    $("#node-input-email-users-container-div").show();
-                } else {
-                    $("#node-input-email-users-add").hide();
-                    $("#node-input-email-users-container-div").hide();
-                }
-            });
+
             // Expert settings
             $("#node-input-expert").typedInput({
                 type: "json",
                 types: ["json"]
             })
+
+            builtInUsersVisibility();
         },
         oneditsave: function () {
             let node = this;
