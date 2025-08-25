@@ -507,7 +507,7 @@
             // User Management
             let cacheItemCount = 0;
             if (node.mtausers && node.mtausers.length > 0) {
-                cacheItemCount = node.users.length;
+                cacheItemCount = node.mtausers.length;
                 node.mtausers.forEach(function (element, index, array) {
                     generateUserEntry(element, index);
                 });
