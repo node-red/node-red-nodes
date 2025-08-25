@@ -45,6 +45,7 @@
             "keyFile":"Private key",
             "users": "Users",
             "auth": "Authenticate users",
+            "noAuth": "No authentication",
             "addButton": "Add",
             "expert": "Expert"
         },
@@ -52,7 +53,8 @@
         "tip": {
             "cred": "<b>Note:</b> Copied credentials from global emailkeys.js file.",
             "recent": "Tip: Only retrieves the single most recent email.",
-            "mta": "<b>Note:</b> To use ports below 1024 you may need elevated (root) privileges. See help sidebar."
+            "mta": "<b>Note:</b> To use ports below 1024 you may need elevated (root) privileges. See help sidebar.",
+            "mta-custom-auth": "<b>Expected Format:</b> <code>[{\"name\":string, \"password\":string}, ...]</code>"
         },
         "status": {
             "messagesent": "Message sent: __response__",
