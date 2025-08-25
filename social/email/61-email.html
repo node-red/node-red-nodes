@@ -417,7 +417,7 @@
 <script type="text/html" data-template-name="e-mail mta">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name" style="width: calc(100% - 110px)">
     </div>
     <div class="form-row">
         <label for="node-input-port"><i class="fa fa-random"></i> <span data-i18n="email.label.port"></span></label>
@@ -448,7 +448,7 @@
     </div>
     <div class="form-row node-input-email-users-container-row" style="margin-bottom: 0px;">
         <div id="node-input-email-users-container-div" style="box-sizing: border-box; border-radius: 5px;
-                height: 200px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+                min-height: 200px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll; resize: vertical;">
             <ol id="node-input-email-users-container" style="list-style-type:none; margin: 0;"></ol>
         </div>
     </div>
@@ -460,7 +460,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-expert"><i class="fa fa-cog"></i> <span data-i18n="email.label.expert"></span></label>
-        <input type="text" id="node-input-expert">
+        <input type="text" id="node-input-expert" style="width: calc(100% - 110px)">
     </div>
     <div class="form-tips" id="node-tip"><span data-i18n="[html]email.tip.mta"></span></div>
 </script>
