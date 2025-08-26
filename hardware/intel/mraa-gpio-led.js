@@ -70,7 +70,9 @@ module.exports = function(RED) {
             if (this.pin == 0) {
                 this.user1_green.close();
                 this.user1_red.close();
-            } if(this.pin == 1) {
+            }
+
+            if (this.pin == 1) {
                 this.user2_green.close();
                 this.user2_red.close();
             }

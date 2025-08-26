@@ -21,8 +21,8 @@ module.exports = function(RED) {
         });
 
         noble.on('scanStart', function(msg) {
-            let msg = {};
-            msg.topic = node.topic;
+            msg = {};
+            msg.topic = node.topic || msg.topic;
             msg.payload = "Scanning initiated..." //debugging
             //console.log('scanning initiated...');
             node.send(msg);
