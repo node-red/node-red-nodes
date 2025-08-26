@@ -65,8 +65,8 @@ module.exports = function(RED) {
             // setup the node group for URI. Must have a node group or exit
             var nodegroup = this.nodegroup || msg.nodegroup;
             if (typeof nodegroup === "undefined") {
-                node.error("ERROR: A Node group must be specified - " + nodegroup);
-                node.status({fill:"red",shape:"ring",text:"No Nodegroup"});
+                node.error("ERROR: the nodegroup is undefined");
+                node.status({fill:"red",shape:"ring",text:"No nodegroup"});
                 return;
             } else {
                 this.url += '&node=' + nodegroup;

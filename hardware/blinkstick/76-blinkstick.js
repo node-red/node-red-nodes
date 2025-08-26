@@ -3,7 +3,7 @@ module.exports = function(RED) {
     "use strict";
     var blinkstick = require("blinkstick");
 
-    var availableModes = ["normal", "inverted", "neopixel"];
+    //var availableModes = ["normal", "inverted", "neopixel"];
     var availableTasks = ["set_color", "blink", "pulse", "morph"];
 
     Object.size = function(obj) {

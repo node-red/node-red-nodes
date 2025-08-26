@@ -58,7 +58,7 @@ module.exports = function(RED) {
         this.port = n.port;
         this.name = n.name;
         this.txt = n.txt;
-        if (this?.txt && (this.txt !== '')) {
+        if (typeof this.txt === "string" && this.txt !== '') {
             try { this.txt = JSON.parse('{'+this.txt+'}'); }
             catch (e) { delete this.txt; }
         }

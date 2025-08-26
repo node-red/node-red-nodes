@@ -93,7 +93,7 @@ module.exports = function(RED) {
                                             }
                                           }
                                           else if (annotation.labelLocation === "bottom") {
-                                            y = y + (10+h+(((defaultLineWidth*0.5)+(Number(defaultFontSize)))));
+                                            y = y + (10+h+((defaultLineWidth*0.5)+(Number(defaultFontSize))));
                                             ctx.textBaseline = "bottom";
 
                                           }

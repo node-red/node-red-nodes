@@ -18,7 +18,7 @@ module.exports = function(RED) {
                 }
                 else if (node.action === "b64") {
                     if ( typeof value === "string") {
-                        var load = value.replace(/\s+/g,'');
+                        let load = value.replace(/\s+/g,'');
                         if (regexp.test(load) && (load.length % 4 === 0) ) {
                             value = Buffer.from(load,'base64').toString();
                             RED.util.setMessageProperty(msg,node.property,value);
@@ -37,7 +37,7 @@ module.exports = function(RED) {
                     }
                     else if (typeof value === "string") {
                         // Take base64 string and make into binary buffer
-                        var load = value.replace(/\s+/g,'');      // remove any whitespace
+                        let load = value.replace(/\s+/g,'');      // remove any whitespace
                         //var load = value.replace(/[\t\r\n\f]+/g,'');
                         //var load = value;
                         if ( regexp.test(load) && (load.length % 4 === 0) ) {

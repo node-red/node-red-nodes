@@ -2,11 +2,11 @@
 module.exports = function(RED) {
     "use strict";
 
-    function convertDegreesMinutesSecondsToDecimals(degrees, minutes, seconds) {
-        var result;
-        result = degrees + (minutes / 60) + (seconds / 3600);
-        return result;
-    }
+    // function convertDegreesMinutesSecondsToDecimals(degrees, minutes, seconds) {
+    //     var result;
+    //     result = degrees + (minutes / 60) + (seconds / 3600);
+    //     return result;
+    // }
 
     function ExifNode(n) {
         RED.nodes.createNode(this,n);
