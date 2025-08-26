@@ -1,7 +1,7 @@
 
 module.exports = function (RED) {
     "use strict";
-    var multilangsentiment = require('multilang-sentiment');
+    var multilangSentiment = require('multilang-sentiment');
 
     function MultiLangSentimentNode(n) {
         RED.nodes.createNode(this, n);

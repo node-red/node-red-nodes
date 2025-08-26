@@ -21,7 +21,6 @@ module.exports = function(RED) {
                 if (fs.existsSync(msg.icon)) { icon = msg.icon; }
                 else { node.error("Bad Icon file: "+msg.icon,msg); }
             }
-            var icon = msg.icon || image;
             if (typeof(title) !== 'undefined') {
                 notifier.notify({ message:msg.payload, title:title, icon:icon });
             }

@@ -102,7 +102,7 @@ module.exports = function(RED) {
                                         else {
                                           //not enought room above imagebox, put label on the bottom
                                           if (y < 0 + (20+((defaultLineWidth*0.5)+(Number(defaultFontSize))))) {
-                                            y = y + (10+h+(((defaultLineWidth*0.5)+(Number(defaultFontSize)))));
+                                            y = y + (10+h+((defaultLineWidth*0.5)+(Number(defaultFontSize))));
                                             ctx.textBaseline = "bottom";
                                           }
                                           //else put the label on the top

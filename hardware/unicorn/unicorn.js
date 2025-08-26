@@ -4,7 +4,6 @@ module.exports = function(RED) {
     var fs = require('fs');
     var PNG = require('pngjs').PNG;
     var spawn = require('child_process').spawn;
-    var execSync = require('child_process').execSync;
 
     var hatCommand = __dirname+'/unihat';
     var allOK = true;

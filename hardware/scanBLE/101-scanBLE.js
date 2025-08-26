@@ -10,8 +10,6 @@ module.exports = function(RED) {
         // Create a RED node
         RED.nodes.createNode(this,n);
 
-        var msg = {};
-        var ble_name;
         var node = this;
 
         //get name and uuid from user
@@ -23,7 +21,7 @@ module.exports = function(RED) {
         });
 
         noble.on('scanStart', function(msg) {
-            msg = {};
+            let msg = {};
             msg.topic = node.topic;
             msg.payload = "Scanning initiated..." //debugging
             //console.log('scanning initiated...');
@@ -31,7 +29,7 @@ module.exports = function(RED) {
         });
 
         noble.on('discover', function(peripheral) {
-            var msg = {};
+            let msg = {};
             msg.topic = node.topic;
             msg.payload = "not found";
 

@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-const { domainToUnicode } = require("url");
+// const { domainToUnicode } = require("url");
 
 /**
  * POP3 protocol - RFC1939 - https://www.ietf.org/rfc/rfc1939.txt

@@ -1,7 +1,6 @@
 
 module.exports = function(RED) {
     "use strict";
-    var util = require("util");
     //var exec = require('child_process').exec;
     var spawn = require('child_process').spawn;
     var fs = require('fs');

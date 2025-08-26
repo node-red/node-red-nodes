@@ -6,17 +6,15 @@ module.exports = function(RED) {
     // ----------------------------------------------
     // ------------------- State --------------------
     // ----------------------------------------------
-    function updateStatus(node, allNodes) {
-        let setStatus = setStatusDisconnected;
-
-        if (node.connecting) {
-            setStatus = setStatusConnecting;
-        } else if (node.connected) {
-            setStatus = setStatusConnected;
-        }
-
-        setStatus(node, allNodes);
-    }
+    // function updateStatus(node, allNodes) {
+    //     let setStatus = setStatusDisconnected;
+    //     if (node.connecting) {
+    //         setStatus = setStatusConnecting;
+    //     } else if (node.connected) {
+    //         setStatus = setStatusConnected;
+    //     }
+    //     setStatus(node, allNodes);
+    // }
 
     function setStatusDisconnected(node, allNodes) {
         if (allNodes) {
@@ -483,9 +481,8 @@ module.exports = function(RED) {
                 const topic = node.topic || msg.topic;
                 if (topic.length > 0) {
                     node.serverConnection.ack(topic, msg.messageId, msg.transaction);
-                } else if (!(topic.length > 0)) {
+                } else if (typeof topic !== "string") {
                     node.warn('No valid publish topic');
-
                 } else {
                     node.warn('Payload or topic is undefined/null')
                 }
