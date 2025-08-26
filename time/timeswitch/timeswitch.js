@@ -197,18 +197,18 @@ module.exports = function (RED) {
 
             // if this month is not among the selected months, stop here
             switch (nowNative.getMonth()) {
-                case 0 : { if (!node.jan) { proceed &= false; } break; }
-                case 1 : { if (!node.feb) { proceed &= false; } break; }
-                case 2 : { if (!node.mar) { proceed &= false; } break; }
-                case 3 : { if (!node.apr) { proceed &= false; } break; }
-                case 4 : { if (!node.may) { proceed &= false; } break; }
-                case 5 : { if (!node.jun) { proceed &= false; } break; }
-                case 6 : { if (!node.jul) { proceed &= false; } break; }
-                case 7 : { if (!node.aug) { proceed &= false; } break; }
-                case 8 : { if (!node.sep) { proceed &= false; } break; }
-                case 9 : { if (!node.oct) { proceed &= false; } break; }
-                case 10: { if (!node.nov) { proceed &= false; } break; }
-                case 11: { if (!node.dec) { proceed &= false; } break; }
+                case 0 : { if (!node.jan) { proceed = false; } break; }
+                case 1 : { if (!node.feb) { proceed = false; } break; }
+                case 2 : { if (!node.mar) { proceed = false; } break; }
+                case 3 : { if (!node.apr) { proceed = false; } break; }
+                case 4 : { if (!node.may) { proceed = false; } break; }
+                case 5 : { if (!node.jun) { proceed = false; } break; }
+                case 6 : { if (!node.jul) { proceed = false; } break; }
+                case 7 : { if (!node.aug) { proceed = false; } break; }
+                case 8 : { if (!node.sep) { proceed = false; } break; }
+                case 9 : { if (!node.oct) { proceed = false; } break; }
+                case 10: { if (!node.nov) { proceed = false; } break; }
+                case 11: { if (!node.dec) { proceed = false; } break; }
             }
 
             if (!proceed) {
