@@ -181,13 +181,13 @@ module.exports = function (RED) {
 
             // if today is not among the selected days of the week, stop here
             switch (nowNative.getDay()) {
-                case 0 : { if (!node.sun) { proceed &= false; } break; }
-                case 1 : { if (!node.mon) { proceed &= false; } break; }
-                case 2 : { if (!node.tue) { proceed &= false; } break; }
-                case 3 : { if (!node.wed) { proceed &= false; } break; }
-                case 4 : { if (!node.thu) { proceed &= false; } break; }
-                case 5 : { if (!node.fri) { proceed &= false; } break; }
-                case 6 : { if (!node.sat) { proceed &= false; } break; }
+                case 0 : { if (!node.sun) { proceed = false; } break; }
+                case 1 : { if (!node.mon) { proceed = false; } break; }
+                case 2 : { if (!node.tue) { proceed = false; } break; }
+                case 3 : { if (!node.wed) { proceed = false; } break; }
+                case 4 : { if (!node.thu) { proceed = false; } break; }
+                case 5 : { if (!node.fri) { proceed = false; } break; }
+                case 6 : { if (!node.sat) { proceed = false; } break; }
             }
 
             if (!proceed) {
