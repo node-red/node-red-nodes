@@ -26,7 +26,7 @@ module.exports = function(RED) {
 
     function BlinkStick(n) {
         RED.nodes.createNode(this,n);
-        var p1 = /^\#[A-Fa-f0-9]{6}$/
+        //var p1 = /^\#[A-Fa-f0-9]{6}$/
         var p2 = /[0-9]+,[0-9]+,[0-9]+/
         this.led = blinkstick.findFirst(); // maybe try findAll() (one day)
         var node = this;

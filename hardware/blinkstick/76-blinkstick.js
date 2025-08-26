@@ -15,7 +15,7 @@ module.exports = function(RED) {
     //Helper function to convert decimal number to hex with padding
     function decimalToHex(d, padding) {
         var hex = Number(d).toString(16);
-        padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+        padding = (typeof padding === "undefined" || padding === null) ? 2 : padding;
 
         while (hex.length < padding) {
             hex = "0" + hex;
@@ -25,15 +25,15 @@ module.exports = function(RED) {
     }
 
     function validateInt(value, defaultValue) {
-        return typeof (value) === "undefined" || value === null ? value = defaultValue : parseInt(value);
+        return (typeof value === "undefined" || value === null) ? defaultValue : parseInt(value);
     }
 
     function validate(value, defaultValue) {
-        return typeof (value) === "undefined" || value === null ? value = defaultValue : value;
+        return (typeof value === "undefined" || value === null) ? defaultValue : value;
     }
 
     function validateArray(value, defaultValue) {
-        return typeof (value) === "undefined" || Array.isArray(value) ? value : defaultValue;
+        return (typeof value === "undefined" || Array.isArray(value)) ? value : defaultValue;
     }
 
     function validatePayloadObject (obj) {
