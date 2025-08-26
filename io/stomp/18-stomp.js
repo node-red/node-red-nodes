@@ -483,7 +483,7 @@ module.exports = function(RED) {
                 const topic = node.topic || msg.topic;
                 if (topic.length > 0) {
                     node.serverConnection.ack(topic, msg.messageId, msg.transaction);
-                } else if (!topic.length > 0) {
+                } else if (!(topic.length > 0)) {
                     node.warn('No valid publish topic');
 
                 } else {

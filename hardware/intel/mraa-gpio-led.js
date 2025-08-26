@@ -8,7 +8,9 @@ module.exports = function(RED) {
         if (this.pin == 0) {
             this.user1_green = new m.Led(0); /*user-led1-green*/
             this.user1_red = new m.Led(1); /*user-led1-red*/
-        } if(this.pin == 1) {
+        }
+
+        if (this.pin == 1) {
             this.user2_green = new m.Led(2); /*user-led2-green*/
             this.user2_red = new m.Led(3); /*user-led2-red*/
         }

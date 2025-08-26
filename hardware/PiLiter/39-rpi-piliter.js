@@ -1,7 +1,6 @@
 
 module.exports = function(RED) {
     "use strict";
-    var util = require("util");
     var spawn = require('child_process').spawn;
     var fs = require('fs');
 
@@ -59,7 +58,7 @@ module.exports = function(RED) {
                 node.child = spawn(gpioCommand, ["byte",node.dir]);
                 node.on("input", function(msg) {
                     var out = msg.payload;
-                    if ((out === 1)|(out === true)|(out === "1")|(out === "on")) {
+                    if ((out === 1)||(out === true)||(out === "1")||(out === "on")) {
                         out = 255;
                     }
                     else { out = 0; }

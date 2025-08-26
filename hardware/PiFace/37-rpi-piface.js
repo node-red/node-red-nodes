@@ -107,7 +107,7 @@ module.exports = function(RED) {
                 if (msg.payload === "true") { msg.payload = true; }
                 if (msg.payload === "false") { msg.payload = false; }
                 var out = Number(msg.payload);
-                if ((out === 0)|(out === 1)) {
+                if ((out === 0)||(out === 1)) {
                     exec("gpio -p write "+node.pin+" "+out, function(err,stdout,stderr) {
                         if (err) {
                             node.status({fill:"red",shape:"ring",text:"error"});
