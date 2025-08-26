@@ -631,6 +631,27 @@ module.exports = function(RED) {
         this.keyFile = n.keyFile;
         this.mtausers = n.mtausers;
         this.auth = n.auth;
+        /** @type {"none"|"built-in"|"flow"|"global"|"jsonata"} **/
+        this.authType = n.authType;
+        const AUTH_TYPES = ['none', 'built-in', "flow", "global", "jsonata"]
+        if (!AUTH_TYPES.includes(this.authType)) {
+            // in-place upgrade
+            this.authType = (n.auth === "true" || n.auth === true) ? "built-in" : "none";
+        }
+
+        // basic user list duck type validation
+        const validateUserList = (users) => {
+            if (!Array.isArray(users) || users.length === 0) {
+                return false;
+            }
+            for (const user of users) {
+                if (!user.name || typeof user.password !== "string") {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         try {
             this.options = JSON.parse(n.expert);
         } catch (error) {
@@ -650,7 +671,7 @@ module.exports = function(RED) {
         if (!node.starttls) {
             node.options.disabledCommands.push("STARTTLS");
         }
-        if (!node.auth) {
+        if (node.authType === "none") {
             node.options.disabledCommands.push("AUTH");
         }
 
@@ -686,14 +707,34 @@ module.exports = function(RED) {
             });
         }
 
-        node.options.onAuth = function (auth, session, callback) {
-            let id = node.mtausers.findIndex(function (item) {
-                return item.name === auth.username;
-            });
-            if (id >= 0 && node.mtausers[id].password === auth.password) {
-                callback(null, { user: id + 1 });
-            } else {
-                callback(new Error("Invalid username or password"));
+        node.options.onAuth = async function (auth, session, callback) {
+            try {
+                if (node.authType === "none") {
+                    return; // auth not enabled - should not reach here
+                }
+                let userList;
+                if (node.authType === "built-in") {
+                    // users defined in UI
+                    userList = node.mtausers;
+                } else {
+                    // users defined in flow, global, or jsonata
+                    userList = await asyncEvaluateNodeProperty(RED, node.auth, node.authType, node, {});
+                }
+
+                if (!validateUserList(userList)) {
+                    callback(new Error("Invalid user list"));
+                }
+
+                let id = userList.findIndex(function (item) {
+                    return item.name === auth.username;
+                });
+                if (id >= 0 && userList[id].password === auth.password) {
+                    callback(null, { user: id + 1 });
+                } else {
+                    callback(new Error("Invalid username or password"));
+                }
+            } catch (error) {
+                callback(new Error("Invalid user list"));
             }
         }
 
@@ -710,5 +751,17 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("e-mail mta",EmailMtaNode);
+
+    function asyncEvaluateNodeProperty (RED, value, type, node, msg) {
+        return new Promise(function (resolve, reject) {
+            RED.util.evaluateNodeProperty(value, type, node, msg, function (e, r) {
+                if (e) {
+                    reject(e)
+                } else {
+                    resolve(r)
+                }
+            })
+        })
+    }
 
 };
