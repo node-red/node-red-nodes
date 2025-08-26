@@ -217,13 +217,13 @@ module.exports = function (RED) {
             }
 
             // if the chronological order is NOW --> ON --> OFF, then now should be OFF
-            if (proceed && selectedOffTime.isAfter(selectedOnTime)) {
+            if (selectedOffTime.isAfter(selectedOnTime)) {
                 sendPayload(0, selectedOnTime);
                 return;
             }
 
             // if the chronological order is NOW --> OFF --> ON, then now should be ON
-            if (proceed && selectedOffTime.isBefore(selectedOnTime)) {
+            if (selectedOffTime.isBefore(selectedOnTime)) {
                 sendPayload(1, selectedOffTime);
                 return;
             }

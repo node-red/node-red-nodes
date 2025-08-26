@@ -17,10 +17,6 @@
 var should = require("should");
 var helper = require("node-red-node-test-helper");
 var rpiNode = require('../../../hardware/PiGpio/36-rpi-gpio.js');
-
-//var rpiNode = require("nr-test-utils").require("@node-red/nodes/core/hardware/36-rpi-gpio.js");
-//var statusNode = require("nr-test-utils").require("@node-red/nodes/core/core/25-status.js");
-var helper = require("node-red-node-test-helper");
 var fs = require("fs");
 
 describe('RPI GPIO Node', function() {
