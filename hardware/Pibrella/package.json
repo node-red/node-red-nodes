@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-node-pibrella",
-    "version"       : "0.1.0",
+    "version"       : "0.2.0",
     "description"   : "A Node-RED node to read from and write to a Pibrella Raspberry Pi add-on board",
     "dependencies"  : {
     },
@@ -18,7 +18,7 @@
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }
