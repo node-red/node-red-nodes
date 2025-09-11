@@ -12,7 +12,7 @@ the driver installed is to use the Unicorn HAT drivers install script... see the
 <a href="http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat" target="_new">
 Pimoroni Getting Started with Unicorn HAT</a> page.
 
-    curl -sS get.pimoroni.com/unicornhat | bash
+    curl -sS https://get.pimoroni.com/unicornhat | bash
 
 Install
 -------
