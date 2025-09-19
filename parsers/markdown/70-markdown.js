@@ -20,5 +20,5 @@ module.exports = function(RED) {
             }
         });
     }
-    RED.nodes.registerType("markdown-prop",markdownNode);
+    RED.nodes.registerType("markdown",markdownNode);
 }
