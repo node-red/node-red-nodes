@@ -77,14 +77,34 @@ module.exports = function (RED) {
         } else if (node.version === "3") {
             user.name = node.username || msg.username || "";
             user.level = SNMP.SecurityLevel.noAuthNoPriv;
-            user.authProtocol = SNMP.AuthProtocols.none;
+            switch (node.authprot) {
+                case "MD5":
+                    user.authProtocol = SNMP.AuthProtocols.md5;
+                    break;
+                case "SHA":
+                    user.authProtocol = SNMP.AuthProtocols.sha;
+                    break;
+                case "SHA224":
+                    user.authProtocol = SNMP.AuthProtocols.sha224;
+                    break;
+                case "SHA256":
+                    user.authProtocol = SNMP.AuthProtocols.sha256;
+                    break;
+                case "SHA384":
+                    user.authProtocol = SNMP.AuthProtocols.sha384;
+                    break;
+                case "SHA512":
+                    user.authProtocol = SNMP.AuthProtocols.sha512;
+                    break;
+                default:
+                    user.authProtocol = SNMP.AuthProtocols.none;
+            }
             user.authKey = "";
             user.privProtocol = SNMP.PrivProtocols.none;
             user.privKey = "";
             options.version = SNMP.Version3;
             if (node.auth === "authNoPriv" || node.auth === "authPriv") {
                 user.level = SNMP.SecurityLevel.authNoPriv;
-                user.authProtocol = (node.authprot === "SHA") ? SNMP.AuthProtocols.sha : SNMP.AuthProtocols.md5;
                 user.authKey = node.authkey || msg.authkey || "";
                 if (node.auth === "authPriv") {
                     user.level = SNMP.SecurityLevel.authPriv;
