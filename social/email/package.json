@@ -4,7 +4,7 @@
   "description": "Node-RED nodes to send and receive simple emails.",
   "dependencies": {
     "imap": "^0.8.19",
-    "node-pop3": "^0.9.1",
+    "node-pop3": "^0.10.0",
     "mailparser": "^3.7.4",
     "nodemailer": "^7.0.5",
     "smtp-server": "^3.14.0"
