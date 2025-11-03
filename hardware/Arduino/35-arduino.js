@@ -468,12 +468,12 @@ module.exports = function(RED) {
 			    //resetBoard(brdNode);
                 try {
                     brdNode.board.transport.close(function(err) {
-                        if (moreLogs) { brdNode.log(RED._("arduino.status.portclosed") + err?"Err: ":"" , err); }
+                        if (moreLogs) { brdNode.log(RED._("arduino.status.portclosed") + (err ? "Err: ":"") , err); }
                     });
                     if (done !== undefined) { done(); }
                 }
                 catch(e) {
-                    if (moreLogs) { brdNode.error("Could not close port: " + brdNode.port + (e?"Err: ":"") , e); }
+                    if (moreLogs) { brdNode.error("Could not close port: " + brdNode.port + (e ? "Err: ":"") , e); }
                  }
             }
             else {
