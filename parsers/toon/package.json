@@ -1,0 +1,26 @@
+{
+    "name"          : "node-red-node-toon",
+    "version"       : "1.0.0",
+    "description"   : "A Node-RED node to encode and decode objects to TOON format strings",
+    "dependencies"  : {
+        "@toon-format/toon": "^1.3.0"
+    },
+    "bundledDependencies": [ "@toon-format/toon" ],
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/node-red/node-red-nodes.git",
+        "directory": "/tree/master/parsers/toon"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "toon" ],
+    "node-red"      : {
+        "nodes"     : {
+            "toon": "toon.js"
+        }
+    },
+    "author": {
+        "name": "Dave Conway-Jones",
+        "email": "dceejay@gmail.com",
+        "url": "http://nodered.org"
+    }
+}
