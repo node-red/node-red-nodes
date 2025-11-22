@@ -1,7 +1,6 @@
 
 module.exports = function(RED) {
     "use strict";
-
     const toonlib = require("@toon-format/toon")
 
     function ToonNode(n) {
@@ -13,7 +12,7 @@ module.exports = function(RED) {
             var value = RED.util.getMessageProperty(msg,node.property);
             if (value !== undefined) {
                 if (typeof(value) !== "string") {
-                    // Take json object and make into a toon string
+                    // Take object and make into a toon string
                     try {
                         value = toonlib.encode(value);
                         RED.util.setMessageProperty(msg,node.property,value);
@@ -23,8 +22,8 @@ module.exports = function(RED) {
                         node.error("Failed to encode: "+err.message,msg);
                     }
                 }
-                else if (typeof value === "string") {
-                    // Take toon string and make into json object
+                else {
+                    // Take toon string and make into object
                     try {
                         value = toonlib.decode(value)
                         RED.util.setMessageProperty(msg,node.property,value)
@@ -34,12 +33,9 @@ module.exports = function(RED) {
                         node.error("Invalid TOON string: "+err.message,msg);
                     }
                 }
-                else {
-                    node.warn("Cannot handle this type of input");
-                }
             }
             else {
-                node.warn("No property found to process");
+                node.warn("No value to process");
             }
         });
     }
