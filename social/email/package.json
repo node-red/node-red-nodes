@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-email",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Node-RED nodes to send and receive simple emails.",
   "dependencies": {
     "imap": "^0.8.19",
@@ -16,6 +16,11 @@
     "nodemailer",
     "smtp-server"
   ],
+  "overrides": {
+    "utf7": {
+      "semver": "^5.7.2"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/node-red/node-red-nodes.git",
