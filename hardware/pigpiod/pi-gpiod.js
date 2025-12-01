@@ -1,7 +1,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var Pigpio = require('js-pigpio');
+    var Pigpio = require('./js-pigpio/index.js');
 
     var bcm2pin = {
         "2":"3", "3":"5", "4":"7", "14":"8", "15":"10", "17":"11", "18":"12", "27":"13", "22":"15",
@@ -50,12 +50,13 @@ module.exports = function(RED) {
                             node.status({fill:"green",shape:"dot",text:level});
                         });
                         if (node.read) {
-                            setTimeout(function() {
+                            var loop = setInterval(function() {
                                 PiGPIO.read(node.pin, function(err, level) {
                                     node.send({ topic:"pi/"+node.pio, payload:Number(level), host:node.host });
                                     node.status({fill:"green",shape:"dot",text:level});
+                                    clearInterval(loop)
                                 });
-                            }, 20);
+                            }, 5);
                         }
                     }
                 });
