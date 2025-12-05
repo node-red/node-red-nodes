@@ -7,7 +7,7 @@ A <a href="http://nodered.org" target="_new">Node-RED</a> node to encode and dec
 Install
 -------
 
-Run the following command in your Node-RED user directory - typically `~/.node-red`
+Either use the Manage Palette option in the Node-RED Editor menu, or run the following command in your Node-RED user directory - typically `~/.node-red`
 
     npm i node-red-node-base64
 
