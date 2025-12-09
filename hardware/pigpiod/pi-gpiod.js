@@ -50,12 +50,18 @@ module.exports = function(RED) {
                             node.status({fill:"green",shape:"dot",text:level});
                         });
                         if (node.read) {
+                            var count = 0;
                             var loop = setInterval(function() {
                                 PiGPIO.read(node.pin, function(err, level) {
                                     node.send({ topic:"pi/"+node.pio, payload:Number(level), host:node.host });
                                     node.status({fill:"green",shape:"dot",text:level});
-                                    clearInterval(loop)
+                                    clearInterval(loop);
                                 });
+                                count++;
+                                if (count > 20) {
+                                    clearInterval(loop);
+                                    node.status({fill:"yellow",shape:"ring",text:"No initial value"});
+                                }
                             }, 5);
                         }
                     }
