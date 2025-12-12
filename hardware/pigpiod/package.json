@@ -1,6 +1,6 @@
 {
   "name": "node-red-node-pi-gpiod",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A node-red node for PiGPIOd",
   "dependencies"  : {
   },
@@ -20,10 +20,18 @@
       "email": "dceejay@gmail.com",
       "url": "http://nodered.org"
   },
+  "contributors": [
+    "@miketrebilcock",
+    "@dduransseau"
+  ],
   "license": "Apache-2.0",
   "node-red"     : {
-        "nodes": {
-            "pi-gpiod": "pi-gpiod.js"
-        }
+    "version": ">=3.0.0",
+    "nodes": {
+        "pi-gpiod": "pi-gpiod.js"
     }
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }
