@@ -12,6 +12,8 @@ module.exports = function(RED) {
         this.priority = n.priority;
         this.sound = n.sound;
         this.html = n.html;
+        this.url = n.url;
+        this.url_title = n.url_title;
         if (this.sound === '') { this.sound = null; }
         var credentials = this.credentials;
         if ((credentials) && (credentials.hasOwnProperty("pushkey"))) { this.pushkey = credentials.pushkey; }
