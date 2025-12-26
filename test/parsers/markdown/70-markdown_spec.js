@@ -48,11 +48,9 @@ describe('markdown node', function() {
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
-            var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {
-                msg.should.have.a.property("payload");
-                msg.payload.should.be.a.Object;
-                msg.payload.a.should.equal("object");
+
+            n1.on('call:warn', call => {
+                call.lastArg.should.have.startWith("No property value of type string");
                 done();
             });
             n1.emit("input", {payload:{a:"object"}});
@@ -65,10 +63,9 @@ describe('markdown node', function() {
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
             var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {
-                msg.should.have.a.property("payload");
-                msg.payload.should.be.a.number;
-                msg.payload.should.equal(1);
+
+            n1.on('call:warn', call => {
+                call.lastArg.should.have.startWith("No property value of type string");
                 done();
             });
             n1.emit("input", {payload:1});
@@ -80,11 +77,9 @@ describe('markdown node', function() {
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
-            var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {
-                msg.should.have.a.property("payload");
-                msg.payload.should.be.a.boolean;
-                msg.payload.should.equal(true);
+
+            n1.on('call:warn', call => {
+                call.lastArg.should.have.startWith("No property value of type string");
                 done();
             });
             n1.emit("input", {payload:true});
@@ -96,10 +91,9 @@ describe('markdown node', function() {
             {id:"n2", type:"helper"} ];
         helper.load(testNode, flow, function() {
             var n1 = helper.getNode("n1");
-            var n2 = helper.getNode("n2");
-            n2.on("input", function(msg) {
-                msg.should.have.a.property("payload");
-                msg.payload.should.be.an.object;
+
+            n1.on('call:warn', call => {
+                call.lastArg.should.have.startWith("No property value of type string");
                 done();
             });
             n1.emit("input", {payload:[1,2,"a","b"]});

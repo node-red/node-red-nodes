@@ -11,12 +11,11 @@ module.exports = function(RED) {
 
         node.on("input", function(msg) {
             var value = RED.util.getMessageProperty(msg, node.property);
-
             if (value !== undefined && typeof value === "string") {
                 RED.util.setMessageProperty(msg, node.property, md.render(value));
                 node.send(msg);
             } else {
-                node.warn("No property value found");
+                node.warn("No property value of type string found");
             }
         });
     }
