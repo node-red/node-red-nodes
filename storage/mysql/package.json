@@ -1,9 +1,9 @@
 {
     "name": "node-red-node-mysql",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "A Node-RED node to read and write to a MySQL database",
     "dependencies": {
-        "mysql2": "^3.6.5"
+        "mysql2": "^3.16.0"
     },
     "repository": {
         "type": "git",
@@ -27,6 +27,6 @@
         "url": "http://nodered.org"
     },
     "engines": {
-        "node": ">=16"
+        "node": ">=18.0.0"
     }
 }
