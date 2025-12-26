@@ -18,7 +18,7 @@ module.exports = function(RED) {
         async function getFeed() {
             const response = await fetch(node.url);
             if (response.status !== 200) {
-                node.error("Bad Feed: "+node.url, err)
+                node.error("Bad Feed: "+node.url, response)
                 node.status({fill:"red",shape:"dot",text:response.status+": "+RED._("feedparse.errors.badstatuscode")});
                 return;
             }

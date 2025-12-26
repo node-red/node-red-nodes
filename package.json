@@ -72,6 +72,13 @@
                     }
                 }
             }
+        },
+        "grunt-lint-inline": {
+            "grunt-contrib-jshint": {
+                "jshint": {
+                    "shelljs": "0.10.0"
+                }
+            }
         }
     },
     "engines": {
