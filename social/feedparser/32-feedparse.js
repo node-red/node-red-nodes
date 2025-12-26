@@ -1,9 +1,7 @@
 
 module.exports = function(RED) {
     "use strict";
-    var FeedParser = require("feedparser");
-    var request = require("request");
-    var url = require('url');
+    const { parseFeed } = require('@rowanmanning/feed-parser');
 
     function FeedParseNode(n) {
         RED.nodes.createNode(this,n);
@@ -12,57 +10,48 @@ module.exports = function(RED) {
         this.interval = (parseInt(n.interval)||15) * 60000;
         this.interval_id = null;
         this.ignorefirst = n.ignorefirst || false;
+        this.sendarray = n.sendarray || false;
         this.seen = {};
         this.donefirst = false;
         var node = this;
-        var parsedUrl = url.parse(this.url);
-        if (!(parsedUrl.host || (parsedUrl.hostname && parsedUrl.port)) && !parsedUrl.isUnix) {
-            node.error(RED._("feedparse.errors.invalidurl"),RED._("feedparse.errors.invalidurl"));
-        }
-        else {
-            var getFeed = function() {
-                var req = request(node.url, {timeout:10000, pool:false});
-                //req.setMaxListeners(50);
-                req.setHeader('user-agent', 'Mozilla/5.0 (Node-RED)');
-                req.setHeader('accept', 'application/rss+xml,text/html,application/xhtml+xml,application/xml');
 
-                var feedparser = new FeedParser();
+        async function getFeed() {
+            const response = await fetch(node.url);
+            if (response.status !== 200) {
+                node.error("Bad Feed: "+node.url, err)
+                node.status({fill:"red",shape:"dot",text:response.status+": "+RED._("feedparse.errors.badstatuscode")});
+                return;
+            }
+            const feed = parseFeed(await response.text());
+            if (node.sendarray === true) {
+                var msg = JSON.parse(JSON.stringify(feed));
+                node.send(msg);
+            }
+            else {
+                for (let a=0; a<feed.items.length; a++) {
+                    const article = feed.items[a];
+                    if (!(article.id in node.seen) || ( node.seen[article.id] !== 0 && node.seen[article.id] != new Date(article.published).getTime())) {
+                        node.seen[article.id] = article.published ? new Date(article.published).getTime() : 0;
+                        const msg = { article: JSON.parse(JSON.stringify(article)) };
+                        msg.topic = msg.article.title;
+                        msg.payload = msg.article.description;
+                        msg.link = msg.article.url
+                        msg.feed = node.url;
 
-                req.on('error', function(err) { node.error(err); });
-
-                req.on('response', function(res) {
-                    if (res.statusCode != 200) { node.warn(RED._("feedparse.errors.badstatuscode")+" "+res.statusCode); }
-                    else { res.pipe(feedparser); }
-                });
-
-                feedparser.on('error', function(error) { node.error(error,error); });
-
-                feedparser.on('readable', function () {
-                    var stream = this, article;
-                    while (article = stream.read()) {  // jshint ignore:line
-                        if (!(article.guid in node.seen) || ( node.seen[article.guid] !== 0 && node.seen[article.guid] != article.date.getTime())) {
-                            node.seen[article.guid] = article.date ? article.date.getTime() : 0;
-                            var msg = {
-                                topic: article.origlink || article.link,
-                                payload: article.description,
-                                article: article
-                            };
-                            if (node.ignorefirst === true && node.donefirst === false) {
-                                // do nothing
-                            }
-                            else {
-                                node.send(msg);
-                            }
+                        if (node.ignorefirst === true && node.donefirst === false) {
+                            // do nothing
+                        }
+                        else {
+                            node.send(msg);
                         }
                     }
-                });
-
-                feedparser.on('meta', function (meta) {});
-                feedparser.on('end', function () {});
-            };
-            node.interval_id = setInterval(function() { node.donefirst = true; getFeed(); }, node.interval);
-            getFeed();
+                }
+            }
+            node.status({fill:"green",shape:"dot",text:""});
         }
+
+        node.interval_id = setInterval(function() { node.donefirst = true; getFeed(); }, node.interval);
+        setTimeout(getFeed, 2000);
 
         node.on("close", function() {
             if (this.interval_id != null) {

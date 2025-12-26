@@ -1,5 +1,9 @@
 <script type="text/html" data-template-name="feedparse">
     <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
         <label for="node-input-url"><i class="fa fa-globe"></i> <span data-i18n="feedparse.label.feedurl"></span></label>
         <input type="text" id="node-input-url">
     </div>
@@ -7,14 +11,15 @@
         <label for="node-input-interval"><i class="fa fa-repeat"></i> <span data-i18n="feedparse.label.refresh"></span></label>
         <input type="text" id="node-input-interval" style="width:60px"> <span data-i18n="feedparse.label.minutes"></span>
     </div>
-    <div class="form-row">
+        <div class="form-row">
+        <label> </label>
+        <input type="checkbox" id="node-input-sendarray" style="display:inline-block; width:20px; vertical-align:baseline;">
+        <span data-i18n="feedparse.label.sendarray"></span>
+    </div>
+    <div class="form-row" id=""node-input-ignorefirst-row">
         <label> </label>
         <input type="checkbox" id="node-input-ignorefirst" style="display:inline-block; width:20px; vertical-align:baseline;">
         <span data-i18n="feedparse.label.ignorefirst"></span>
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 </script>
 
@@ -26,7 +31,8 @@
             name: {value:""},
             url: {value:"", required:true},
             interval: { value:15, required:true, validate:function(v) {return (!isNaN(parseInt(v)) && (parseInt(v) <= 35790))} },
-            ignorefirst: { value:false }
+            ignorefirst: { value:false },
+            sendarray: { value:false }
         },
         inputs:0,
         outputs:1,
@@ -39,6 +45,15 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            $('#node-input-sendarray').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#node-input-ignorefirst-row').hide()
+                } else {
+                    $('#node-input-ignorefirst-row').show()
+                }
+            });
         }
     });
 </script>

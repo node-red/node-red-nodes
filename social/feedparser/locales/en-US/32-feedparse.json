@@ -5,12 +5,14 @@
             "feedurl": "Feed url",
             "refresh": "Refresh",
             "minutes": "minutes",
-            "ignorefirst": "Ignore any stories older than restart"
+            "ignorefirst": "Ignore any stories older than restart",
+            "sendarray": "Send response as a single object"
         },
         "errors": {
             "badstatuscode": "error - Bad status code",
             "invalidurl": "Invalid url",
-            "invalidinterval": "Repeat interval too large"
+            "invalidinterval": "Repeat interval too large",
+            "badparse": "error - Bad feed parse"
         }
     }
 }
