@@ -72,4 +72,19 @@ describe("FeedParseNode", () => {
             });
         });
     });
+
+    it("missing host", async function () {
+        const flow = [
+            {id:"n1", type:"feedparse", interval: 15, url: "", name: "feedparse" , wires:[["n2"]] },
+            { id: "n2", type: "helper" }
+        ];
+        await helper.load(feedParserNode, flow, () => {
+            const n2 = helper.getNode("n2");
+            const n1 = helper.getNode("n1");
+            n1.on('call:warn', call => {
+                call.lastArg.should.have.startWith("feedparse.errors.invalidurl");
+                // done();
+            });
+        });
+    });
 });

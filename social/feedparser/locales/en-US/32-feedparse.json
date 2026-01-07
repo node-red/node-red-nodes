@@ -10,7 +10,7 @@
         },
         "errors": {
             "badstatuscode": "error - Bad status code",
-            "invalidurl": "Invalid url",
+            "invalidurl": "Missing url",
             "invalidinterval": "Repeat interval too large",
             "badparse": "error - Bad feed parse"
         }
