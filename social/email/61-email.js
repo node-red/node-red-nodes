@@ -118,14 +118,15 @@ module.exports = function(RED) {
                     }
                     var sendopts = { from: ((msg.from) ? msg.from : node.userid) };   // sender address
                     sendopts.to = node.name || msg.to; // comma separated list of addresses
+                    // Always allow message-related options
+                    if (msg.inReplyTo) { sendopts.inReplyTo = msg.inReplyTo; }
+                    if (msg.references) { sendopts.references = msg.references; }
+                    if (msg.headers) { sendopts.headers = msg.headers; }
+                    if (msg.priority) { sendopts.priority = msg.priority; }
                     if (node.name === "") {
                         sendopts.cc = msg.cc;
                         sendopts.bcc = msg.bcc;
-                        sendopts.inReplyTo = msg.inReplyTo;
                         sendopts.replyTo = msg.replyTo;
-                        sendopts.references = msg.references;
-                        sendopts.headers = msg.headers;
-                        sendopts.priority = msg.priority;
                     }
                     if (msg.hasOwnProperty("topic") && msg.topic === '') { sendopts.subject = ""; }
                     else { sendopts.subject = msg.topic || msg.title || "Message from Node-RED"; } // subject line
