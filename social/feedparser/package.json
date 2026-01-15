@@ -18,8 +18,12 @@
     "feed"
   ],
   "node-red": {
+    "version": ">=3.0.0",
     "nodes": {
       "feedparse": "32-feedparse.js"
     }
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
