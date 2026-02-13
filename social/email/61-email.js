@@ -381,20 +381,29 @@ module.exports = function(RED) {
         // checkIMAP
         //
         // Check the email sever using the IMAP protocol for new messages.
-        var s = false;
-        var ss = false;
+        var s = false; // Connection established
+        var ss = false; // Server announced ready
         function checkIMAP(msg,send,done) {
+            let doneCalled = false;
+            function safeDone(err) {
+                if (done && !doneCalled) {
+                    doneCalled = true;
+                    done(err);
+                }
+            }
             var tout = (node.repeat > 0) ? node.repeat - 500 : 15000;
             var saslxoauth2 = "";
-            if (node.authtype === "XOAUTH2") {
-                var value = RED.util.getMessageProperty(msg,node.token);
-                if (value !== undefined) {
-                    if (node.saslformat) {
-                        //Make base64 string for access - compatible with outlook365 and gmail
-                        saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
-                    } else {
-                        saslxoauth2 = value;
-                    }
+            node.lastMsg = msg;
+            if (!s) {
+                if (node.authtype === "XOAUTH2") {
+                    var value = RED.util.getMessageProperty(msg,node.token);
+                    if (value !== undefined) {
+                        if (node.saslformat) {
+                            //Make base64 string for access - compatible with outlook365 and gmail
+                            saslxoauth2 = Buffer.from("user="+node.userid+"\x01auth=Bearer "+value+"\x01\x01").toString('base64');
+                        } else {
+                            saslxoauth2 = value;
+                        }
                 }
                 imap = new Imap({
                     xoauth2: saslxoauth2,
@@ -419,12 +428,44 @@ module.exports = function(RED) {
                     authTimeout: tout
                 });
             }
+            // Server notified about new mails during IDLE
+            imap.on('mail', function(numNew) {
+                node.status({fill:"yellow", shape:"dot", text:"Server notified " + numNew + " new mail(s)..."});
+                fetchIMAP(); // new mail -> catch immediatly
+            });
+	        // Server notified about new attributes on (e.g. -> UNSEEN) during IDLE 
+            imap.on('update', function() {
+                node.status({fill:"yellow", shape:"dot", text:"Server notified updated attributes..."});
+                fetchIMAP();
+            });
+            imap.on('close', function(hadError) {
+                var msg = 'IMAP connection closed';
+                if (hadError) {
+                    msg += ' due to error';
+                }
+                node.log(msg);
+                s = false;
+                ss = false;
+                node.status({fill:"yellow", shape:"ring", text:"Connection closed"});
+
+                // Reconnect nach Verzögerung
+                setInputRepeatTimeout();
+            });
+            imap.on('end', function() {
+                node.log('IMAP connection ended');
+                s = false;
+                ss = false;
+                node.status({fill:"yellow", shape:"ring", text:"Connection ended"});
+                setInputRepeatTimeout();
+            });
             imap.on('error', function(err) {
                 if (err.errno !== "ECONNRESET") {
                     s = false;
+                    ss = false;
                     node.error(err.message,err);
                     node.status({fill:"red",shape:"ring",text:"email.status.connecterror"});
                 }
+	            safeDone();
                 setInputRepeatTimeout();
             });
             //console.log("Checking IMAP for new messages");
@@ -457,116 +498,130 @@ module.exports = function(RED) {
                             });
                             node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
                             imap.end();
-                            s = false;
+                            s = ss = false;
                             setInputRepeatTimeout();
-                            done(err);
+                            safeDone(err);
                             return;
                         }
                         else {
-                            var criteria = ((node.criteria === '_msg_')?
-                                (msg.criteria || ["UNSEEN"]):
-                                ([node.criteria]));
-                            if (Array.isArray(criteria)) {
-                                try {
-                                    imap.search(criteria, function(err, results) {
-                                        if (err) {
-                                            node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
-                                            node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
+                            fetchIMAP();
+                        }
+                    }); // End of imap->openInbox
+                }); // End of imap->ready
+            }
+            function fetchIMAP() {
+                var msg = RED.util.cloneMessage(node.lastMsg);
+                var criteria = ((node.criteria === '_msg_')?
+                    (msg.criteria || ["UNSEEN"]):
+                    ([node.criteria]));
+                if (Array.isArray(criteria)) {
+                    try {
+                        imap.search(criteria, function(err, results) {
+                            if (err) {
+                                node.status({fill:"red", shape:"ring", text:"email.status.foldererror"});
+                                node.error(RED._("email.errors.fetchfail", {folder:node.box}),err);
+                                imap.end();
+                                s = false;
+                                setInputRepeatTimeout();
+                                safeDone(err);
+                                return;
+                            }
+                            else {
+                            //console.log("> search - err=%j, results=%j", err, results);
+                                if (results.length === 0) {
+                                //console.log(" [X] - Nothing to fetch");
+                                    node.status({results:0});
+                                    if (imap && imap.serverSupports && imap.serverSupports('IDLE')) {
+                                        node.status({ fill:"grey", shape:"ring", text:"Received 0. -> IDLE" });
+                                    } else {
+                                        imap.end();
+                                        s = false;
+                                        setInputRepeatTimeout();
+                                    }
+                                    msg.payload = 0;
+                                    safeDone();
+                                    return;
+                                }
+
+                                var marks = false;
+                                if (node.disposition === "Read") { marks = true; }
+                                // We have the search results that contain the list of unseen messages and can now fetch those messages.
+                                var fetch = imap.fetch(results, {
+                                    bodies: '',
+                                    struct: true,
+                                    markSeen: marks
+                                });
+
+                                // For each fetched message returned ...
+                                fetch.on('message', function(imapMessage, seqno) {
+                                //node.log(RED._("email.status.message",{number:seqno}));
+                                //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
+                                    imapMessage.on('body', function(stream, info) {
+                                           //console.log("> message - body - stream=?, info=%j", info);
+                                        simpleParser(stream, {checksumAlgo: 'sha256'}, function(err, parsed) {
+                                            if (err) {
+                                                node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
+                                                node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
+                                            }
+                                            else {
+                                                processNewMessage(msg, parsed);
+                                            }
+                                        });
+                                    }); // End of msg->body
+                                }); // End of fetch->message
+
+                                // When we have fetched all the messages
+                                fetch.on('end', function() {
+                                    node.status({results:results.length});
+                                    var cleanup = function() {
+                                    if (imap && imap.serverSupports && imap.serverSupports('IDLE')) {
+                                            node.status({ fill:"grey", shape:"ring", text:"Received " + results.length + ". -> IDLE" });
+                                        } else {
                                             imap.end();
                                             s = false;
                                             setInputRepeatTimeout();
-                                            done(err);
-                                            return;
                                         }
-                                        else {
-                                        //console.log("> search - err=%j, results=%j", err, results);
-                                            if (results.length === 0) {
-                                            //console.log(" [X] - Nothing to fetch");
-                                                node.status({results:0});
-                                                imap.end();
-                                                s = false;
-                                                setInputRepeatTimeout();
-                                                msg.payload = 0;
-                                                done();
-                                                return;
-                                            }
+                                        msg.payload = results.length;
+                                        safeDone();
+                                    };
+                                    if (node.disposition === "Delete") {
+                                        imap.addFlags(results, '\\Deleted', imap.expunge(cleanup) );
+                                    } else if (node.disposition === "Read") {
+                                        imap.addFlags(results, '\\Seen', cleanup);
+                                    } else {
+                                        cleanup();
+                                    }
+                                });
 
-                                            var marks = false;
-                                            if (node.disposition === "Read") { marks = true; }
-                                            // We have the search results that contain the list of unseen messages and can now fetch those messages.
-                                            var fetch = imap.fetch(results, {
-                                                bodies: '',
-                                                struct: true,
-                                                markSeen: marks
-                                            });
-
-                                            // For each fetched message returned ...
-                                            fetch.on('message', function(imapMessage, seqno) {
-                                            //node.log(RED._("email.status.message",{number:seqno}));
-                                            //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
-                                                imapMessage.on('body', function(stream, info) {
-                                                //console.log("> message - body - stream=?, info=%j", info);
-                                                    simpleParser(stream, {checksumAlgo: 'sha256'}, function(err, parsed) {
-                                                        if (err) {
-                                                            node.status({fill:"red", shape:"ring", text:"email.status.parseerror"});
-                                                            node.error(RED._("email.errors.parsefail", {folder:node.box}),err);
-                                                        }
-                                                        else {
-                                                            processNewMessage(msg, parsed);
-                                                        }
-                                                    });
-                                                }); // End of msg->body
-                                            }); // End of fetch->message
-
-                                            // When we have fetched all the messages, we don't need the imap connection any more.
-                                            fetch.on('end', function() {
-                                                node.status({results:results.length});
-                                                var cleanup = function() {
-                                                    imap.end();
-                                                    s = false;
-                                                    setInputRepeatTimeout();
-                                                    msg.payload = results.length;
-                                                    done();
-                                                };
-                                                if (node.disposition === "Delete") {
-                                                    imap.addFlags(results, '\\Deleted', imap.expunge(cleanup) );
-                                                } else if (node.disposition === "Read") {
-                                                    imap.addFlags(results, '\\Seen', cleanup);
-                                                } else {
-                                                    cleanup();
-                                                }
-                                            });
-
-                                            fetch.once('error', function(err) {
-                                                console.log('Fetch error: ' + err);
-                                                imap.end();
-                                                s = false;
-                                                setInputRepeatTimeout();
-                                                done(err);
-                                            });
-                                        }
-                                    }); // End of imap->search
-                                }
-                                catch(e) {
-                                    node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
-                                    node.error(e.toString(),e);
-                                    s = ss = false;
+                                fetch.once('error', function(err) {
+                                    console.log('Fetch error: ' + err);
                                     imap.end();
-                                    done(e);
-                                    return;
-                                }
+                                    s = false;
+                                    setInputRepeatTimeout();
+                                    safeDone();
+                                });
                             }
-                            else {
-                                node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
-                                node.error(RED._("email.errors.bad_criteria"),msg);
-                                s = ss = false;
-                                imap.end();
-                                done();
-                                return;
-                            }
-                        }
-                    }); // End of imap->openInbox
-            }); // End of imap->ready
+                        }); // End of imap->search
+                    }
+                    catch(e) {
+                        node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
+                        node.error(e.toString(),e);
+                        s = ss = false;
+                        imap.end();
+                        safeDone(e);
+                        return;
+                    }
+                }
+                else {
+                    node.status({fill:"red", shape:"ring", text:"email.status.bad_criteria"});
+                    node.error(RED._("email.errors.bad_criteria"),msg);
+                    s = ss = false;
+                    imap.end();
+                    safeDone(new Error("bad criteria"));
+                    return;
+                }
+
+            }
             node.status({fill:"grey",shape:"dot",text:"node-red:common.status.connecting"});
             imap.connect();
         } // End of checkIMAP
