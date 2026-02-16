@@ -10,6 +10,7 @@
         },
         "errors": {
             "badstatuscode": "error - Bad status code",
+            "failedfetch": "error - Failed to fetch feed",
             "invalidurl": "Missing url",
             "invalidinterval": "Repeat interval too large",
             "badparse": "error - Bad feed parse"

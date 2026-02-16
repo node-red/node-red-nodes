@@ -17,7 +17,11 @@ module.exports = function(RED) {
 
         async function getFeed() {
             if (node.url && typeof node.url === "string" && node.url !== "") {
-                const response = await fetch(node.url);
+                const response = await fetch(node.url).catch((error) => {
+                    node.error("Failed Fetch: "+node.url, error)
+                    node.status({fill:"red",shape:"dot",text:RED._("feedparse.errors.failedfetch")});
+                    return;
+                });
                 if (response.status !== 200) {
                     node.error("Bad Feed: "+node.url, response)
                     node.status({fill:"red",shape:"dot",text:response.status+": "+RED._("feedparse.errors.badstatuscode")});
