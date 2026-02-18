@@ -433,7 +433,7 @@ module.exports = function(RED) {
                 node.status({fill:"yellow", shape:"dot", text:"Server notified " + numNew + " new mail(s)..."});
                 fetchIMAP(); // new mail -> catch immediatly
             });
-	        // Server notified about new attributes on (e.g. -> UNSEEN) during IDLE 
+	        // Server notified about new attributes on (e.g. -> UNSEEN) during IDLE
             imap.on('update', function() {
                 node.status({fill:"yellow", shape:"dot", text:"Server notified updated attributes..."});
                 fetchIMAP();
