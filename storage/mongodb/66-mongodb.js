@@ -105,74 +105,16 @@ module.exports = function(RED) {
                         delete msg._topic;
                         delete msg.collection;
                         if (node.operation === "store") {
-                            if (node.payonly) {
-                                if (typeof msg.payload !== "object") {
-                                    msg.payload = {"payload": msg.payload};
-                                }
-                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
-                                    msg.payload._id = msg._id;
-                                }
-                                coll.save(msg.payload,function(err, item) {
-                                    if (err) {
-                                        node.error(err,msg);
-                                    }
-                                });
-                            }
-                            else {
-                                coll.save(msg,function(err, item) {
-                                    if (err) {
-                                        node.error(err,msg);
-                                    }
-                                });
-                            }
+                            storeInDb(node, msg, coll);
                         }
                         else if (node.operation === "insert") {
-                            if (node.payonly) {
-                                if (typeof msg.payload !== "object") {
-                                    msg.payload = {"payload": msg.payload};
-                                }
-                                if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
-                                    msg.payload._id = msg._id;
-                                }
-                                coll.insert(msg.payload, function(err, item) {
-                                    if (err) {
-                                        node.error(err,msg);
-                                    }
-                                });
-                            }
-                            else {
-                                coll.insert(msg, function(err,item) {
-                                    if (err) {
-                                        node.error(err,msg);
-                                    }
-                                });
-                            }
+                            insertInDb(node, msg, coll);
                         }
                         else if (node.operation === "update") {
-                            if (typeof msg.payload !== "object") {
-                                msg.payload = {"payload": msg.payload};
-                            }
-                            var query = msg.query || {};
-                            var payload = msg.payload || {};
-                            var options = {
-                                upsert: node.upsert,
-                                multi: node.multi
-                            };
-                            if (ObjectID.isValid(msg.query._id)) {
-                                msg.query._id = new ObjectID(msg.query._id);
-                            }
-                            coll.update(query, payload, options, function(err, item) {
-                                if (err) {
-                                    node.error(err,msg);
-                                }
-                            });
+                            updateInDb(node, msg, coll);
                         }
                         else if (node.operation === "delete") {
-                            coll.remove(msg.payload, function(err, items) {
-                                if (err) {
-                                    node.error(err,msg);
-                                }
-                            });
+                            deleteInDb(node, msg, coll);
                         }
                     });
                 }
@@ -195,6 +137,9 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         this.collection = n.collection;
         this.mongodb = n.mongodb;
+        this.payonly = n.payonly || false;
+        this.upsert = n.upsert || false;
+        this.multi = n.multi || false;
         this.operation = n.operation || "find";
         this.mongoConfig = RED.nodes.getNode(this.mongodb);
         this.status({fill:"grey",shape:"ring",text:RED._("mongodb.status.connecting")});
@@ -292,6 +237,18 @@ module.exports = function(RED) {
                                 }
                             });
                         }
+                        else if (node.operation === "store") {
+                            storeInDb(node, msg, coll);
+                        }
+                        else if (node.operation === "insert") {
+                            insertInDb(node, msg, coll);
+                        }
+                        else if (node.operation === "update") {
+                            updateInDb(node, msg, coll);
+                        }
+                        else if (node.operation === "delete") {
+                            deleteInDb(node, msg, coll);
+                        }
                     });
                 }
             });
@@ -306,5 +263,103 @@ module.exports = function(RED) {
             if (node.client) { node.client.close(); }
         });
     }
-    RED.nodes.registerType("mongodb in",MongoInNode);
+    RED.nodes.registerType("mongodb in", MongoInNode);
+
+    function insertInDb(node, msg, coll) {
+        if (node.payonly) {
+            if (typeof msg.payload !== "object") {
+                msg.payload = { "payload": msg.payload };
+            }
+            if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
+                msg.payload._id = msg._id;
+            }
+            coll.insert(msg.payload, function (err, item) {
+                if (err) {
+                    node.error(err, msg);
+                }
+                else {
+                    msg.payload = item;
+                    node.send(msg);
+                }
+            });
+        }
+        else {
+            coll.insert(msg, function (err, item) {
+                if (err) {
+                    node.error(err, msg);
+                }
+                else {
+                    msg.payload = item;
+                    node.send(msg);
+                }
+            });
+        }
+    }
+
+    function updateInDb(node, msg, coll) {
+        if (typeof msg.payload !== "object") {
+            msg.payload = { "payload": msg.payload };
+        }
+        var query = msg.query || {};
+        var payload = msg.payload || {};
+        var options = {
+            upsert: node.upsert,
+            multi: node.multi
+        };
+        if (ObjectID.isValid(msg.query._id)) {
+            msg.query._id = new ObjectID(msg.query._id);
+        }
+        coll.update(query, payload, options, function (err, item) {
+            if (err) {
+                node.error(err, msg);
+            }
+            else {
+                msg.payload = item;
+                node.send(msg);
+            }
+        });
+    }
+
+    function deleteInDb(node, msg, coll) {
+        coll.remove(msg.payload, function (err, items) {
+            if (err) {
+                node.error(err, msg);
+            }
+            else {
+                msg.payload = items;
+                node.send(msg);
+            }
+        });
+    }
+
+    function storeInDb(node, msg, coll) {
+        if (node.payonly) {
+            if (typeof msg.payload !== "object") {
+                msg.payload = { "payload": msg.payload };
+            }
+            if (msg.hasOwnProperty("_id") && !msg.payload.hasOwnProperty("_id")) {
+                msg.payload._id = msg._id;
+            }
+            coll.save(msg.payload, function (err, item) {
+                if (err) {
+                    node.error(err, msg);
+                }
+                else {
+                    msg.payload = item;
+                    node.send(msg);
+                }
+            });
+        }
+        else {
+            coll.save(msg, function (err, item) {
+                if (err) {
+                    node.error(err, msg);
+                }
+                else {
+                    msg.payload = item;
+                    node.send(msg);
+                }
+            });
+        }
+    }
 }
