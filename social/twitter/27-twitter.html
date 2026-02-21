@@ -29,6 +29,10 @@
         <label style="margin-left: 20px;" for="node-config-input-access_token_secret"><span data-i18n="twitter.label.access_secret"></span></label>
         <input type="password" id="node-config-input-access_token_secret">
     </div>
+    <div class="form-row">
+        <label style="margin-left: 20px;" for="node-config-input-access_token_bearer"><span data-i18n="twitter.label.access_bearer"></span></label>
+        <input type="password" id="node-config-input-access_token_bearer">
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -45,8 +49,9 @@
             consumer_key: { type: "password"},
             consumer_secret: { type: "password" },
             access_token: {type: "password"},
-            access_token_secret: {type:"password"}
-        },
+            access_token_secret: {type:"password"},
+            access_token_bearer: {type:"password"}
+                },
         label: function() {
             if (this.screen_name) {
                 return (this.screen_name[0]!=="@"?"@":"")+this.screen_name
@@ -60,7 +65,8 @@
                 "consumer_key",
                 "consumer_secret",
                 "access_token",
-                "access_token_secret"
+                "access_token_secret",
+                "access_token_bearer",
             ];
             // Just in case any whitespace has crept in with the copy-paste of the fields
             trimFields.forEach(function(field) {
