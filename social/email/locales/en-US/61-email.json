@@ -59,6 +59,7 @@
         "status": {
             "messagesent": "Message sent: __response__",
             "fetching": "fetching",
+            "fetched": "Fetched __number__",
             "foldererror": "fetch folder error",
             "messageerror": "fetch message error",
             "message": "message #__number__",

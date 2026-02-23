@@ -1,5 +1,7 @@
 /* eslint-disable indent */
 
+const { clearTimeout } = require('timers');
+
 // const { domainToUnicode } = require("url");
 
 /**
@@ -233,6 +235,9 @@ module.exports = function (RED) {
         this.disposition = n.disposition || "None"; // "None", "Delete", "Read"
         this.criteria = n.criteria || "UNSEEN"; // "ALL", "ANSWERED", "FLAGGED", "SEEN", "UNANSWERED", "UNFLAGGED", "UNSEEN"
         this.authtype = n.authtype || "BASIC";
+        this.statusTimer = null;
+        this.statusDelay = 7000; // 7s
+        this.statusErr = false; // If Error, do not set status -> connected
         if (this.authtype !== "BASIC") {
             this.inputs = 1;
             this.repeat = 0;
@@ -305,7 +310,7 @@ module.exports = function (RED) {
                 "port": node.inport
             });
             try {
-                node.status({ fill: "grey", shape: "dot", text: "node-red:common.status.connecting" });
+                node.status({ fill: "yellow", shape: "dot", text: "node-red:common.status.connecting" });
                 await pop3.connect();
                 if (node.authtype === "XOAUTH2") {
                     var value = RED.util.getMessageProperty(msg, node.token);
@@ -401,6 +406,7 @@ module.exports = function (RED) {
                 node.lastMsg = msg;
             }
             if (!s) {
+                clearTimeout(node.statusTimer);
                 node.status({ fill: "yellow", shape: "ring", text: "node-red:common.status.connecting" });
                 if (node.authtype === "XOAUTH2") {
                     var value = RED.util.getMessageProperty(msg, node.token);
@@ -447,10 +453,13 @@ module.exports = function (RED) {
                     // var msg = 'IMAP connection closed';
                     if (hadError) {
                         // msg += ' due to error';
+                        node.statusErr = true;
                         node.status({ fill: "red", shape: "ring", text: "email.status.connecterror" });
-                    } else {
+                    } else if (!node.statusErr) {
+                        clearTimeout(node.statusTimer);
                         node.status({ fill: "gray", shape: "dot", text: "node-red:common.status.disconnected" });
                     }
+                    clearTimeout(node.statusTimer);
                     // node.log(msg);
                     s = false;
                     ss = false;
@@ -462,7 +471,10 @@ module.exports = function (RED) {
                     // node.log('IMAP connection ended');
                     s = false;
                     ss = false;
-                    node.status({ fill: "gray", shape: "dot", text: "node-red:common.status.disconnected" });
+                    clearTimeout(node.statusTimer);
+                    if(!node.statusErr) {
+                        node.status({ fill: "gray", shape: "dot", text: "node-red:common.status.disconnected" });
+                    }
                     setInputRepeatTimeout();
                 });
                 imap.on('error', function (err) {
@@ -472,6 +484,7 @@ module.exports = function (RED) {
                         // We handle connection lost with try to reconnect, so do not throw error.
                         node.error(err.message, err);
                     }
+                    node.statusErr = true;
                     node.status({ fill: "red", shape: "ring", text: "email.status.messageerror" });
                     safeDone();
                     setInputRepeatTimeout();
@@ -482,6 +495,7 @@ module.exports = function (RED) {
                 imap.once("ready", function () {
                     if (ss === true) { return; }
                     ss = true;
+                    clearTimeout(node.statusTimer);
                     node.status({ fill: "blue", shape: "dot", text: "email.status.fetching" });
                     //console.log("> ready");
                     // Open the folder
@@ -504,6 +518,7 @@ module.exports = function (RED) {
                                     }
                                     node.error(RED._("email.errors.fetchfail", { folder: node.box + ".  Folders - " + boxs.join(', ') }), err);
                                 });
+                                node.statusErr = true;
                                 node.status({ fill: "red", shape: "ring", text: "email.status.foldererror" });
                                 imap.end();
                                 s = ss = false;
@@ -518,6 +533,7 @@ module.exports = function (RED) {
                 }); // End of imap->ready
             }
             function fetchIMAP() {
+                clearTimeout(node.statusTimer);
                 node.status({ fill: "blue", shape: "dot", text: "email.status.fetching" });
                 var msg = RED.util.cloneMessage(node.lastMsg);
                 var criteria = ((node.criteria === '_msg_') ?
@@ -527,6 +543,7 @@ module.exports = function (RED) {
                     try {
                         imap.search(criteria, function (err, results) {
                             if (err) {
+                                node.statusErr = true;
                                 node.status({ fill: "red", shape: "ring", text: "email.status.foldererror" });
                                 node.error(RED._("email.errors.fetchfail", { folder: node.box }), err);
                                 imap.end();
@@ -539,9 +556,11 @@ module.exports = function (RED) {
                                 //console.log("> search - err=%j, results=%j", err, results);
                                 if (results.length === 0) {
                                     //console.log(" [X] - Nothing to fetch");
-                                    if (imap && imap.serverSupports && imap.serverSupports('IDLE')) {
+                                    if (imap.serverSupports && imap.serverSupports('IDLE')) {
                                         // IMAP IDLE
-                                        node.status({ fill: "green", shape: "dot", text: "node-red:common.status.connected" });
+                                        node.status({ fill: "green", shape: "dot", text: RED._("email.status.fetched", { number: "0" } )});
+                                        node.statusErr = false;
+                                        setStatusTimer();
                                     } else {
                                         imap.end();
                                         s = false;
@@ -571,6 +590,7 @@ module.exports = function (RED) {
                                         simpleParser(stream, { checksumAlgo: 'sha256' }, function (err, parsed) {
                                             if (err) {
                                                 node.status({ fill: "red", shape: "ring", text: "email.status.parseerror" });
+                                                node.statusErr = true;
                                                 node.error(RED._("email.errors.parsefail", { folder: node.box }), err);
                                             }
                                             else {
@@ -583,9 +603,11 @@ module.exports = function (RED) {
                                 // When we have fetched all the messages
                                 fetch.on('end', function () {
                                     var cleanup = function () {
-                                        if (imap && imap.serverSupports && imap.serverSupports('IDLE')) {
+                                        if (imap.serverSupports && imap.serverSupports('IDLE')) {
                                             // for IMAP IDLE, connection is expected to stay open
-                                            node.status({ fill: "green", shape: "dot", text: "node-red:common.status.connected" });
+                                            node.status({ fill: "green", shape: "dot", text: RED._("email.status.fetched", { number: results.length.toString() } )});
+                                            node.statusErr = false;
+                                            setStatusTimer();
                                         } else {
                                             imap.end();
                                             s = false;
@@ -608,6 +630,8 @@ module.exports = function (RED) {
                                     console.log('Fetch error: ' + err);
                                     imap.end();
                                     s = false;
+                                    node.statusErr = true;
+                                    node.status({ fill: "red", shape: "ring", text: "email.status.fetcherror" });
                                     setInputRepeatTimeout();
                                     safeDone();
                                 });
@@ -615,6 +639,7 @@ module.exports = function (RED) {
                         }); // End of imap->search
                     }
                     catch (e) {
+                        node.statusErr = true;
                         node.status({ fill: "red", shape: "ring", text: "email.status.bad_criteria" });
                         node.error(e.toString(), e);
                         s = ss = false;
@@ -624,6 +649,7 @@ module.exports = function (RED) {
                     }
                 }
                 else {
+                    node.statusErr = true;
                     node.status({ fill: "red", shape: "ring", text: "email.status.bad_criteria" });
                     node.error(RED._("email.errors.bad_criteria"), msg);
                     s = ss = false;
@@ -646,6 +672,22 @@ module.exports = function (RED) {
             }
         }  // End of checkEmail
 
+        function setStatusTimer() {
+            // cancel previous timer
+            if (node.statusTimer) {
+                clearTimeout(node.statusTimer);
+            }
+
+            node.statusTimer = setTimeout(function () {
+                if (!node.statusErr) {
+                    node.status({
+                        fill: "green",
+                        shape: "dot",
+                        text: "node-red:common.status.connected"
+                    });
+                }}, node.statusDelay);
+        }
+
         node.on("input", function (msg, send, done) {
             send = send || function () { node.send.apply(node, arguments) };
             checkEmail(msg, send, done);
@@ -654,6 +696,9 @@ module.exports = function (RED) {
         node.on("close", function () {
             if (this.interval_id != null) {
                 clearTimeout(this.interval_id);
+            }
+            if (this.statusTimer) {
+                clearTimeout(this.statusTimer);
             }
             if (imap) {
                 imap.end();

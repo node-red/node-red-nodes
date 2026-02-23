@@ -45,6 +45,7 @@
         "status": {
             "messagesent": "Nachricht gesendet: __response__",
             "fetching": "Rufe ab",
+            "fetched": "__number__ abgerufen",
             "foldererror": "Fehler bei Verzeichnisabruf",
             "messageerror": "Fehler bei Nachrichtenabruf",
             "message": "Nachricht #__number__",
