@@ -1,7 +1,5 @@
 /* eslint-disable indent */
 
-const { clearTimeout } = require('timers');
-
 // const { domainToUnicode } = require("url");
 
 /**
