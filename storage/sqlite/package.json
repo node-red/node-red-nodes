@@ -1,6 +1,6 @@
 {
     "name": "node-red-node-sqlite",
-    "version": "1.1.2",
+    "version": "2.0.0",
     "description": "A sqlite node for Node-RED",
     "dependencies": {
         "sqlite3": "^6.0.1"
@@ -11,7 +11,7 @@
         "directory": "tree/master/storage/sqlite"
     },
     "engines": {
-        "node": ">=12"
+        "node": ">=18"
     },
     "license": "Apache-2.0",
     "keywords": [
@@ -19,14 +19,14 @@
         "sqlite"
     ],
     "node-red": {
-        "version": ">=1.0.0",
+        "version": ">=3.0.0",
         "nodes": {
             "sqlite": "sqlite.js"
         }
     },
     "author": {
         "name": "Dave Conway-Jones",
-        "email": "ceejay@vnet.ibm.com",
+        "email": "dceejay@gmail.com",
         "url": "http://nodered.org"
     }
 }
