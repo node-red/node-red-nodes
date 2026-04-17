@@ -10,6 +10,16 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 
     npm i --unsafe-perm node-red-node-sqlite
 
+**Breaking - v2.x**
+
+   Version 2 updates the underlying library and this may not have all the required precompiled binaries for all platforms. If you get an error loading the node - for example saying *GLIBC_2.38 not found* - then you will need to rebuild the sqlite3 binary locally. This can be done by running the rebuild command in the correct directory. This will be something like
+   
+   ```
+   cd ~/.node-red/node_modules/sqlite3
+   npm run rebuild
+   ```
+  but of course if you have installed under a project or under docker it may be in a different location.
+
 **Notes**:
 
   - Version 1.x requires nodejs v12 or greater.
