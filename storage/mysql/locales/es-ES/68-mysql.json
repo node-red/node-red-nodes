@@ -1,0 +1,25 @@
+{
+    "mysql": {
+        "label": {
+            "host": "Servidor",
+            "port": "Puerto",
+            "user": "Usuario",
+            "password": "Contraseña",
+            "database": "Base de Datos",
+            "timezone": "Zona Horaria",
+            "charset": "Juego de Caracteres"
+        },
+        "status": {
+            "badping": "No está",
+            "error": "Error",
+            "ok": "Vale",
+            "notconnected": "aún no conectado"
+        },
+        "errors": {
+            "notstring": "la consulta no está definida como una cadena",
+            "notconnected": "Base de datos no conectada",
+            "notconfigured": "Base de datos MySQL no configurada"
+        },
+        "tip": "Consejo: La zona horaria debe especificarse como &#177;hh:mm o dejarse en blanco para 'local'."
+    }
+}
