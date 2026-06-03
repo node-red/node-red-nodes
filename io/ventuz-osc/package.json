@@ -1,0 +1,37 @@
+{
+  "name": "node-red-contrib-ventuz-osc",
+  "version": "0.0.8",
+  "description": "Node-RED nodes for Ventuz OSC communication",
+  "keywords": [
+    "node-red",
+    "ventuz",
+    "osc",
+    "realtime",
+    "broadcast"
+  ],
+  "license": "MIT",
+  "author": "c3812600 <c3812600@qq.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c3812600/node-red-contrib-ventuz-osc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/c3812600/node-red-contrib-ventuz-osc/issues"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "version": ">=2.0.0",
+    "nodes": {
+      "osc-out": "nodes/osc-out.js",
+      "osc-in": "nodes/osc-in.js"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

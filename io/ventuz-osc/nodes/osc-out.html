@@ -1,0 +1,74 @@
+<script type="text/javascript">
+    RED.nodes.registerType('osc-out', {
+        category: 'network',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            host: { value: "127.0.0.1", required: true },
+            port: { value: 9000, required: true, validator: RED.validators.number() },
+            address: { value: "/ventuz/broadcast", required: true },
+            iface: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "bridge.svg",
+        label: function() {
+            return this.name || this.host + ':' + this.port;
+        },
+        paletteLabel: "osc out"
+    });
+</script>
+
+<script type="text/html" data-template-name="osc-out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="127.0.0.1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-plug"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="9000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-address"><i class="fa fa-map-marker"></i> OSC Address</label>
+        <input type="text" id="node-input-address" placeholder="/ventuz/broadcast">
+    </div>
+    <div class="form-row">
+        <label for="node-input-iface"><i class="fa fa-server"></i> Interface IP</label>
+        <input type="text" id="node-input-iface" placeholder="0.0.0.0 (可选)">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="osc-out">
+    <p>OSC Out 节点 - 发送 OSC 消息</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string | number | boolean | array | object</span></dt>
+        <dd>OSC 消息参数</dd>
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd>OSC 地址（可选，覆盖节点配置）</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>向指定目标发送 OSC 消息。支持以下数据类型：</p>
+    <ul>
+        <li><b>整数</b> - 32位有符号整数</li>
+        <li><b>浮点数</b> - 32位浮点数</li>
+        <li><b>字符串</b> - UTF-8 编码，支持中文（自动 BEUC 编码）</li>
+        <li><b>布尔值</b> - 自动转换为整数 (0/1)</li>
+        <li><b>Blob</b> - Buffer 类型数据</li>
+    </ul>
+    <p>消息格式为 OSC Bundle，包含时间戳。</p>
+    <h3>Examples</h3>
+    <pre>// 发送字符串
+[{"topic": "/ventuz/text", "payload": "Hello World"}]
+
+// 发送数字
+[{"topic": "/ventuz/value", "payload": 123.45}]
+
+// 发送数组（多个参数）
+[{"topic": "/ventuz/data", "payload": [1, 2.5, "test"]}]
+</pre>
+</script>

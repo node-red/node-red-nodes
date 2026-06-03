@@ -1,0 +1,78 @@
+<script type="text/javascript">
+    RED.nodes.registerType('osc-in', {
+        category: 'network',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            port: { value: 9001, required: true, validator: RED.validators.number() },
+            address: { value: "/ventuz/*", required: true },
+            multicast: { value: "" },
+            iface: { value: "" }
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "bridge.svg",
+        label: function() {
+            return this.name || 'port ' + this.port;
+        },
+        paletteLabel: "osc in"
+    });
+</script>
+
+<script type="text/html" data-template-name="osc-in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-plug"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="9001">
+    </div>
+    <div class="form-row">
+        <label for="node-input-address"><i class="fa fa-map-marker"></i> OSC Address Filter</label>
+        <input type="text" id="node-input-address" placeholder="/ventuz/*">
+    </div>
+    <div class="form-row">
+        <label for="node-input-multicast"><i class="fa fa-network-wired"></i> Multicast Group</label>
+        <input type="text" id="node-input-multicast" placeholder="230.230.230.235 (可选)">
+    </div>
+    <div class="form-row">
+        <label for="node-input-iface"><i class="fa fa-server"></i> Interface IP</label>
+        <input type="text" id="node-input-iface" placeholder="0.0.0.0 (可选)">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="osc-in">
+    <p>OSC In 节点 - 接收 OSC 消息</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">array</span></dt>
+        <dd>OSC 消息参数数组</dd>
+        <dt>topic <span class="property-type">string</span></dt>
+        <dd>OSC 地址</dd>
+        <dt>_ip <span class="property-type">string</span></dt>
+        <dd>发送方 IP 地址</dd>
+        <dt>_port <span class="property-type">number</span></dt>
+        <dd>发送方端口</dd>
+        <dt>_raw <span class="property-type">buffer</span></dt>
+        <dd>原始 OSC 二进制数据</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>监听指定端口的 OSC 消息。支持 OSC Bundle 和单条消息。</p>
+    <p>支持通配符地址过滤：</p>
+    <ul>
+        <li><code>/ventuz/*</code> - 匹配所有 /ventuz/ 开头的地址</li>
+        <li><code>*</code> - 匹配所有地址</li>
+        <li><code>/ventuz/broadcast</code> - 精确匹配</li>
+    </ul>
+    <p>自动解码 BEUC 编码的中文字符串。</p>
+    <h3>Examples</h3>
+    <pre>// 接收到的消息格式
+{
+    "topic": "/ventuz/broadcast",
+    "payload": ["Hello", 123, 45.67],
+    "ip": "192.168.1.100",
+    "port": 12345
+}
+</pre>
+</script>
