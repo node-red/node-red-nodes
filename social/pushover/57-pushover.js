@@ -2,7 +2,6 @@
 module.exports = function(RED) {
     "use strict";
     var PushOver = require('pushover-notifications');
-    var util = require('util');
     var fs = require('fs');
 
     function PushoverNode(n) {
@@ -26,7 +25,7 @@ module.exports = function(RED) {
                 user: this.deviceid,
                 token: this.pushkey,
                 onerror: function(err) {
-                    util.log('[57-pushover.js] Error: '+err);
+                    RED.log.log('[57-pushover.js] Error: '+err);
                 }
             });
         }
