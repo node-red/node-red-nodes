@@ -41,7 +41,7 @@
         "grunt-simple-mocha": "0.4.1",
         "imap": "0.8.19",
         "mailparser": "3.9.9",
-        "markdown-it": "14.1.1",
+        "markdown-it": "14.2.0",
         "mocha": "6.2.3",
         "msgpack-lite": "0.1.26",
         "multilang-sentiment": "1.2.0",
