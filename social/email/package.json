@@ -6,7 +6,7 @@
     "imap": "0.8.19",
     "node-pop3": "0.11.0",
     "mailparser": "3.9.9",
-    "nodemailer": "8.0.10",
+    "nodemailer": "9.0.1",
     "smtp-server": "3.18.5",
     "semver": "5.7.2"
   },
