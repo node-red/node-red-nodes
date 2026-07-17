@@ -3,7 +3,7 @@
     "version": "1.3.0",
     "description": "A Node-RED node that extracts Exif information from image buffers.",
     "dependencies": {
-        "exifreader": "4.39.1"
+        "exifreader": "4.40.1"
     },
     "bundledDependencies": [
         "exifreader"
