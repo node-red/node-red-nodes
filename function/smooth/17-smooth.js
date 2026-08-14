@@ -54,6 +54,17 @@ module.exports = function(RED) {
                             v[top].tot = v[top].tot + n - v[top].pop;
                             value = v[top].tot / v[top].a.length;
                         }
+                        if (node.action === "median") {
+                            var sortedForMedian = v[top].a.slice().sort((a, b) => a - b);                            
+                            var medianIndex = Math.floor(v[top].iter / 2);
+                            if (v[top].iter % 2 === 0) {
+                                value = (sortedForMedian[medianIndex - 1] + sortedForMedian[medianIndex]) / 2;
+                            }
+                            else {
+                                value = sortedForMedian[medianIndex]
+                            }
+                        }
+                            
                         if (node.action === "sd") {
                             v[top].tot = v[top].tot + n - v[top].pop;
                             v[top].tot2 = v[top].tot2 + (n*n) - (v[top].pop * v[top].pop);
