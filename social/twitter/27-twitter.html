@@ -96,6 +96,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
+    <div class="form-row">
+        <label for="node-input-pollInterval"><i class="fa fa-clock"></i> <span  data-i18n="twitter.label.pollInterval"></span></label>
+        <input type="text" id="node-input-pollInterval" data-i18n="[placeholder]twitter.placeholder.pollInterval">
+    </div>
     <div class="form-tips"><span data-i18n="[html]twitter.tip"></span></div>
 </script>
 
@@ -108,7 +112,8 @@
             tags: {value:""},
             user: {value:"false",required:true},
             name: {value:""},
-            inputs: {value:0}
+            inputs: {value:0},
+            pollInterval: {value:60000}
         },
         inputs: 0,
         outputs: 1,
@@ -139,6 +144,7 @@
             var userph = this._("twitter.placeholder.user");
             var forlabel = this._("twitter.label.for");
             var forph = this._("twitter.placeholder.for");
+            var pollInterval = this._("twitter.placeholder.pollInterval")
             $("#node-input-user").change(function() {
                 var type = $("#node-input-user option:selected").val();
                 if (type == "user") {
@@ -156,7 +162,7 @@
             $("#node-input-user").change();
         },
         oneditsave: function() {
-            if ($('#node-input-tags').val() === '' && $("#node-input-user option:selected").val() === 'false') {
+            if ($('#node-input-tags').val() === ''/* && $("#node-input-user option:selected").val() === 'false'*/) {
                 this.inputs = 1;
             }
             else {

@@ -169,6 +169,7 @@ module.exports = function(RED) {
         this.twitterConfig = RED.nodes.getNode(this.twitter);
         this.poll_ids = [];
         this.timeout_ids = [];
+        this.pollInterval=n.pollInterval || 60000;
 
         var credentials = RED.nodes.getCredentials(this.twitter);
         this.status({});
@@ -177,17 +178,60 @@ module.exports = function(RED) {
             var node = this;
             if (this.user === "true") {
                 // Poll User Home Timeline 1/min
-                this.poll(60000,"https://api.twitter.com/1.1/statuses/home_timeline.json");
+                this.poll(node.pollInterval,"https://api.twitter.com/1.1/statuses/home_timeline.json");
             } else if (this.user === "user") {
-                var users = node.tags.split(/\s*,\s*/).filter(v=>!!v);
+                var tags= node.tags || "";
+                var users = tags.split(/\s*,\s*/).filter(v=>!!v);
+                /* // Block no longer reqd as accepts msg.payload
                 if (users.length === 0) {
                     node.error(RED._("twitter.warn.nousers"));
                     return;
                 }
+                */
+
+                
                 // Poll User timeline
+                node.lastMessageTS = new Date();
+                node.status({fill:"green",shape:"ring",text:"Initializing"});
                 users.forEach(function(user) {
-                    node.poll(60000,"https://api.twitter.com/1.1/statuses/user_timeline.json",{screen_name: user});
+                    node.poll(node.pollInterval,"https://api.twitter.com/1.1/statuses/user_timeline.json",{screen_name: user});
                 })
+
+                node.on("input", function(msg) { // sticky polling - identifies already tracked handles vs add/remove handles
+                    var payloadtags=msg.payload.split(/\s*,\s*/).filter(v=>!!v);
+                    var screennames=node.poll_ids.map(p=>p.asset.opts.screen_name);
+                    var newusers=payloadtags.filter(x=>!screennames.includes(x));
+                    var removeusers=screennames.filter(x=>!payloadtags.includes(x));
+                    newusers.forEach(function(user) { //start tracking new users in msg.payload
+                            node.warn("Twitter-In: New Handle: "+user)
+                            node.status({fill:"green",shape:"ring",text:"Adding handles"});
+                            node.lastMessageTS = new Date();
+                            node.poll(node.pollInterval,"https://api.twitter.com/1.1/statuses/user_timeline.json",{screen_name: user});
+                        });
+                    removeusers.forEach(function(user) { // remove any tracked users missing from msg.payload
+                        node.poll_ids.forEach((p,i)=>{
+                            if(user===p.asset.opts.screen_name){
+                                node.status({fill:"green",shape:"ring",text:"Removing handles"});
+                                node.lastMessageTS = new Date();
+                                node.warn("Twitter-In: Delete Handle: "+p.asset.opts.screen_name);
+                                clearInterval(p.interval);
+                                node.poll_ids.splice(i,1);
+                            }                                
+                        })
+                    });
+                });
+
+                function checklastMessageTS() {
+                    if(node.lastMessageTS != null){
+                        var timeDiff = new Date() - node.lastMessageTS;
+                        if(timeDiff > 5000){
+                            node.status({fill:"yellow",shape:"ring",text:"Idle @ "+node.lastMessageTS.toLocaleTimeString()});
+                            node.lastMessageTS=null;
+                        } 
+                    }   
+                }
+                  
+                node.interval = setInterval(checklastMessageTS, 1000);
             } else if (this.user === "dm") {
                 node.pollDirectMessages();
             } else if (this.user === "event") {
@@ -266,7 +310,7 @@ module.exports = function(RED) {
                             node.log(RED._("twitter.status.using-geo",{location:node.tags.toString()}));
                         }
                     }
-
+                    
                     // all public tweets
                     if (this.user === "false") {
                         node.on("input", function(msg) {
@@ -312,8 +356,11 @@ module.exports = function(RED) {
                 catch (err) {
                     node.error(err);
                 }
+
+
             }
             this.on('close', function() {
+                clearInterval(node.interval);
                 if (this.tout) { clearTimeout(this.tout); }
                 if (this.tout2) { clearTimeout(this.tout2); }
                 if (this.stream) {
@@ -328,7 +375,7 @@ module.exports = function(RED) {
                 }
                 if (this.poll_ids) {
                     for (var i=0; i<this.poll_ids.length; i++) {
-                        clearInterval(this.poll_ids[i]);
+                        clearInterval(this.poll_ids[i].interval);
                     }
                 }
             });
@@ -342,7 +389,7 @@ module.exports = function(RED) {
     TwitterInNode.prototype.poll = function(interval, url, opts) {
         var node = this;
         var opts = opts || {};
-        var pollId;
+        var pollId={};
         opts.count = 1;
         this.twitterConfig.get(url,opts).then(function(result) {
             if (result.status === 429) {
@@ -359,12 +406,15 @@ module.exports = function(RED) {
             if (res.length > 0) {
                 since = res[0].id_str;
             }
-            pollId = setInterval(function() {
+            pollId.asset={url:url,opts:opts};
+            pollId.interval = setInterval(function() {
+                node.lastMessageTS = new Date();
+                node.status({fill:"blue",shape:"ring",text:"Polling"});
                 opts.since_id = since;
                 node.twitterConfig.get(url,opts).then(function(result) {
                     if (result.status === 429) {
                         node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
-                        clearInterval(pollId);
+                        clearInterval(pollId.interval);
                         node.timeout_ids.push(setTimeout(function() {
                             node.poll(interval,url,opts);
                         },result.rateLimitTimeout))
@@ -378,7 +428,7 @@ module.exports = function(RED) {
                             // 'since_id parameter is invalid' - reset it for next time
                             delete opts.since_id;
                         }
-                        clearInterval(pollId);
+                        clearInterval(pollId.interval);
                         node.timeout_ids.push(setTimeout(function() {
                             node.poll(interval,url,opts);
                         },interval))
@@ -409,7 +459,7 @@ module.exports = function(RED) {
                     }
                 }).catch(function(err) {
                     node.error(err);
-                    clearInterval(pollId);
+                    clearInterval(pollId.interval);
                     node.timeout_ids.push(setTimeout(function() {
                         delete opts.since_id;
                         delete opts.count;
@@ -433,7 +483,7 @@ module.exports = function(RED) {
         var node = this;
         var opts = {};
         var url = "https://api.twitter.com/1.1/direct_messages/events/list.json";
-        var pollId;
+        var pollId={};
         opts.count = 50;
         this.twitterConfig.get(url,opts).then(function(result) {
             if (result.status === 429) {
@@ -457,11 +507,12 @@ module.exports = function(RED) {
             if (messages.length > 0) {
                 since = messages[0].id;
             }
-            pollId = setInterval(function() {
+            pollId.asset={url:url,opts:opts};
+            pollId.interval = setInterval(function() {
                 node.twitterConfig.get(url,opts).then(function(result) {
                     if (result.status === 429) {
                         node.warn("Rate limit hit. Waiting "+Math.floor(result.rateLimitTimeout/1000)+" seconds to try again");
-                        clearInterval(pollId);
+                        clearInterval(pollId.interval);
                         node.timeout_ids.push(setTimeout(function() {
                             node.pollDirectMessages();
                         },result.rateLimitTimeout))
@@ -471,7 +522,7 @@ module.exports = function(RED) {
                     var res = result.body;
                     if (res.errors) {
                         node.error(res.errors[0].message);
-                        clearInterval(pollId);
+                        clearInterval(pollId.interval);
                         node.timeout_ids.push(setTimeout(function() {
                             node.pollDirectMessages();
                         },interval))
@@ -532,7 +583,7 @@ module.exports = function(RED) {
                     }
                 }).catch(function(err) {
                     node.error(err);
-                    clearInterval(pollId);
+                    clearInterval(pollId.interval);
                     node.timeout_ids.push(setTimeout(function() {
                         node.pollDirectMessages();
                     },interval))
