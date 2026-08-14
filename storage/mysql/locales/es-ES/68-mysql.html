@@ -1,0 +1,16 @@
+
+<script type="text/html" data-help-name="MySQLdatabase">
+    <p>Añade aquí las credenciales para acceder a tu base de datos.</p>
+    <p>La zona horaria se puede configurar como GMT, EST5EDT, UTC, etc.</p>
+    <p>El juego de caracteres por defecto es el "antiguo" MySQL UTF8 de 3 bytes. Si necesitas soporte para emojis, etc., utiliza UTF8MB4.</p>
+</script>
+
+<script type="text/html" data-help-name="mysql">
+    <p>Permite acceso básico a una base de datos MySQL.</p>
+    <p>Este nodo utiliza la operación <b>consulta</b> en la base de datos configurada. Esto permite tanto INSERTAR como ELIMINAR. Por su propia naturaleza, permite la inyección de SQL... así que <i>ten cuidado...</i></p>
+    <p><code>msg.topic</code> debe contener la <i>consulta</i> para la base de datos y el resultado se devuelve en <code>msg.payload</code>.</p>
+    <p><code>msg.payload</code> puede contener una matriz de valores para vincularlos al tema.</p>
+    <p>Normalmente, la carga devuelta será una matriz de filas de resultados. <b>Nota</b>: estos son del tipo <i>RowDataPacket</i> y no son un objeto completamente estándar.</p>
+    <p>Si no se encuentra nada para la clave, se devuelve <i>null</i>.</p>
+    <p>El tiempo de espera de reconexión en milisegundos se puede cambiar añadiendo una línea <pre>mysqlReconnectTime: 30000,</pre> en <b>settings.js</b></p>
+</script>
