@@ -611,52 +611,74 @@ module.exports = function(RED) {
                             node.warn(RED._("twitter.errors.truncated"));
                         }
                         var mediaPromise;
-                        if (msg.media && Buffer.isBuffer(msg.media)) {
-                            // var mediaType = fileType(msg.media);
-                            // if (mediaType === null) {
-                            //     node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                            //     node.error("msg.media is not a valid media object",msg);
-                            //     return;
-                            // }
-                            mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json",null,null,{
-                                media: msg.media
-                            }).then(function(result) {
-                                if (result.status === 200) {
-                                    return result.body.media_id_string;
-                                } else {
-                                    throw new Error(result.body.errors[0]);
-                                }
-                            });
+                    if (msg.media && Buffer.isBuffer(msg.media)) {
 
-                        } else {
-                            mediaPromise = Promise.resolve();
-                        }
-                        mediaPromise.then(function(mediaId) {
-                            var params = msg.params || {};
-                            params.status = msg.payload;
-                            if (mediaId) {
-                                params.media_ids = mediaId;
+                        mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json",{  
+                            command: "INIT",
+                            total_bytes: msg.mediaSize,
+                            media_type: msg.mediaType
+                        }).then(function(result) {
+                            if (result.status === 200) {
+                                return result.body.media_id_string;
+                            } else {
+                                throw new Error(result.body.errors[0]);
                             }
-                            node.twitterConfig.post("https://api.twitter.com/1.1/statuses/update.json",{},params).then(function(result) {
-                                if (result.status === 200) {
-                                    node.status({});
-                                } else {
-                                    node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                    
-                                    if ('error' in result.body && typeof result.body.error === 'string') {
-                                        node.error(result.body.error,msg);
-                                    } else {
-                                        node.error(result.body.errors[0].message,msg);
-                                    }
-                                }
-                            }).catch(function(err) {
+                        });
+
+
+                        mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json",{  
+                            command: "APPEND",
+                            media_id: mediaId,
+                            media: msg.media,
+                            segment_index: 0
+                        }).then(function(result) {
+                            if (result.status === 200) {
+                                return result.media_id;
+                            } else {
+                                throw new Error(result.body.errors[0]);
+                            }
+                        });
+                        
+                        mediaPromise = node.twitterConfig.post("https://upload.twitter.com/1.1/media/upload.json",{  
+                            command: "FINALIZE",
+                            media_id: mediaId
+                        }).then(function(result) {
+                            if (result.status === 200) {
+                                return result.media_id;
+                            } else {
+                                throw new Error(result.body.errors[0]);
+                            }
+                        });
+                 
+                    } else {
+                        mediaPromise = Promise.resolve();
+                    }
+                    mediaPromise.then(function(mediaId) {
+                        var params = msg.params || {};
+                        params.status = msg.payload;
+                        if (mediaId) {
+                            params.media_ids = mediaId;
+                        }
+                        node.twitterConfig.post("https://api.twitter.com/1.1/statuses/update.json",{},params).then(function(result) {
+                            if (result.status === 200) {
+                                node.status({});
+                            } else {
                                 node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
-                                node.error(err,msg);
-                            })
+                                
+                                if ('error' in result.body && typeof result.body.error === 'string') {
+                                    node.error(result.body.error,msg);
+                                } else {
+                                    node.error(result.body.errors[0].message,msg);
+                                }
+                            }
                         }).catch(function(err) {
                             node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
                             node.error(err,msg);
-                        });
+                        })
+                    }).catch(function(err) {
+                        node.status({fill:"red",shape:"ring",text:"twitter.status.failed"});
+                        node.error(err,msg);
+                    });
                         // if (msg.payload.length > 280) {
                         //     msg.payload = msg.payload.slice(0,279);
                         //     node.warn(RED._("twitter.errors.truncated"));
