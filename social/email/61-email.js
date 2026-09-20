@@ -404,6 +404,7 @@ module.exports = function (RED) {
             if (msg && Object.keys(msg).length > 0) {
                 node.lastMsg = msg;
             }
+
             if (!s) {
                 clearTimeout(node.statusTimer);
                 node.status({ fill: "yellow", shape: "ring", text: "node-red:common.status.connecting" });
@@ -460,6 +461,10 @@ module.exports = function (RED) {
                 }
                 imap.on('close', function (hadError) {
                     // var msg = 'IMAP connection closed';
+                    // node.log(msg);
+                    s = false;
+                    ss = false;
+                    clearTimeout(node.statusTimer);
                     if (hadError) {
                         // msg += ' due to error';
                         node.statusErr = true;
@@ -468,11 +473,6 @@ module.exports = function (RED) {
                         clearTimeout(node.statusTimer);
                         node.status({ fill: "gray", shape: "dot", text: "node-red:common.status.disconnected" });
                     }
-                    clearTimeout(node.statusTimer);
-                    // node.log(msg);
-                    s = false;
-                    ss = false;
-
                     // Reconnect after delay
                     setInputRepeatTimeout();
                 });
@@ -481,7 +481,7 @@ module.exports = function (RED) {
                     s = false;
                     ss = false;
                     clearTimeout(node.statusTimer);
-                    if(!node.statusErr) {
+                    if (!node.statusErr) {
                         node.status({ fill: "gray", shape: "dot", text: "node-red:common.status.disconnected" });
                     }
                     setInputRepeatTimeout();
@@ -541,6 +541,7 @@ module.exports = function (RED) {
                         }); // End of imap->openInbox
                 }); // End of imap->ready
             }
+
             function fetchIMAP() {
                 clearTimeout(node.statusTimer);
                 node.status({ fill: "blue", shape: "dot", text: "email.status.fetching" });
@@ -582,7 +583,7 @@ module.exports = function (RED) {
                                 }
 
                                 var marks = false;
-                                if (node.disposition === "Read") { marks = true; }
+                                if ((node.disposition === "Read")||(node.disposition === "Delete")) { marks = true; }
                                 // We have the search results that contain the list of unseen messages and can now fetch those messages.
                                 var fetch = imap.fetch(results, {
                                     bodies: '',
@@ -593,7 +594,7 @@ module.exports = function (RED) {
                                 // For each fetched message returned ...
                                 fetch.on('message', function (imapMessage, seqno) {
                                     //node.log(RED._("email.status.message",{number:seqno}));
-                                    //console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
+                                    // console.log("> Fetch message - msg=%j, seqno=%d", imapMessage, seqno);
                                     imapMessage.on('body', function (stream, info) {
                                         //console.log("> message - body - stream=?, info=%j", info);
                                         simpleParser(stream, { checksumAlgo: 'sha256' }, function (err, parsed) {
@@ -617,7 +618,8 @@ module.exports = function (RED) {
                                             node.status({ fill: "green", shape: "ring", text: RED._("email.status.fetched", { number: results.length.toString() } )});
                                             node.statusErr = false;
                                             setStatusTimer();
-                                        } else {
+                                        }
+                                        else {
                                             imap.end();
                                             s = false;
                                             setInputRepeatTimeout();
@@ -626,17 +628,17 @@ module.exports = function (RED) {
                                         msg.payload = results.length;
                                         safeDone();
                                     };
-                                    if (node.disposition === "Delete") {
-                                        imap.addFlags(results, '\\Deleted', imap.expunge(cleanup));
-                                    } else if (node.disposition === "Read") {
+                                    if (node.disposition === "Read") {
                                         imap.addFlags(results, '\\Seen', cleanup);
+                                    } else if (node.disposition === "Delete") {
+                                        imap.addFlags(results, '\\Deleted', imap.expunge(cleanup));
                                     } else {
                                         cleanup();
                                     }
                                 });
 
                                 fetch.once('error', function (err) {
-                                    console.log('Fetch error: ' + err);
+                                    // console.log('Fetch error: ' + err);
                                     imap.end();
                                     s = false;
                                     node.statusErr = true;
@@ -706,11 +708,11 @@ module.exports = function (RED) {
         });
 
         node.on("close", function () {
-            if (this.interval_id != null) {
-                clearTimeout(this.interval_id);
+            if (node.interval_id) {
+                clearTimeout(node.interval_id);
             }
-            if (this.statusTimer) {
-                clearTimeout(this.statusTimer);
+            if (node.statusTimer) {
+                clearTimeout(node.statusTimer);
             }
             if (imap) {
                 imap.end();

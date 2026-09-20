@@ -1,13 +1,13 @@
 {
   "name": "node-red-node-email",
-  "version": "5.2.5",
+  "version": "5.3.0",
   "description": "Node-RED nodes to send and receive simple emails.",
   "dependencies": {
     "imap": "0.8.19",
     "node-pop3": "0.11.0",
-    "mailparser": "3.9.14",
-    "nodemailer": "9.0.3",
-    "smtp-server": "3.19.2",
+    "mailparser": "3.9.28",
+    "nodemailer": "10.0.10",
+    "smtp-server": "3.19.13",
     "semver": "5.7.2"
   },
   "bundledDependencies": [
