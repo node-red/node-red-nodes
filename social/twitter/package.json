@@ -1,10 +1,12 @@
 {
     "name": "node-red-node-twitter",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "A Node-RED node to talk to Twitter",
     "dependencies": {
-        "twitter-ng": "0.6.2",
-        "request": "^2.88.0"
+            "request": "^2.88.0",
+            "twitter-ng": "0.6.2",
+            "needle": "^3.1.0",
+            "twitter-api-v2": "^1.12.7"
     },
     "repository": {
         "type": "git",
@@ -27,6 +29,9 @@
         },
         {
             "name": "Dave Conway-Jones"
+        },
+        {
+             "name": "Shahram Jalaliniya"
         }
     ]
 }
